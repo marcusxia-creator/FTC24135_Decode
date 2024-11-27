@@ -27,6 +27,7 @@ public class FiniteMachineStateArm {
     private LIFTSTATE liftState = LIFTSTATE.LIFT_START; // Persisting state
     private ElapsedTime liftTimer = new ElapsedTime(); // Timer for controlling dumping time
  
+    private ElapsedTime transfer_timer = new ElapsedTime();
     private ElapsedTime debounceTimer = new ElapsedTime(); // Timer for debouncing
     private final double DEBOUNCE_THRESHOLD = 0.2; // Debouncing threshold for button presses
 
@@ -88,14 +89,30 @@ public class FiniteMachineStateArm {
                 // Debounce the button press for starting the lift extend
                 if ((gamepad_1.getButton(GamepadKeys.Button.X) || gamepad_2.getButton(GamepadKeys.Button.X)) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
                     debounceTimer.reset();
-                    robot.depositClawServo.setPosition(CLAW_CLOSE);
-                    robot.liftMotorLeft.setTargetPosition(LIFT_HIGH);
-                    robot.liftMotorRight.setTargetPosition(LIFT_HIGH);
-                    robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    robot.liftMotorLeft.setPower(UPLIFT_POWER);
-                    robot.liftMotorRight.setPower(UPLIFT_POWER);
-                    liftState = LIFTSTATE.LIFT_EXTEND;
+                    transfer_timer.reset();
+
+                    if (robot.intakeLeftArmServo.getPosition()>0.35) {
+                        robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
+                        if (transfer_timer.seconds() >= 0.15) {
+                            robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
+                        }
+                        if (transfer_timer.seconds() >= 0.25) {
+                            robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
+                        }
+                        if (transfer_timer.seconds() >= 0.35) {
+                            robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Initial);
+                            robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Initial);
+                        }
+                    }
+                    if (transfer_timer.seconds() >= 0.85) {
+                        robot.liftMotorLeft.setTargetPosition(LIFT_HIGH);
+                        robot.liftMotorRight.setTargetPosition(LIFT_HIGH);
+                        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        robot.liftMotorLeft.setPower(UPLIFT_POWER);
+                        robot.liftMotorRight.setPower(UPLIFT_POWER);
+                        liftState = LIFTSTATE.LIFT_EXTEND;
+                    }
                 }
                 break;
             case LIFT_EXTEND:
@@ -114,6 +131,7 @@ public class FiniteMachineStateArm {
                 // Wait for the dump time to pass
                 if (liftTimer.seconds() >= DUMP_TIME) {
                     robot.depositClawServo.setPosition(CLAW_OPEN);
+                    depositState = DEPOSITSTATE.OPEN;
                 }
                 if (liftTimer.seconds() >= DUMP_TIME+0.5) {
                     robot.depositLeftArmServo.setPosition(DEPOSIT_ARM_IDLE);// Reset servo to idle
@@ -185,7 +203,7 @@ public class FiniteMachineStateArm {
         CLOSE
     }
 
-    //Toggle Deposit Open - Close
+    //Toggle Deposit Claw Open - Close
     private void ToggleDeposit() {
         if (depositState == DEPOSITSTATE.OPEN) {
             depositState = DEPOSITSTATE.CLOSE;
