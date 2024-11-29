@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.TeleOps.BasicTeleOps;
 import org.firstinspires.ftc.teamcode.TeleOps.FiniteMachineStateIntake;
 
-@Autonomous(name="AutonomousMoveCode", group="org.firstinspires.ftc.teamcode")
+@Autonomous(name="AutonomousMoveCode", group="Meet_1")
 public class AutonomousMoveCode extends LinearOpMode {
     private RobotHardware robot = new RobotHardware();
 
