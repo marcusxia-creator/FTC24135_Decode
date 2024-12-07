@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import androidx.annotation.NonNull;
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -24,6 +26,11 @@ Color_Sensor I2C 1
  */
 
 public class RobotHardware {
+
+    public RobotHardware (HardwareMap hardwareMap) {
+        this.hardwareMap = hardwareMap;
+    }
+
     //Drive chassis motor
     public DcMotorEx frontLeftMotor;
     public DcMotorEx backLeftMotor;
@@ -46,20 +53,22 @@ public class RobotHardware {
     public Servo depositWristServo;
     public Servo depositClawServo;
 
+
     public ColorSensor Color_Sensor;// Color Sensor
 
     public IMU imu; //IMU
     public HardwareMap hardwareMap;
 
-    public void init(HardwareMap hardwareMap) {
-        this.hardwareMap = hardwareMap; // store the hardwareMap reference
-        //set Motors
+    public void init() {
         frontLeftMotor = hardwareMap.get(DcMotorEx.class, "FL_Motor");
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "BL_Motor");
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
+
+
         liftMotorLeft = hardwareMap.get(DcMotorEx.class,"VS_Left_Motor");
         liftMotorRight = hardwareMap.get(DcMotorEx.class, "VS_Right_Motor");
+
 
         //set servos
         intakeSlideServo = hardwareMap.get(Servo.class, "Intake_Slide_Servo");
@@ -67,6 +76,7 @@ public class RobotHardware {
         intakeRightArmServo = hardwareMap.get(Servo.class, "Intake_Arm_Right_Servo");
         intakeRotationServo = hardwareMap.get(Servo.class, "Intake_Rotation_Servo");
         intakeClawServo = hardwareMap.get(Servo.class, "Intake_Claw_Servo");
+
         depositLeftArmServo = hardwareMap.get(Servo.class, "Deposit_Arm_Left_Servo");
         depositRightArmServo = hardwareMap.get(Servo.class, "Deposit_Arm_Right_Servo");
         depositWristServo = hardwareMap.get(Servo.class, "Deposit_Wrist_Servo");
@@ -76,10 +86,18 @@ public class RobotHardware {
         //set motor mode and motor direction
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // set motor mode
-        backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER); //set motor mode
-        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // set motor mode
-        backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // set motor mode
+
+        //Reset the drive train motor encoders
+        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        //Set drive train motor run mode
+        frontLeftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
+        backLeftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); //set motor mode
+        frontRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
+        backRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
 
         //set servo direction - intake and deposit
         intakeRightArmServo.setDirection(Servo.Direction.REVERSE);
@@ -87,21 +105,26 @@ public class RobotHardware {
 
         //set slide motors to RUN_TO_POSITION for vertical slide motor
         liftMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        liftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        liftMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        //Reset the motor encoder
+        liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+
+        //Set the run mode of the motors
+        liftMotorLeft.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        liftMotorRight.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         // set robot motor power 0
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
+
     }// End of init
 
     // Initialize IMU
     public void initIMU() {
-        // set up REVimu
+        // set up REV imu
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters myIMUparameters;
         myIMUparameters = new IMU.Parameters(
@@ -110,6 +133,5 @@ public class RobotHardware {
                         RevHubOrientationOnRobot.UsbFacingDirection.LEFT
                 ));
         imu.initialize(myIMUparameters);
-        imu.resetYaw();
     }
 }
