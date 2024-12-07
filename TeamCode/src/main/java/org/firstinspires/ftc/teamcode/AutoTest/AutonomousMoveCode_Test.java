@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.TeleOps.BasicTeleOps;
 
 @Autonomous(name="AutonomousMoveCode_Test", group="org.firstinspires.ftc.teamcode")
 public class AutonomousMoveCode_Test extends LinearOpMode {

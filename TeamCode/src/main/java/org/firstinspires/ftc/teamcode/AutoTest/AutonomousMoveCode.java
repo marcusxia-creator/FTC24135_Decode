@@ -1,15 +1,11 @@
 package org.firstinspires.ftc.teamcode.AutoTest;
 
-import android.transition.Slide;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.TeleOps.BasicTeleOps;
-import org.firstinspires.ftc.teamcode.TeleOps.FiniteMachineStateIntake;
 
 @Autonomous(name="AutonomousMoveCode", group="org.firstinspires.ftc.teamcode")
 public class AutonomousMoveCode extends LinearOpMode {
