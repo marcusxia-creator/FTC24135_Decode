@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
-/*
+/**
 Hardware config:
 Motor:
 Control hub motor: FL_Motor 0, BL_motor 1, FR_Motor,2, BR_Motor
@@ -23,7 +23,7 @@ IntakeArm_Servo 0, Intake_Servo 1
 Color Sensor:
 Color_Sensor I2C 1
 
- */
+ **/
 
 public class RobotHardware {
 
