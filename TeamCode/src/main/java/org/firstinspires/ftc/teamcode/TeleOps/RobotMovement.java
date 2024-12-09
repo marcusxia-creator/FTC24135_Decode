@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -18,10 +17,6 @@ public class RobotMovement {
 
     //Declare the motor max speed
     private final double motorMaxSpeed;
-
-    private static double x;
-    private static double y;
-    private static double rx;
 
     //Declare constructor
     public RobotMovement (Gamepad gamepad1, Gamepad gamepad2, RobotHardware robot, double motorMaxSpeed) {
@@ -40,6 +35,10 @@ public class RobotMovement {
 
         //Set the imu parameters
         double botHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+
+        double x = 0;
+        double y = 0;
+        double rx = 0;
 
         //Set the gamepad parameters
         if (Math.abs(gamepad1.right_stick_y) > 0.1 || Math.abs(gamepad1.right_stick_x) > 0.1 || Math.abs(gamepad1.left_stick_x) > 0.1) {
