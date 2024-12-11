@@ -5,19 +5,23 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class RobotActionConfig {
     //drive chassis
-    public static double powerFactor =0.7;
+    public static double drivetrain_Power_Factor =0.7;
 
-    public static double intake_slide_Extension = 0.55;// range(0.3 - 0.65)
-    public static double intake_slide_Retract = 0.3;
+    //Intake Config
+    public static double intake_Slide_Extend = 0.55;// range(0.3 - 0.65)
+    public static double intake_Slide_Retract = 0.3;
 
-    public static double intake_Rotation = 0.49;
+    public static double intake_Rotation_Default = 0.49;
 
-    public static double intake_Arm_initial = 0.1;//0-0.56
-    public static double intake_Arm_down = 0.05;
-    public static double intake_Arm_retract = 0.53;
+    public static double intake_Arm_Idle = 0.1;//0-0.56
+    public static double intake_Arm_Extend = 0.05;
+    public static double intake_Arm_Retract = 0.53;
 
     public static double intake_Claw_Open = 0.55;
     public static double intake_Claw_Close = 0.3;
+
+    public static double intake_Rotation_Steer_Amount = 0.1;
+    public static double intake_Arm_Change_Amount = 0.05;
 
     //Deposit Config
     public static int deposit_Slide_down_Pos = 50;   //slides Position Configure
@@ -42,4 +46,8 @@ public class RobotActionConfig {
 
     public static double deposit_Arm_Hang = 0.8;
     public static double deposit_Wrist_Hang = 0.3;
+
+    //Other properties
+    public static double DEBOUNCE_THRESHOLD = 0.25;
+    public static boolean deposit_Action = false;
 }

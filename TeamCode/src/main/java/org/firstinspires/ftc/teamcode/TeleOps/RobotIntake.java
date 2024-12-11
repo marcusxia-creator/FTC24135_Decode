@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -23,65 +22,18 @@ public class RobotIntake {
 
     private final RobotHardware robot;
 
-    private final double intakeSlideExtendedPosition;
-    private final double intakeSlideRetractedPosition;
-    private final double intakeArmExtendedPosition;
-    private final double intakeArmRetractedPosition;
-    private final double intakeRotationServoNeutralPosition;
-    private final double intakeClawServoClosePosition;
-    private final double intakeClawServoOpenPosition;
-    private final double intakeArmIdlePosition;
-
-    private final double intakeArmServoChangeAmount;
-    private final double intakeRotationServoSteerAmount;
-
-    private final double depositServoClawClosePosition;
-
     //Set up timer for debouncing
     private final ElapsedTime debounceTimer = new ElapsedTime(); // Timer for debouncing
-    private final double DEBOUNCE_THRESHOLD;
+    private final double DEBOUNCE_THRESHOLD = RobotActionConfig.DEBOUNCE_THRESHOLD;
 
     private final ElapsedTime intakeTimer = new ElapsedTime();
 
     //Constructor
-    public RobotIntake
-        (
-            Gamepad gamepad1, Gamepad gamepad2, RobotHardware robot,
-
-            double intakeSlideExtendedPosition, double intakeSlideRetractedPosition,
-            double intakeArmExtendedPosition, double intakeArmRetractedPosition,
-            double intakeRotationNeutralPosition,
-            double intakeClawServoClosePosition,double intakeClawServoOpenPosition,
-
-            double intakeArmServoChangeAmount, double intakeRotationServoSteerAmount,
-
-            double intakeArmIdlePosition,
-
-            double depositServoClawClosePosition,
-
-            double debounce_threshold
-        ) {
+    public RobotIntake (Gamepad gamepad1, Gamepad gamepad2, RobotHardware robot) {
 
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.robot = robot;
-
-        this.intakeSlideExtendedPosition = intakeSlideExtendedPosition;
-        this.intakeSlideRetractedPosition = intakeSlideRetractedPosition;
-        this.intakeArmExtendedPosition = intakeArmExtendedPosition;
-        this.intakeArmRetractedPosition = intakeArmRetractedPosition;
-        this.intakeRotationServoNeutralPosition = intakeRotationNeutralPosition;
-        this.intakeClawServoClosePosition = intakeClawServoClosePosition;
-        this.intakeClawServoOpenPosition = intakeClawServoOpenPosition;
-
-        this.intakeArmServoChangeAmount = intakeArmServoChangeAmount;
-        this.intakeRotationServoSteerAmount = intakeRotationServoSteerAmount;
-
-        this.intakeArmIdlePosition = intakeArmIdlePosition;
-
-        this.depositServoClawClosePosition = depositServoClawClosePosition;
-
-        this.DEBOUNCE_THRESHOLD = debounce_threshold;
 
         this.intakeState = IntakeState.INTAKE_EXTEND;
     }
@@ -91,46 +43,58 @@ public class RobotIntake {
             case INTAKE_EXTEND:
                 if ((gamepad1.dpad_right || gamepad2.dpad_right) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
                     debounceTimer.reset();
-                    robot.intakeLeftArmServo.setPosition(intakeArmExtendedPosition);
-                    robot.intakeRightArmServo.setPosition(intakeArmExtendedPosition);
-                    robot.intakeSlideServo.setPosition(intakeSlideExtendedPosition);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Extend);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Extend);
+                    robot.intakeSlideServo.setPosition(RobotActionConfig.intake_Slide_Extend);
                     intakeState = IntakeState.INTAKE_GRAB;
                 }
                 else {
-                    intakeInit(intakeSlideRetractedPosition, intakeArmRetractedPosition, intakeRotationServoNeutralPosition, intakeClawServoOpenPosition);
+                    intakeInit(RobotActionConfig.intake_Arm_Retract);
                 }
                 break;
             case INTAKE_GRAB:
                 if ((gamepad1.dpad_left || gamepad2.dpad_left) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
                     debounceTimer.reset();
-                    robot.intakeClawServo.setPosition(intakeClawServoClosePosition);
-                    robot.intakeRotationServo.setPosition(intakeRotationServoNeutralPosition);
+                    robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Extend);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Extend);
+                    robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Default);
                     intakeState = IntakeState.INTAKE_RETRACT;
                 }
                 else {
-                    intakeArmControl(intakeArmServoChangeAmount);
-                    intakeRotationServoSteer(intakeRotationServoSteerAmount);
+                    //Assigning value to each gamepad
+                    previousGamepad1.copy(currentGamepad1);
+                    currentGamepad1.copy(gamepad1);
+
+                    previousGamepad2.copy(currentGamepad2);
+                    currentGamepad2.copy(gamepad2);
+
+                    //Calling the methods
+                    intakeArmControl();
+                    intakeRotationServoSteer();
                 }
                 break;
             case INTAKE_RETRACT:
-                robot.intakeSlideServo.setPosition(intakeSlideRetractedPosition);
+                robot.intakeSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 if (intakeTimer.seconds() > 0.5) {
                     intakeTimer.reset();
-                    robot.intakeLeftArmServo.setPosition(intakeArmRetractedPosition);
-                    robot.intakeRightArmServo.setPosition(intakeArmRetractedPosition);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Retract);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Retract);
                     intakeState = IntakeState.SAMPLE_TRANSFER;
                 }
                 break;
             case SAMPLE_TRANSFER:
                 if(intakeTimer.seconds() > 1) {
-                    robot.intakeClawServo.setPosition(intakeClawServoOpenPosition);
+                    robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 }
                 if(intakeTimer.seconds() > 1.3) {
-                    robot.depositClawServo.setPosition(depositServoClawClosePosition);
+                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                 }
                 if(intakeTimer.seconds() > 1.5) {
-                    robot.intakeLeftArmServo.setPosition(intakeArmIdlePosition);
-                    robot.intakeRightArmServo.setPosition(intakeArmIdlePosition);
+                    intakeTimer.reset();
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
+                    RobotActionConfig.deposit_Action = true;
                     intakeState = IntakeState.INTAKE_EXTEND;
                 }
                 break;
@@ -147,42 +111,31 @@ public class RobotIntake {
         SAMPLE_TRANSFER
     }
 
-    private void intakeInit (double intakeSlideRetractedPosition, double intakeArmRetractedPosition, double intakeRotationServoNeutralPosition, double intakeClawServoOpenPosition) {
-        robot.intakeSlideServo.setPosition(intakeSlideRetractedPosition);
-        robot.intakeLeftArmServo.setPosition(intakeArmRetractedPosition);
-        robot.intakeRightArmServo.setPosition(intakeArmRetractedPosition);
-        robot.intakeRotationServo.setPosition(intakeRotationServoNeutralPosition);
-        robot.intakeClawServo.setPosition(intakeClawServoOpenPosition);
+    public void intakeInit (double intake_Arm_Position) {
+        robot.intakeSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
+        robot.intakeLeftArmServo.setPosition(intake_Arm_Position);
+        robot.intakeRightArmServo.setPosition(intake_Arm_Position);
+        robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Default);
+        robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
     }
 
-    private void intakeArmControl (double armServoChangeAmount) {
-        previousGamepad1.copy(currentGamepad1);
-        currentGamepad1.copy(gamepad1);
-
-        previousGamepad2.copy(currentGamepad2);
-        currentGamepad2.copy(gamepad2);
-
+    private void intakeArmControl () {
+        //Rising edge detector
         if ((currentGamepad1.dpad_up && !previousGamepad1.dpad_up) || (currentGamepad2.dpad_up && !previousGamepad2.dpad_up)) {
-            robot.intakeLeftArmServo.setPosition(robot.intakeLeftArmServo.getPosition() + armServoChangeAmount);
+            robot.intakeLeftArmServo.setPosition(robot.intakeLeftArmServo.getPosition() + RobotActionConfig.intake_Arm_Change_Amount);
         }
         if ((currentGamepad1.dpad_down && !previousGamepad1.dpad_down) || (currentGamepad2.dpad_down && !previousGamepad2.dpad_down)) {
-            robot.intakeLeftArmServo.setPosition(robot.intakeLeftArmServo.getPosition() - armServoChangeAmount);
+            robot.intakeLeftArmServo.setPosition(robot.intakeLeftArmServo.getPosition() - RobotActionConfig.intake_Arm_Change_Amount);
         }
     }
 
-    private void intakeRotationServoSteer(double intakeRotationServoSteer) {
-        previousGamepad1.copy(currentGamepad1);
-        currentGamepad1.copy(gamepad1);
-
-        previousGamepad2.copy(currentGamepad2);
-        currentGamepad2.copy(gamepad2);
-
+    private void intakeRotationServoSteer() {
         //Rising edge detector
         if ((currentGamepad1.left_bumper && !previousGamepad1.left_bumper) || (currentGamepad2.left_bumper && !previousGamepad2.left_bumper)) {
-            robot.intakeRotationServo.setPosition(robot.intakeRotationServo.getPosition() + intakeRotationServoSteer);
+            robot.intakeRotationServo.setPosition(robot.intakeRotationServo.getPosition() + RobotActionConfig.intake_Rotation_Steer_Amount);
         }
         if ((currentGamepad1.right_bumper && !previousGamepad1.right_bumper) || (currentGamepad2.right_bumper && !previousGamepad2.right_bumper)) {
-            robot.intakeRotationServo.setPosition(robot.intakeRotationServo.getPosition() - intakeRotationServoSteer);
+            robot.intakeRotationServo.setPosition(robot.intakeRotationServo.getPosition() - RobotActionConfig.intake_Rotation_Steer_Amount);
         }
     }
 }

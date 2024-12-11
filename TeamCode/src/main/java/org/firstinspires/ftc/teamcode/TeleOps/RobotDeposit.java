@@ -100,7 +100,7 @@ public class RobotDeposit {
             case LIFT_START:
                 // Debounce the button press for starting the lift extend
                 if (((gamepad_1.getButton(GamepadKeys.Button.X) && (gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) < 0.2))
-                        || (gamepad_2.getButton(GamepadKeys.Button.X) && (gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) < 0.2))) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD){
+                        || (gamepad_2.getButton(GamepadKeys.Button.X) && (gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) < 0.2))) && RobotActionConfig.deposit_Action && debounceTimer.seconds() > DEBOUNCE_THRESHOLD){
                     debounceTimer.reset();
                     robot.depositClawServo.setPosition(CLAW_CLOSE);
                     robot.liftMotorLeft.setTargetPosition(LIFT_HIGH);
@@ -149,6 +149,7 @@ public class RobotDeposit {
                 if (isLiftAtPosition(LIFT_LOW)) {
                     robot.liftMotorLeft.setPower(0); // Stop the motor after reaching the low position
                     robot.liftMotorRight.setPower(0);
+                    RobotActionConfig.deposit_Action = false;
                     liftState = LIFTSTATE.LIFT_START;
                 }
                 break;

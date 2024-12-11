@@ -19,11 +19,11 @@ public class RobotMovement {
     private final double motorMaxSpeed;
 
     //Declare constructor
-    public RobotMovement (Gamepad gamepad1, Gamepad gamepad2, RobotHardware robot, double motorMaxSpeed) {
+    public RobotMovement (Gamepad gamepad1, Gamepad gamepad2, RobotHardware robot) {
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.robot = robot;
-        this.motorMaxSpeed = motorMaxSpeed;
+        this.motorMaxSpeed = RobotActionConfig.drivetrain_Power_Factor;
         this.driveTrainControlMode = DriveTrainControlMode.ROBOT_CENTRIC;
     }
 
