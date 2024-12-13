@@ -27,7 +27,7 @@ public class RobotOpMode extends OpMode {
 
         //Initializing robot intake
         robotIntake = new RobotIntake(gamepad1, gamepad2, robot);
-        robotIntake.intakeInit(RobotActionConfig.intake_Arm_Retract);
+        robotIntake.intakeInit();
 
         //Initializing FTC dashboard
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());

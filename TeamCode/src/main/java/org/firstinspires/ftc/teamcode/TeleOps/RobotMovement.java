@@ -15,15 +15,11 @@ public class RobotMovement {
     //Declare robot
     private final RobotHardware robot;
 
-    //Declare the motor max speed
-    private final double motorMaxSpeed;
-
     //Declare constructor
     public RobotMovement (Gamepad gamepad1, Gamepad gamepad2, RobotHardware robot) {
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.robot = robot;
-        this.motorMaxSpeed = RobotActionConfig.drivetrain_Power_Factor;
         this.driveTrainControlMode = DriveTrainControlMode.ROBOT_CENTRIC;
     }
 
@@ -40,6 +36,9 @@ public class RobotMovement {
         double y = 0;
         double rx = 0;
 
+        //Declare the motor max speed
+        double motorMaxSpeed = RobotActionConfig.drivetrain_Power_Factor;
+
         //Set the gamepad parameters
         if (Math.abs(gamepad1.right_stick_y) > 0.1 || Math.abs(gamepad1.right_stick_x) > 0.1 || Math.abs(gamepad1.left_stick_x) > 0.1) {
             y = -gamepad1.right_stick_y;
@@ -49,6 +48,10 @@ public class RobotMovement {
             y = -gamepad2.right_stick_y;
             x = gamepad2.right_stick_x;
             rx = gamepad2.left_stick_x;
+        }
+
+        if ((gamepad1.left_trigger > 0.6) || (gamepad2.left_trigger > 0.6)) {
+            motorMaxSpeed /= 2;
         }
 
         /**Future note, check if short circuit is needed**/

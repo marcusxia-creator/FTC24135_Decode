@@ -4,12 +4,12 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class RobotActionConfig {
-    //drive chassis
+    /**drive chassis**/
     public static double drivetrain_Power_Factor =0.7;
 
-    //Intake Config
+    /**Intake Config**/
     public static double intake_Slide_Extend = 0.55;// range(0.3 - 0.65)
-    public static double intake_Slide_Retract = 0.3;
+    public static double intake_Slide_Retract = 0.32; /** Zirui Changed this to 0.32 (0.3 original) for the slide to stop without slamming on the chassis **/
 
     public static double intake_Rotation_Default = 0.49;
 
@@ -23,7 +23,7 @@ public class RobotActionConfig {
     public static double intake_Rotation_Steer_Amount = 0.1;
     public static double intake_Arm_Change_Amount = 0.05;
 
-    //Deposit Config
+    /**Deposit Config**/
     public static int deposit_Slide_down_Pos = 50;   //slides Position Configure
     public static int deposit_Slide_Highbar_Pos = 795;  //slides Position Configure
     public static int deposit_Slide_Highbasket_Pos = 2800; //slides Position Configure
@@ -47,7 +47,14 @@ public class RobotActionConfig {
     public static double deposit_Arm_Hang = 0.8;
     public static double deposit_Wrist_Hang = 0.3;
 
-    //Other properties
+    /**Other properties**/
+    //Debounce timer
     public static double DEBOUNCE_THRESHOLD = 0.25;
-    public static boolean deposit_Action = false;
+
+    //To check if intake is finished running so that deposit can run (otherwise deposit cannot run)
+    public enum DepositState {
+        DEPOSIT_EXTEND,
+        DEPOSIT_IDLE
+    }
+    public static DepositState depositState;
 }

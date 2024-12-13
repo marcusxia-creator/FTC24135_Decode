@@ -49,7 +49,7 @@ public class RobotIntake {
                     intakeState = IntakeState.INTAKE_GRAB;
                 }
                 else {
-                    intakeInit(RobotActionConfig.intake_Arm_Retract);
+                    intakeInit();
                 }
                 break;
             case INTAKE_GRAB:
@@ -77,7 +77,6 @@ public class RobotIntake {
             case INTAKE_RETRACT:
                 robot.intakeSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 if (intakeTimer.seconds() > 0.5) {
-                    intakeTimer.reset();
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Retract);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Retract);
                     intakeState = IntakeState.SAMPLE_TRANSFER;
@@ -94,7 +93,7 @@ public class RobotIntake {
                     intakeTimer.reset();
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
-                    RobotActionConfig.deposit_Action = true;
+                    RobotActionConfig.depositState = RobotActionConfig.DepositState.DEPOSIT_EXTEND;
                     intakeState = IntakeState.INTAKE_EXTEND;
                 }
                 break;
@@ -111,10 +110,10 @@ public class RobotIntake {
         SAMPLE_TRANSFER
     }
 
-    public void intakeInit (double intake_Arm_Position) {
+    public void intakeInit () {
         robot.intakeSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
-        robot.intakeLeftArmServo.setPosition(intake_Arm_Position);
-        robot.intakeRightArmServo.setPosition(intake_Arm_Position);
+        robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
+        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Default);
         robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
     }

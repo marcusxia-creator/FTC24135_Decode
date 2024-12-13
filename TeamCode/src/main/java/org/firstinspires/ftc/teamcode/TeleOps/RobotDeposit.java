@@ -100,10 +100,10 @@ public class RobotDeposit {
             case LIFT_START:
                 // Debounce the button press for starting the lift extend
                 if (((gamepad_1.getButton(GamepadKeys.Button.X) && (gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) < 0.2))
-                        || (gamepad_2.getButton(GamepadKeys.Button.X) && (gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) < 0.2))) && RobotActionConfig.deposit_Action && debounceTimer.seconds() > DEBOUNCE_THRESHOLD){
+                        || (gamepad_2.getButton(GamepadKeys.Button.X) && (gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) < 0.2))) && RobotActionConfig.depositState == RobotActionConfig.DepositState.DEPOSIT_EXTEND && debounceTimer.seconds() > DEBOUNCE_THRESHOLD){
                     debounceTimer.reset();
-                    robot.depositClawServo.setPosition(CLAW_CLOSE);
-                    robot.liftMotorLeft.setTargetPosition(LIFT_HIGH);
+                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
+                    robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_Highbasket_Pos);
                     robot.liftMotorRight.setTargetPosition(LIFT_HIGH);
                     robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -149,7 +149,7 @@ public class RobotDeposit {
                 if (isLiftAtPosition(LIFT_LOW)) {
                     robot.liftMotorLeft.setPower(0); // Stop the motor after reaching the low position
                     robot.liftMotorRight.setPower(0);
-                    RobotActionConfig.deposit_Action = false;
+                    RobotActionConfig.depositState = RobotActionConfig.DepositState.DEPOSIT_IDLE;
                     liftState = LIFTSTATE.LIFT_START;
                 }
                 break;
