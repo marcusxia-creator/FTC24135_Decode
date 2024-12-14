@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -9,23 +11,22 @@ public class RobotMovement {
     private DriveTrainControlMode driveTrainControlMode;
 
     //Declare gamepad
-    private final Gamepad gamepad1;
-    private final Gamepad gamepad2;
+    private final GamepadEx gamepad_1;
+    private final GamepadEx gamepad_2;
 
     //Declare robot
     private final RobotHardware robot;
 
     //Declare constructor
-    public RobotMovement (Gamepad gamepad1, Gamepad gamepad2, RobotHardware robot) {
-        this.gamepad1 = gamepad1;
-        this.gamepad2 = gamepad2;
+    public RobotMovement (GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot) {
+        this.gamepad_1 = gamepad_1;
+        this.gamepad_2 = gamepad_2;
         this.robot = robot;
         this.driveTrainControlMode = DriveTrainControlMode.ROBOT_CENTRIC;
     }
 
     //Set the debounce timer
     private final ElapsedTime debounceTimer = new ElapsedTime();
-    private static final double DEBOUNCE_THRESHOLD = 0.25;
 
     public void robotDriveTrain() {
 
@@ -40,22 +41,22 @@ public class RobotMovement {
         double motorMaxSpeed = RobotActionConfig.drivetrain_Power_Factor;
 
         //Set the gamepad parameters
-        if (Math.abs(gamepad1.right_stick_y) > 0.1 || Math.abs(gamepad1.right_stick_x) > 0.1 || Math.abs(gamepad1.left_stick_x) > 0.1) {
-            y = -gamepad1.right_stick_y;
-            x = gamepad1.right_stick_x;
-            rx = gamepad1.left_stick_x;
-        } else if (Math.abs(gamepad2.right_stick_y) > 0.1 || Math.abs(gamepad2.right_stick_x) > 0.1 || Math.abs(gamepad2.left_stick_x) > 0.1) {
-            y = -gamepad2.right_stick_y;
-            x = gamepad2.right_stick_x;
-            rx = gamepad2.left_stick_x;
+        if (Math.abs(gamepad_1.getRightY()) > 0.1 || Math.abs(gamepad_1.getRightX()) > 0.1 || Math.abs(gamepad_1.getLeftX()) > 0.1) {
+            y = -gamepad_1.getRightY();
+            x = gamepad_1.getRightX();
+            rx = gamepad_1.getLeftX();
+        } else if (Math.abs(gamepad_2.getRightY()) > 0.1 || Math.abs(gamepad_2.getRightX()) > 0.1 || Math.abs(gamepad_2.getLeftX()) > 0.1) {
+            y = -gamepad_2.getRightY();
+            x = gamepad_2.getRightX();
+            rx = gamepad_2.getLeftX();
         }
 
-        if ((gamepad1.left_trigger > 0.6) || (gamepad2.left_trigger > 0.6)) {
+        if ((gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.6) || (gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.6)) {
             motorMaxSpeed /= 2;
         }
 
         /**Future note, check if short circuit is needed**/
-        if ((gamepad1.start && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) || (gamepad2.start && debounceTimer.seconds() > DEBOUNCE_THRESHOLD)) {
+        if ((gamepad_1.getButton(GamepadKeys.Button.START) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) || (gamepad_2.getButton(GamepadKeys.Button.START) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD)) {
             debounceTimer.reset();
             if (driveTrainControlMode == DriveTrainControlMode.ROBOT_CENTRIC) {
                 driveTrainControlMode = DriveTrainControlMode.FIELD_CENTRIC;
@@ -65,7 +66,7 @@ public class RobotMovement {
             }
         }
 
-        if ((gamepad1.back && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) || (gamepad2.back && debounceTimer.seconds() > DEBOUNCE_THRESHOLD)) {
+        if ((gamepad_1.getButton(GamepadKeys.Button.BACK) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) || (gamepad_2.getButton(GamepadKeys.Button.BACK) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD)) {
             debounceTimer.reset();
             robot.imu.resetYaw();
         }

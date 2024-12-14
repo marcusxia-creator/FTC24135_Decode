@@ -5,6 +5,8 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.R;
+
 /** Button Config for deposit
  * *X                   : extend
  * *B                   : Cancel
@@ -34,67 +36,33 @@ public class RobotDeposit {
     private ElapsedTime extendTimer = new ElapsedTime();
     private final double EXTENDTIME = 1;
 
-    public RobotDeposit (RobotHardware robot, GamepadEx gamepad_1,
-                                 GamepadEx gamepad_2, double DEPOSIT_ARM_IDLE, double DUMP_DEPOSIT,
-                                 double DUMP_TIME, double RETRACT_TIME,
-                                 double DEPOSIT_IDLE, double DEPOSIT_DUMP, double CLAW_OPEN, double CLAW_CLOSE, int LIFT_LOW, int LIFT_HIGH,
-                                 double UPLIFT_POWER, double DOWNLIFT_POWER,
-                                 double depositArmHang, double depositWristHang
+    public RobotDeposit (GamepadEx gamepad_1,
+                                 GamepadEx gamepad_2, RobotHardware robot
                          ) {
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
         this.robot = robot;
-        this.DEPOSIT_ARM_IDLE = DEPOSIT_ARM_IDLE;
-        this.DUMP_DEPOSIT = DUMP_DEPOSIT;
-        this.DUMP_TIME = DUMP_TIME;
-        this.RETRACT_TIME = RETRACT_TIME;
-        this.DEPOSIT_IDLE = DEPOSIT_IDLE;
-        this.DEPOSIT_DUMP = DEPOSIT_DUMP;
-        this.CLAW_OPEN  = CLAW_OPEN;
-        this.CLAW_CLOSE = CLAW_CLOSE;
-        this.LIFT_LOW = LIFT_LOW;
-        this.LIFT_HIGH = LIFT_HIGH;
-        this.UPLIFT_POWER = UPLIFT_POWER;
-        this.DOWNLIFT_POWER = DOWNLIFT_POWER;
-
-        this.depositArmHang = depositArmHang;
-        this.depositWristHang = depositWristHang;
     }
 
-    final double DEPOSIT_ARM_IDLE;     // Idle position for the deposit arm servo
-    final double DUMP_DEPOSIT;  // Dumping position for the deposit arm servo
-    final double DUMP_TIME;     // Time for dumping action in seconds
-    final int LIFT_LOW;         // Encoder position for the low position
-    final int LIFT_HIGH;        // Encoder position for the high position
-    final double UPLIFT_POWER;  // uplife power
-    final double DOWNLIFT_POWER;// downwards power
-    final double DEPOSIT_IDLE;   // deposit idling position
-    final double DEPOSIT_DUMP;   // deposit dump position
-    final double RETRACT_TIME;  // retract waiting time
-    final double CLAW_OPEN;     // claw open
-    final double CLAW_CLOSE;    // claw close
-
-    private final double depositArmHang;
-    private final double depositWristHang;
 
     // Initialize Deposit Arm
     public void Init() {
         liftTimer.reset();
         hangTimer.reset();
-        robot.liftMotorLeft.setTargetPosition(LIFT_LOW);
-        robot.liftMotorRight.setTargetPosition(LIFT_LOW);
+        robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_down_Pos);
+        robot.liftMotorRight.setTargetPosition(RobotActionConfig.deposit_Slide_down_Pos);
         robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.liftMotorLeft.setPower(0.1);                                          // Make sure lift motor is on
         robot.liftMotorRight.setPower(0.1);
-        robot.depositWristServo.setPosition(0.125);
-        robot.depositLeftArmServo.setPosition(DEPOSIT_ARM_IDLE);
-        robot.depositRightArmServo.setPosition(DEPOSIT_ARM_IDLE);
-        robot.depositClawServo.setPosition(CLAW_OPEN);
+        robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Initial_Pos);
+        robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_retract_Pos);
+        robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_retract_Pos);
+        robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
     }
 
     // Deposit Arm Control
-    public void DepositArmLoop() {
+    public void depositArmLoop() {
         // Display current lift state and telemetry feedback
         switch (liftState) {
             case LIFT_START:
@@ -104,49 +72,51 @@ public class RobotDeposit {
                     debounceTimer.reset();
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                     robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_Highbasket_Pos);
-                    robot.liftMotorRight.setTargetPosition(LIFT_HIGH);
+                    robot.liftMotorRight.setTargetPosition(RobotActionConfig.deposit_Slide_Highbasket_Pos);
                     robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    robot.liftMotorLeft.setPower(UPLIFT_POWER);
-                    robot.liftMotorRight.setPower(UPLIFT_POWER);
+                    robot.liftMotorLeft.setPower(RobotActionConfig.deposit_Slide_UpLiftPower);
+                    robot.liftMotorRight.setPower(RobotActionConfig.deposit_Slide_UpLiftPower);
                     liftState = LIFTSTATE.LIFT_EXTEND;
                 }
                 break;
             case LIFT_EXTEND:
                 // Check if the lift has reached the high position
-                if (isLiftAtPosition(LIFT_HIGH)) {
+                if (isLiftAtPosition(RobotActionConfig.deposit_Slide_Highbasket_Pos)) {
                     //move deposit arm to dump
-                    robot.depositLeftArmServo.setPosition(DUMP_DEPOSIT);
-                    robot.depositRightArmServo.setPosition(DUMP_DEPOSIT);
+                    robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_dump_Pos);
+                    robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_dump_Pos);
                     // Move deposit wrist servo to dump position
-                    robot.depositWristServo.setPosition(DEPOSIT_DUMP);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_dump_Pos);
                     liftTimer.reset();
                     liftState = LIFTSTATE.LIFT_DUMP;
                 }
                 break;
             case LIFT_DUMP:
                 // Wait for the dump time to pass
-                if (liftTimer.seconds() >= DUMP_TIME) {
-                    robot.depositClawServo.setPosition(CLAW_OPEN);
+                if (liftTimer.seconds() >= RobotActionConfig.dumpTime) {
+                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                 }
-                if (liftTimer.seconds() >= DUMP_TIME+0.5) {
-                    robot.depositLeftArmServo.setPosition(DEPOSIT_ARM_IDLE);// Reset servo to idle
-                    robot.depositRightArmServo.setPosition(DEPOSIT_ARM_IDLE);
-                    robot.depositWristServo.setPosition(DEPOSIT_IDLE);
-                    liftState = LIFTSTATE.LIFT_RETRACT;
+                if (liftTimer.seconds() >= RobotActionConfig.dumpTime+0.5) {
+                    robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_retract_Pos);// Reset servo to idle
+                    robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_retract_Pos);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_retract_Pos);
+                    if (liftTimer.seconds() >= RobotActionConfig.dumpTime +1.5) {
+                        liftState = LIFTSTATE.LIFT_RETRACT;
+                    }
                 }
                 break;
             case LIFT_RETRACT:
                 // Check if the lift has reached the low position
-                if(servo_AtPosition(CLAW_OPEN) && liftTimer.seconds()>= RETRACT_TIME) {
-                    robot.liftMotorLeft.setTargetPosition(LIFT_LOW); // Start retracting the lift
-                    robot.liftMotorRight.setTargetPosition(LIFT_LOW); // Start retracting the lift
+                if(servo_AtPosition(RobotActionConfig.deposit_Claw_Open) && liftTimer.seconds()>=RobotActionConfig.retractTime) {
+                    robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_down_Pos); // Start retracting the lift
+                    robot.liftMotorRight.setTargetPosition(RobotActionConfig.deposit_Slide_down_Pos); // Start retracting the lift
                     robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    robot.liftMotorLeft.setPower(DOWNLIFT_POWER);
-                    robot.liftMotorRight.setPower(DOWNLIFT_POWER);
+                    robot.liftMotorLeft.setPower(RobotActionConfig.deposit_Slide_DownLiftPower);
+                    robot.liftMotorRight.setPower(RobotActionConfig.deposit_Slide_DownLiftPower);
                 }
-                if (isLiftAtPosition(LIFT_LOW)) {
+                if (isLiftAtPosition(RobotActionConfig.deposit_Slide_down_Pos)) {
                     robot.liftMotorLeft.setPower(0); // Stop the motor after reaching the low position
                     robot.liftMotorRight.setPower(0);
                     RobotActionConfig.depositState = RobotActionConfig.DepositState.DEPOSIT_IDLE;
@@ -164,10 +134,10 @@ public class RobotDeposit {
             liftState = LIFTSTATE.LIFT_START;
             robot.liftMotorLeft.setPower(0); // Ensure the motor is stopped
             robot.liftMotorRight.setPower(0);
-            robot.depositWristServo.setPosition(DEPOSIT_IDLE);
-            robot.depositLeftArmServo.setPosition(DEPOSIT_ARM_IDLE);
-            robot.depositRightArmServo.setPosition(DEPOSIT_ARM_IDLE);
-            robot.depositClawServo.setPosition(CLAW_OPEN);
+            robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_retract_Pos);
+            robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_retract_Pos);
+            robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_retract_Pos);
+            robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
         }
 
         // Claw control - Button Back
@@ -175,9 +145,9 @@ public class RobotDeposit {
             debounceTimer.reset();
             ToggleDeposit();
             if (depositState == DEPOSITSTATE.OPEN) {
-                robot.depositClawServo.setPosition(CLAW_CLOSE);
+                robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
             } else {
-                robot.depositClawServo.setPosition(CLAW_OPEN);
+                robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
             }
         }
 
@@ -191,9 +161,9 @@ public class RobotDeposit {
                 robot.intakeSlideServo.setPosition(0.4);
                 while (extendTimer.seconds() < 1.0){
                 }
-                robot.depositLeftArmServo.setPosition(depositArmHang);
-                robot.depositRightArmServo.setPosition(depositArmHang);
-                robot.depositWristServo.setPosition(depositWristHang);
+                robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Hang);
+                robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Hang);
+                robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hang);
             }
 
         }
