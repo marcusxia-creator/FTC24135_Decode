@@ -10,22 +10,21 @@ public class RobotIntake {
     private IntakeState intakeState;
 
     //Declare gamepad
-    private final GamepadEx gamepad1;
-    private final GamepadEx gamepad2;
+    private final GamepadEx gamepad_1;
+    private final GamepadEx gamepad_2;
 
     private final RobotHardware robot;
 
     //Set up timer for debouncing
     private final ElapsedTime debounceTimer = new ElapsedTime(); // Timer for debouncing
-    private final double DEBOUNCE_THRESHOLD = RobotActionConfig.DEBOUNCE_THRESHOLD;
 
     private final ElapsedTime intakeTimer = new ElapsedTime();
 
     //Constructor
-    public RobotIntake (GamepadEx gamepad1, GamepadEx gamepad2, RobotHardware robot) {
+    public RobotIntake (GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot) {
 
-        this.gamepad1 = gamepad1;
-        this.gamepad2 = gamepad2;
+        this.gamepad_1 = gamepad_1;
+        this.gamepad_2 = gamepad_2;
         this.robot = robot;
 
         this.intakeState = IntakeState.INTAKE_EXTEND;
@@ -34,7 +33,7 @@ public class RobotIntake {
     public void intakeSlideControl () {
         switch (intakeState) {
             case INTAKE_EXTEND:
-                if ((gamepad1.getButton(GamepadKeys.Button.DPAD_RIGHT) || gamepad2.getButton(GamepadKeys.Button.DPAD_RIGHT)) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
+                if ((gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) || gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT)) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
                     debounceTimer.reset();
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Extend);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Extend);
@@ -46,12 +45,13 @@ public class RobotIntake {
                 }
                 break;
             case INTAKE_GRAB:
-                if ((gamepad1.getButton(GamepadKeys.Button.DPAD_LEFT) || gamepad2.getButton(GamepadKeys.Button.DPAD_LEFT)) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
+                if ((gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) || gamepad_2.getButton(GamepadKeys.Button.DPAD_LEFT)) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
                     debounceTimer.reset();
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Extend);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Extend);
                     robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Default);
+                    intakeTimer.reset();
                     intakeState = IntakeState.INTAKE_RETRACT;
                 }
                 else {
@@ -106,20 +106,22 @@ public class RobotIntake {
 
     private void intakeArmControl () {
         //Rising edge detector
-        if (gamepad1.wasJustPressed(GamepadKeys.Button.DPAD_UP) || (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_UP))) {
+        if (gamepad_1.wasJustPressed(GamepadKeys.Button.DPAD_UP) || gamepad_2.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
             robot.intakeLeftArmServo.setPosition(robot.intakeLeftArmServo.getPosition() + RobotActionConfig.intake_Arm_Change_Amount);
+            robot.intakeRightArmServo.setPosition(robot.intakeRightArmServo.getPosition() + RobotActionConfig.intake_Arm_Change_Amount);
         }
-        if (gamepad1.wasJustPressed(GamepadKeys.Button.DPAD_DOWN) || (gamepad2.wasJustPressed(GamepadKeys.Button.DPAD_DOWN))) {
+        if (gamepad_1.wasJustPressed(GamepadKeys.Button.DPAD_DOWN) || gamepad_2.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
             robot.intakeLeftArmServo.setPosition(robot.intakeLeftArmServo.getPosition() - RobotActionConfig.intake_Arm_Change_Amount);
+            robot.intakeRightArmServo.setPosition(robot.intakeRightArmServo.getPosition() - RobotActionConfig.intake_Arm_Change_Amount);
         }
     }
 
     private void intakeRotationServoSteer() {
         //Rising edge detector
-        if (gamepad1.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER) || (gamepad2.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER))) {
+        if (gamepad_1.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER) || gamepad_2.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
             robot.intakeRotationServo.setPosition(robot.intakeRotationServo.getPosition() + RobotActionConfig.intake_Rotation_Steer_Amount);
         }
-        if (gamepad1.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER) || (gamepad2.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER))) {
+        if (gamepad_1.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER) || gamepad_2.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
             robot.intakeRotationServo.setPosition(robot.intakeRotationServo.getPosition() - RobotActionConfig.intake_Rotation_Steer_Amount);
         }
     }
