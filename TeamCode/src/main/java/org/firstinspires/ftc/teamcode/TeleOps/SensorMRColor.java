@@ -106,6 +106,7 @@ public class SensorMRColor extends LinearOpMode {
       // convert the RGB values to HSV values.
       Color.RGBToHSV(colorSensor.red() * 8, colorSensor.green() * 8, colorSensor.blue() * 8, hsvValues);
 
+      if ((hsvValues[0] < 20 && hsvValues[0] > 16) && hsvValues[2] > 0.5)
       // send the info back to driver station using telemetry function.
       telemetry.addData("LED", bLedOn ? "On" : "Off");
       telemetry.addData("Clear", colorSensor.alpha());
