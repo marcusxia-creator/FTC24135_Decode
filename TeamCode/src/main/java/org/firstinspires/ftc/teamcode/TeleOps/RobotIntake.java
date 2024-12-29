@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
@@ -35,6 +36,7 @@ public class RobotIntake {
             case INTAKE_EXTEND:
                 if ((gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) || gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT)) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
                     debounceTimer.reset();
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Extend);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Extend);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Extend);
                     robot.intakeSlideServo.setPosition(RobotActionConfig.intake_Slide_Extend);
@@ -61,8 +63,11 @@ public class RobotIntake {
                 }
                 break;
             case INTAKE_RETRACT:
-                robot.intakeSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
+                if (intakeTimer.seconds() > 0.1) {
+                    robot.intakeSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
+                }
                 if (intakeTimer.seconds() > 0.5) {
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Retract);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Retract);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Retract);
                     intakeState = IntakeState.SAMPLE_TRANSFER;
@@ -70,10 +75,10 @@ public class RobotIntake {
                 break;
             case SAMPLE_TRANSFER:
                 if(intakeTimer.seconds() > 1) {
-                    robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
+                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                 }
                 if(intakeTimer.seconds() > 1.3) {
-                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
+                    robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 }
                 if(intakeTimer.seconds() > 1.5) {
                     intakeTimer.reset();
@@ -86,6 +91,10 @@ public class RobotIntake {
             default:
                 intakeState = IntakeState.INTAKE_EXTEND;
                 break;
+        }
+
+        if ((gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.6 && gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT)) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+
         }
     }
 
@@ -100,6 +109,7 @@ public class RobotIntake {
         robot.intakeSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
         robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
         robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
+        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Retract);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Default);
         robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
     }

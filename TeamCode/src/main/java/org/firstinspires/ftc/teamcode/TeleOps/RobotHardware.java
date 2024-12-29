@@ -46,6 +46,7 @@ public class RobotHardware {
     public Servo intakeRightArmServo;
     public Servo intakeRotationServo;
     public Servo intakeClawServo;
+    public Servo intakeWristServo;
 
     //Deposit servos
     public Servo depositLeftArmServo;
@@ -60,28 +61,31 @@ public class RobotHardware {
     public HardwareMap hardwareMap;
 
     public void init() {
+
+        /**Set up motors**/
+        //Drive train motors
         frontLeftMotor = hardwareMap.get(DcMotorEx.class, "FL_Motor");
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "BL_Motor");
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
-
-
+        //Lift motors
         liftMotorLeft = hardwareMap.get(DcMotorEx.class,"VS_Left_Motor");
         liftMotorRight = hardwareMap.get(DcMotorEx.class, "VS_Right_Motor");
 
 
-        //set servos
+        /**set servos**/
+        //Intake servo
         intakeSlideServo = hardwareMap.get(Servo.class, "Intake_Slide_Servo");
         intakeLeftArmServo = hardwareMap.get(Servo.class, "Intake_Arm_Left_Servo");
         intakeRightArmServo = hardwareMap.get(Servo.class, "Intake_Arm_Right_Servo");
         intakeRotationServo = hardwareMap.get(Servo.class, "Intake_Rotation_Servo");
         intakeClawServo = hardwareMap.get(Servo.class, "Intake_Claw_Servo");
-
+        intakeWristServo = hardwareMap.get(Servo.class, "Intake_Wrist_Servo");
+        //Deposit servo
         depositLeftArmServo = hardwareMap.get(Servo.class, "Deposit_Arm_Left_Servo");
         depositRightArmServo = hardwareMap.get(Servo.class, "Deposit_Arm_Right_Servo");
         depositWristServo = hardwareMap.get(Servo.class, "Deposit_Wrist_Servo");
         depositClawServo = hardwareMap.get(Servo.class, "Deposit_Claw_Servo");
-
 
         //set motor mode and motor direction
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed

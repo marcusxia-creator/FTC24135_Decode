@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode.TeleOps;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -51,11 +51,9 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 @TeleOp(name = "Sensor: MR Color", group = "Sensor")
-@Disabled
 public class SensorMRColor extends LinearOpMode {
 
   ColorSensor colorSensor;    // Hardware Device Object
-
 
   @Override
   public void runOpMode() {
@@ -79,7 +77,7 @@ public class SensorMRColor extends LinearOpMode {
     boolean bLedOn = true;
 
     // get a reference to our ColorSensor object.
-    colorSensor = hardwareMap.get(ColorSensor.class, "sensor_color");
+    colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
 
     // Set the LED in the beginning
     colorSensor.enableLed(bLedOn);
@@ -115,6 +113,15 @@ public class SensorMRColor extends LinearOpMode {
       telemetry.addData("Green", colorSensor.green());
       telemetry.addData("Blue ", colorSensor.blue());
       telemetry.addData("Hue", hsvValues[0]);
+      telemetry.addData("Saturation", hsvValues[1]);
+      telemetry.addData("Value", hsvValues[2]);
+
+       /**
+       *Black (162-167)
+       *Red (18 ± 2)
+       *Yellow (75 ± 2)
+       *Blue (226 ± 2)
+       **/
 
       // change the background color to match the color detected by the RGB sensor.
       // pass a reference to the hue, saturation, and value array as an argument

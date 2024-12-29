@@ -37,6 +37,7 @@ public class RobotOpMode extends OpMode {
 
         //Initializing deposit
         robotDeposit = new RobotDeposit(gamepadCo1, gamepadCo2, robot);
+        robotDeposit.Init();
 
         telemetry.addLine("RobotInitialized");
         telemetry.update();
@@ -50,6 +51,7 @@ public class RobotOpMode extends OpMode {
         robotDeposit.depositArmLoop();
     }
 
+    @Override
     public void stop() {
         robot.frontLeftMotor.setPower(0);
         robot.frontRightMotor.setPower(0);

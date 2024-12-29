@@ -44,23 +44,6 @@ public class RobotDeposit {
         this.robot = robot;
     }
 
-
-    // Initialize Deposit Arm
-    public void Init() {
-        liftTimer.reset();
-        hangTimer.reset();
-        robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_down_Pos);
-        robot.liftMotorRight.setTargetPosition(RobotActionConfig.deposit_Slide_down_Pos);
-        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.liftMotorLeft.setPower(0.1);                                          // Make sure lift motor is on
-        robot.liftMotorRight.setPower(0.1);
-        robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Initial_Pos);
-        robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_retract_Pos);
-        robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_retract_Pos);
-        robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
-    }
-
     // Deposit Arm Control
     public void depositArmLoop() {
         // Display current lift state and telemetry feedback
@@ -167,6 +150,22 @@ public class RobotDeposit {
             }
 
         }
+    }
+
+    // Initialize Deposit Arm
+    public void Init() {
+        liftTimer.reset();
+        hangTimer.reset();
+        robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_down_Pos);
+        robot.liftMotorRight.setTargetPosition(RobotActionConfig.deposit_Slide_down_Pos);
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.liftMotorLeft.setPower(0.1);                                          // Make sure lift motor is on
+        robot.liftMotorRight.setPower(0.1);
+        robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Initial_Pos);
+        robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_retract_Pos);
+        robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_retract_Pos);
+        robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
     }
 
     // Helper method to check if the lift is within the desired position threshold
