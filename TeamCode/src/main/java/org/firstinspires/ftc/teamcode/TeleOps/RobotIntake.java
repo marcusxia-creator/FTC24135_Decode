@@ -21,7 +21,7 @@ public class RobotIntake {
     private final ElapsedTime intakeTimer = new ElapsedTime();
 
     //Constructor
-    public RobotIntake (GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot) {
+    public RobotIntake (RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2) {
 
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;

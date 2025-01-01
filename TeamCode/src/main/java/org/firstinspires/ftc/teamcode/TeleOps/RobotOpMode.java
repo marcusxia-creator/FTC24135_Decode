@@ -29,15 +29,15 @@ public class RobotOpMode extends OpMode {
         robot.initIMU();
 
         //Initializing robot drive train
-        robotMovement = new RobotMovement(gamepadCo1, gamepadCo2, robot);
+        robotMovement = new RobotMovement(robot, gamepadCo1, gamepadCo2);
 
         //Initializing robot intake
-        robotIntake = new RobotIntake(gamepadCo1, gamepadCo2, robot);
+        robotIntake = new RobotIntake(robot, gamepadCo1, gamepadCo2);
         robotIntake.intakeInit();
 
         //Initializing deposit
-        robotDeposit = new RobotDeposit(gamepadCo1, gamepadCo2, robot);
-        robotDeposit.Init();
+        robotDeposit = new RobotDeposit(robot, gamepadCo1, gamepadCo2);
+        robotDeposit.init();
 
         telemetry.addLine("RobotInitialized");
         telemetry.update();
@@ -48,7 +48,8 @@ public class RobotOpMode extends OpMode {
         //Loop the robot functions
         robotMovement.robotDriveTrain();
         robotIntake.intakeSlideControl();
-        robotDeposit.depositArmLoop();
+        robotDeposit.depositBarState();
+        robotDeposit.depositBasketState();
     }
 
     @Override

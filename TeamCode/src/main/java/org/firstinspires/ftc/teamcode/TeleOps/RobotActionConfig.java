@@ -5,7 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class RobotActionConfig {
     /**drive chassis**/
-    public static double drivetrain_Power_Factor =0.7;
+    public static double powerFactor =0.7;
 
     /**Intake Config**/
     public static double intake_Slide_Extend = 0.55;// range(0.3 - 0.65)
@@ -25,32 +25,36 @@ public class RobotActionConfig {
     public static double intake_Claw_Open = 0.55;
     public static double intake_Claw_Close = 0.3;
 
+
     /**Deposit Config**/
     public static int deposit_Slide_down_Pos = 50;   //slides Position Configure
     public static int deposit_Slide_Highbar_Pos = 795;  //slides Position Configure
     public static int deposit_Slide_Highbasket_Pos = 2800; //slides Position Configure
 
     public static double deposit_Wrist_dump_Pos = 0.3;
-    public static double deposit_Wrist_retract_Pos = 0.14;
-    public static double deposit_Wrist_Initial_Pos = 0.125;
+    public static double deposit_Wrist_retract_Pos = 0.15;
 
     public static double deposit_Arm_dump_Pos = 0.8;
     public static double deposit_Arm_retract_Pos = 0.0;
 
-    public static double deposit_Arm_hook_Pos = 0.8;
+    public static double deposit_Arm_hang_Pos = 0.8;
+
+    public static double deposit_Arm_Highbar_Pos = 0;
+    public static double deposit_Wrist_Highbar_Pos = 0;
+
     public static double deposit_Claw_Open = 0.11;
     public static double deposit_Claw_Close = 0.0;
 
     public static double dumpTime = 1.8;
     public static double retractTime = 3.2;
 
-    public static double deposit_Slide_UpLiftPower = 1;  //slides power
-    public static double deposit_Slide_DownLiftPower = 0.7;  //slides power
-
-    public static double deposit_Arm_Hang = 0.8;
-    public static double deposit_Wrist_Hang = 0.3;
+    public static double deposit_Slide_UpLiftPower = 0.9;  //slides power
+    public static double deposit_Slide_DownLiftPower = 0.3;
 
     /**Other properties**/
+    //Hsv values
+    public static float hsvValues[] = {0F,0F,0F};
+
     //Debounce timer
     public static double DEBOUNCE_THRESHOLD = 0.25;
 }

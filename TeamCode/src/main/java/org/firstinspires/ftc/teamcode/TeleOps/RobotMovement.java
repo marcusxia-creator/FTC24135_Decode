@@ -18,7 +18,7 @@ public class RobotMovement {
     private final RobotHardware robot;
 
     //Declare constructor
-    public RobotMovement (GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot) {
+    public RobotMovement (RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2) {
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
         this.robot = robot;
