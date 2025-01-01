@@ -24,8 +24,8 @@ public class RobotOpMode extends OpMode {
         gamepadCo2 = new GamepadEx(gamepad2);
 
         //Initializing the robot
-        robot = new RobotHardware(hardwareMap);
-        robot.init();
+        robot = new RobotHardware();
+        robot.init(hardwareMap);
         robot.initIMU();
 
         //Initializing robot drive train

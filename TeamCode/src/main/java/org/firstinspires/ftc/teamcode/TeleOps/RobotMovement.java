@@ -38,7 +38,7 @@ public class RobotMovement {
         double rx = 0;
 
         //Declare the motor max speed
-        double motorMaxSpeed = RobotActionConfig.drivetrain_Power_Factor;
+        double motorMaxSpeed = RobotActionConfig.drive_Power_Factor;
 
         //Set the gamepad parameters
         if (Math.abs(gamepad_1.getRightY()) > 0.1 || Math.abs(gamepad_1.getRightX()) > 0.1 || Math.abs(gamepad_1.getLeftX()) > 0.1) {

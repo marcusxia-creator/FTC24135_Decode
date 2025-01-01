@@ -27,10 +27,6 @@ Color_Sensor I2C 1
 
 public class RobotHardware {
 
-    public RobotHardware (HardwareMap hardwareMap) {
-        this.hardwareMap = hardwareMap;
-    }
-
     //Drive chassis motor
     public DcMotorEx frontLeftMotor;
     public DcMotorEx backLeftMotor;
@@ -60,7 +56,9 @@ public class RobotHardware {
     public IMU imu; //IMU
     public HardwareMap hardwareMap;
 
-    public void init() {
+    public void init(@NonNull HardwareMap hardwareMap) {
+
+        this.hardwareMap = hardwareMap;
 
         /**Set up motors**/
         //Drive train motors
