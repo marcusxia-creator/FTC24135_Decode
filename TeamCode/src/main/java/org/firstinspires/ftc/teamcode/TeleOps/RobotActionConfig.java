@@ -53,11 +53,4 @@ public class RobotActionConfig {
     /**Other properties**/
     //Debounce timer
     public static double DEBOUNCE_THRESHOLD = 0.25;
-
-    //To check if intake is finished running so that deposit can run (otherwise deposit cannot run)
-    public enum DepositState {
-        DEPOSIT_EXTEND,
-        DEPOSIT_IDLE
-    }
-    public static DepositState depositState;
 }

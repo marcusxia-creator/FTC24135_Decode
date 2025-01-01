@@ -38,7 +38,8 @@ public class RobotIntake {
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Extend);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Extend);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Extend);
-                    robot.intakeSlideServo.setPosition(RobotActionConfig.intake_Slide_Extend);
+                    robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extend);
+                    robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extend);
                     intakeState = IntakeState.INTAKE_GRAB;
                 }
                 else {
@@ -63,7 +64,8 @@ public class RobotIntake {
                 break;
             case INTAKE_RETRACT:
                 if (intakeTimer.seconds() > 0.1) {
-                    robot.intakeSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
+                    robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
+                    robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 }
                 if (intakeTimer.seconds() > 0.5) {
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Retract);
@@ -83,7 +85,6 @@ public class RobotIntake {
                     intakeTimer.reset();
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
-                    RobotActionConfig.depositState = RobotActionConfig.DepositState.DEPOSIT_EXTEND;
                     intakeState = IntakeState.INTAKE_EXTEND;
                 }
                 break;
@@ -110,7 +111,8 @@ public class RobotIntake {
     }
 
     public void intakeInit () {
-        robot.intakeSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
+        robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
+        robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
         robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
         robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
         robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Retract);
