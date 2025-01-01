@@ -58,13 +58,13 @@ public class RobotHardware {
     public DcMotorEx liftMotorRight;// Vertical Slide Motor
 
     //Intake servos
-    public Servo intakeRightSlideServo;
     public Servo intakeLeftSlideServo;
+    public Servo intakeRightSlideServo;
     public Servo intakeLeftArmServo;
     public Servo intakeRightArmServo;
+    public Servo intakeWristServo;
     public Servo intakeRotationServo;
     public Servo intakeClawServo;
-    public Servo intakeWristServo;
 
     //Deposit servos
     public Servo depositArmServo;
@@ -75,6 +75,7 @@ public class RobotHardware {
     public ColorSensor colorSensor;
 
     public IMU imu; //IMU
+
     public HardwareMap hardwareMap;
 
     public void init(@NonNull HardwareMap hardwareMap) {
@@ -94,12 +95,12 @@ public class RobotHardware {
 
         /**set servos**/
         //Intake servo
-        intakeRightSlideServo = hardwareMap.get(Servo.class, "Intake_Slide_Right_Servo");
         intakeLeftSlideServo = hardwareMap.get(Servo.class, "Intake_Slide_Left_Servo");
+        intakeRightSlideServo = hardwareMap.get(Servo.class, "Intake_Slide_Right_Servo");
         intakeLeftArmServo = hardwareMap.get(Servo.class, "Intake_Arm_Left_Servo");
         intakeRightArmServo = hardwareMap.get(Servo.class, "Intake_Arm_Right_Servo");
-        intakeRotationServo = hardwareMap.get(Servo.class, "Intake_Rotation_Servo");
         intakeWristServo = hardwareMap.get(Servo.class, "Intake_Wrist_Servo");
+        intakeRotationServo = hardwareMap.get(Servo.class, "Intake_Rotation_Servo");
         intakeClawServo = hardwareMap.get(Servo.class, "Intake_Claw_Servo");
         //Deposit servo
         depositArmServo = hardwareMap.get(Servo.class, "Deposit_Arm_Servo");
@@ -126,6 +127,7 @@ public class RobotHardware {
 
         //set servo direction - intake and deposit
         intakeRightArmServo.setDirection(Servo.Direction.REVERSE);
+        intakeRightSlideServo.setDirection(Servo.Direction.REVERSE);
 
         //set slide motors to RUN_TO_POSITION for vertical slide motor
         liftMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -154,7 +156,7 @@ public class RobotHardware {
         myIMUparameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                        RevHubOrientationOnRobot.UsbFacingDirection.LEFT
+                        RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
                 ));
         imu.initialize(myIMUparameters);
     }
