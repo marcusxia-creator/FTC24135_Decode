@@ -14,14 +14,35 @@ import com.qualcomm.robotcore.hardware.Servo;
 /**
 Hardware config:
 Motor:
-Control hub motor: FL_Motor 0, BL_motor 1, FR_Motor,2, BR_Motor
-Expansion hub motor: VS_Motor_Left 0, VS_Motor_Right 1
+Control hub motor:
+ Port 0: FL_Motor,
+ Port 1: BL_motor,
+ Port 2: FR_Motor,
+ Port 3: BR_Motor
 
-Servo:
-IntakeArm_Servo 0, Intake_Servo 1
+Control hub servo:
+ Port 0: Intake_Wrist_Servo
+ Port 1: Intake_Arm_Left_Servo
+ Port 2: Intake_Slide_Left_Servo
+ Port 3: Deposit_Claw_Servo
+ Port 4: Deposit_Arm_Servo
+ Port 5: Nothing
 
-Color Sensor:
-Color_Sensor I2C 1
+Expansion hub motor:
+ Port 0: VS_Motor_Left
+ Port 1: VS_Motor_Right
+
+Expansion hub servo:
+ Port 0: Nothing
+ Port 1: Intake_Slide_Right_Servo
+ Port 2: Deposit_Wrist_Servo
+ Port 3: Intake_Claw_Servo
+ Port 4: Intake_Rotation_Servo
+ Port 5: Intake_Arm_Right_Servo
+
+Control hub I2C:
+ Port 1: PinPoint Odometry
+ Port 2: Color_Sensor
 
  **/
 
