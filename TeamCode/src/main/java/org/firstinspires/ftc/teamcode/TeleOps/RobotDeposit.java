@@ -75,7 +75,6 @@ public class RobotDeposit {
         // Display current lift state and telemetry feedback
         switch (basketState) {
             case START:
-                debounceTimer.reset();
                 liftTimer.reset();
                 robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                 robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_retract_Pos);

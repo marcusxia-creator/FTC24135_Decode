@@ -82,7 +82,6 @@ public class RobotIntake {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 }
                 if(intakeTimer.seconds() > 1.5) {
-                    intakeTimer.reset();
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
                     intakeState = IntakeState.INTAKE_EXTEND;
