@@ -18,14 +18,14 @@ Control hub motor:
                 port 2: FR_Motor
                 port 3: BR_Motor
 Expansion hub motor:
-                port 0 VS_Left_Motor
-                port 2: VS_Right_Motor
+                port 0 VS_Motor_Left
+                port 1: VS_Motor_Right
 
 Servo:
 Control hub:
                 port 0: Intake_Wrist_Servo
                 port 1: Intake_Arm_Left_Servo
-                port 2: Deposit_Wrist_Servo
+                port 2: Intake_Slide_Left_Servo
                 port 3: Deposit_Claw_Servo
                 port 4: Deposit_Arm_Servo
                 port 5: Empty
@@ -33,15 +33,15 @@ Control hub:
 Expansion hub:
                 port 0: Empty
                 port 1: Intake_Slide_Right_Servo
-                port 2: Intake_Slide_Left_Servo
+                port 2: Deposit_Wrist_Servo
                 port 3: Intake_Claw_Servo
                 port 4: Intake_Rotation_Servo
                 port 5: Intake_Arm_Right_Servo
-
+                Intake_Servo 1
 
 I2C port
 control hub
-                port 0: control hub imu
+                port 0: inm
                 port 1: pinpoint odometry computer
                 port 2: Color_Sensor
 
@@ -105,7 +105,6 @@ public class RobotHardware {
         depositClawServo = hardwareMap.get(Servo.class, "Deposit_Claw_Servo");
         //Color sensor
         colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
-        colorSensor.enableLed(false);
 
         //set motor mode and motor direction
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed
@@ -125,9 +124,9 @@ public class RobotHardware {
 
         //set servo direction - intake and deposit
         intakeRightArmServo.setDirection(Servo.Direction.REVERSE);
-        intakeLeftSlideServo.setDirection(Servo.Direction.REVERSE);
+        intakeRightSlideServo.setDirection(Servo.Direction.REVERSE);
 
-        //set slide motors direction
+        //set slide motors to RUN_TO_POSITION for vertical slide motor
         liftMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //Reset the motor encoder
