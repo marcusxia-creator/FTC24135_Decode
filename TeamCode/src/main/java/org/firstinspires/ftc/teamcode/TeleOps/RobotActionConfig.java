@@ -19,7 +19,7 @@ public class RobotActionConfig {
     public static double intake_Wrist_Extend = 0.5; /** Needs change**/
     public static double intake_Wrist_Retract = 0; /** Needs change**/
 
-    public static double intake_Rotation_Default = 0.49;
+    public static double intake_Rotation_Center = 0.46;
     public static double intake_Rotation_Steer_Amount = 0.1;
 
     public static double intake_Claw_Open = 0.55;
