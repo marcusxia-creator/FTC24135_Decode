@@ -63,11 +63,11 @@ public class RobotIntake {
                 }
                 break;
             case INTAKE_RETRACT:
-                if (intakeTimer.seconds() > 0.1) {
+                if (intakeTimer.seconds() > RobotActionConfig.intake_Slide_Retract_Threshold) {
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 }
-                if (intakeTimer.seconds() > 0.5) {
+                if (intakeTimer.seconds() > RobotActionConfig.intake_Wrist_Arm_Retract_Threshold) {
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Retract);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Retract);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Retract);
@@ -75,13 +75,13 @@ public class RobotIntake {
                 }
                 break;
             case SAMPLE_TRANSFER:
-                if(intakeTimer.seconds() > 1) {
+                if(intakeTimer.seconds() > RobotActionConfig.deposit_Claw_Close_Threshold) {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                 }
-                if(intakeTimer.seconds() > 1.3) {
+                if(intakeTimer.seconds() > RobotActionConfig.intake_Claw_Open_Threshold) {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 }
-                if(intakeTimer.seconds() > 1.5) {
+                if(intakeTimer.seconds() > RobotActionConfig.intake_Arm_Idle_Threshold) {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
                     intakeState = IntakeState.INTAKE_EXTEND;

@@ -51,10 +51,18 @@ public class RobotActionConfig {
     public static double deposit_Slide_UpLiftPower = 0.9;  //slides power
     public static double deposit_Slide_DownLiftPower = 0.3;
 
-    /**Other properties**/
-    //Hsv values
-    public static float hsvValues[] = {0F,0F,0F};
+    /**Timers**/
+    //Intake timer
+    public static double intake_Slide_Retract_Threshold = 0.1;
+    public static double intake_Wrist_Arm_Retract_Threshold = 0.5;
+    public static double deposit_Claw_Close_Threshold = 1;
+    public static double intake_Claw_Open_Threshold = 1.3;
+    public static double intake_Arm_Idle_Threshold = 1.5;
 
     //Debounce timer
     public static double DEBOUNCE_THRESHOLD = 0.25;
+
+    /**Other properties**/
+    //Hsv values
+    public static float hsvValues[] = {0F,0F,0F};
 }
