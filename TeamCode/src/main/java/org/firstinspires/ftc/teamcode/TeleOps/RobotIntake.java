@@ -5,9 +5,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 public class RobotIntake {
-
+    //Declare IntakeState
+    private enum IntakeState {
+        INTAKE_EXTEND,
+        INTAKE_GRAB,
+        INTAKE_RETRACT,
+        SAMPLE_TRANSFER
+    }
+    
     //Declare intake states
-    private IntakeState intakeState;
+    private IntakeState intakeState = IntakeState.INTAKE_EXTEND;
 
     //Declare gamepad
     private final GamepadEx gamepad_1;
@@ -17,23 +24,21 @@ public class RobotIntake {
 
     //Set up timer for debouncing
     private final ElapsedTime debounceTimer = new ElapsedTime(); // Timer for debouncing
-
     private final ElapsedTime intakeTimer = new ElapsedTime();
 
     //Constructor
     public RobotIntake (RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2) {
-
+        this.robot = robot;
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
-        this.robot = robot;
-
-        this.intakeState = IntakeState.INTAKE_EXTEND;
     }
 
     public void intakeSlideControl () {
         switch (intakeState) {
             case INTAKE_EXTEND:
-                if ((gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) || gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT)) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+                if (((gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1) || 
+                     (gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1)) &&
+                    debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
                     debounceTimer.reset();
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Extend);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Extend);
@@ -102,20 +107,13 @@ public class RobotIntake {
         }
     }
 
-    private enum IntakeState {
-        INTAKE_EXTEND,
-        INTAKE_GRAB,
-        INTAKE_RETRACT,
-        SAMPLE_TRANSFER
-    }
-
     public void intakeInit () {
         robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
         robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
         robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
         robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
         robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Retract);
-        robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Default);
+        robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Center);
         robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
     }
 
