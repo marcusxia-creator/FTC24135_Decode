@@ -21,6 +21,7 @@ public class ServoTest{
     private final RobotHardware robot;
 
     //declear initial servo position
+    private double servoposition;
     int iniPosition = 50;
     int delta_Position = 50;
     int current_Position;
@@ -29,9 +30,6 @@ public class ServoTest{
    //
     private final ElapsedTime debounceTimer = new ElapsedTime(); // Timer for debouncing
     private static final double DEBOUNCE_THRESHOLD = 0.25;
-    private double servoposition;
-    private double servoposition2;
-    private double servoposition3;
 
     public ServoTest(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2) {
         this.robot = robot;
@@ -67,7 +65,7 @@ public class ServoTest{
             debounceTimer.reset();
 
             //use to be 0.01
-            servoposition = robot.depositClawServo.getPosition();
+            servoposition = robot.depositArmServo.getPosition();
             //use to be 0.01
             servoposition += 0.01;
             robot.depositClawServo.setPosition(Range.clip(servoposition,0,1));
@@ -76,7 +74,7 @@ public class ServoTest{
         if (gamepad_1.getButton(B) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             //use to be 0.01
-            servoposition = robot.depositClawServo.getPosition();
+            servoposition = robot.depositArmServo.getPosition();
             servoposition -= 0.01;
             robot.depositClawServo.setPosition(Range.clip(servoposition,0,1));
         }
@@ -178,33 +176,29 @@ public class ServoTest{
         if (gamepad_2.getButton(DPAD_LEFT) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             servoposition = robot.intakeWristServo.getPosition();
-            servoposition2 = robot.intakeLeftSlideServo.getPosition();
-            servoposition3 = robot.intakeRightSlideServo.getPosition();
             //use to be 0.01
             servoposition += 0.01;
-            servoposition2 += 0.01;
-            servoposition3 += 0.01;
             robot.intakeWristServo.setPosition(Range.clip(servoposition,0,1));
-            robot.intakeLeftSlideServo.setPosition(Range.clip(servoposition2,0,1));
-            robot.intakeRightSlideServo.setPosition(Range.clip(servoposition3,0,1));
         }
 
         // gamepad2 DPAD_RIGHT for intake wrist servo
         if (gamepad_2.getButton(DPAD_RIGHT) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             servoposition = robot.intakeWristServo.getPosition();
-            servoposition2 = robot.intakeLeftSlideServo.getPosition();
-            servoposition3 = robot.intakeRightSlideServo.getPosition();
             //use to be 0.01
             servoposition -= 0.01;
-            servoposition2 -= 0.01;
-            servoposition3 -= 0.01;
             robot.intakeWristServo.setPosition(Range.clip(servoposition, 0, 1));
-            robot.intakeLeftSlideServo.setPosition(Range.clip(servoposition2,0,1));
-            robot.intakeRightSlideServo.setPosition(Range.clip(servoposition3,0,1));
         }
 
         //gamepad2 X for intake claw rotation
+        // gamepad2 DPAD_LEFT for intake wrist servo
+        if (gamepad_2.getButton(DPAD_LEFT) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
+            debounceTimer.reset();
+            servoposition = robot.intakeWristServo.getPosition();
+            //use to be 0.01
+            servoposition += 0.01;
+            robot.intakeWristServo.setPosition(Range.clip(servoposition,0,1));
+        }
 
         // gamepad2 DPAD_RIGHT for intake wrist servo
         if (gamepad_2.getButton(X) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
