@@ -12,7 +12,7 @@ public class RobotActionConfig {
     public static double intake_Slide_Retract = 0;
 
     public static double intake_Arm_Idle = 0.25;
-    public static double intake_Arm_Pick = 0.35;
+    public static double intake_Arm_Pick = 0.41;
     public static double intake_Arm_Transfer = 0.1;
     public static double intake_Arm_Change_Amount = 0.05;
 
@@ -20,11 +20,11 @@ public class RobotActionConfig {
     public static double intake_Wrist_Pick = 0.64;
     public static double intake_Wrist_Transfer = 0.07;
 
-    public static double intake_Rotation_Idle = 0.49;
+    public static double intake_Rotation_Idle = 0.46;
     public static double intake_Rotation_Steer_Amount = 0.1;
 
-    public static double intake_Claw_Open = 0.55;
-    public static double intake_Claw_Close = 0.3;
+    public static double intake_Claw_Open = 0;
+    public static double intake_Claw_Close = 0.27;
 
 
     /**Deposit Config**/

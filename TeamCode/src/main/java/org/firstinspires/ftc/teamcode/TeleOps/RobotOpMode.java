@@ -48,8 +48,8 @@ public class RobotOpMode extends OpMode {
         //Loop the robot functions
         robotMovement.robotDriveTrain();
         robotIntake.intakeSlideControl();
-        robotDeposit.depositBarState();
-        robotDeposit.depositBasketState();
+        //robotDeposit.depositBarState();
+        //robotDeposit.depositBasketState();
     }
 
     @Override

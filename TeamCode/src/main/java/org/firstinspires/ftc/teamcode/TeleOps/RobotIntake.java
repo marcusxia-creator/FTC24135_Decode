@@ -81,7 +81,7 @@ public class RobotIntake {
                 break;
             case SAMPLE_TRANSFER:
                 if(intakeTimer.seconds() > RobotActionConfig.deposit_Claw_Close_Threshold) {
-                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
+                    //robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                 }
                 if(intakeTimer.seconds() > RobotActionConfig.intake_Claw_Open_Threshold) {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
@@ -97,8 +97,8 @@ public class RobotIntake {
                 break;
         }
 
-        if ((gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.6 && gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT)) ||
-                (gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.6 && gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT)) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+        if ((gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.8 && gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT)) ||
+                (gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.8 && gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT)) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
             robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
