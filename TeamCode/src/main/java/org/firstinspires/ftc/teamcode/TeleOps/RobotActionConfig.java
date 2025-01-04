@@ -11,7 +11,6 @@ public class RobotActionConfig {
     public static double intake_Slide_Extend = 0.3;// range(0 - 0.3)
     public static double intake_Slide_Retract = 0;
 
-    public static double intake_Arm_Idle = 0.25;
     public static double intake_Arm_Pick = 0.41;
     public static double intake_Arm_Transfer = 0.1;
     public static double intake_Arm_Change_Amount = 0.05;
@@ -58,8 +57,6 @@ public class RobotActionConfig {
     public static double intake_Wrist_Arm_Retract_Threshold = 0.5;
     public static double deposit_Claw_Close_Threshold = 1;
     public static double intake_Claw_Open_Threshold = 1.3;
-    public static double intake_Arm_Idle_Threshold = 1.5;
-
     //Debounce timer
     public static double DEBOUNCE_THRESHOLD = 0.25;
 

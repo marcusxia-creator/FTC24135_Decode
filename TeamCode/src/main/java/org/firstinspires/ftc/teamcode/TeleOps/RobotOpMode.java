@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -17,6 +18,8 @@ public class RobotOpMode extends OpMode {
 
     public GamepadEx gamepadCo1;                    //For gamepad
     public GamepadEx gamepadCo2;
+
+    public RUNMODE runMode = RUNMODE.RUN;
 
     @Override
     public void init() {
@@ -47,11 +50,39 @@ public class RobotOpMode extends OpMode {
     public void loop() {
         //Loop the robot functions
         robotMovement.robotDriveTrain();
-        robotIntake.intakeSlideControl();
-        //robotDeposit.depositBarState();
-        //robotDeposit.depositBasketState();
+
+
+        // Toggle run mode
+        if (gamepadCo1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.6 && gamepadCo2.getButton(GamepadKeys.Button.BACK)) {
+
+            ToggleRunMode();
+        }
+
+        //Run base on run mode
+        if (runMode == RUNMODE.RUN){
+            robotIntake.intakeSlideControl();
+            //robotDeposit.depositBarState();
+            //robotDeposit.depositBasketState();
+        }
+        else {
+            //Servotest.test();
+        }
+
+        telemetry.addData("Intake Slide State", robotIntake.intakeState);
     }
 
+    public enum RUNMODE {
+        TEST,
+        RUN
+    }
+
+    private void ToggleRunMode() {
+        if (runMode == RUNMODE.RUN) {
+            runMode = RUNMODE.TEST;
+        } else {
+            runMode = RUNMODE.RUN;
+        }
+    }
     @Override
     public void stop() {
         robot.frontLeftMotor.setPower(0);

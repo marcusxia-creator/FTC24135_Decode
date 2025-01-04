@@ -6,7 +6,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 public class RobotIntake {
     //Declare IntakeState
-    private enum IntakeState {
+    public enum IntakeState {
         INTAKE_EXTEND,
         INTAKE_GRAB,
         INTAKE_RETRACT,
@@ -14,7 +14,7 @@ public class RobotIntake {
     }
     
     //Declare intake states
-    private IntakeState intakeState = IntakeState.INTAKE_EXTEND;
+    public IntakeState intakeState = IntakeState.INTAKE_EXTEND;
 
     //Declare gamepad
     private final GamepadEx gamepad_1;
@@ -36,19 +36,16 @@ public class RobotIntake {
     public void intakeSlideControl () {
         switch (intakeState) {
             case INTAKE_EXTEND:
-                if (((gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1) || 
-                     (gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1)) &&
-                    debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+                if ((gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) ||
+                     gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT)) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
                     debounceTimer.reset();
+                    robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extend);
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extend);
                     intakeState = IntakeState.INTAKE_GRAB;
-                }
-                else {
-                    intakeInit();
                 }
                 break;
             case INTAKE_GRAB:
@@ -81,14 +78,7 @@ public class RobotIntake {
                 break;
             case SAMPLE_TRANSFER:
                 if(intakeTimer.seconds() > RobotActionConfig.deposit_Claw_Close_Threshold) {
-                    //robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
-                }
-                if(intakeTimer.seconds() > RobotActionConfig.intake_Claw_Open_Threshold) {
-                    robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
-                }
-                if(intakeTimer.seconds() > RobotActionConfig.intake_Arm_Idle_Threshold) {
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
+                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                     intakeState = IntakeState.INTAKE_EXTEND;
                 }
                 break;
@@ -97,9 +87,7 @@ public class RobotIntake {
                 break;
         }
 
-        if ((gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.8 && gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT)) ||
-                (gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.8 && gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT)) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
-            debounceTimer.reset();
+    if ((gamepad_1.getButton(GamepadKeys.Button.X) || gamepad_2.getButton(GamepadKeys.Button.X)) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
             robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
             robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
             robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
@@ -110,8 +98,8 @@ public class RobotIntake {
     public void intakeInit () {
         robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
         robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
-        robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
-        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
+        robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
+        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
         robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Idle);
         robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
@@ -119,11 +107,11 @@ public class RobotIntake {
 
     private void intakeArmControl () {
         //Rising edge detector
-        if (gamepad_1.wasJustPressed(GamepadKeys.Button.DPAD_UP) || gamepad_2.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
+        if ((gamepad_1.wasJustPressed(GamepadKeys.Button.DPAD_UP)) || gamepad_2.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
             robot.intakeLeftArmServo.setPosition(robot.intakeLeftArmServo.getPosition() + RobotActionConfig.intake_Arm_Change_Amount);
             robot.intakeRightArmServo.setPosition(robot.intakeRightArmServo.getPosition() + RobotActionConfig.intake_Arm_Change_Amount);
         }
-        if (gamepad_1.wasJustPressed(GamepadKeys.Button.DPAD_DOWN) || gamepad_2.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
+        if ((gamepad_1.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) || gamepad_2.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
             robot.intakeLeftArmServo.setPosition(robot.intakeLeftArmServo.getPosition() - RobotActionConfig.intake_Arm_Change_Amount);
             robot.intakeRightArmServo.setPosition(robot.intakeRightArmServo.getPosition() - RobotActionConfig.intake_Arm_Change_Amount);
         }
@@ -131,10 +119,10 @@ public class RobotIntake {
 
     private void intakeRotationServoSteer() {
         //Rising edge detector
-        if (gamepad_1.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER) || gamepad_2.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
+        if ((gamepad_1.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) || gamepad_2.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
             robot.intakeRotationServo.setPosition(robot.intakeRotationServo.getPosition() + RobotActionConfig.intake_Rotation_Steer_Amount);
         }
-        if (gamepad_1.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER) || gamepad_2.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
+        if ((gamepad_1.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) || gamepad_2.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
             robot.intakeRotationServo.setPosition(robot.intakeRotationServo.getPosition() - RobotActionConfig.intake_Rotation_Steer_Amount);
         }
     }
