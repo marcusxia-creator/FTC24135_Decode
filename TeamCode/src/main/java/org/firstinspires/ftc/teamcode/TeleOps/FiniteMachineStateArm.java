@@ -19,9 +19,6 @@ public class FiniteMachineStateArm {
     private final GamepadEx gamepad_1;
     private final GamepadEx gamepad_2;
     private final RobotHardware robot;
-
-    //bring in the finitemachinestateintake
-    private FiniteMachineStateIntake FiniteMachineStateIntake;
     
     public enum LIFTSTATE {
         LIFT_START,
@@ -54,14 +51,11 @@ public class FiniteMachineStateArm {
     // hsvValues is an array that will hold the hue, saturation, and value information.
     float hsvValues[] = {0F,0F,0F};
 
-
     public FiniteMachineStateArm(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2) {
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
         this.robot = robot;
     }
-
-
     // Initialize Deposit Arm
     public void Init() {
         liftTimer.reset();
@@ -131,7 +125,7 @@ public class FiniteMachineStateArm {
                 if (!(hsvValues[0] > 155 && hsvValues[0] < 165)) {
 
                     if (transfer_timer.milliseconds() > 100) {
-                        depositState = DEPOSITSTATE.CLOSE;
+                        robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                     }
 
                     if (transfer_timer.milliseconds() > 300) {
@@ -217,9 +211,7 @@ public class FiniteMachineStateArm {
                 break;
 
             case LIFT_HIGHBAR:
-                if(gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1&&
-                        debounceTimer.seconds() > DEBOUNCE_THRESHOLD){
-                    debounceTimer.reset();
+                if(gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1){
                     robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_Highbar_Pos); // Start Rise to highbar position
                     robot.liftMotorRight.setTargetPosition(RobotActionConfig.deposit_Slide_Highbar_Pos); // Start retracting the lift
                     robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -234,9 +226,7 @@ public class FiniteMachineStateArm {
                 if (IsLiftAtPosition(RobotActionConfig.deposit_Slide_Highbar_Pos)) {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook_Pos);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook_Pos);
-                    if (gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.6&&
-                            debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
-                        debounceTimer.reset();
+                    if (gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.6) {
                         robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_Down_Pos); // Start retracting the lift
                         robot.liftMotorRight.setTargetPosition(RobotActionConfig.deposit_Slide_Down_Pos); // Start retracting the lift
                         robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
