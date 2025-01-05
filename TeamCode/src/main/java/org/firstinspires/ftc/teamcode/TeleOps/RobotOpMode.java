@@ -35,7 +35,7 @@ public class RobotOpMode extends OpMode {
         robotMovement = new RobotMovement(robot, gamepadCo1, gamepadCo2);
 
         //Initializing robot intake
-        robotIntake = new RobotIntake(robot, gamepadCo1, gamepadCo2);
+        robotIntake = new RobotIntake(robot, gamepadCo1, gamepadCo2, gamepad1, gamepad2);
         robotIntake.intakeInit();
 
         //Initializing deposit

@@ -4,15 +4,15 @@ import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-@TeleOp (name= "April_Tag_3d_Post_Estimation_TEST", group = "org/firstinspires/ftc/teamcode/OpMode")
+@Autonomous(name= "April_Tag_3d_Post_Estimation_TEST", group = "org/firstinspires/ftc/teamcode/OpMode")
 public class AprilTagVisionPortalTest extends OpMode {
 
     private static AprilTagProcessor tagProcessor;
@@ -37,6 +37,8 @@ public class AprilTagVisionPortalTest extends OpMode {
                 .build();
 
 
+        visionPortal.resumeLiveView();
+        visionPortal.resumeLiveView();
 
     }
 
