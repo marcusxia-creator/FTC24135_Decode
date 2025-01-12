@@ -65,6 +65,7 @@ public class RobotIntake {
                         && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
 
                     debounceTimer.reset();
+                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                     robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Idle);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);

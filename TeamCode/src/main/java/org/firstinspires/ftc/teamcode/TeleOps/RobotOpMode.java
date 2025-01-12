@@ -83,6 +83,7 @@ public class RobotOpMode extends OpMode {
             runMode = RUNMODE.RUN;
         }
     }
+
     @Override
     public void stop() {
         robot.frontLeftMotor.setPower(0);
