@@ -60,8 +60,8 @@ public class RobotIntake {
     public void intakeSlideControl () {
         switch (intakeState) {
             case INTAKE_EXTEND:
-                if ((gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) ||
-                     gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT)) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+                if (((gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1) ||
+                        (gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1)) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
                     debounceTimer.reset();
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                     robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Idle);
@@ -123,7 +123,8 @@ public class RobotIntake {
                 break;
         }
 
-    if ((gamepad_1.getButton(GamepadKeys.Button.X) || gamepad_2.getButton(GamepadKeys.Button.X)) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+    if (((gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.6)
+            || (gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.6)) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
             robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
             robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
             robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);

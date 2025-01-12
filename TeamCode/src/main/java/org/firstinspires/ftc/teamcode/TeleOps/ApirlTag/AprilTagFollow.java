@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -22,11 +23,14 @@ public class AprilTagFollow extends LinearOpMode {
     private DcMotorEx frontRightMotor;
     private DcMotorEx backRightMotor;
 
-    boolean drive = false;
-    boolean goLeft = false;
-    boolean goRight = false;
-    boolean goForward = false;
-    boolean goBackward = false;
+
+    private static final ElapsedTime checkTime = new ElapsedTime();
+
+    private static double FIRST_TIMER_THRESHOLD = 0;
+    private static double TIMER_THRESHOLD = 5;
+
+    private static boolean driveFront = true;
+    private static boolean strafe = false;
 
     @Override
     public void runOpMode() {
@@ -62,28 +66,36 @@ public class AprilTagFollow extends LinearOpMode {
             if (!tagProcessor.getDetections().isEmpty()) {
                 AprilTagDetection tag = tagProcessor.getDetections().get(0);
 
-                if (!drive) {
-                    if (tag.ftcPose.x < 0.3) {
-                        strafeLeft();
-                    }
-                    if (tag.ftcPose.x > 0.3) {
-                        strafeRight();
-                    }
-                    else {
-                        stopRobot();
-                        drive = true;
-                    }
+                if (tag.ftcPose.x < 0.3 && tag.ftcPose.x > -0.3 && tag.ftcPose.y < 16 && tag.ftcPose.y > 15) {
+                    stopRobot();
                 }
-                if (drive) {
-                    if (tag.ftcPose.y > 16) {
+                else {
+                    if (tag.ftcPose.y > 16 && driveFront) {
                         driveForward();
+                        FIRST_TIMER_THRESHOLD = 5;
                     }
-                    if (tag.ftcPose.y < 15) {
+                    if (tag.ftcPose.y < 15 && checkTime.seconds() > FIRST_TIMER_THRESHOLD) {
                         driveBackward();
+                        driveFront = false;
                     }
                     else {
-                        stopRobot();
-                        drive = false;
+                        strafe = true;
+                        checkTime.reset();
+                        FIRST_TIMER_THRESHOLD = 0;
+                    }
+
+                    if (tag.ftcPose.x < 0.3 && strafe && checkTime.seconds() > TIMER_THRESHOLD) {
+                        strafeRight();
+                        TIMER_THRESHOLD = 10;
+                    }
+                    if (tag.ftcPose.x > -0.3 && checkTime.seconds() > TIMER_THRESHOLD) {
+                        strafeLeft();
+                        strafe = false;
+                    }
+                    else {
+                        driveFront = true;
+                        checkTime.reset();
+                        TIMER_THRESHOLD = 5;
                     }
                 }
 
@@ -91,6 +103,7 @@ public class AprilTagFollow extends LinearOpMode {
                 telemetry.addData("y", tag.ftcPose.y);
                 telemetry.addData("z", tag.ftcPose.z);
             }
+
 
             telemetry.addData("April tag is detected", !tagProcessor.getDetections().isEmpty());
             telemetry.update();

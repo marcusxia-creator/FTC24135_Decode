@@ -45,8 +45,9 @@ public class RobotActionConfig {
     public static double deposit_Arm_Highbar_Pos = 0;
     public static double deposit_Wrist_Highbar_Pos = 0;
 
-    public static double deposit_Claw_Open = 0.11;
-    public static double deposit_Claw_Close = 0.0;
+    public static double deposit_Claw_Open = 0;
+    public static double deposit_Claw_Close = 0.08;
+    /** All Need change except this ↑↑↑ **/
 
     public static double dumpTime = 1.8;
     public static double retractTime = 3.2;
