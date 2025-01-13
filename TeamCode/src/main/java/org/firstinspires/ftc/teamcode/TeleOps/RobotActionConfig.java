@@ -20,7 +20,7 @@ public class RobotActionConfig {
     public static double intake_Wrist_Initial = 0.0;
     public static double intake_Wrist_Idle = 0.6;
     public static double intake_Wrist_Pick = 0.64;
-    public static double intake_Wrist_Transfer = 0.07;
+    public static double intake_Wrist_Transfer = 0.11;
 
     public static double intake_Rotation_Idle = 0.46;
     public static double intake_Rotation_Steer_Amount = 0.15;
