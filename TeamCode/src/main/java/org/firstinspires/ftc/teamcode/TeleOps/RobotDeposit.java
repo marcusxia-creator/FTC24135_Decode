@@ -71,6 +71,12 @@ public class RobotDeposit {
 
     // Deposit Arm Control
     public void DepositControl() {
+        /**
+         * Black color HSV - 162
+         * Blue color HSV - 225
+         * Yellow color HSV - 85
+         * Red color HSV - 19
+         */
         Color.RGBToHSV(robot.colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, RobotActionConfig.hsvValues);
         // Display current lift state and telemetry feedback
         switch (depositControlState) {

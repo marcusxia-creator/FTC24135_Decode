@@ -127,14 +127,7 @@ public class BasicTeleOps extends OpMode {
             }
         }
 
-        /**
-         * Black color HSV - 162
-         * Blue color HSV - 225
-         * Yellow color HSV - 85
-         * Red color HSV - 19
-         */
-        Color.RGBToHSV(robot.colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, RobotActionConfig.hsvValues);
-        //
+
         robotDrive.DriveLoop(); // Use RobotDrive methods
         RobotDrive.DriveMode currentDriveMode = robotDrive.getDriveMode();
 
