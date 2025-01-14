@@ -269,7 +269,13 @@ public class FiniteStateMachineDeposit {
                 break;
             case LIFT_SCORE:
                 robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
-                if (liftTimer.seconds() > 3){
+                if (liftTimer.seconds() > 0.4){
+                    while (liftTimer.seconds() < 2){
+                        robot.frontLeftMotor.setVelocity(12.1);
+                        robot.frontRightMotor.setVelocity(12.1);
+                        robot.backLeftMotor.setVelocity(12.1);
+                        robot.backRightMotor.setVelocity(12.1);
+                    }
                     liftState = LIFTSTATE.LIFT_RETRACT;
                     liftTimer.reset();
                 }
