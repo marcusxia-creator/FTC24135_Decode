@@ -19,59 +19,47 @@ public class RobotActionConfig {
     public static double intake_Arm_Transfer            = 0.1;  // intake arm transfer pos
 
     public static double intake_Wrist_Initial           = 0.0; /** Needs change**/
-    public static double intake_Wrist_Idle              = 0.1; // Final
-    public static double intake_Wrist_Pick              = 0.64; // Final
-    public static double intake_Wrist_Transfer          = 0.11; // Final
-    public static double intake_Rotation_Steer_Amount   = 0.15;
+    public static double intake_Wrist_Idle              = 0.1; /** Needs change**/
+    public static double intake_Wrist_Pick              = 0.64; /** Needs change**/
+    public static double intake_Wrist_Transfer          = 0.11; /** Needs change**/
 
     public static double intake_Claw_Open               = 0.0; //range(0.0 - 0.27)
     public static double intake_Claw_Close              = 0.27;
 
-    //Deposit Slide Config
-    public static int deposit_Slide_down_Pos            = 50;   //slides Position Configure
-    public static int deposit_Slide_Highbar_Up_Pos      = 1050;//slides Position Configure
-    public static int deposit_Slide_Highbasket_Pos      = 3222; //slides Position Configure
+    //Deposit Config
+    public static int deposit_Slide_Down_Pos             = 50;   //range (0-3300), 50 to prevent hard hit.
+    public static int deposit_Slide_Highbar_Pos         = 1050;  //slides Position Configure
+    public static int deposit_Slide_Highbasket_Pos      = 3222; //highest point
     public static int deposit_Slide_Hang_Pos            = 3525;
-    //deposit slide power
-    public static double deposit_Slide_UpLiftPower      = 1.0;  //slides power
-    public static double deposit_Slide_DownLiftPower    = 0.7;
 
-    //Deposit Wrist config
-    public static double deposit_Wrist_dump_Pos         = 0.22;
-    public static double deposit_Wrist_Transfer_Pos     = 0.53;
-    public static double deposit_Wrist_Highbar_Pos      = 0.64;
-    public static double deposit_Wrist_PickUp_Pos       = 0.38;
+    public static double deposit_Wrist_Dump             = 0.22; //range(0-1), 0: installation position
+    public static double deposit_Wrist_Transfer         = 0.53; // 0.06 is rest position.
+    public static double deposit_Wrist_Pick             = 0.38; // 0.06 is rest position.
+    public static double deposit_Wrist_Hook             = 0.64; // 0.06 is rest position.
     public static double deposit_Wrist_Flat_Pos         = 0.3;
 
-    //deposit arm config
-    public static double deposit_Arm_dump_Pos           = 0.7;
-    public static double deposit_Arm_Transfer_Pos       = 0.0;
-    public static double deposit_Arm_hang_Pos           = 0.8;
-    public static double deposit_Arm_Highbar_Pos        = 0.9;
-    public static double deposit_Arm_PickUp_Pos         = 1;
 
-    //deposit claw config
-    public static double deposit_Claw_Open              = 0.36;
+    public static double deposit_Arm_Pick               = 1; // 0 is pick position.
+    public static double deposit_Arm_Dump               = 0.7; // range (0-1) 0: installation position 180 deg
+    public static double deposit_Arm_Transfer           = 0.0; // 0 is rest position.
+    public static double deposit_Arm_hang_Pos           = 0.8;  // hang position
+    public static double deposit_Arm_Hook               = 0.9;  // deposit arm hook position
+
+    public static double deposit_Claw_Open              = 0.36;  //
     public static double deposit_Claw_Close             = 0.08;
 
-    public static float hsvValues[] = {0F,0F,0F};
+    public static float hsvValues[]                     = {0F,0F,0F}; // set color sensor value
 
-    // Time
-    public static double DEBOUNCE_THRESHOLD                 =0.25; // debounce_Threshold
-    // control time
-    public static double intake_Claw_Extension_Threshold    = 0.2;
-    public static double intake_Claw_Grab_Threshold         = 0.1;
-    public static double intake_Slide_Retract_Threshold     = intake_Claw_Grab_Threshold * 2.5;
-    public static double intake_Wrist_Arm_Retract_Threshold = intake_Slide_Retract_Threshold + intake_Claw_Extension_Threshold;
-    public static double deposit_Claw_Close_Threshold       = 0.8;
-    public static double intake_Claw_Open_Threshold         = 0.15;
-    public static double intake_Arm_Idle_Threshold          = 1.5;
+    public static double dumpTime                       = 0.25; // deposit time need to rotate deposit arm then open claw
+    public static double retractTime                    = 0.25; // wait then retract slide
+
+    public static double postDumpTime                   = dumpTime+0.25;
+    public static double transferTime                   = 0.5; // wait for transfer time then open intake claw.
+    public static double hookTime                       = 0.3; // wait then release deposit claw.
 
 
-    public static double depositDumpTime                       = 0.5; // deposit time need to rotate deposit arm then open claw
-    public static double depositRetractTime                    = 1.5; // wait then retract slide
-    public static double depositPostDumpTime                   = depositDumpTime+0.4;
-    public static double transferTime                          = 0.5; // wait for transfer time then open intake claw.
-    public static double hookTime                              = 0.3; // wait then release deposit claw.
+    public static double deposit_Slide_UpLiftPower      = 1.0;  //slides power
+    public static double deposit_Slide_DownLiftPower    = 0.7;  //slides power
+    public static double DEBOUNCE_THRESHOLD             =0.25; // debounce_Threshold
 
 }
