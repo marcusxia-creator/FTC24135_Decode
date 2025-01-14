@@ -47,14 +47,9 @@ public class BasicTeleOps extends OpMode {
 
     private boolean startPressed = false;
 
-    float hsvValues[] = {0F,0F,0F};
-
-
     //Bulk Reading
     private List<LynxModule> allHubs;
 
-
-    
     @Override
     public void init() {
 
@@ -63,8 +58,6 @@ public class BasicTeleOps extends OpMode {
         // Initialize hardware in RobotHardware
         robot = new RobotHardware();
         robot.init(hardwareMap);
-
-        //robot configuration
 
         //gamepad
         gamepadCo1 = new GamepadEx(gamepad1);
@@ -75,7 +68,7 @@ public class BasicTeleOps extends OpMode {
         robotDrive.Init();                                                              // Initialize RobotDrive
 
         //Deposit Arm control
-        depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2); // Pass parameters as needed);
+        depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive); // Pass parameters as needed);
         depositArmDrive.Init();
 
         //Intake Arm Control
@@ -110,28 +103,20 @@ public class BasicTeleOps extends OpMode {
             if (bulkData != null) {
                 // Example: Reading motor position for each hub
                 if (hub.equals(allHubs.get(0))) { // Assuming the first hub is Control Hub
-                    int liftLeftMotor = bulkData.getMotorCurrentPosition(robot.liftMotorLeft.getPortNumber());
-                    int liftRightMotor = bulkData.getMotorCurrentPosition(robot.liftMotorRight.getPortNumber());
-
-                    telemetry.addData("Deposit Left Motor Position (Expansion Hub)", liftLeftMotor);
-                    telemetry.addData("Deposit right Motor Position (Expansion Hub)", liftRightMotor);
-                } else if (hub.equals(allHubs.get(1))) { // Assuming the second hub is Expansion Hub
                     int frontLeftMotor = bulkData.getMotorCurrentPosition(robot.frontLeftMotor.getPortNumber());
                     int frontRightMotor = bulkData.getMotorCurrentPosition(robot.frontRightMotor.getPortNumber());
+
                     telemetry.addData("Drive Motor FL Motor (Control Hub) Position", frontLeftMotor);
                     telemetry.addData("Drive Motor FR Motor (Control Hub) Position", frontRightMotor);
+                } else if (hub.equals(allHubs.get(1))) { // Assuming the second hub is Expansion Hub
+                    int liftLeftMotor = bulkData.getMotorCurrentPosition(robot.liftMotorLeft.getPortNumber());
+                    int  liftRightMotor= bulkData.getMotorCurrentPosition(robot.liftMotorRight.getPortNumber());
+                    telemetry.addData("Deposit Left Motor Position (Expansion Hub)", liftLeftMotor);
+                    telemetry.addData("Deposit right Motor Position (Expansion Hub)", liftRightMotor);
                 }
             }
         }
 
-        /**
-         * Black color HSV - 162
-         * Blue color HSV - 225
-         * Yellow color HSV - 85
-         * Red color HSV - 19
-         */
-        Color.RGBToHSV(robot.colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, hsvValues);
-        //
         robotDrive.DriveLoop(); // Use RobotDrive methods
         RobotDrive.DriveMode currentDriveMode = robotDrive.getDriveMode();
 
@@ -172,7 +157,7 @@ public class BasicTeleOps extends OpMode {
         telemetry.addLine("---------------------");
         telemetry.addData("Heading ", robot.imu.getRobotYawPitchRollAngles().getYaw());
         telemetry.addData("Color Sensor", FiniteStateMachineDeposit.detectedColor);
-        telemetry.addData("Color Sensor value", hsvValues[2]);
+        telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
         telemetry.update();
     }
 
