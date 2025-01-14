@@ -231,7 +231,7 @@ public class FiniteStateMachineDeposit {
             case SPECIMEN_PICK:
                 robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
                 robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Pick);
-                if (Objects.equals(detectedColor, "Black")){
+                if (!empty){
                     depositClawState = DEPOSITCLAWSTATE.CLOSE;
                 }
                 /** manual control can close off the claw and then move to the LIFT.HIGHBAR state*/
