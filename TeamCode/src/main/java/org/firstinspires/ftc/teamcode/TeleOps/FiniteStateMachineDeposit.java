@@ -14,9 +14,11 @@ import java.util.List;
 import java.util.Objects;
 
 /** Button Config for deposit
- * *X                   : high basket extend State
- * *B                   : Cancel
- * *Y                   : Specimen State
+ * *X                           : high basket extend State
+ * *B                           : Cancel
+ * *Y                           : Specimen State
+ * *DPAD UP && LEFT BUMPER      : Hung
+ * *DPAD DOWN && LEFT BUMPER    : Hung
  */
 
 public class FiniteStateMachineDeposit {
