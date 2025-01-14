@@ -102,7 +102,7 @@ public class FiniteStateMachineDeposit {
         colorRanges.add(new ColorRange("Black", 155, 170));
         colorRanges.add(new ColorRange("Red", 15, 25));
         colorRanges.add(new ColorRange("Blue", 220, 230));
-        colorRanges.add(new ColorRange("Yellow", 80, 90));
+        colorRanges.add(new ColorRange("Yellow", 70, 80));
     }
 
     // Deposit Arm Control
