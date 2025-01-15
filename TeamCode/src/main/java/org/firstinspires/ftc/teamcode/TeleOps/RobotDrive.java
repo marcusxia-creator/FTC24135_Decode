@@ -53,7 +53,7 @@ public class RobotDrive {
     @SuppressLint("DefaultLocale")
     public void DriveLoop() {
         // Toggle control mode
-        if (((gamepad_1.getButton(START) && !gamepad_1.getButton(LEFT_BUMPER))|| (gamepad_2.getButton(START))&& !gamepad_2.getButton(LEFT_BUMPER)) && !startPressed) {
+        if ((gamepad_1.getButton(START) || gamepad_2.getButton(START)) && !startPressed && (!gamepad_1.getButton(LEFT_BUMPER) || !gamepad_2.getButton(LEFT_BUMPER))) {
             toggleControlMode();
             debounceTimer.reset();
             startPressed = true;
@@ -71,9 +71,9 @@ public class RobotDrive {
             backPressed = false;
         }
 
-        if(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.5 || gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.5){
-            //powerFactor = RobotActionConfig.powerFactor / 2;
-            powerFactor = 1.2 - gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+        if(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.4 || gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.4){
+            double factor = Math.max(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER), gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+            powerFactor = RobotActionConfig.powerFactor *(1.2 - factor); //1.2 - power reduction will be 0.8 - 0.2
         }
         else {
             powerFactor = RobotActionConfig.powerFactor;
@@ -154,6 +154,8 @@ public class RobotDrive {
             backLeftPower /= maxPower;
         }
 
+
+
         // Set motor powers
         robot.frontLeftMotor.setPower(Range.clip(frontLeftPower * powerFactor, -1.0, 1.0));
         robot.frontRightMotor.setPower(Range.clip(frontRightPower * powerFactor, -1.0, 1.0));
@@ -162,6 +164,16 @@ public class RobotDrive {
 
     }
 
+    // Method to get left encoder count
+    /*
+    public int [] getEncoderCounts() {
+        int[] counts = new int[3];
+        counts[0] = robot.leftodometry.getCurrentPosition();
+        counts[1] = robot.rightodometry.getCurrentPosition();
+        counts[2] = robot.centerodometry.getCurrentPosition();
+        return counts;
+    }
+    */
     public double[] getVelocity() {
         double[] velocities = new double[4];
         velocities[0] = robot.frontLeftMotor.getVelocity();
