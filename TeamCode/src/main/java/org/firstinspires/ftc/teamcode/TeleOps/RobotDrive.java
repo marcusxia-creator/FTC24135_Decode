@@ -53,7 +53,7 @@ public class RobotDrive {
     @SuppressLint("DefaultLocale")
     public void DriveLoop() {
         // Toggle control mode
-        if ((gamepad_1.getButton(START) || gamepad_2.getButton(START)) && !startPressed) {
+        if ((gamepad_1.getButton(START) || gamepad_2.getButton(START)) && !startPressed && (!gamepad_1.getButton(LEFT_BUMPER) || !gamepad_2.getButton(LEFT_BUMPER))) {
             toggleControlMode();
             debounceTimer.reset();
             startPressed = true;
@@ -71,8 +71,9 @@ public class RobotDrive {
             backPressed = false;
         }
 
-        if(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.5 || gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.5){
-            powerFactor = RobotActionConfig.powerFactor / 2;
+        if(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.4 || gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.4){
+            double factor = Math.max(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER), gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+            powerFactor = RobotActionConfig.powerFactor *(1.2 - factor); //1.2 - power reduction will be 0.8 - 0.2
         }
         else {
             powerFactor = RobotActionConfig.powerFactor;
