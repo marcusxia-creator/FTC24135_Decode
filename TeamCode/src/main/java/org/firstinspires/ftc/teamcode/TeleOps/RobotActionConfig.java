@@ -6,6 +6,9 @@ import com.acmerobotics.dashboard.config.Config;
 public class RobotActionConfig {
     //drive chassis
     public static double powerFactor = 1;
+    public static double WHEEL_DIAMETER_CM = 96;
+    public static double TICKS_PER_REVOLUTION = 384.5;
+    public static double GEAR_RATIO = 0.6;
 
     //Intake Configure
     public static double intake_Slide_Extension         = 0.33;// range(0.1 - 0.65)
@@ -42,24 +45,31 @@ public class RobotActionConfig {
     public static double deposit_Arm_Pick               = 1; // 0 is pick position.
     public static double deposit_Arm_Dump               = 0.7; // range (0-1) 0: installation position 180 deg
     public static double deposit_Arm_Transfer           = 0.0; // 0 is rest position.
-    public static double deposit_Arm_hang_Pos           = 0.8;  // hang position
+    public static double deposit_Arm_hang_Pos           = 0.25;  // hang position
     public static double deposit_Arm_Hook               = 0.9;  // deposit arm hook position
 
     public static double deposit_Claw_Open              = 0.36;  //
     public static double deposit_Claw_Close             = 0.08;
 
+    //COLOR VALUE
     public static float hsvValues[]                     = {0F,0F,0F}; // set color sensor value
 
+    //TIME CONFIGURATION - DEPOSIT
     public static double dumpTime                       = 0.25; // deposit time need to rotate deposit arm then open claw
     public static double retractTime                    = 0.25; // wait then retract slide
 
     public static double postDumpTime                   = dumpTime+0.25;
-    public static double transferTime                   = 0.5; // wait for transfer time then open intake claw.
-    public static double hookTime                       = 0.3; // wait then release deposit claw.
+    public static double dropTime                       = 0.25; // wait for deposit arm to drop position and open claw.
+    public static double pickTime                       = 0.2;  // when detect specimen and wait to close deposit claw.
+    public static double waitTime                       = 0.2; // general wait time
+    public static double DEBOUNCE_THRESHOLD             = 0.25; // debounce_Threshold
+    //TIME CONFIGURATION - INTAKE
+    public static double intakeSlideExtendTime          = 0.5; // intake slide extension time
+    public static double intakeArmRotationTime          = 0.5; // intake slide extension time
 
-
+    //DEPOSIT vertical slide power
     public static double deposit_Slide_UpLiftPower      = 1.0;  //slides power
     public static double deposit_Slide_DownLiftPower    = 0.7;  //slides power
-    public static double DEBOUNCE_THRESHOLD             =0.25; // debounce_Threshold
+
 
 }
