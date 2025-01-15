@@ -18,7 +18,6 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 @Config
 public class LeftSideAuto extends LinearOpMode {
 
-    RobotActionConfig value = new RobotActionConfig();
     RobotHardware robot = new RobotHardware();
     static final double COUNTS_PER_MOTOR_GOBILDA_435 = 384.5;
     static final double COUNTS_PER_MOTOR_GOBILDA_312 = 537.7;
