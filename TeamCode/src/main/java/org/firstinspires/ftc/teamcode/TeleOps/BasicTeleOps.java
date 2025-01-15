@@ -24,31 +24,70 @@ import java.util.List;
  *
  */
 
+/** Control Config
+ * TeleOps Control - Global Control Button
+ *  * LEFT BUMPER + START ----> control state -  Run vs ServoTest
+ *
+ * DRIVETRAIN Control - Global Control Button
+ *  * Right STICK       ---->  Y and X movement and diagonal
+ *  * Left STICK        ---->  Turn
+ *  * START             ---->  Field and Robot centric selection
+ *  * BACK              ---->  reset IMU Yaw Angle
+ *  * LEFT Trigger + STICKs ---->  fine movement - depending on the pressed level (0.2 - 0.8)
+ *
+ * DEPOSIT ARM
+ * --- LOCAL STATE
+ *  * X                         ---->high basket drop series - local state - LIFT_START
+ *  * Y                         ---->deposit arm flip to the back side - local state - LIFT_START
+ * --- GLOBAL STATE
+ *  * B                 ----> TO CANCEL DEPOSIT SYSTEM
+ *  *                   ----> SLIDE AND DEPOSIT WRIST AND DEPOSIT ARM BACK TO "TRANSFER POSITION"
+ *  * Right Trigger + A ----> TO TOGGLE DEPOSIT CLAW OPEN.CLOSE
+ *
+ *  INTAKE ARM
+ *  * --- LOCAL STATE - INTAKE PICK
+ *  * DPAD_RIGHT                  ----> intake extend and set pick position action series - local state - INTAKE_START
+ *  * DPAD_LEFT                   ----> intake retract - local state - INTAKE_PICK
+ *  * LEFT_BUMPER / RIGHT_BUMPER  ---->  for INTAKE CLAW ROTATION
+ *  * DPAD_UP / DPAD_DOWN  ---->  for INTAKE ARM UP AND DOWN
+ *  *   *
+ *  * --- GLOBAL STATE
+ *  * Right Trigger + DPAD_RIGHT ----> to lower the intake arm for near side pick up
+ *  * A                 ----> TO TOGGLE DEPOSIT CLAW OPEN.CLOSE
+ */
+
 @Config
 @TeleOp(name = "TeleOps_MW_FMS_v2.1_GW", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOps extends OpMode {
+
+    //Control State Variable
+    public enum ControlState {
+        RUN,
+        TEST
+    }
+
     //Robot
-    public RobotHardware robot;                     // Bring in robot hardware configuration
-    public GamepadEx gamepadCo1;                    //For gamepad
+    public RobotHardware robot;                         // Bring in robot hardware configuration
+    public GamepadEx gamepadCo1;                        //For gamepad
     public GamepadEx gamepadCo2;
 
     //Robot drive
-    public RobotDrive robotDrive;                   //For robot drive
+    public RobotDrive robotDrive;                       //For robot drive
 
     //Robot Intake & Deposit
     public FiniteStateMachineDeposit depositArmDrive;   //For Robot Arm
-    public FiniteStateMachineIntake intakeArmDrive; //For Robot Intake
+    public FiniteStateMachineIntake intakeArmDrive;     //For Robot Intake
 
-    public ServoTest servoTest;
+    public ServoTest servoTest;                         //For Servo Testing
 
-    private ControlState controlState = ControlState.RUN;
+    private ControlState controlState = ControlState.RUN;   // Control State
 
-    private ElapsedTime debounceTimer = new ElapsedTime(); // Timer for debouncing
+    private ElapsedTime debounceTimer = new ElapsedTime();  // Timer for debouncing
 
-    private boolean startPressed = false;
+    private boolean lBstartPressed = false;                 // For Button State
 
     //Bulk Reading
-    private List<LynxModule> allHubs;
+    private List<LynxModule> allHubs;                       // Bulk Reading
 
     @Override
     public void init() {
@@ -88,7 +127,7 @@ public class BasicTeleOps extends OpMode {
         //Robot Control State
         RobotDrive.DriveMode currentDriveMode = robotDrive.getDriveMode();
 
-        //
+        //Telemetry
         telemetry.addLine("-------------------");
         telemetry.addData("Status", " initialized Motors and Encoder and IMU and Arm Control");
         telemetry.addData("Control Mode", currentDriveMode.name());
@@ -98,6 +137,7 @@ public class BasicTeleOps extends OpMode {
     @Override
     public void loop () {
 
+        //Bulk Reading for Motors
         for (LynxModule hub : allHubs) {
             BulkData bulkData = hub.getBulkData();
             if (bulkData != null) {
@@ -117,43 +157,51 @@ public class BasicTeleOps extends OpMode {
             }
         }
 
+        // Robot Drivetrain
         robotDrive.DriveLoop(); // Use RobotDrive methods
         RobotDrive.DriveMode currentDriveMode = robotDrive.getDriveMode();
 
-        if ((gamepadCo1.getButton(START) && gamepadCo1.getButton(LEFT_BUMPER)) && !startPressed) {
+        //Control Mode Selection
+        if ((gamepadCo1.getButton(START) && gamepadCo1.getButton(LEFT_BUMPER)) && !lBstartPressed) {
             toggleControlState();
             debounceTimer.reset();
-            startPressed = true;
+            lBstartPressed = true;
         } else if (!(gamepadCo1.getButton(START) && gamepadCo1.getButton(LEFT_BUMPER))) {
-            startPressed = false;
+            lBstartPressed = false;
         }
 
+        //RUN Mode Selection
         if (controlState == ControlState.RUN) {
             depositArmDrive.DepositArmLoop();
-            FiniteStateMachineDeposit.LIFTSTATE liftState = depositArmDrive.State();
+            FiniteStateMachineDeposit.LIFTSTATE liftState = depositArmDrive.liftState;
+            FiniteStateMachineDeposit.DEPOSITCLAWSTATE depositClawState = depositArmDrive.depositClawState;
 
             intakeArmDrive.IntakeArmLoop();
-            FiniteStateMachineIntake.INTAKESTATE intakeState = intakeArmDrive.intakeState();
+            FiniteStateMachineIntake.INTAKESTATE intakeState = intakeArmDrive.intakeState;
+            FiniteStateMachineIntake.INTAKECLAWSTATE intakeClawState = intakeArmDrive.intakeClawState;
             telemetry.addLine("---------------------");
             telemetry.addData("Deposit State", liftState.name());
-            telemetry.addData("Intake State", intakeState.name());
+            telemetry.addData("Deposit Claw State", depositClawState.name());
             telemetry.addLine("---------------------");
-            //telemetry.addData("Color",depositArmDrive.Color());
+            telemetry.addData("Intake State", intakeState.name());
+            telemetry.addData("Intake Claw State", intakeClawState.name());
+            telemetry.addLine("---------------------");
         } else {
             servoTest.ServoTestLoop();
         }
 
         // Telemetry
+        telemetry.addData("Run Mode", controlState);
+        telemetry.addData("Drive Mode", currentDriveMode.name());
         telemetry.addLine("---------------------");
         telemetry.addData("Deposit Arm Position", robot.depositArmServo.getPosition());
         telemetry.addData("Deposit Wrist Position", robot.depositWristServo.getPosition());
+        telemetry.addData("Deposit Claw Position", robot.depositClawServo.getPosition());
         telemetry.addLine("---------------------");
         telemetry.addData("Intake Arm Left Position", robot.intakeLeftArmServo.getPosition());
         telemetry.addData("Intake Arm Right Position", robot.intakeRightArmServo.getPosition());
         telemetry.addData("Intake Wrist Position", robot.intakeWristServo.getPosition());
-        telemetry.addLine("---------------------");
-        telemetry.addData("Run Mode", controlState);
-        telemetry.addData("Drive Mode", currentDriveMode.name());
+        telemetry.addData("Intake Claw Position", robot.intakeClawServo.getPosition());
         telemetry.addLine("---------------------");
         telemetry.addData("Heading ", robot.imu.getRobotYawPitchRollAngles().getYaw());
         telemetry.addData("Color Sensor", FiniteStateMachineDeposit.detectedColor);
@@ -161,7 +209,7 @@ public class BasicTeleOps extends OpMode {
         telemetry.update();
     }
 
-
+    //Stop the Robot
     public void stop () {
         robot.frontLeftMotor.setPower(0);
         robot.frontRightMotor.setPower(0);
@@ -170,13 +218,10 @@ public class BasicTeleOps extends OpMode {
         robot.liftMotorLeft.setPower(0);
         robot.liftMotorRight.setPower(0);
         //robot.IntakeServo.setPosition(1.0);
-        telemetry.addData("Status", "Robot stopped");
-    }
-    public enum ControlState {
-        RUN,
-        TEST
+        telemetry.addData("Status", "Robot Stopped");
     }
 
+    //Control State Toggle
     private void toggleControlState () {
         if (controlState != ControlState.RUN) {
             controlState = ControlState.RUN;
