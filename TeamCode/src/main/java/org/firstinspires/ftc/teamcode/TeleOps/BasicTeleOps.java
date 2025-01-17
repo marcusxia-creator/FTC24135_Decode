@@ -57,7 +57,7 @@ import java.util.List;
  */
 
 @Config
-@TeleOp(name = "TeleOps_MW_FMS_v2.1_GW", group = "org.firstinspires.ftc.teamcode")
+@TeleOp(name = "TeleOps_MW_FMS_v2.2_GW", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOps extends OpMode {
 
     //Control State Variable
@@ -76,7 +76,7 @@ public class BasicTeleOps extends OpMode {
 
     //Robot Intake & Deposit
     //public FiniteStateMachineDeposit depositArmDrive;   //For Robot Arm
-    public FSMDepositControl depositArmDrive;
+    public FiniteStateMachineDeposit depositArmDrive;
     public FiniteStateMachineIntake intakeArmDrive;     //For Robot Intake
 
     public ServoTest servoTest;                         //For Servo Testing
@@ -108,9 +108,9 @@ public class BasicTeleOps extends OpMode {
         robotDrive.Init();                                                              // Initialize RobotDrive
 
         //Deposit Arm control
-        depositArmDrive = new FSMDepositControl(robot, gamepadCo1, gamepadCo2, intakeArmDrive); // Pass parameters as needed);
+        depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive); // Pass parameters as needed);
         //depositArmDrive.Init();
-        depositArmDrive.init();
+        depositArmDrive.Init();
 
         //Intake Arm Control
         intakeArmDrive = new FiniteStateMachineIntake(robot, gamepadCo1,gamepadCo2, depositArmDrive);
@@ -175,11 +175,11 @@ public class BasicTeleOps extends OpMode {
         //RUN Mode Selection
         if (controlState == ControlState.RUN) {
             //depositArmDrive.DepositArmLoop();
-            depositArmDrive.depositArmLoop();
+            depositArmDrive.DepositArmLoop();
             //FiniteStateMachineDeposit.LIFTSTATE liftState = depositArmDrive.liftState;
             //FiniteStateMachineDeposit.DEPOSITCLAWSTATE depositClawState = depositArmDrive.depositClawState;
-            FSMDepositControl.LIFTSTATE liftState = depositArmDrive.returnLiftstate();
-            FSMDepositControl.DEPOSITCLAWSTATE depositClawState = depositArmDrive.returnDepositClawState();
+            FiniteStateMachineDeposit.LIFTSTATE liftState = depositArmDrive.liftState;
+            FiniteStateMachineDeposit.DEPOSITCLAWSTATE depositClawState = depositArmDrive.depositClawState;
 
             intakeArmDrive.IntakeArmLoop();
             FiniteStateMachineIntake.INTAKESTATE intakeState = intakeArmDrive.intakeState;
