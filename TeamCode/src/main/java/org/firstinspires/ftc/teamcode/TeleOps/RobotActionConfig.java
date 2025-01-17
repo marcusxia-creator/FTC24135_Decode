@@ -6,9 +6,10 @@ import com.acmerobotics.dashboard.config.Config;
 public class RobotActionConfig {
     //drive chassis
     public static double powerFactor = 1;
-    public static double WHEEL_DIAMETER_CM = 96;
+    public static double WHEEL_DIAMETER_CM = 9.6;
     public static double TICKS_PER_REVOLUTION = 384.5;
     public static double GEAR_RATIO = 0.6;
+    public static double TICKS_PER_CM = 29.75;
 
     //Intake Configure
     public static double intake_Slide_Extension         = 0.33;// range(0.1 - 0.65)
@@ -35,10 +36,10 @@ public class RobotActionConfig {
     public static int deposit_Slide_Highbasket_Pos      = 3222; //highest point
     public static int deposit_Slide_Hang_Pos            = 3525;
 
-    public static double deposit_Wrist_Dump             = 0.22; //range(0-1), 0: installation position
-    public static double deposit_Wrist_Transfer         = 0.53; // 0.06 is rest position.
-    public static double deposit_Wrist_Pick             = 0.38; // 0.06 is rest position.
-    public static double deposit_Wrist_Hook             = 0.64; // 0.06 is rest position.
+    public static double deposit_Wrist_Dump             = 0.22; //range(0.22-0.64), 0: installation position
+    public static double deposit_Wrist_Transfer         = 0.53; // 176 deg ~ 0.003 is 1 deg
+    public static double deposit_Wrist_Pick             = 0.38; // 0.003 is 1 deg
+    public static double deposit_Wrist_Hook             = 0.64; // 0.003 is 1 deg
     public static double deposit_Wrist_Flat_Pos         = 0.3;
 
 
@@ -47,6 +48,8 @@ public class RobotActionConfig {
     public static double deposit_Arm_Transfer           = 0.0; // 0 is rest position.
     public static double deposit_Arm_hang_Pos           = 0.25;  // hang position
     public static double deposit_Arm_Hook               = 0.9;  // deposit arm hook position
+    public static double deposit_Arm_Dump_Prep          = 0.4;  // deposit arm hook position
+
 
     public static double deposit_Claw_Open              = 0.36;  //
     public static double deposit_Claw_Close             = 0.08;
