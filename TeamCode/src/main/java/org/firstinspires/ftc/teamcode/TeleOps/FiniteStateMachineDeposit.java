@@ -156,6 +156,14 @@ public class FiniteStateMachineDeposit {
                     liftTimer.reset();
                     liftState = LIFTSTATE.LIFT_HIGHBAR;
                 }
+
+                // "Right trigger + Y" button to set deposit arm to hook specimen position
+                if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1)||
+                        (gamepad_2.getButton(GamepadKeys.Button.Y)&& gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1)) &&
+                        isButtonDebounced()) {
+                    liftTimer.reset();
+                    liftState = LIFTSTATE.SPECIMEN_PICK;
+                }
                 break;
 
             case LIFT_SAMPLE_BRANCH:
