@@ -186,10 +186,10 @@ public class BasicTeleOps extends OpMode {
             FiniteStateMachineIntake.INTAKECLAWSTATE intakeClawState = intakeArmDrive.intakeClawState;
             telemetry.addLine("---------------------");
             telemetry.addData("Deposit State", liftState);
-            telemetry.addData("Deposit Claw State", depositClawState.name());
+            telemetry.addData("Deposit Claw State", depositClawState);
             telemetry.addLine("---------------------");
-            telemetry.addData("Intake State", intakeState.name());
-            telemetry.addData("Intake Claw State", intakeClawState.name());
+            telemetry.addData("Intake State", intakeState);
+            telemetry.addData("Intake Claw State", intakeClawState);
             telemetry.addLine("---------------------");
         } else {
             servoTest.ServoTestLoop();
