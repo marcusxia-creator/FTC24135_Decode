@@ -68,7 +68,7 @@ public class RobotActionConfig {
     public static double transferTime                   = 0.9;   // sample transfer time for close deposit claw
     public static double DEBOUNCE_THRESHOLD             = 0.25; // debounce_Threshold
     //TIME CONFIGURATION - INTAKE
-    public static double intakeSlideExtendTime          = 0.5; // intake slide extension time
+    public static double intakeSlideExtendTime          = 0.8; // intake slide extension time
     public static double intakeArmRotationTime          = 0.5; // intake slide extension time
 
     //DEPOSIT vertical slide power
