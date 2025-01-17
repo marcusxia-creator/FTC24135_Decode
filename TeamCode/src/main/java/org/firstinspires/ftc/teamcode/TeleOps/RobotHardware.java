@@ -105,6 +105,7 @@ public class RobotHardware {
         depositClawServo = hardwareMap.get(Servo.class, "Deposit_Claw_Servo");
         //Color sensor
         colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
+        colorSensor.enableLed(false);
 
         //set motor mode and motor direction
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed
