@@ -58,7 +58,7 @@ public class FiniteStateMachineIntake {
 
     private double intakeArmPosition;
     private double rotationPosition;
-    FSMDepositControl.LIFTSTATE depositArmState;
+    FiniteStateMachineDeposit.LIFTSTATE depositArmState;
 
     //Constructor
     public FiniteStateMachineIntake(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2, FiniteStateMachineDeposit depositArmDrive) {
