@@ -16,7 +16,9 @@ import java.util.Objects;
 
 /** Button Config for deposit
  * *X                           : high basket extend State          - LOCAL STATE - LIFT_START
- * *Y                           : Specimen State                    - LOCAL STATE - LIFT_START
+ * * XX                         : red and blue high basket
+ * * XY                         : red and blue sample drop
+ * *Y                           : Specimen score                   - LOCAL STATE - LIFT_START
  * *B                           : Cancel;back to transfer pos       - GLOBAL STATE
  * *A                           : TOGGLE DEPOSIT CLAW OPEN/CLOSE    - GLOBAL STATE
  * *DPAD UP && LEFT BUMPER      : Hung                              - GLOBAL STATE -ACTIVE AFTER 100S
@@ -66,7 +68,7 @@ public class FiniteStateMachineDeposit {
 
     /**  member DECLEAR */
     // STATE
-    public DEPOSITCLAWSTATE depositClawState;
+    public DEPOSITCLAWSTATE depositClawState = DEPOSITCLAWSTATE.OPEN;
     public LIFTSTATE liftState = LIFTSTATE.LIFT_START; // Persisting state
     //TIME
     private ElapsedTime liftTimer = new ElapsedTime(); // Timer for controlling dumping time
@@ -365,8 +367,8 @@ public class FiniteStateMachineDeposit {
 
     //Claw CONTROL Handler ---- GLOBAL CONTROL ----> BUTTON A
     private void ClawManualControl(){
-        if((gamepad_1.getButton(GamepadKeys.Button.A) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.6) ||
-             (gamepad_2.getButton(GamepadKeys.Button.A) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.6) &&
+        if(((gamepad_1.getButton(GamepadKeys.Button.A) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.6) ||
+             (gamepad_2.getButton(GamepadKeys.Button.A) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.6)) &&
                 isButtonDebounced()){
             ToggleDeposit();
         }
@@ -439,8 +441,7 @@ public class FiniteStateMachineDeposit {
 
         // Wait until motion is complete
         while (robot.frontLeftMotor.isBusy() && robot.frontRightMotor.isBusy()) {
-            telemetry.addData("Movement", "Driving Backward");
-            telemetry.update();
+
         }
 
         // Stop motors and reset mode
@@ -452,7 +453,5 @@ public class FiniteStateMachineDeposit {
         robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        telemetry.addData("AutoMovement", "Completed");
     }
 }
