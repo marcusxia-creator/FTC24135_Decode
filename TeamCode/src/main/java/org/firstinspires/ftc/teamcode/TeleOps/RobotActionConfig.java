@@ -20,12 +20,12 @@ public class RobotActionConfig {
     public static double intake_Arm_Initial             = 0.12; //initial arm position, range(0-0.56, 0: lowest, 0.56:fully retracted).
     public static double intake_Arm_Pick                = 0.40; //intake arm pick pos
     public static double intake_Arm_Idle                = 0.26; // intake arm lift a bit before retract
-    public static double intake_Arm_Transfer            = 0.1;  // intake arm transfer pos
+    public static double intake_Arm_Transfer            = 0.09;  // intake arm transfer pos
 
     public static double intake_Wrist_Initial           = 0.0; /** Needs change**/
     public static double intake_Wrist_Idle              = 0.1; /** Needs change**/
     public static double intake_Wrist_Pick              = 0.64; /** Needs change**/
-    public static double intake_Wrist_Transfer          = 0.11; /** Needs change**/
+    public static double intake_Wrist_Transfer          = 0.12; /** Needs change**/
 
     public static double intake_Claw_Open               = 0.0; //range(0.0 - 0.27)
     public static double intake_Claw_Close              = 0.27;
@@ -37,7 +37,7 @@ public class RobotActionConfig {
     public static int deposit_Slide_Hang_Pos            = 3525;
 
     public static double deposit_Wrist_Dump             = 0.22; //range(0.22-0.64), 0: installation position
-    public static double deposit_Wrist_Transfer         = 0.54; // 176 deg ~ 0.003 is 1 deg
+    public static double deposit_Wrist_Transfer         = 0.52; // 176 deg ~ 0.003 is 1 deg
     public static double deposit_Wrist_Pick             = 0.38; // 0.003 is 1 deg
     public static double deposit_Wrist_Hook             = 0.64; // 0.003 is 1 deg
     public static double deposit_Wrist_Flat_Pos         = 0.3;
@@ -45,7 +45,7 @@ public class RobotActionConfig {
 
     public static double deposit_Arm_Pick               = 1; // 0 is pick position.
     public static double deposit_Arm_Dump               = 0.7; // range (0-1) 0: installation position 180 deg
-    public static double deposit_Arm_Transfer           = 0.04; // 0 is rest position.
+    public static double deposit_Arm_Transfer           = 0.05; // 0 is rest position.
     public static double deposit_Arm_hang_Pos           = 0.25;  // hang position
     public static double deposit_Arm_Hook               = 0.9;  // deposit arm hook position
     public static double deposit_Arm_Dump_Prep          = 0.4;  // deposit arm hook position
