@@ -321,10 +321,12 @@ public class FiniteStateMachineDeposit {
 
         //Global Control ----> Handle lift Cancel Action if 'B' button is pressed
         if ((gamepad_1.getButton(GamepadKeys.Button.B) || gamepad_2.getButton(GamepadKeys.Button.B))
-                && isButtonDebounced() && liftState != LIFTSTATE.LIFT_START) {
+                && isButtonDebounced()) {
             depositClawState = DEPOSITCLAWSTATE.OPEN;
             robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
             robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+            robot.liftMotorLeft.setPower(0); // Stop the motor after reaching the low position
+            robot.liftMotorRight.setPower(0);
             try {
                 sleep(200);
             } catch (InterruptedException e) {

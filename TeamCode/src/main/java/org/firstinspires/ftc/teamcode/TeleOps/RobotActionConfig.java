@@ -32,7 +32,7 @@ public class RobotActionConfig {
 
     //Deposit Config
     public static int deposit_Slide_Down_Pos             = 50;   //range (0-3300), 50 to prevent hard hit.
-    public static int deposit_Slide_Highbar_Pos         = 1025;  //slides Position Configure
+    public static int deposit_Slide_Highbar_Pos         = 1000;  //slides Position Configure
     public static int deposit_Slide_Highbasket_Pos      = 3222; //highest point
     public static int deposit_Slide_Hang_Pos            = 3525;
 
@@ -65,7 +65,7 @@ public class RobotActionConfig {
     public static double dropTime                       = 0.25; // wait for deposit arm to drop position and open claw.
     public static double pickTime                       = 0.5;  // when detect specimen and wait to close deposit claw.
     public static double waitTime                       = 0.2;  // general wait time
-    public static double transferTime                   = 0.9;   // sample transfer time for close deposit claw
+    public static double transferTime                   = 0.4;   // sample transfer time for close deposit claw
     public static double DEBOUNCE_THRESHOLD             = 0.25; // debounce_Threshold
     //TIME CONFIGURATION - INTAKE
     public static double intakeSlideExtendTime          = 0.8; // intake slide extension time
