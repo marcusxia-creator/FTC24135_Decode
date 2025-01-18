@@ -160,8 +160,8 @@ public class FiniteStateMachineDeposit {
                 }
 
                 // "Right trigger + Y" button to set deposit arm to hook specimen position
-                if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1)||
-                        (gamepad_2.getButton(GamepadKeys.Button.Y)&& gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1)) &&
+                if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.6)||
+                        (gamepad_2.getButton(GamepadKeys.Button.Y)&& gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.6)) &&
                         isButtonDebounced()) {
                     liftTimer.reset();
                     liftState = LIFTSTATE.SPECIMEN_PICK;
@@ -305,7 +305,7 @@ public class FiniteStateMachineDeposit {
                 // LIFT_SPECIMEN_SCORE ----> flat out and auto back out.
                 robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 if (liftTimer.seconds() > RobotActionConfig.waitTime){
-                    driveBackward(10);
+                    driveBackward(RobotActionConfig.backwardDist);
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                     liftState = LIFTSTATE.LIFT_RETRACT;
