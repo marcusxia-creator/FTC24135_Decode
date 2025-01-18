@@ -65,7 +65,7 @@ public class ServoTest{
             debounceTimer.reset();
 
             //use to be 0.01
-            servoposition = robot.depositArmServo.getPosition();
+            servoposition = robot.depositClawServo.getPosition();
             //use to be 0.01
             servoposition += 0.01;
             robot.depositClawServo.setPosition(Range.clip(servoposition,0,1));
@@ -74,7 +74,7 @@ public class ServoTest{
         if (gamepad_1.getButton(B) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             //use to be 0.01
-            servoposition = robot.depositArmServo.getPosition();
+            servoposition = robot.depositClawServo.getPosition();
             servoposition -= 0.01;
             robot.depositClawServo.setPosition(Range.clip(servoposition,0,1));
         }
