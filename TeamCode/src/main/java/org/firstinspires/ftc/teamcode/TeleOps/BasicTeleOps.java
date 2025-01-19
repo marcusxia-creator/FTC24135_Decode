@@ -207,6 +207,8 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Intake Arm Right Position", robot.intakeRightArmServo.getPosition());
         telemetry.addData("Intake Wrist Position", robot.intakeWristServo.getPosition());
         telemetry.addData("Intake Claw Position", robot.intakeClawServo.getPosition());
+        telemetry.addData("Intake Slide Position", robot.intakeLeftSlideServo.getPosition());
+        telemetry.addData("Intake Slide Position", robot.intakeRightSlideServo.getPosition());
         telemetry.addLine("---------------------");
         telemetry.addData("Heading ", robot.imu.getRobotYawPitchRollAngles().getYaw());
         telemetry.addData("Color Sensor", FiniteStateMachineDeposit.detectedColor);
