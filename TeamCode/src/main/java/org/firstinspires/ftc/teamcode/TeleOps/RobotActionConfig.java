@@ -13,7 +13,7 @@ public class RobotActionConfig {
 
     //Intake Configure
     public static double intake_Slide_Extension         = 0.33;// range(0.1 - 0.65)
-    public static double intake_Slide_Retract           = 0.0;
+    public static double intake_Slide_Retract           = 0.03;
 
     public static double intake_Rotation_Mid            = 0.46; // range(0-1, 0.49 at the middle for installation
 
@@ -47,7 +47,7 @@ public class RobotActionConfig {
     public static double deposit_Arm_Dump               = 0.7; // range (0-1) 0: installation position 180 deg
     public static double deposit_Arm_Transfer           = 0.05; // 0 is rest position.
     public static double deposit_Arm_hang_Pos           = 0.25;  // hang position
-    public static double deposit_Arm_Hook               = 0.9;  // deposit arm hook position
+    public static double deposit_Arm_Hook               = 0.95;  // deposit arm hook position
     public static double deposit_Arm_Dump_Prep          = 0.4;  // deposit arm hook position
 
 

@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.AutoTest.RobotHardware;
 
-@Autonomous(name="AutonomousMoveCode", group="org.firstinspires.ftc.teamcode")
+@Autonomous(name="AutonomousMoveCode", group="Meet_1")
 public class AutonomousMoveCode extends LinearOpMode {
     private RobotHardware robot = new RobotHardware();
 
