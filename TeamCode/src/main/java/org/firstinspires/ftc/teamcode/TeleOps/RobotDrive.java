@@ -163,10 +163,10 @@ public class RobotDrive {
             desiredBackRightPower /= maxPower;
         }
 
-        double frontLeftPower = lerp(robot.frontLeftMotor.getPower(), desiredFrontLeftPower, 0.25);
-        double frontRightPower = lerp(robot.frontRightMotor.getPower(), desiredFrontRightPower, 0.25);
-        double backLeftPower = lerp(robot.backLeftMotor.getPower(), desiredBackLeftPower, 0.25);
-        double backRightPower = lerp(robot.backRightMotor.getPower(), desiredBackRightPower, 0.25);
+        double frontLeftPower = lerp(robot.frontLeftMotor.getPower(), desiredFrontLeftPower, RobotActionConfig.slowness);
+        double frontRightPower = lerp(robot.frontRightMotor.getPower(), desiredFrontRightPower,  RobotActionConfig.slowness);
+        double backLeftPower = lerp(robot.backLeftMotor.getPower(), desiredBackLeftPower,  RobotActionConfig.slowness);
+        double backRightPower = lerp(robot.backRightMotor.getPower(), desiredBackRightPower,  RobotActionConfig.slowness);
 
 
         // Set motor powers
