@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.BACK;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.START;
 
 import android.annotation.SuppressLint;
@@ -12,7 +11,6 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.State;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 /** Button Config for Drive
@@ -38,6 +36,7 @@ public class RobotDrive {
     private boolean backPressed = false;
 
     private double powerFactor;
+    private Object drive_power;
 
     public RobotDrive(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2) {
         this.robot = robot;
@@ -84,13 +83,13 @@ public class RobotDrive {
 
         // gamepad 1 take priority override gamepad 2
         if (Math.abs(gamepad_1.getRightY()) > 0.1 || Math.abs(gamepad_1.getRightX()) > 0.1 || Math.abs(gamepad_1.getLeftX()) > 0.1) {
-            drive = -gamepad_1.getRightY();
-            strafe = gamepad_1.getRightX();
-            rotate = gamepad_1.getLeftX();
+            drive = deadband(-gamepad_1.getRightY(),0.1);
+            strafe = deadband(gamepad_1.getRightX(),0.1);
+            rotate = deadband(gamepad_1.getLeftX(),0.1);
         } else if (Math.abs(gamepad_2.getRightY()) > 0.1 || Math.abs(gamepad_2.getRightX()) > 0.1 || Math.abs(gamepad_2.getLeftX()) > 0.1) {
-            drive = -gamepad_2.getRightY();
-            strafe = gamepad_2.getRightX();
-            rotate = gamepad_2.getLeftX();
+            drive = deadband(-gamepad_2.getRightY(),0.1);
+            strafe = deadband(gamepad_2.getRightX(),0.1);
+            rotate = deadband(gamepad_2.getLeftX(),0.1);
         }
 
         // Get robot's current heading
@@ -124,6 +123,16 @@ public class RobotDrive {
             driveMode = DriveMode.FIELD_CENTRIC;
         }
     }
+    double deadband(double input, double threshold) {
+        if (Math.abs(input) < threshold) { // Ignore small values
+            return 0.0;
+        }
+        return input;
+    }
+
+    double lerp(double current, double target, double alpha) {
+        return current + alpha * (target - current);
+    }
 
     private void setMecanumDrivePower(double drive, double strafe, double rotate, double currentHeading, double powerFactor) {
         // Determine the drive mode
@@ -136,24 +145,28 @@ public class RobotDrive {
         }
 
         // Mecanum wheel drive formula
-        double frontLeftPower = drive + strafe + rotate;
-        double frontRightPower = drive - strafe - rotate;
-        double backLeftPower = drive - strafe + rotate;
-        double backRightPower = drive + strafe - rotate;
+        double desiredFrontLeftPower = drive + strafe + rotate;
+        double desiredFrontRightPower = drive - strafe - rotate;
+        double desiredBackLeftPower = drive - strafe + rotate;
+        double desiredBackRightPower = drive + strafe - rotate;
 
         // Constrain the power within +-1.0
         double maxPower = Math.max(
-                Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower)),
-                Math.max(Math.abs(backRightPower), Math.abs(backLeftPower))
+                Math.max(Math.abs(desiredFrontLeftPower), Math.abs(desiredFrontRightPower)),
+                Math.max(Math.abs(desiredBackRightPower), Math.abs(desiredBackLeftPower))
         );
 
         if (maxPower > 1.0) {
-            frontLeftPower /= maxPower;
-            frontRightPower /= maxPower;
-            backRightPower /= maxPower;
-            backLeftPower /= maxPower;
+            desiredFrontLeftPower /= maxPower;
+            desiredFrontRightPower /= maxPower;
+            desiredBackLeftPower /= maxPower;
+            desiredBackRightPower /= maxPower;
         }
 
+        double frontLeftPower = lerp(robot.frontLeftMotor.getPower(), desiredFrontLeftPower, 0.25);
+        double frontRightPower = lerp(robot.frontRightMotor.getPower(), desiredFrontRightPower, 0.25);
+        double backLeftPower = lerp(robot.backLeftMotor.getPower(), desiredBackLeftPower, 0.25);
+        double backRightPower = lerp(robot.backRightMotor.getPower(), desiredBackRightPower, 0.25);
 
 
         // Set motor powers
