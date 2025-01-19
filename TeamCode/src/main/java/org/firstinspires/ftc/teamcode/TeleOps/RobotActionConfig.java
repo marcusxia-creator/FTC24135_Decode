@@ -13,7 +13,7 @@ public class RobotActionConfig {
 
     //Intake Configure
     public static double intake_Slide_Extension         = 0.33;// range(0.1 - 0.65)
-    public static double intake_Slide_Retract           = 0.045;
+    public static double intake_Slide_Retract           = 0.03;
 
     public static double intake_Rotation_Mid            = 0.46; // range(0-1, 0.49 at the middle for installation
 
