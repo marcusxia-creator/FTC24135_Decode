@@ -47,7 +47,7 @@ public class LeftSideAuto extends LinearOpMode {
     //movement positions
     public static double basket_x_coordinate = -59;
     public static double basket_y_coordinate = -59;
-    public static double first_sample_x_coordinate = -49.5;
+    public static double first_sample_x_coordinate = -48.7;
     public static double first_sample_y_coordinate = -37;
     public static double second_sample_x_coordinate = -60.5;
     public static double second_sample_y_coordinate = -37;
