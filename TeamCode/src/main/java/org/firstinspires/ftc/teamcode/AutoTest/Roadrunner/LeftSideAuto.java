@@ -49,11 +49,16 @@ public class LeftSideAuto extends LinearOpMode {
     public static double basket_y_coordinate = -59;
     public static double first_sample_x_coordinate = -49.5;
     public static double first_sample_y_coordinate = -37;
-    public static double second_sample_x_coordinate = -59.5;
+    public static double second_sample_x_coordinate = -60.5;
     public static double second_sample_y_coordinate = -37;
     public static double third_sample_x_coordinate = -58;
     public static double third_sample_y_coordinate = -37;
     public static double third_sample_heading = 114;
+
+    public static double rightPark_x_coordiante = -24;
+    public static double rightPark_y_coordiante = 0;
+    public static double rightPark_heading = 180;
+
 
     public static final double SLIDES_MOVE_HEIGHT = 3226;
     public static final double SLIDES_MOVE_POWER = 0.9;
@@ -157,6 +162,7 @@ public class LeftSideAuto extends LinearOpMode {
                 .addTemporalMarker(()->{robot.depositWristServo.setPosition(deposit_Wrist_Transfer_Pos);})
                 .UNSTABLE_addTemporalMarkerOffset(0.5,()->{Slides_Move(50,0.9);})                             // at global time 1.5 second mark to back to lower slides.
                 .waitSeconds(3.0)
+                .lineToLinearHeading(new Pose2d(rightPark_x_coordiante,rightPark_y_coordiante,Math.toRadians(rightPark_heading)))
                 .build();
 
         waitForStart();
