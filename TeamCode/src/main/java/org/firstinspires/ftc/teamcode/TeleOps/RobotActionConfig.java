@@ -62,7 +62,7 @@ public class RobotActionConfig {
     public static double retractTime                    = 0.25; // wait then retract slide
 
     public static double postDumpTime                   = dumpTime+0.25;
-    public static double dropTime                       = 0.25; // wait for deposit arm to drop position and open claw.
+    public static double dropTime                       = 0.4; // wait for deposit arm to drop position and open claw.
     public static double pickTime                       = 0.5;  // when detect specimen and wait to close deposit claw.
     public static double waitTime                       = 0.2;  // general wait time
     public static double transferTime                   = 0.4;   // sample transfer time for close deposit claw
