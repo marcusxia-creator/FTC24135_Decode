@@ -18,12 +18,12 @@ public class RobotActionConfig {
     public static double intake_Rotation_Mid            = 0.46; // range(0-1, 0.49 at the middle for installation
 
     public static double intake_Arm_Initial             = 0.12; //initial arm position, range(0-0.56, 0: lowest, 0.56:fully retracted).
-    public static double intake_Arm_Pick                = 0.40; //intake arm pick pos
-    public static double intake_Arm_Idle                = 0.26; // intake arm lift a bit before retract
-    public static double intake_Arm_Transfer            = 0.09;  // intake arm transfer pos
+    public static double intake_Arm_Pick                = 0.38; //intake arm pick pos
+    public static double intake_Arm_Idle                = 0.30; // intake arm lift a bit before retract
+    public static double intake_Arm_Transfer            = 0.08;  // intake arm transfer pos
 
     public static double intake_Wrist_Initial           = 0.0; /** Needs change**/
-    public static double intake_Wrist_Idle              = 0.1; /** Needs change**/
+    public static double intake_Wrist_Idle              = 0.70; /** Needs change**/
     public static double intake_Wrist_Pick              = 0.64; /** Needs change**/
     public static double intake_Wrist_Transfer          = 0.12; /** Needs change**/
 
