@@ -193,8 +193,9 @@ public class FiniteStateMachineDeposit {
 
             case LIFT_HIGHBASKET:
                 if (!detectedColor.equals("Black")) {
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
                     if (liftTimer.seconds() >= 0.25) {
                         setLiftTarget(RobotActionConfig.deposit_Slide_Highbasket_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
                         // Move deposit Arm & wrist servo to dump prep position
@@ -396,6 +397,10 @@ public class FiniteStateMachineDeposit {
     // set deposit claw state outside class helper
     public void SetDepositClawState(DEPOSITCLAWSTATE state) {
         this.depositClawState = state;
+    }
+    // set deposit slides states
+    public void SetDepositstate(LIFTSTATE state) {
+        this.liftState = state;
     }
 
     // Debouncer helper
