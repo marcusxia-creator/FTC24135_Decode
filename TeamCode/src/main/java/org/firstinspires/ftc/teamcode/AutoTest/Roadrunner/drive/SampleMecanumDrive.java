@@ -34,6 +34,8 @@ import org.firstinspires.ftc.teamcode.AutoTest.Roadrunner.trajectorysequence.Tra
 import org.firstinspires.ftc.teamcode.AutoTest.Roadrunner.trajectorysequence.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.AutoTest.Roadrunner.util.LynxModuleUtil;
 
+import org.firstinspires.ftc.teamcode.AutoTest.Roadrunner.drive.GoBildaPinpointDriver;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -75,7 +77,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     private List<DcMotorEx> motors;
 
     //private IMU imu;
-    private GoBildaPinpointDriver pinpointimu;
+    private GoBildaPinpointDriver pinpoint;
 
     private VoltageSensor batteryVoltageSensor;
 
@@ -104,6 +106,9 @@ public class SampleMecanumDrive extends MecanumDrive {
                 DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR));
         imu.initialize(parameters);
         */
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "Pinpoint");
+
+
 
         leftFront = hardwareMap.get(DcMotorEx.class, "FL_Motor");
         leftRear = hardwareMap.get(DcMotorEx.class, "BL_Motor");
@@ -143,7 +148,9 @@ public class SampleMecanumDrive extends MecanumDrive {
                 lastEncPositions, lastEncVels, lastTrackingEncPositions, lastTrackingEncVels
         );
     }
-
+    public void pinpointresetIMU(){
+         pinpoint.resetPosAndIMU();
+    }
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
         return new TrajectoryBuilder(startPose, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
     }
@@ -299,13 +306,29 @@ public class SampleMecanumDrive extends MecanumDrive {
     @Override
     public double getRawExternalHeading() {
         //return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-        return pinpointimu.getHeading();
+        return pinpoint.getHeading();
     }
 
     @Override
     public Double getExternalHeadingVelocity() {
         //return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
-        return pinpointimu.getHeadingVelocity();
+        return pinpoint.getHeadingVelocity();
+    }
+
+    public Integer getExternalparallelEncoderPosition(){
+        return pinpoint.getEncoderY();
+    }
+
+    public Integer getExternalperpendicularEncoderPosition(){
+        return pinpoint.getEncoderX();
+    }
+
+    public Double getExternalparallelEncoderVelocity(){
+        return pinpoint.getVelY();
+    }
+
+    public Double getExternalperpendicularEncoderVelocity(){
+        return pinpoint.getVelX();
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {
