@@ -170,7 +170,7 @@ public class FiniteStateMachineDeposit {
 
             case LIFT_SAMPLE_BRANCH:
                 // yellow color to high basket
-                if (detectedColor.equals("Yellow")) {
+                if (detectedColor.equals("Yellow") || empty) {
                     liftState = LIFTSTATE.LIFT_HIGHBASKET;
                     liftTimer.reset();
                 }
@@ -193,9 +193,9 @@ public class FiniteStateMachineDeposit {
 
             case LIFT_HIGHBASKET:
                 if (!detectedColor.equals("Black")) {
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
-                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
                     if (liftTimer.seconds() >= 0.25) {
                         setLiftTarget(RobotActionConfig.deposit_Slide_Highbasket_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
                         // Move deposit Arm & wrist servo to dump prep position
@@ -281,6 +281,7 @@ public class FiniteStateMachineDeposit {
                 break;
 
             case LIFT_HIGHBAR:
+                driveStrafe(RobotActionConfig.strafeDist);
                 if(liftTimer.seconds()>RobotActionConfig.waitTime){
                     setLiftTarget(RobotActionConfig.deposit_Slide_Highbar_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
                     if (IsLiftAtPosition(RobotActionConfig.deposit_Slide_Highbar_Pos)) {
@@ -333,7 +334,7 @@ public class FiniteStateMachineDeposit {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            liftState = LIFTSTATE.LIFT_RETRACT;
+            liftState = LIFTSTATE.LIFT_START;
         }
         // Hung ----> Action active after 100 secs.
         if (runtime.seconds() > 100){
@@ -359,10 +360,10 @@ public class FiniteStateMachineDeposit {
 
     // Helper method to check if the lift is within the desired position threshold
     private boolean IsLiftAtPosition(int targetPosition) {
-        return Math.abs(robot.liftMotorLeft.getCurrentPosition() - targetPosition) < 5 && Math.abs(robot.liftMotorRight.getCurrentPosition() - targetPosition) < 5;
+        return Math.abs(robot.liftMotorLeft.getCurrentPosition() - targetPosition) < 15 && Math.abs(robot.liftMotorRight.getCurrentPosition() - targetPosition) < 15;
     }
     private boolean IsLiftDownAtPosition(int targetPosition) {
-        return Math.abs(robot.liftMotorLeft.getCurrentPosition() - targetPosition) < 15 && Math.abs(robot.liftMotorRight.getCurrentPosition() - targetPosition) < 15;
+        return Math.abs(robot.liftMotorLeft.getCurrentPosition() - targetPosition) < 25 && Math.abs(robot.liftMotorRight.getCurrentPosition() - targetPosition) < 25;
     }
     private boolean Servo_AtPosition(double servoClawPosition) {
         return Math.abs(robot.depositClawServo.getPosition() - servoClawPosition) < 0.01;
@@ -433,6 +434,45 @@ public class FiniteStateMachineDeposit {
         robot.frontRightMotor.setTargetPosition(robot.frontRightMotor.getCurrentPosition() - targetTicks);
         robot.backLeftMotor.setTargetPosition(robot.backLeftMotor.getCurrentPosition() - targetTicks);
         robot.backRightMotor.setTargetPosition(robot.backRightMotor.getCurrentPosition() - targetTicks);
+
+        // Set motors to run to position
+        robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // Set motor power
+        robot.frontLeftMotor.setPower(0.5);
+        robot.frontRightMotor.setPower(0.5);
+        robot.backLeftMotor.setPower(0.5);
+        robot.backRightMotor.setPower(0.5);
+
+        // Wait until motion is complete
+        while (robot.frontLeftMotor.isBusy() && robot.frontRightMotor.isBusy()) {
+
+        }
+
+        // Stop motors and reset mode
+        robot.frontLeftMotor.setPower(0);
+        robot.frontRightMotor.setPower(0);
+        robot.backLeftMotor.setPower(0);
+        robot.backRightMotor.setPower(0);
+        robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    private void driveStrafe(double distanceCm) {
+        // Calculate target ticks based on distance
+        double circumference = RobotActionConfig.WHEEL_DIAMETER_CM * Math.PI;
+        double rotationsNeeded = distanceCm / circumference;
+        int targetTicks = (int) (rotationsNeeded * RobotActionConfig.TICKS_PER_REVOLUTION * RobotActionConfig.GEAR_RATIO);
+
+        // Set target positions
+        robot.frontLeftMotor.setTargetPosition(robot.frontLeftMotor.getCurrentPosition() + targetTicks);
+        robot.frontRightMotor.setTargetPosition(robot.frontRightMotor.getCurrentPosition() - targetTicks);
+        robot.backLeftMotor.setTargetPosition(robot.backLeftMotor.getCurrentPosition() - targetTicks);
+        robot.backRightMotor.setTargetPosition(robot.backRightMotor.getCurrentPosition() + targetTicks);
 
         // Set motors to run to position
         robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
