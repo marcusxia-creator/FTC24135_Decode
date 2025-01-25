@@ -316,19 +316,19 @@ public class SampleMecanumDrive extends MecanumDrive {
     }
 
     public Integer getExternalparallelEncoderPosition(){
-        return pinpoint.getEncoderY();
-    }
-
-    public Integer getExternalperpendicularEncoderPosition(){
         return pinpoint.getEncoderX();
     }
 
+    public Integer getExternalperpendicularEncoderPosition(){
+        return pinpoint.getEncoderY();
+    }
+
     public Double getExternalparallelEncoderVelocity(){
-        return pinpoint.getVelY();
+        return pinpoint.getVelX();
     }
 
     public Double getExternalperpendicularEncoderVelocity(){
-        return pinpoint.getVelX();
+        return pinpoint.getVelY();
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {
