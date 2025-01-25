@@ -7,6 +7,8 @@ import com.acmerobotics.roadrunner.localization.TwoTrackingWheelLocalizer;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.teamcode.AutoTest.Roadrunner.util.Encoder;
 import org.firstinspires.ftc.teamcode.AutoTest.Roadrunner.drive.GoBildaPinpointDriver;
 
@@ -49,6 +51,7 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
     // Parallel wheel is parallel to the forward axis
     // Perpendicular is perpendicular to the forward axis
     private GoBildaPinpointDriver pinpoint;
+    private SampleMecanumDrive drive;
 
     public TwoWheelTrackingLocalizer(HardwareMap hardwareMap, SampleMecanumDrive drive) {
         super(Arrays.asList(
@@ -56,7 +59,10 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
             new Pose2d(PERPENDICULAR_X, PERPENDICULAR_Y, Math.toRadians(90))
         ));
 
+        //pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+        //pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
         this.pinpoint = pinpoint;
+        this.drive = drive;
 
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
     }
@@ -67,20 +73,22 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
 
     @Override
     public double getHeading() {
-        return pinpoint.getHeading();
+        return drive.getExternalHeading();
     }
 
     @Override
     public Double getHeadingVelocity() {
-        return pinpoint.getHeadingVelocity();
+        return drive.getExternalHeadingVelocity();
     }
 
     @NonNull
     @Override
     public List<Double> getWheelPositions() {
         return Arrays.asList(
-                encoderTicksToInches(pinpoint.getEncoderX()),
-                encoderTicksToInches(pinpoint.getEncoderY())
+                //encoderTicksToInches(pinpoint.getEncoderX()),
+                //encoderTicksToInches(pinpoint.getEncoderY())
+                encoderTicksToInches(drive.getExternalperpendicularEncoderPosition()),
+                encoderTicksToInches(drive.getExternalparallelEncoderPosition())
         );
     }
 
@@ -92,8 +100,11 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
         //  compensation method
 
         return Arrays.asList(
-                encoderTicksToInches(pinpoint.getVelX()),
-                encoderTicksToInches(pinpoint.getVelY())
+                //encoderTicksToInches(pinpoint.getVelX()),
+                //encoderTicksToInches(pinpoint.getVelY())
+                encoderTicksToInches(drive.getExternalperpendicularEncoderVelocity()),
+                encoderTicksToInches(drive.getExternalparallelEncoderVelocity())
+
         );
     }
 }
