@@ -87,8 +87,8 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
         return Arrays.asList(
                 //encoderTicksToInches(pinpoint.getEncoderX()),
                 //encoderTicksToInches(pinpoint.getEncoderY())
-                encoderTicksToInches(drive.getExternalperpendicularEncoderPosition()),
-                encoderTicksToInches(drive.getExternalparallelEncoderPosition())
+                encoderTicksToInches(drive.getExternalparallelEncoderPosition()),
+                encoderTicksToInches(drive.getExternalperpendicularEncoderPosition())
         );
     }
 
@@ -102,9 +102,8 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
         return Arrays.asList(
                 //encoderTicksToInches(pinpoint.getVelX()),
                 //encoderTicksToInches(pinpoint.getVelY())
-                encoderTicksToInches(drive.getExternalperpendicularEncoderVelocity()),
-                encoderTicksToInches(drive.getExternalparallelEncoderVelocity())
-
+                encoderTicksToInches(drive.getExternalparallelEncoderVelocity()),
+                encoderTicksToInches(drive.getExternalperpendicularEncoderVelocity())
         );
     }
 }

@@ -57,7 +57,6 @@ public class LeftSideAuto extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.pinpointresetIMU();
 
-
         robot.init(hardwareMap);
 
         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
