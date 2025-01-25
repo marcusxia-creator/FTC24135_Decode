@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 @Config
 public class LeftSideAuto extends LinearOpMode {
 
-    RobotHardware robot = new RobotHardware();
+    RobotHardware robot = new RobotHardware();                          //RobotHardware is from TeleOps.
     static final double COUNTS_PER_MOTOR_GOBILDA_435 = 384.5;
     static final double COUNTS_PER_MOTOR_GOBILDA_312 = 537.7;
     static final double DRIVE_GEAR_REDUCTION = 1.5; //24:16 Motor:Wheel
@@ -28,11 +28,7 @@ public class LeftSideAuto extends LinearOpMode {
     static final double COUNTS_PER_MM_Drive = (COUNTS_PER_MOTOR_GOBILDA_435 * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_MM * Math.PI);
     static final double COUNTS_PER_CM_Slides = COUNTS_PER_MOTOR_GOBILDA_312 / 38.2; //Ticks Per Rotation * Pulley Circumference
 
-    public static double powerFactor = 1;
-
-    //Intake Configure
-
-
+    //Deposit Configure
     public static double deposit_Wrist_Dump_Pos = 0.22; //range(0-1), 0: installation position
     public static double deposit_Wrist_Transfer_Pos = 0.52; // 0.06 is rest position.
 
@@ -42,15 +38,19 @@ public class LeftSideAuto extends LinearOpMode {
     public static double deposit_Claw_Open = 0.36;  //
     public static double deposit_Claw_Close = 0.0;
 
+    public static final double SLIDES_MOVE_HEIGHT = 3226;
+    public static final double SLIDES_MOVE_POWER = 0.9;
+
+    // Timer Configuration
     public static double dumpTime = 0.5; // deposit time need to rotate deposit arm then open claw
 
     //movement positions
     public static double basket_x_coordinate = -59;
     public static double basket_y_coordinate = -59;
     public static double first_sample_x_coordinate = -48.7;
-    public static double first_sample_y_coordinate = -37;
+    public static double first_sample_y_coordinate = -36;
     public static double second_sample_x_coordinate = -60.5;
-    public static double second_sample_y_coordinate = -37;
+    public static double second_sample_y_coordinate = -36;
     public static double third_sample_x_coordinate = -58;
     public static double third_sample_y_coordinate = -37;
     public static double third_sample_heading = 114;
@@ -59,9 +59,6 @@ public class LeftSideAuto extends LinearOpMode {
     public static double rightPark_y_coordiante = 0;
     public static double rightPark_heading = 180;
 
-
-    public static final double SLIDES_MOVE_HEIGHT = 3226;
-    public static final double SLIDES_MOVE_POWER = 0.9;
 
     public ElapsedTime timer = new ElapsedTime();
 
