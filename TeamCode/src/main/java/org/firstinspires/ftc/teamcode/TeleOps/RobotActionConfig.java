@@ -23,10 +23,10 @@ public class RobotActionConfig {
     public static double intake_Arm_Idle                = 0.26; // intake arm lift a bit before retract
     public static double intake_Arm_Transfer            = 0.08;  // intake arm transfer pos
 
-    public static double intake_Wrist_Retract           = 0.2; /** Needs change**/
-    public static double intake_Wrist_Idle              = 0.70; /** Needs change**/
-    public static double intake_Wrist_Pick              = 0.64; /** Needs change**/
-    public static double intake_Wrist_Transfer          = 0.12; /** Needs change**/
+    public static double intake_Wrist_Retract           = 0.20; /** Needs change**/
+    public static double intake_Wrist_Idle              = 0.20;
+    public static double intake_Wrist_Pick              = 0.64;
+    public static double intake_Wrist_Transfer          = 0.12;
 
     public static double intake_Claw_Open               = 0.0; //range(0.0 - 0.27)
     public static double intake_Claw_Close              = 0.27;
