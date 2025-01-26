@@ -282,6 +282,7 @@ public class FiniteStateMachineDeposit {
 
             case LIFT_HIGHBAR:
                 driveStrafe(RobotActionConfig.strafeDist);
+                robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Initial);
                 if(liftTimer.seconds()>RobotActionConfig.waitTime){
                     setLiftTarget(RobotActionConfig.deposit_Slide_Highbar_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
                     if (IsLiftAtPosition(RobotActionConfig.deposit_Slide_Highbar_Pos)) {

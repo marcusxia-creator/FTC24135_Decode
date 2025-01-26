@@ -42,7 +42,7 @@ Expansion hub:
 I2C port
 control hub
                 port 0: control hub imu
-                port 1: pinpoint odometry computer
+                port 1: Pinpoint (odometry computer)
                 port 2: Color_Sensor
 
  */
