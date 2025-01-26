@@ -14,6 +14,7 @@ public class RobotActionConfig {
     //Intake Configure
     public static double intake_Slide_Extension         = 0.33;// range(0.1 - 0.65)
     public static double intake_Slide_Retract           = 0.03;
+    public static double intake_slide_Retract_Set      = 0.1;
 
     public static double intake_Rotation_Mid            = 0.46; // range(0-1, 0.49 at the middle for installation
 
@@ -22,7 +23,7 @@ public class RobotActionConfig {
     public static double intake_Arm_Idle                = 0.26; // intake arm lift a bit before retract
     public static double intake_Arm_Transfer            = 0.08;  // intake arm transfer pos
 
-    public static double intake_Wrist_Initial           = 0.0; /** Needs change**/
+    public static double intake_Wrist_Retract           = 0.2; /** Needs change**/
     public static double intake_Wrist_Idle              = 0.70; /** Needs change**/
     public static double intake_Wrist_Pick              = 0.64; /** Needs change**/
     public static double intake_Wrist_Transfer          = 0.12; /** Needs change**/
@@ -68,8 +69,8 @@ public class RobotActionConfig {
     public static double transferTime                   = 0.6;   // sample transfer time for close deposit claw
     public static double DEBOUNCE_THRESHOLD             = 0.25; // debounce_Threshold
     //TIME CONFIGURATION - INTAKE
-    public static double intakeSlideExtendTime          = 0.8; // intake slide extension time
-    public static double intakeArmRotationTime          = 0.5; // intake slide extension time
+    public static double intakeSlideExtendTime          = 0.9; // intake slide extension time
+    public static double intakeWristRotationTime          = 0.4; // intake slide extension time
 
     //DEPOSIT vertical slide power
     public static double deposit_Slide_UpLiftPower      = 1.0;  //slides power
