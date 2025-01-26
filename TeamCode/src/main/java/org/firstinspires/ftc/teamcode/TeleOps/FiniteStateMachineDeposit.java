@@ -193,8 +193,6 @@ public class FiniteStateMachineDeposit {
 
             case LIFT_HIGHBASKET:
                 if (!detectedColor.equals("Black")) {
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
                     if (liftTimer.seconds() >= 0.25) {
                         setLiftTarget(RobotActionConfig.deposit_Slide_Highbasket_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
