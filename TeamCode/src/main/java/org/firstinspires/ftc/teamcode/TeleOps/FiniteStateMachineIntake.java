@@ -93,6 +93,7 @@ public class FiniteStateMachineIntake {
                         (gamepad_2.getButton(DPAD_RIGHT) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1)) &&
                         isButtonDebounced()) {
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
+                    robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
@@ -168,6 +169,7 @@ public class FiniteStateMachineIntake {
                 }
                 if (intakeTimer.seconds() > RobotActionConfig.waitTime + RobotActionConfig.intakeWristRotationTime) {
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_slide_Retract_Set);// set slide retract 2/3
+                    robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_slide_Retract_Set);
                     intakeTimer.reset();
                     intakeState = INTAKESTATE.INTAKE_TRANS;
                 }
@@ -189,6 +191,7 @@ public class FiniteStateMachineIntake {
                 }
                 if (intakeTimer.seconds() > RobotActionConfig.intakeSlideExtendTime) {                  // wait another  0.5second to retract slide again.
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);     // set slide retract
+                    robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 }
                 if (depositArmState == FiniteStateMachineDeposit.LIFTSTATE.LIFT_START && intakeTimer.seconds() >= RobotActionConfig.transferTime + RobotActionConfig.intakeSlideExtendTime) {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
