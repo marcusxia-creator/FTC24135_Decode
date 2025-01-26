@@ -73,13 +73,13 @@ public class RobotIntake {
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extend);
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extend);
-                    intakeTimer.reset();
                     intakeState = IntakeState.INTAKE_GRAB;
                 }
                 break;
             case INTAKE_GRAB:
                 if ((gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) || gamepad_2.getButton(GamepadKeys.Button.DPAD_LEFT)) && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
                     debounceTimer.reset();
+                    intakeTimer.reset();
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
                     if (intakeTimer.seconds() > RobotActionConfig.intake_Claw_Grab_Threshold) {
                         robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
