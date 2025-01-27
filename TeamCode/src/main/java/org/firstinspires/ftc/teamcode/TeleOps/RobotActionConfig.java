@@ -5,7 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class RobotActionConfig {
     //drive chassis
-    public static double powerFactor = 1;
+    public static double powerFactor = 0.9;
     public static double WHEEL_DIAMETER_CM = 9.6;
     public static double TICKS_PER_REVOLUTION = 384.5;
     public static double GEAR_RATIO = 0.6;

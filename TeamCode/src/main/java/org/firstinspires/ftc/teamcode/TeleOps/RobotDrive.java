@@ -72,7 +72,7 @@ public class RobotDrive {
 
         if(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.4 || gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.4){
             double factor = Math.max(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER), gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
-            powerFactor = RobotActionConfig.powerFactor *(1.2 - factor); //1.2 - power reduction will be 0.8 - 0.2
+            powerFactor = RobotActionConfig.powerFactor *(1.2 - factor); //1.2 - power reduction will be (0.8 - 0.2)*power factor
         }
         else {
             powerFactor = RobotActionConfig.powerFactor;
