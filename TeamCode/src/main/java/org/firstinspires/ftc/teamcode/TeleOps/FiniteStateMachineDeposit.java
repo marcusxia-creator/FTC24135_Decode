@@ -279,7 +279,7 @@ public class FiniteStateMachineDeposit {
                 break;
 
             case LIFT_HIGHBAR:
-                driveStrafe(RobotActionConfig.strafeDist);
+                //driveStrafe(RobotActionConfig.strafeDist);
                 robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
                 if(liftTimer.seconds()>RobotActionConfig.waitTime){
                     setLiftTarget(RobotActionConfig.deposit_Slide_Highbar_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
@@ -336,20 +336,19 @@ public class FiniteStateMachineDeposit {
             liftState = LIFTSTATE.LIFT_START;
         }
         // Hung ----> Action active after 100 secs.
-        if (runtime.seconds() > 100){
-            if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
+        //if (runtime.seconds() > 100){
+        if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
                     && isButtonDebounced()){
                 setLiftTarget(RobotActionConfig.deposit_Slide_Hang_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
-            }
+        }
 
-            if (gamepad_1.getButton(GamepadKeys.Button.DPAD_DOWN)&&gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
-                &&isButtonDebounced()){
-                int slides_Current_Position = robot.liftMotorLeft.getCurrentPosition();
-                setLiftTarget(slides_Current_Position - 300, RobotActionConfig.deposit_Slide_DownLiftPower);
-                if(gamepad_1.wasJustReleased(GamepadKeys.Button.DPAD_DOWN) && gamepad_1.wasJustReleased(GamepadKeys.Button.LEFT_BUMPER)){
-                    robot.liftMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                    robot.liftMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                }
+        if (gamepad_1.getButton(GamepadKeys.Button.DPAD_DOWN)&&gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
+                &&isButtonDebounced()) {
+            int slides_Current_Position = robot.liftMotorLeft.getCurrentPosition();
+            setLiftTarget(slides_Current_Position - 300, RobotActionConfig.deposit_Slide_DownLiftPower);
+            if (gamepad_1.wasJustReleased(GamepadKeys.Button.DPAD_DOWN) && gamepad_1.wasJustReleased(GamepadKeys.Button.LEFT_BUMPER)) {
+                robot.liftMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                robot.liftMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }
         }
         //Claw CONTROL  ---- GLOBAL CONTROL ----> BUTTON A
