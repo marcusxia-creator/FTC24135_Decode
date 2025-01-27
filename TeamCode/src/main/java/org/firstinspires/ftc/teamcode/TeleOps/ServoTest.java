@@ -45,8 +45,8 @@ public class ServoTest{
 
         robot.intakeLeftArmServo.setPosition(0.0);
         robot.intakeRightArmServo.setPosition(0.0);
-        robot.intakeLeftSlideServo.setPosition(0.4);
-        robot.intakeRightSlideServo.setPosition(0.4);
+        robot.intakeLeftSlideServo.setPosition(0.03);
+        robot.intakeRightSlideServo.setPosition(0.03);
         robot.intakeWristServo.setPosition(0.0);
         robot.intakeRotationServo.setPosition(0.46);
         robot.intakeClawServo.setPosition(0.5);

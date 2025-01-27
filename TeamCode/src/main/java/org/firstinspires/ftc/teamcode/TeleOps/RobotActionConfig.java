@@ -5,7 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class RobotActionConfig {
     //drive chassis
-    public static double powerFactor = 1;
+    public static double powerFactor = 0.9;
     public static double WHEEL_DIAMETER_CM = 9.6;
     public static double TICKS_PER_REVOLUTION = 384.5;
     public static double GEAR_RATIO = 0.6;
@@ -19,7 +19,7 @@ public class RobotActionConfig {
     public static double intake_Rotation_Mid            = 0.46; // range(0-1, 0.49 at the middle for installation
 
     public static double intake_Arm_Initial             = 0.12; //initial arm position, range(0-0.56, 0: lowest, 0.56:fully retracted).
-    public static double intake_Arm_Pick                = 0.39; //intake arm pick pos
+    public static double intake_Arm_Pick                = 0.38; //intake arm pick pos
     public static double intake_Arm_Idle                = 0.26; // intake arm lift a bit before retract
     public static double intake_Arm_Transfer            = 0.08;  // intake arm transfer pos
 
@@ -35,7 +35,7 @@ public class RobotActionConfig {
     public static int deposit_Slide_Down_Pos             = 50;   //range (0-3300), 50 to prevent hard hit.
     public static int deposit_Slide_Highbar_Pos         = 1000;  //slides Position Configure
     public static int deposit_Slide_Highbasket_Pos      = 3222; //highest point
-    public static int deposit_Slide_Hang_Pos            = 3525;
+    public static int deposit_Slide_Hang_Pos            = 3700;
 
     public static double deposit_Wrist_Dump             = 0.22; //range(0.22-0.64), 0: installation position
     public static double deposit_Wrist_Transfer         = 0.52; // 176 deg ~ 0.003 is 1 deg
