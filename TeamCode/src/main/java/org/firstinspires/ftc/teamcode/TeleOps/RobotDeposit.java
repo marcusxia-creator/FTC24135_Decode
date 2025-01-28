@@ -11,7 +11,7 @@ import android.graphics.Color;
  * *B                   : Cancel
  */
 
-
+@Deprecated
 public class RobotDeposit {
     private final GamepadEx gamepad_1;
     private final GamepadEx gamepad_2;
@@ -19,9 +19,6 @@ public class RobotDeposit {
 
     // hsvValues is an array that will hold the hue, saturation, and value information.
     float hsvValues[] = {0F,0F,0F};
-
-
-
 
     public enum DEPOSITCONTROLSTATE {
         START,
@@ -58,14 +55,14 @@ public class RobotDeposit {
     public void Init() {
         liftTimer.reset();
         debounceTimer.reset();
-        robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_down_Pos);
-        robot.liftMotorRight.setTargetPosition(RobotActionConfig.deposit_Slide_down_Pos);
+        robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_Down_Pos);
+        robot.liftMotorRight.setTargetPosition(RobotActionConfig.deposit_Slide_Down_Pos);
         robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.liftMotorLeft.setPower(0.1);                                          // Make sure lift motor is on
         robot.liftMotorRight.setPower(0.1);
-        robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer_Pos);
-        robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer_Pos);
+        robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
+        robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
     }
 
@@ -83,8 +80,8 @@ public class RobotDeposit {
             // start position
             case START:
                 //robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
-                robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer_Pos);
-                robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer_Pos);
+                robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
+                robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                 if ((gamepad_1.getButton(GamepadKeys.Button.X)&&debounceTimer.seconds()>DEBOUNCE_THRESHOLD) && ((RobotActionConfig.hsvValues[0] < 80 && RobotActionConfig.hsvValues[0] > 70)
                         || (RobotActionConfig.hsvValues[0] < 20 && RobotActionConfig.hsvValues[0]>16) || (RobotActionConfig.hsvValues[0]<228 && RobotActionConfig.hsvValues[0]>224)))
                 {
@@ -118,8 +115,8 @@ public class RobotDeposit {
                 // extend arm
             case BASKET_ARM_EXTEND:
                 if (isSlideAtPosition(RobotActionConfig.deposit_Slide_Highbasket_Pos)) {
-                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_dump_Pos);
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_dump_Pos);
+                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Dump);
                     liftTimer.reset();
                     depositControlState = DEPOSITCONTROLSTATE.BASKET_DUMP;
                 }
@@ -128,21 +125,21 @@ public class RobotDeposit {
                 if(liftTimer.seconds() > 0.5) {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                     if (liftTimer.seconds() > 0.75) {
-                        robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer_Pos);
-                        robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer_Pos);
+                        robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
+                        robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                         depositControlState = DEPOSITCONTROLSTATE.BASKET_RETRACT;
                     }
                 }
                 break;
             case BASKET_RETRACT:
-                if(wristServo_AtPosition(RobotActionConfig.deposit_Wrist_Transfer_Pos)) {
-                    robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_down_Pos);
-                    robot.liftMotorRight.setTargetPosition(RobotActionConfig.deposit_Slide_down_Pos);
+                if(wristServo_AtPosition(RobotActionConfig.deposit_Wrist_Transfer)) {
+                    robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_Down_Pos);
+                    robot.liftMotorRight.setTargetPosition(RobotActionConfig.deposit_Slide_Down_Pos);
                     robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     robot.liftMotorLeft.setPower(RobotActionConfig.deposit_Slide_DownLiftPower);
                     robot.liftMotorRight.setPower(RobotActionConfig.deposit_Slide_DownLiftPower);
-                    if (isSlideAtDownPosition(RobotActionConfig.deposit_Slide_down_Pos)){
+                    if (isSlideAtDownPosition(RobotActionConfig.deposit_Slide_Down_Pos)){
                         depositControlState = DEPOSITCONTROLSTATE.START;
                     }
                 }
@@ -152,8 +149,8 @@ public class RobotDeposit {
                     if (liftTimer.seconds()> 0.5){
                         robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                     }
-                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_PickUp_Pos);
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_PickUp_Pos);
+                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Pick);
 
                     if(liftTimer.seconds()>0.75) {
                         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
@@ -168,8 +165,8 @@ public class RobotDeposit {
 
                 break;
             case BAR_SLIDE_EXTEND:
-                    robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_Highbar_Up_Pos);
-                    robot.liftMotorRight.setTargetPosition(RobotActionConfig.deposit_Slide_Highbar_Up_Pos);
+                    robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_Highbar_Pos);
+                    robot.liftMotorRight.setTargetPosition(RobotActionConfig.deposit_Slide_Highbar_Pos);
                     robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     robot.liftMotorLeft.setPower(RobotActionConfig.deposit_Slide_UpLiftPower);
@@ -178,9 +175,9 @@ public class RobotDeposit {
 
                 break;
             case BAR_ARM_EXTEND:
-                if(isSlideAtPosition(RobotActionConfig.deposit_Slide_Highbar_Up_Pos)){
-                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Highbar_Pos);
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Highbar_Pos);
+                if(isSlideAtPosition(RobotActionConfig.deposit_Slide_Highbar_Pos)){
+                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
                     if (depositState == DEPOSITCLAWSTATE.OPEN) {
                         depositControlState = DEPOSITCONTROLSTATE.BAR_SCORE;
                         liftTimer.reset();
@@ -195,17 +192,17 @@ public class RobotDeposit {
                     }
                 break;
             case BAR_RETRACT:
-                robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_down_Pos);
-                robot.liftMotorRight.setTargetPosition(RobotActionConfig.deposit_Slide_down_Pos);
+                robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_Down_Pos);
+                robot.liftMotorRight.setTargetPosition(RobotActionConfig.deposit_Slide_Down_Pos);
                 robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 robot.liftMotorLeft.setPower(RobotActionConfig.deposit_Slide_DownLiftPower);
                 robot.liftMotorRight.setPower(RobotActionConfig.deposit_Slide_DownLiftPower);
                 if (liftTimer.seconds() > 1) {
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer_Pos);
-                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer_Pos);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
+                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                 }
-                if (isSlideAtDownPosition(RobotActionConfig.deposit_Slide_down_Pos)) {
+                if (isSlideAtDownPosition(RobotActionConfig.deposit_Slide_Down_Pos)) {
                     depositControlState = DEPOSITCONTROLSTATE.START;
                 }
                 break;
@@ -218,14 +215,14 @@ public class RobotDeposit {
         if ((gamepad_1.getButton(GamepadKeys.Button.B) || gamepad_2.getButton(GamepadKeys.Button.B)) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             depositControlState = DEPOSITCONTROLSTATE.START;
-            robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_down_Pos);
-            robot.liftMotorRight.setTargetPosition(RobotActionConfig.deposit_Slide_down_Pos);
+            robot.liftMotorLeft.setTargetPosition(RobotActionConfig.deposit_Slide_Down_Pos);
+            robot.liftMotorRight.setTargetPosition(RobotActionConfig.deposit_Slide_Down_Pos);
             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorLeft.setPower(RobotActionConfig.deposit_Slide_DownLiftPower);
             robot.liftMotorRight.setPower(RobotActionConfig.deposit_Slide_DownLiftPower);
-            robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer_Pos);
-            robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer_Pos);
+            robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
+            robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
             robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
         }
 

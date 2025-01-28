@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+
 public class ColorRange {
     public String colorName;
     public int hueMin, hueMax;

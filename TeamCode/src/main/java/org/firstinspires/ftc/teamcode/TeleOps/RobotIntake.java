@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
+@Deprecated
 public class RobotIntake {
     //Declare IntakeState
     public enum IntakeState {
