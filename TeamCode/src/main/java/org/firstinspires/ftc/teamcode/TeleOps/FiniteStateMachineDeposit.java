@@ -280,11 +280,11 @@ public class FiniteStateMachineDeposit {
 
             case LIFT_HIGHBAR:
                 //driveStrafe(RobotActionConfig.strafeDist);
-                robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
+                robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);                                            // move the intake away to give space to specimen hook
                 if(liftTimer.seconds()>RobotActionConfig.waitTime){
-                    setLiftTarget(RobotActionConfig.deposit_Slide_Highbar_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
-                    if (IsLiftAtPosition(RobotActionConfig.deposit_Slide_Highbar_Pos)) {
-                        robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
+                    setLiftTarget(RobotActionConfig.deposit_Slide_Highbar_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);        // rise up lift
+                    if (IsLiftAtPosition(RobotActionConfig.deposit_Slide_Highbar_Pos)) {                                            // if vertical slide reached the position
+                        robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);                                      // set the deposit arm and deposit wrist to hook position.
                         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
                         liftState = LIFTSTATE.LIFT_SPECIMEN_HOOK;
                     }
@@ -304,9 +304,9 @@ public class FiniteStateMachineDeposit {
 
             case LIFT_SPECIMEN_SCORE:
                 // LIFT_SPECIMEN_SCORE ----> flat out and auto back out.
-                robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
-                if (liftTimer.seconds() > RobotActionConfig.waitTime){
-                    driveBackward(RobotActionConfig.backwardDist);
+                robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);                                      // set deposit wrist flat
+                if (liftTimer.seconds() > RobotActionConfig.waitTime){                                                              // wait 0.2s
+                    driveBackward(RobotActionConfig.backwardDist);                                                                  // Auto drive back
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                     liftState = LIFTSTATE.LIFT_RETRACT;
