@@ -97,7 +97,6 @@ public class FiniteStateMachineIntake {
                     robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
-                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                     robot.intakeClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                     depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.OPEN);
                     intakeClawState = INTAKECLAWSTATE.OPEN;
