@@ -4,6 +4,10 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class RobotActionConfig {
+    /**
+     * updated the parameters on 2025-01-29;
+     */
+
     //drive chassis
     public static double powerFactor = 0.9;
     public static double WHEEL_DIAMETER_CM = 9.6;
