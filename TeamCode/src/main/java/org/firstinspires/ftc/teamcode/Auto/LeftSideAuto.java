@@ -55,7 +55,7 @@ public class LeftSideAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        drive.pinpointresetIMU();
+        //drive.pinpointresetIMU();
 
         robot.init(hardwareMap);
 
