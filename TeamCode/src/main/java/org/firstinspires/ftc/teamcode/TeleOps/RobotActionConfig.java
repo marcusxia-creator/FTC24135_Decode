@@ -25,7 +25,7 @@ public class RobotActionConfig {
 
     public static double intake_Wrist_Retract           = 0.20; /** Needs change**/
     public static double intake_Wrist_Idle              = 0.20;
-    public static double intake_Wrist_Pick              = 0.64;
+    public static double intake_Wrist_Pick              = 0.645;
     public static double intake_Wrist_Transfer          = 0.12;
 
     public static double intake_Claw_Open               = 0.0; //range(0.0 - 0.27)
@@ -35,7 +35,7 @@ public class RobotActionConfig {
     public static int deposit_Slide_Down_Pos             = 50;   //range (0-3300), 50 to prevent hard hit.
     public static int deposit_Slide_Highbar_Pos         = 1000;  //slides Position Configure
     public static int deposit_Slide_Highbasket_Pos      = 3222; //highest point
-    public static int deposit_Slide_Hang_Pos            = 3700;
+    public static int deposit_Slide_Hang_Pos            = 3600;
 
     public static double deposit_Wrist_Dump             = 0.22; //range(0.22-0.64), 0: installation position
     public static double deposit_Wrist_Transfer         = 0.52; // 176 deg ~ 0.003 is 1 deg
