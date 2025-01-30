@@ -12,7 +12,7 @@ public class RobotActionConfig {
     public static double TICKS_PER_CM = 29.75;
 
     //Intake Configure
-    public static double intake_Slide_Extension         = 0.33;// range(0.1 - 0.65)
+    public static double intake_Slide_Extension         = 0.29;// range(0.1 - 0.65)
     public static double intake_Slide_Retract           = 0.03;
     public static double intake_slide_Retract_Set      = 0.1;
 
