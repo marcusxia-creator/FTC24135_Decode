@@ -130,7 +130,8 @@ public class RobotDrive {
         return input;
     }
 
-    double lerp(double current, double target, double alpha) {
+    double lerp(double current, double target, double accel_Slowness, double decel_Slowness) {
+        double alpha = (Math.abs(target) > Math.abs(current)) ? accel_Slowness : decel_Slowness;
         return current + alpha * (target - current);
     }
 
@@ -163,10 +164,10 @@ public class RobotDrive {
             desiredBackRightPower /= maxPower;
         }
 
-        double frontLeftPower = lerp(robot.frontLeftMotor.getPower(), desiredFrontLeftPower, RobotActionConfig.slowness);
-        double frontRightPower = lerp(robot.frontRightMotor.getPower(), desiredFrontRightPower,  RobotActionConfig.slowness);
-        double backLeftPower = lerp(robot.backLeftMotor.getPower(), desiredBackLeftPower,  RobotActionConfig.slowness);
-        double backRightPower = lerp(robot.backRightMotor.getPower(), desiredBackRightPower,  RobotActionConfig.slowness);
+        double frontLeftPower = lerp(robot.frontLeftMotor.getPower(), desiredFrontLeftPower, RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
+        double frontRightPower = lerp(robot.frontRightMotor.getPower(), desiredFrontRightPower,  RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
+        double backLeftPower = lerp(robot.backLeftMotor.getPower(), desiredBackLeftPower,  RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
+        double backRightPower = lerp(robot.backRightMotor.getPower(), desiredBackRightPower,  RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
 
 
         // Set motor powers

@@ -85,6 +85,7 @@ public class RobotActionConfig {
     public static double backwardDist                   =-90;
     public static double strafeDist                     = 130;
 
-    public static double slowness                       =0.25;
+    public static double accel_Slowness =0.25;
+    public static double decel_Slowness = 0.5;
 
 }
