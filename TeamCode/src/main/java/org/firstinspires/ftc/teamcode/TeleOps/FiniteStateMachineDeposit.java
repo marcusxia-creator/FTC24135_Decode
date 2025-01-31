@@ -117,6 +117,7 @@ public class FiniteStateMachineDeposit {
 
     // Deposit Arm Control
     public void DepositArmLoop(){
+        long currentTime = System.currentTimeMillis();
         /** determine the Color */
         Color.RGBToHSV(
                 robot.colorSensor.red() * 8,
@@ -240,7 +241,7 @@ public class FiniteStateMachineDeposit {
                 if(Servo_AtPosition(RobotActionConfig.deposit_Claw_Open) && liftTimer.seconds()>= RobotActionConfig.retractTime) {
                     setLiftTarget(RobotActionConfig.deposit_Slide_Down_Pos, RobotActionConfig.deposit_Slide_DownLiftPower);
                 }
-                if (IsLiftDownAtPosition(RobotActionConfig.deposit_Slide_Down_Pos)) {
+                if (IsLiftDownAtPosition(RobotActionConfig.deposit_Slide_Down_Pos)||LSisPressed(currentTime)) {
                     robot.liftMotorLeft.setPower(0); // Stop the motor after reaching the low position
                     robot.liftMotorRight.setPower(0);
                     liftState = LIFTSTATE.LIFT_START;
@@ -351,6 +352,7 @@ public class FiniteStateMachineDeposit {
                 robot.liftMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }
         }
+
         //Claw CONTROL  ---- GLOBAL CONTROL ----> BUTTON A
         ClawManualControl();
         DepositClawSwitch();
@@ -366,6 +368,17 @@ public class FiniteStateMachineDeposit {
     private boolean Servo_AtPosition(double servoClawPosition) {
         return Math.abs(robot.depositClawServo.getPosition() - servoClawPosition) < 0.01;
     }
+    //Limit switch state
+    private boolean LSisPressed(long currentTime) {
+        if(currentTime - RobotActionConfig.lastPressedTime > RobotActionConfig.debounceDelay){
+            RobotActionConfig.lastPressedTime = currentTime;
+            return robot.limitSwitch.getState();
+        } else{
+            return false;
+        }
+
+    }
+
 
     //Claw CONTROL Handler ---- GLOBAL CONTROL ----> BUTTON A
     private void ClawManualControl(){

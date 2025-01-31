@@ -75,6 +75,8 @@ public class RobotActionConfig {
     //TIME CONFIGURATION - INTAKE
     public static double intakeSlideExtendTime          = 0.9; // intake slide extension time
     public static double intakeWristRotationTime          = 0.4; // intake slide extension time
+    public static long lastPressedTime = 0; //limitSwitch timer
+    public static final long debounceDelay = 100; //limitSwitch debouncer
 
     //DEPOSIT vertical slide power
     public static double deposit_Slide_UpLiftPower      = 1.0;  //slides power

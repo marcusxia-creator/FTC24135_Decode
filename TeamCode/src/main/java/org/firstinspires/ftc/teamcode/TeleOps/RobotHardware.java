@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -40,10 +41,13 @@ Expansion hub:
 
 
 I2C port
-control hub
+Control hub
                 port 0: control hub imu
                 port 1: Pinpoint (odometry computer)
                 port 2: Color_Sensor
+Digital Port
+Control hub
+                port 7: LimitSwitch
 
  */
 
@@ -72,6 +76,8 @@ public class RobotHardware {
     public Servo depositClawServo;
 
     public ColorSensor colorSensor;// Color Sensor
+
+    public DigitalChannel limitSwitch;// Limit Switch
 
     public IMU imu; //IMU
     public HardwareMap hardwareMap;
@@ -106,6 +112,9 @@ public class RobotHardware {
         //Color sensor
         colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
         colorSensor.enableLed(false);
+        //Limit Switch
+        limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
+        limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         //set motor mode and motor direction
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed
