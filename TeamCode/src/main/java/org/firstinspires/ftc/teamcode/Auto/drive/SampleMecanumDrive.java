@@ -296,14 +296,14 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public double getRawExternalHeading() {
-        //return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-        return pinpoint.getHeading();
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        //return pinpoint.getHeading();
     }
 
     @Override
     public Double getExternalHeadingVelocity() {
-        //return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
-        return pinpoint.getHeadingVelocity();
+        return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
+        //return pinpoint.getHeadingVelocity();
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {
