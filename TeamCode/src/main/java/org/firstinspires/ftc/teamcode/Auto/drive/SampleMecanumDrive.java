@@ -75,7 +75,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     private List<DcMotorEx> motors;
 
     private IMU imu;
-    private GoBildaPinpointDriver pinpoint;
+
     private VoltageSensor batteryVoltageSensor;
 
     private List<Integer> lastEncPositions = new ArrayList<>();
@@ -101,7 +101,7 @@ public class SampleMecanumDrive extends MecanumDrive {
                 DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR));
         imu.initialize(parameters);
 
-        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        //pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         leftFront = hardwareMap.get(DcMotorEx.class, "FL_Motor");
         leftRear = hardwareMap.get(DcMotorEx.class, "BL_Motor");
