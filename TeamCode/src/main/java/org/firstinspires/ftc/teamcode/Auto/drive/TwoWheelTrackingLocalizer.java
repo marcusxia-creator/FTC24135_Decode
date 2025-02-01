@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.localization.TwoTrackingWheelLocalizer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
             new Pose2d(PERPENDICULAR_X, PERPENDICULAR_Y, Math.toRadians(90))
         ));
         this.drive = drive;
-        this.pinpoint = pinpoint;
+        //this.pinpoint = pinpoint;
 
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
     }
