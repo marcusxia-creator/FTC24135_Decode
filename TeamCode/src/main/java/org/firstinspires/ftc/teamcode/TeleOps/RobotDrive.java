@@ -72,7 +72,7 @@ public class RobotDrive {
 
         if(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.4 || gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.4){
             double factor = Math.max(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER), gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
-            powerFactor = RobotActionConfig.powerFactor *(1.2 - factor); //1.2 - power reduction will be (0.8 - 0.2)*power factor
+            powerFactor = Range.clip(RobotActionConfig.powerFactor *(1.4 - factor),0,1); //1.0 - power reduction will be 0.6 - 0.2
         }
         else {
             powerFactor = RobotActionConfig.powerFactor;
@@ -130,7 +130,8 @@ public class RobotDrive {
         return input;
     }
 
-    double lerp(double current, double target, double alpha) {
+    double lerp(double current, double target, double accel_Slowness, double decel_Slowness) {
+        double alpha = (Math.abs(target) > Math.abs(current)) ? accel_Slowness : decel_Slowness;
         return current + alpha * (target - current);
     }
 
@@ -163,10 +164,10 @@ public class RobotDrive {
             desiredBackRightPower /= maxPower;
         }
 
-        double frontLeftPower = lerp(robot.frontLeftMotor.getPower(), desiredFrontLeftPower, RobotActionConfig.slowness);
-        double frontRightPower = lerp(robot.frontRightMotor.getPower(), desiredFrontRightPower,  RobotActionConfig.slowness);
-        double backLeftPower = lerp(robot.backLeftMotor.getPower(), desiredBackLeftPower,  RobotActionConfig.slowness);
-        double backRightPower = lerp(robot.backRightMotor.getPower(), desiredBackRightPower,  RobotActionConfig.slowness);
+        double frontLeftPower = lerp(robot.frontLeftMotor.getPower(), desiredFrontLeftPower, RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
+        double frontRightPower = lerp(robot.frontRightMotor.getPower(), desiredFrontRightPower,  RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
+        double backLeftPower = lerp(robot.backLeftMotor.getPower(), desiredBackLeftPower,  RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
+        double backRightPower = lerp(robot.backRightMotor.getPower(), desiredBackRightPower,  RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
 
 
         // Set motor powers

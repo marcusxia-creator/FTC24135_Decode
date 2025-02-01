@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class FSMDepositControl {
 
     // Enums

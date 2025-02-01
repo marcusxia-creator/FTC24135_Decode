@@ -4,6 +4,10 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class RobotActionConfig {
+    /**
+     * updated the parameters on 2025-01-29;
+     */
+
     //drive chassis
     public static double powerFactor = 0.9;
     public static double WHEEL_DIAMETER_CM = 9.6;
@@ -12,20 +16,20 @@ public class RobotActionConfig {
     public static double TICKS_PER_CM = 29.75;
 
     //Intake Configure
-    public static double intake_Slide_Extension         = 0.33;// range(0.1 - 0.65)
+    public static double intake_Slide_Extension         = 0.29;// range(0.1 - 0.65)
     public static double intake_Slide_Retract           = 0.03;
     public static double intake_slide_Retract_Set      = 0.1;
 
     public static double intake_Rotation_Mid            = 0.46; // range(0-1, 0.49 at the middle for installation
 
     public static double intake_Arm_Initial             = 0.12; //initial arm position, range(0-0.56, 0: lowest, 0.56:fully retracted).
-    public static double intake_Arm_Pick                = 0.39; //intake arm pick pos
+    public static double intake_Arm_Pick                = 0.37; //intake arm pick pos
     public static double intake_Arm_Idle                = 0.26; // intake arm lift a bit before retract
     public static double intake_Arm_Transfer            = 0.08;  // intake arm transfer pos
 
     public static double intake_Wrist_Retract           = 0.20; /** Needs change**/
     public static double intake_Wrist_Idle              = 0.20;
-    public static double intake_Wrist_Pick              = 0.64;
+    public static double intake_Wrist_Pick              = 0.645;
     public static double intake_Wrist_Transfer          = 0.12;
 
     public static double intake_Claw_Open               = 0.0; //range(0.0 - 0.27)
@@ -35,7 +39,7 @@ public class RobotActionConfig {
     public static int deposit_Slide_Down_Pos             = 50;   //range (0-3300), 50 to prevent hard hit.
     public static int deposit_Slide_Highbar_Pos         = 1000;  //slides Position Configure
     public static int deposit_Slide_Highbasket_Pos      = 3222; //highest point
-    public static int deposit_Slide_Hang_Pos            = 3525;
+    public static int deposit_Slide_Hang_Pos            = 3600;
 
     public static double deposit_Wrist_Dump             = 0.22; //range(0.22-0.64), 0: installation position
     public static double deposit_Wrist_Transfer         = 0.52; // 176 deg ~ 0.003 is 1 deg
@@ -71,6 +75,8 @@ public class RobotActionConfig {
     //TIME CONFIGURATION - INTAKE
     public static double intakeSlideExtendTime          = 0.9; // intake slide extension time
     public static double intakeWristRotationTime          = 0.4; // intake slide extension time
+    public static long lastPressedTime = 0; //limitSwitch timer
+    public static final long debounceDelay = 100; //limitSwitch debouncer
 
     //DEPOSIT vertical slide power
     public static double deposit_Slide_UpLiftPower      = 1.0;  //slides power
@@ -79,6 +85,7 @@ public class RobotActionConfig {
     public static double backwardDist                   =-90;
     public static double strafeDist                     = 130;
 
-    public static double slowness                       =0.25;
+    public static double accel_Slowness =0.25;
+    public static double decel_Slowness = 0.5;
 
 }
