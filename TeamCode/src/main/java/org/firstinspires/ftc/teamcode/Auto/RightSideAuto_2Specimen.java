@@ -75,7 +75,7 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
                 .waitSeconds(waitTimer)
 
                 /** back out of bar position -1st time*/
-                .lineToLinearHeading(new Pose2d(10, -50, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate-10, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
