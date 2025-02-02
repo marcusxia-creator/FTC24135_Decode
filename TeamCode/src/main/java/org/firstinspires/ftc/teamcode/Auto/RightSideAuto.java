@@ -75,7 +75,7 @@ public class RightSideAuto extends LinearOpMode {
                 })
                 .waitSeconds(waitTimer)
                 //back out of bar position -1st time
-                .lineToLinearHeading(new Pose2d(12, -60, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(24, -60, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
@@ -125,7 +125,7 @@ public class RightSideAuto extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
                 })
-                .waitSeconds(waitTimer)
+                .waitSeconds(0.15)
                 /** 3.1 segment ---->  Transfer 2nd specimen*/
                 .addTemporalMarker(() -> {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
