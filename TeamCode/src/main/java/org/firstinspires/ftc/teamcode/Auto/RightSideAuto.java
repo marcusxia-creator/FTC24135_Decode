@@ -90,9 +90,18 @@ public class RightSideAuto extends LinearOpMode {
                     Slides_Stop();
                 })
                 .waitSeconds(waitTimer)
+                /** 2nd Segment --> push red sample for specimen
+                 *
+                 */
+                .lineToLinearHeading(new Pose2d(36, -48, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(40, -8, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(48, -16, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(48, -56, Math.toRadians(-90)))
 
-                /** 2nd Segment --> move to pick 1st Specimen*/
+                /** 3nd Segment --> move to pick 1st Specimen*/
                 .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(-45)))
+
+
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
@@ -116,7 +125,7 @@ public class RightSideAuto extends LinearOpMode {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
                 })
                 .waitSeconds(waitTimer)
-                /** 2nd segment ---->  Transfer 1st specimen*/
+                /** 3.1 segment ---->  Transfer 1st specimen*/
                 .addTemporalMarker(() -> {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
@@ -157,7 +166,7 @@ public class RightSideAuto extends LinearOpMode {
                 .waitSeconds(waitTimer*2)
                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate - 10, Math.toRadians(-90)))
 
-                /** 3rd Segment --> go back to pickup position - */
+                /** 4rd Segment --> go back to pickup position - */
                 .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(-45)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
@@ -183,7 +192,10 @@ public class RightSideAuto extends LinearOpMode {
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
                 })
                 .waitSeconds(0.7)
-                /**
+                /**. can add another pick up and score movement.
+                 *
+                 */
+
                 /**
                 .addTemporalMarker(() -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
