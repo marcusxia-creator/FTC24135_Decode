@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Auto;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -58,7 +59,7 @@ public class RightSideAuto extends LinearOpMode {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
                 })
-                .waitSeconds(vSlideWaitTimer)
+                            //.waitSeconds(vSlideWaitTimer)
                 //drive to bar
                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
@@ -74,7 +75,7 @@ public class RightSideAuto extends LinearOpMode {
                 })
                 .waitSeconds(waitTimer)
                 //back out of bar position -1st time
-                .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate - 10, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(highbar_x_coordinate, -60, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
@@ -93,10 +94,10 @@ public class RightSideAuto extends LinearOpMode {
                 /** 2nd Segment --> push red sample for specimen
                  *
                  */
-                .lineToLinearHeading(new Pose2d(36, -48, Math.toRadians(-90)))
-                .lineToLinearHeading(new Pose2d(40, -8, Math.toRadians(-90)))
-                .lineToLinearHeading(new Pose2d(48, -16, Math.toRadians(-90)))
-                .lineToLinearHeading(new Pose2d(48, -56, Math.toRadians(-90)))
+                //.lineToLinearHeading(new Pose2d(36, -48, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(55.5, -8, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(55.5, -56, Math.toRadians(-90)))
+                //.lineToLinearHeading(new Pose2d(49, -56, Math.toRadians(-90)))
 
                 /** 3nd Segment --> move to pick 1st Specimen*/
                 .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(-45)))
@@ -105,7 +106,7 @@ public class RightSideAuto extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
-                //Grab first specimen
+                //Grab 1st specimen
                 .UNSTABLE_addTemporalMarkerOffset(0,() -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
@@ -125,7 +126,7 @@ public class RightSideAuto extends LinearOpMode {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
                 })
                 .waitSeconds(waitTimer)
-                /** 3.1 segment ---->  Transfer 1st specimen*/
+                /** 3.1 segment ---->  Transfer 2nd specimen*/
                 .addTemporalMarker(() -> {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
@@ -200,7 +201,7 @@ public class RightSideAuto extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
                 })
-                .waitSeconds(waitTimer)
+                .waitSeconds(waitTimer-0.05)
 
                 /** 3.1 segment ---->  Transfer 1st specimen*/
                 .addTemporalMarker(() -> {
