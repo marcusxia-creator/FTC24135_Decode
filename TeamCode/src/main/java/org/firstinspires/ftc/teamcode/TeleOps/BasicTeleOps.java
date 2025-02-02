@@ -146,7 +146,8 @@ public class BasicTeleOps extends OpMode {
     @Override
     public void loop () {
         long currentTime = System.currentTimeMillis();
-        if (gamepadCo1.getButton(BACK) && currentTime < 5000){
+        if (gamepadCo1.getButton(BACK) && debounceTimer.seconds()>0.2){
+            debounceTimer.reset();
             robot.liftMotorLeft.setTargetPosition(0);
             robot.liftMotorRight.setTargetPosition(0);
             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
