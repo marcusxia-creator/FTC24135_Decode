@@ -95,8 +95,8 @@ public class RightSideAuto extends LinearOpMode {
                  *
                  */
                 //.lineToLinearHeading(new Pose2d(36, -48, Math.toRadians(-90)))
-                .lineToLinearHeading(new Pose2d(55.5, -8, Math.toRadians(-90)))
-                .lineToLinearHeading(new Pose2d(55.5, -56, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(57, -8, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(57, -56, Math.toRadians(-90)))
                 //.lineToLinearHeading(new Pose2d(49, -56, Math.toRadians(-90)))
 
                 /** 3nd Segment --> move to pick 1st Specimen*/
@@ -107,7 +107,7 @@ public class RightSideAuto extends LinearOpMode {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
                 //Grab 1st specimen
-                .UNSTABLE_addTemporalMarkerOffset(0,() -> {
+                .UNSTABLE_addTemporalMarkerOffset(-0.25,() -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
@@ -115,13 +115,13 @@ public class RightSideAuto extends LinearOpMode {
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Wait);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(1.0, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.75, () -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
                 })
-                .waitSeconds(1.0+hSlideWaitTimer)
+                .waitSeconds(0.75+hSlideWaitTimer)
                 .addTemporalMarker(() -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
                 })
