@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.AutoTest.Roadrunner.drive;
+package org.firstinspires.ftc.teamcode.Auto.drive;
 
 import androidx.annotation.NonNull;
 
@@ -10,8 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.AutoTest.Roadrunner.util.Encoder;
-import org.firstinspires.ftc.teamcode.AutoTest.Roadrunner.drive.GoBildaPinpointDriver;
+import org.firstinspires.ftc.teamcode.Auto.drive.GoBildaPinpointDriver;
 
 import java.util.Arrays;
 import java.util.List;
@@ -69,7 +68,6 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
         pinpointPos = pinpoint.getPosition();
 
     }
-
     public static double encoderTicksToInches(double ticks) {
         return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV;
     }

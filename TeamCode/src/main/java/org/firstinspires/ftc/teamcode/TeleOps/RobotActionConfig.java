@@ -18,7 +18,7 @@ public class RobotActionConfig {
     //Intake Configure
     public static double intake_Slide_Extension         = 0.29;// range(0.1 - 0.65)
     public static double intake_Slide_Retract           = 0.03;
-    public static double intake_slide_Retract_Set      = 0.1;
+    public static double intake_slide_Retract_Set       = 0.1;
 
     public static double intake_Rotation_Mid            = 0.46; // range(0-1, 0.49 at the middle for installation
 
@@ -36,7 +36,7 @@ public class RobotActionConfig {
     public static double intake_Claw_Close              = 0.27;
 
     //Deposit Config
-    public static int deposit_Slide_Down_Pos             = 50;   //range (0-3300), 50 to prevent hard hit.
+    public static int deposit_Slide_Down_Pos            = 50;   //range (0-3300), 50 to prevent hard hit.
     public static int deposit_Slide_Highbar_Pos         = 1000;  //slides Position Configure
     public static int deposit_Slide_Highbasket_Pos      = 3222; //highest point
     public static int deposit_Slide_Hang_Pos            = 3600;
@@ -74,9 +74,9 @@ public class RobotActionConfig {
     public static double DEBOUNCE_THRESHOLD             = 0.25; // debounce_Threshold
     //TIME CONFIGURATION - INTAKE
     public static double intakeSlideExtendTime          = 0.9; // intake slide extension time
-    public static double intakeWristRotationTime          = 0.4; // intake slide extension time
-    public static long lastPressedTime = 0; //limitSwitch timer
-    public static final long debounceDelay = 100; //limitSwitch debouncer
+    public static double intakeWristRotationTime        = 0.4; // intake slide extension time
+    public static long lastPressedTime                  = 0; //limitSwitch timer
+    public static final long debounceDelay              = 100; //limitSwitch debouncer
 
     //DEPOSIT vertical slide power
     public static double deposit_Slide_UpLiftPower      = 1.0;  //slides power
@@ -85,7 +85,6 @@ public class RobotActionConfig {
     public static double backwardDist                   =-90;
     public static double strafeDist                     = 130;
 
-    public static double accel_Slowness =0.25;
-    public static double decel_Slowness = 0.5;
-
+    public static double accel_Slowness                 = 0.25;
+    public static double decel_Slowness                 = 0.6;
 }
