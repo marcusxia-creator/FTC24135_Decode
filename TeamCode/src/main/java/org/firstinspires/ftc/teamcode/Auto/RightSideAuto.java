@@ -75,11 +75,11 @@ public class RightSideAuto extends LinearOpMode {
                 })
                 .waitSeconds(waitTimer)
                 //back out of bar position -1st time
-                .lineToLinearHeading(new Pose2d(highbar_x_coordinate, -60, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(12, -60, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
-                .waitSeconds(waitTimer)
+                .waitSeconds(0.1)
                 //drop slides and put arm back to transfer position
                 .addTemporalMarker(() -> {
                     Slides_Move(-950, 0.8);
@@ -90,7 +90,7 @@ public class RightSideAuto extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     Slides_Stop();
                 })
-                .waitSeconds(waitTimer)
+                .waitSeconds(0.1)
                 /** 2nd Segment --> push red sample for specimen
                  *
                  */
