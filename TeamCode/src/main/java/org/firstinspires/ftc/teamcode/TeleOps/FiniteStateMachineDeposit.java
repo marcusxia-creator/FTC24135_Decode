@@ -278,7 +278,6 @@ public class FiniteStateMachineDeposit {
                     liftState = LIFTSTATE.LIFT_HIGHBAR;
                 }
                 break;
-
             case LIFT_HIGHBAR:
                 //driveStrafe(RobotActionConfig.strafeDist);
                 robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);                                            // move the intake away to give space to specimen hook
