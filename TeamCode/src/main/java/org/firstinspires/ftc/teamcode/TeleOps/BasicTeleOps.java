@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.START;
 
@@ -112,7 +113,7 @@ public class BasicTeleOps extends OpMode {
         //Deposit Arm control
         depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive); // Pass parameters as needed);
         //depositArmDrive.Init();
-        depositArmDrive.Init();
+
 
         //Intake Arm Control
         intakeArmDrive = new FiniteStateMachineIntake(robot, gamepadCo1,gamepadCo2, depositArmDrive);
@@ -121,9 +122,6 @@ public class BasicTeleOps extends OpMode {
         //Servo Testing
         servoTest = new ServoTest(robot, gamepadCo1, gamepadCo2);
         //servoTest.ServoTestInit();
-
-        long currentTime = System.currentTimeMillis();
-
 
         // get bulk reading
         allHubs = hardwareMap.getAll(LynxModule.class);
@@ -134,19 +132,6 @@ public class BasicTeleOps extends OpMode {
         RobotDrive.DriveMode currentDriveMode = robotDrive.getDriveMode();
 
         //Reset the motor encoder
-        robot.liftMotorLeft.setTargetPosition(0);
-        robot.liftMotorRight.setTargetPosition(0);
-        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.liftMotorLeft.setPower(0.3);                                          // Make sure lift motor is on
-        robot.liftMotorRight.setPower(0.3);
-        while (robot.liftMotorLeft.isBusy()&&robot.liftMotorRight.isBusy()){
-            if(LSisPressed()){
-                robot.liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-                robot.liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-                break;
-            }
-        }
 
         //Telemetry
         telemetry.addLine("-------------------");
@@ -159,6 +144,23 @@ public class BasicTeleOps extends OpMode {
 
     @Override
     public void loop () {
+        long currentTime = System.currentTimeMillis();
+        if (gamepadCo1.getButton(B) && currentTime < 5000){
+            robot.liftMotorLeft.setTargetPosition(0);
+            robot.liftMotorRight.setTargetPosition(0);
+            robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.liftMotorLeft.setPower(0.3);                                          // Make sure lift motor is on
+            robot.liftMotorRight.setPower(0.3);
+            while (robot.liftMotorLeft.isBusy()&&robot.liftMotorRight.isBusy()){
+                if(LSisPressed()){
+                    robot.liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+                    robot.liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+                    break;
+                }
+            }
+            depositArmDrive.Init();
+        }
 
         //Bulk Reading for Motors
         for (LynxModule hub : allHubs) {
