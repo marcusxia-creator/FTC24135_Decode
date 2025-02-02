@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.BACK;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.START;
 
@@ -145,7 +146,7 @@ public class BasicTeleOps extends OpMode {
     @Override
     public void loop () {
         long currentTime = System.currentTimeMillis();
-        if (gamepadCo1.getButton(B) && currentTime < 5000){
+        if (gamepadCo1.getButton(BACK) && currentTime < 5000){
             robot.liftMotorLeft.setTargetPosition(0);
             robot.liftMotorRight.setTargetPosition(0);
             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
