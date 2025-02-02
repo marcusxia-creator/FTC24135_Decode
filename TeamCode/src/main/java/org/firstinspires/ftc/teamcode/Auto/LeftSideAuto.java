@@ -94,11 +94,12 @@ public class LeftSideAuto extends LinearOpMode {
                 .addTemporalMarker(()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);})
                 .waitSeconds(0.5)
                 /**transfer 1st sample*/
+                .addTemporalMarker(()->{robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);})
+                .waitSeconds(0.3)
                 .addTemporalMarker(()->{robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);})
                 .addTemporalMarker(()->{robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);})
-                .addTemporalMarker(()->{robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);})
-                .UNSTABLE_addTemporalMarkerOffset(1.1,()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);})
-                .UNSTABLE_addTemporalMarkerOffset(1.3,()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);})
+                .UNSTABLE_addTemporalMarkerOffset(1.2,()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);})
+                .UNSTABLE_addTemporalMarkerOffset(1.4,()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);})
                 .lineToLinearHeading(new Pose2d(basket_x_coordinate,basket_y_coordinate,Math.toRadians(45)))                    // move to basket
                 /** drop 1st sample*/
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{drive.setDrivePower(new Pose2d(0,0,0));})          //stop
@@ -124,11 +125,12 @@ public class LeftSideAuto extends LinearOpMode {
                 .addTemporalMarker(()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);})
                 .waitSeconds(0.5)
                 /**transfer 2nd sample*/
+                .addTemporalMarker(()->{robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);})
+                .waitSeconds(0.3)
                 .addTemporalMarker(()->{robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);})
                 .addTemporalMarker(()->{robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);})
-                .addTemporalMarker(()->{robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);})
-                .UNSTABLE_addTemporalMarkerOffset(1.1,()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);})
-                .UNSTABLE_addTemporalMarkerOffset(1.3,()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);})
+                .UNSTABLE_addTemporalMarkerOffset(1.2,()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);})
+                .UNSTABLE_addTemporalMarkerOffset(1.4,()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);})
                 .lineToLinearHeading(new Pose2d(basket_x_coordinate,basket_y_coordinate,Math.toRadians(45)))                    // move to basket
                 /** drop 2nd sample*/
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{drive.setDrivePower(new Pose2d(0,0,0));})          //stop
