@@ -18,6 +18,7 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
 
     public static double highbar_x_coordinate = -3;
     public static double highbar_y_coordinate = -33;
+    public static double highbar_x_coordinate2 = +3;
     public static double specimen_pickup_x_coordinate = 27;
     public static double specimen_pickup_y_coordinate = -51;
     public static double first_sample_pickup_x_coordinate = 26;
@@ -69,11 +70,12 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
                 })
                 .waitSeconds(clawOpenTimer)
                 .addTemporalMarker(() -> {
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos-0.05);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Retract_Pos);
                 })
                 .waitSeconds(waitTimer)
-                //back out of bar position -1st time
-                .lineToLinearHeading(new Pose2d(24, -60, Math.toRadians(-90)))
+
+                /** back out of bar position -1st time*/
+                .lineToLinearHeading(new Pose2d(10, -50, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
@@ -139,8 +141,8 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
                 })
                 .waitSeconds(vSlideWaitTimer)
-                //move to highbar spot
-                .lineToLinearHeading(new Pose2d(highbar_x_coordinate-2, highbar_y_coordinate, Math.toRadians(-90)))
+                /**move to highbar spot for 2nd Specimen*/
+                .lineToLinearHeading(new Pose2d(highbar_x_coordinate2, highbar_y_coordinate, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
@@ -150,17 +152,11 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
                 })
                 .waitSeconds(clawOpenTimer)
                 .addTemporalMarker(() -> {
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos-0.05);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Retract_Pos);
                 })
                 .waitSeconds(waitTimer*2)
+                /** move out */
                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate - 10, Math.toRadians(-90)))
-
-                /** 4rd Segment --> pick 3rd go back to pickup position - */
-                .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(-45)))
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    drive.setDrivePower(new Pose2d(0, 0, 0));
-                })
-                //drop slides and go back to transfer position
                 .addTemporalMarker(() -> {
                     Slides_Move(-950, 0.9);
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
@@ -171,7 +167,8 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
                     Slides_Stop();
                 })
                 .waitSeconds(waitTimer)
-                .lineToLinearHeading(new Pose2d(50, -60, Math.toRadians(90)))
+                /**go back to OB ZONE- */
+                .lineToLinearHeading(new Pose2d(55, -60, Math.toRadians(90)))
                 .waitSeconds(0.25)
                 .build();
 

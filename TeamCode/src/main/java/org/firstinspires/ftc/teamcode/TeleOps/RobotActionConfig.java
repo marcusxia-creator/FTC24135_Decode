@@ -19,7 +19,7 @@ public class RobotActionConfig {
     public static double intake_Slide_Extension         = 0.29;// range(0.1 - 0.65)
     public static double intake_Slide_Retract           = 0.03;
     public static double intake_slide_Retract_Set       = 0.1;
-    public static double intake_Slide_Extension_Wait   = 0.16; // FOR AUTO MODE
+    public static double intake_Slide_Extension_Wait   = 0.16; // FOR AUTO MODE ONLY
 
     public static double intake_Rotation_Mid            = 0.46; // range(0-1, 0.49 at the middle for installation
 
@@ -27,7 +27,7 @@ public class RobotActionConfig {
     public static double intake_Arm_Pick                = 0.42; //intake arm pick pos
     public static double intake_Arm_Idle                = 0.26; // intake arm lift a bit before retract
     public static double intake_Arm_Transfer            = 0.08;  // intake arm transfer pos
-    public static double intake_Arm_Wait                = 0.4; // FOR AUTO MODE
+    public static double intake_Arm_Wait                = 0.4; // FOR AUTO MODE ONLY
 
     public static double intake_Wrist_Retract           = 0.20; /** Needs change**/
     public static double intake_Wrist_Idle              = 0.20;
@@ -47,7 +47,8 @@ public class RobotActionConfig {
     public static double deposit_Wrist_Transfer         = 0.52; // 176 deg ~ 0.003 is 1 deg
     public static double deposit_Wrist_Pick             = 0.38; // 0.003 is 1 deg
     public static double deposit_Wrist_Hook             = 0.64; // 0.003 is 1 deg
-    public static double deposit_Wrist_Flat_Pos         = 0.3;
+    public static double deposit_Wrist_Flat_Pos         = 0.30;
+    public static double deposit_Wrist_Retract_Pos      = 0.25; // FOR AUTO MODE ONLY
 
 
     public static double deposit_Arm_Pick               = 1; // 0 is pick position.
