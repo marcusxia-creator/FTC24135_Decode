@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
-@Autonomous(name="RightSideAuto_3Specimen", group="org.firstinspires.ftc.teamcode.Auto")
+@Autonomous(name="RightSideAuto_3Specimen_League", group="org.firstinspires.ftc.teamcode.Auto")
 @Config
 public class RightSideAuto extends LinearOpMode {
 
