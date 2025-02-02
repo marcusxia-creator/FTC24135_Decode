@@ -14,6 +14,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.LynxModule.BulkData;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.List;
@@ -120,6 +122,8 @@ public class BasicTeleOps extends OpMode {
         servoTest = new ServoTest(robot, gamepadCo1, gamepadCo2);
         //servoTest.ServoTestInit();
 
+        long currentTime = System.currentTimeMillis();
+
 
         // get bulk reading
         allHubs = hardwareMap.getAll(LynxModule.class);
@@ -129,11 +133,28 @@ public class BasicTeleOps extends OpMode {
         //Robot Control State
         RobotDrive.DriveMode currentDriveMode = robotDrive.getDriveMode();
 
+        //Reset the motor encoder
+        robot.liftMotorLeft.setTargetPosition(0);
+        robot.liftMotorRight.setTargetPosition(0);
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.liftMotorLeft.setPower(0.3);                                          // Make sure lift motor is on
+        robot.liftMotorRight.setPower(0.3);
+        while (robot.liftMotorLeft.isBusy()&&robot.liftMotorRight.isBusy()){
+            if(LSisPressed()){
+                robot.liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+                robot.liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+                break;
+            }
+        }
+
         //Telemetry
         telemetry.addLine("-------------------");
         telemetry.addData("Status", " initialized Motors and Encoder and IMU and Arm Control");
         telemetry.addData("Control Mode", currentDriveMode.name());
         telemetry.addLine("-------------------");
+        telemetry.addData("Vertical slide Encoder",robot.liftMotorLeft.getCurrentPosition());
+        telemetry.update();
         }
 
     @Override
@@ -237,5 +258,8 @@ public class BasicTeleOps extends OpMode {
             controlState = ControlState.TEST;
         }
     }
-
+    //limit switch control
+    private boolean LSisPressed() {
+            return robot.limitSwitch.getState();
+    }
 }

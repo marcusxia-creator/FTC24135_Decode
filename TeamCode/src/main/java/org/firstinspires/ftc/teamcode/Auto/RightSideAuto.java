@@ -25,6 +25,10 @@ public class RightSideAuto extends LinearOpMode {
     public static double first_sample_pickup_y_coordinate = -38;
 
     public static double clawOpenTimer = 0.2;
+    public static double waitTimer = 0.25;
+    public static double vSlideWaitTimer = 2*waitTimer;
+    public static double hSlideWaitTimer =  0.35;
+    public static double wristWaitTimer = 0.25;
     RobotHardware robot = new RobotHardware();
 
     @Override
@@ -54,7 +58,7 @@ public class RightSideAuto extends LinearOpMode {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
                 })
-                .waitSeconds(0.5)
+                .waitSeconds(vSlideWaitTimer)
                 //drive to bar
                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
@@ -68,24 +72,24 @@ public class RightSideAuto extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 })
-                .waitSeconds(0.4)
+                .waitSeconds(waitTimer)
                 //back out of bar position -1st time
                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate - 10, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
-                .waitSeconds(0.4)
+                .waitSeconds(waitTimer)
                 //drop slides and put arm back to transfer position
                 .addTemporalMarker(() -> {
                     Slides_Move(-950, 0.8);
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                 })
-                .waitSeconds(0.5)
+                .waitSeconds(vSlideWaitTimer)
                 .addTemporalMarker(() -> {
                     Slides_Stop();
                 })
-                .waitSeconds(0.2)
+                .waitSeconds(waitTimer)
 
                 /** 2nd Segment --> move to pick 1st Specimen*/
                 .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(-45)))
@@ -106,38 +110,37 @@ public class RightSideAuto extends LinearOpMode {
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
-
                 })
-                .waitSeconds(1.5)
+                .waitSeconds(1.0+hSlideWaitTimer)
                 .addTemporalMarker(() -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
                 })
-                .waitSeconds(0.25)
+                .waitSeconds(waitTimer)
                 /** 2nd segment ---->  Transfer 1st specimen*/
                 .addTemporalMarker(() -> {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                 })
-                .waitSeconds(0.3)
+                .waitSeconds(wristWaitTimer)
                 .addTemporalMarker(() -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(1.2, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(1.35, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(hSlideWaitTimer+clawOpenTimer, () -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 })
-                .waitSeconds(1.45)
+                .waitSeconds(1)
                 //extend slides to scoring position
                 .addTemporalMarker(() -> {
                     Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Pos, 0.9);
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
                 })
-                .waitSeconds(0.5)
+                .waitSeconds(vSlideWaitTimer)
                 //move to highbar spot
                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
@@ -151,7 +154,7 @@ public class RightSideAuto extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 })
-                .waitSeconds(0.5)
+                .waitSeconds(waitTimer*2)
                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate - 10, Math.toRadians(-90)))
 
                 /** 3rd Segment --> go back to pickup position - */
@@ -165,7 +168,7 @@ public class RightSideAuto extends LinearOpMode {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                 })
-                .waitSeconds(0.5)
+                .waitSeconds(vSlideWaitTimer)
                 .addTemporalMarker(() -> {
                     Slides_Stop();
                 })

@@ -139,9 +139,6 @@ public class RobotHardware {
         //set slide motors direction
         liftMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        //Reset the motor encoder
-        liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
         //Set the run mode of the motors
         liftMotorLeft.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
