@@ -77,7 +77,10 @@ public class RightSideAuto extends LinearOpMode {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                 })
-                .waitSeconds(2)
+                .waitSeconds(1.3)
+                .addTemporalMarker(()->{
+                    Slides_Stop();
+                })
                 //move to first sample pickup
                 .lineToLinearHeading(new Pose2d(first_sample_pickup_x_coordinate,first_sample_pickup_y_coordinate,Math.toRadians(40)))
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{drive.setDrivePower(new Pose2d(0,0,0));})
@@ -246,5 +249,13 @@ public class RightSideAuto extends LinearOpMode {
             telemetry.addData("Slide mode","Running");
             telemetry.update();
         }
+    }
+
+    private void Slides_Stop(){
+        RobotHardware robot = new RobotHardware();
+        robot.init(hardwareMap);
+
+        robot.liftMotorLeft.setPower(0);
+        robot.liftMotorRight.setPower(0);
     }
 }
