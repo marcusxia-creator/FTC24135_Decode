@@ -31,7 +31,7 @@ import java.util.List;
 /** Control Config
  * TeleOps Control - Global Control Button
  *  * LEFT BUMPER + START ----> control state -  Run vs ServoTest
- *
+ *  * Back Bumper         ----> reset the vertical slide at the start of the teleops
  * DRIVETRAIN Control - Global Control Button
  *  * Right STICK       ---->  Y and X movement and diagonal
  *  * Left STICK        ---->  Turn
