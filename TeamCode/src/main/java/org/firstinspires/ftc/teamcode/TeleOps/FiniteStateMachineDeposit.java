@@ -347,7 +347,7 @@ public class FiniteStateMachineDeposit {
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_DOWN)&&gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
                 &&isButtonDebounced()) {
             int slides_Current_Position = robot.liftMotorLeft.getCurrentPosition();
-            setLiftTarget(slides_Current_Position - 300, RobotActionConfig.deposit_Slide_DownLiftPower);
+            setLiftTarget(slides_Current_Position - 500, RobotActionConfig.deposit_Slide_DownLiftPower);
             if (gamepad_1.wasJustReleased(GamepadKeys.Button.DPAD_DOWN) && gamepad_1.wasJustReleased(GamepadKeys.Button.LEFT_BUMPER)) {
                 robot.liftMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 robot.liftMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

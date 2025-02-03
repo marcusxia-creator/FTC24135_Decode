@@ -41,7 +41,7 @@ public class RobotActionConfig {
     public static int deposit_Slide_Down_Pos            = 50;   //range (0-3300), 50 to prevent hard hit.
     public static int deposit_Slide_Highbar_Pos         = 1000;  //slides Position Configure
     public static int deposit_Slide_Highbasket_Pos      = 3222; //highest point
-    public static int deposit_Slide_Hang_Pos            = 3600;
+    public static int deposit_Slide_Hang_Pos            = 3750;
 
     public static double deposit_Wrist_Dump             = 0.22; //range(0.22-0.64), 0: installation position
     public static double deposit_Wrist_Transfer         = 0.52; // 176 deg ~ 0.003 is 1 deg

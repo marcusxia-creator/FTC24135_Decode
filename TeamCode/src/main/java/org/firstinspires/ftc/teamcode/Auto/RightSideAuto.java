@@ -19,11 +19,11 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 public class RightSideAuto extends LinearOpMode {
 
     public static double highbar_x_coordinate = -3;
-    public static double highbar_y_coordinate = -33;
+    public static double highbar_y_coordinate = -32;
     public static double highbar_x_coordinate2 = 0;
     public static double highbar_x_coordinate3 = 3;
-    public static double specimen_pickup_x_coordinate = 27;
-    public static double specimen_pickup_y_coordinate = -51;
+    public static double specimen_pickup_x_coordinate = 29;
+    public static double specimen_pickup_y_coordinate = -49;
     public static double first_sample_pickup_x_coordinate = 26;
     public static double first_sample_pickup_y_coordinate = -38;
 
@@ -138,7 +138,10 @@ public class RightSideAuto extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0.9, () -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 })
-                .waitSeconds(1.1)
+                .UNSTABLE_addTemporalMarkerOffset(1.1, () -> {
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
+                })
+                .waitSeconds(1.3)
                 //extend slides to scoring position
                 .addTemporalMarker(() -> {
                     Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Pos, 0.9);
@@ -237,12 +240,16 @@ public class RightSideAuto extends LinearOpMode {
                 })
                 .waitSeconds(0.15)
                 //Back out robot
-                .lineToLinearHeading(new Pose2d(50, -60, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(-45)))
                 /** ----> Extend slides to OB ZONE */
                 .addTemporalMarker(() -> {
                         robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                         Slides_Move(-950, 0.9);
+                        robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
+                        robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
+                        robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
+                        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
                 })
                 .waitSeconds(0.7)
                 .build();

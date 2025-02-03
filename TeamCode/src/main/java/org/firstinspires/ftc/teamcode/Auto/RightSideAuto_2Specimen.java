@@ -17,10 +17,11 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 public class RightSideAuto_2Specimen extends LinearOpMode {
 
     public static double highbar_x_coordinate = -3;
-    public static double highbar_y_coordinate = -33;
-    public static double highbar_x_coordinate2 = +3;
-    public static double specimen_pickup_x_coordinate = 27;
-    public static double specimen_pickup_y_coordinate = -51;
+    public static double highbar_y_coordinate = -32;
+    public static double highbar_x_coordinate2 = 0;
+    public static double highbar_x_coordinate3 = 3;
+    public static double specimen_pickup_x_coordinate = 29;
+    public static double specimen_pickup_y_coordinate = -49;
     public static double first_sample_pickup_x_coordinate = 26;
     public static double first_sample_pickup_y_coordinate = -38;
 
@@ -127,10 +128,10 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.9, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.0, () -> {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(1.1, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.3, () -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 })
                 .waitSeconds(1.25)
