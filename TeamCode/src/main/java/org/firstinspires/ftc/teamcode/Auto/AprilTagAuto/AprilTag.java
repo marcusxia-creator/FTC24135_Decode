@@ -1,9 +1,7 @@
-package org.firstinspires.ftc.teamcode.ApirlTagAuto;
-
+package org.firstinspires.ftc.teamcode.Auto.AprilTagAuto;
 
 import android.util.Size;
-
-import androidx.annotation.NonNull;
+import java.util.HashMap; // import the HashMap class
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -16,6 +14,13 @@ public class AprilTag {
     private static AprilTagProcessor tagProcessor;
     private static VisionPortal visionPortal;
     private static HardwareMap hardwareMap;
+
+    HashMap<Integer, Double []> AprilTagID = new HashMap<>();
+
+    double[] robotOffSet = {
+            0, /**x**/
+            0, /**y**/
+    };
 
     public AprilTag(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
@@ -40,4 +45,9 @@ public class AprilTag {
         visionPortal.resumeLiveView();
 
     }
+
+
+    //public static double getPose () {
+        //return
+    //}
 }
