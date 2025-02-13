@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+
 /** Button Config for deposit
  * *X                           : high basket extend State          - LOCAL STATE - LIFT_START
  * * XX                         : red and blue high basket
@@ -36,6 +37,7 @@ public class FiniteStateMachineDeposit {
     public enum LIFTSTATE {
         LIFT_START,
         LIFT_SAMPLE_BRANCH,
+        LIFT_SPECIMEN_BRANCH,
         LIFT_HIGHBASKET,
         LIFT_SAMPLE_EXTEND,
         LIFT_SAMPLE_DUMP,
@@ -159,7 +161,7 @@ public class FiniteStateMachineDeposit {
                         (gamepad_2.getButton(GamepadKeys.Button.Y)&& gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) <0.1)) &&
                         isButtonDebounced()) {
                     liftTimer.reset();
-                    liftState = LIFTSTATE.LIFT_HIGHBAR;
+                    liftState = LIFTSTATE.LIFT_SPECIMEN_BRANCH;
                 }
 
                 // "Right trigger + Y" button to set deposit arm to hook specimen position
@@ -185,6 +187,10 @@ public class FiniteStateMachineDeposit {
                         liftState = LIFTSTATE.LIFT_HIGHBASKET;
                         liftTimer.reset();
                     }
+                }
+                break;
+            case LIFT_SPECIMEN_BRANCH:
+                if (detectedColor.equals("Blue") || detectedColor.equals("Red")){
                     if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1) ||
                             (gamepad_2.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1)) &&
                             isButtonDebounced()) {
@@ -192,7 +198,6 @@ public class FiniteStateMachineDeposit {
                         liftTimer.reset();
                     }
                 }
-                break;
 
             case LIFT_HIGHBASKET:
                 if (!detectedColor.equals("Black")) {
@@ -260,7 +265,9 @@ public class FiniteStateMachineDeposit {
                 if(liftTimer.seconds() > RobotActionConfig.dropTime+0.5) {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
-                    liftState = LIFTSTATE.LIFT_START;
+                    if(gamepad_1.getButton(GamepadKeys.Button.Y)){
+                        liftState = LIFTSTATE.LIFT_HIGHBAR;
+                    }
                 }
                 break;
 
