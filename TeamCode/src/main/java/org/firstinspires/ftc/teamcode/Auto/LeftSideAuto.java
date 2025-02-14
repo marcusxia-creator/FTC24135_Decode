@@ -58,8 +58,8 @@ public class LeftSideAuto extends LinearOpMode {
         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
         robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
         robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
-        robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
-        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
+        robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
+        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
         robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
@@ -94,8 +94,8 @@ public class LeftSideAuto extends LinearOpMode {
                 /** move to 1st sample*/
                 .lineToLinearHeading(new Pose2d(first_sample_x_coordinate,first_sample_y_coordinate,Math.toRadians(90)))        //move to 1st sample
                 /** pick 1st sample*/
-                .addTemporalMarker(()->{robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Pick+0.02);})
-                .addTemporalMarker(()->{robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Pick+0.02);})
+                .addTemporalMarker(()->{robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick +0.02);})
+                .addTemporalMarker(()->{robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick +0.02);})
                 .UNSTABLE_addTemporalMarkerOffset(-0.5,()->{robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);})
                 .addTemporalMarker(()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);})
                 .waitSeconds(0.5)
@@ -103,16 +103,16 @@ public class LeftSideAuto extends LinearOpMode {
                 .waitSeconds(0.5)
                 /**transfer 1st sample*/
                 .addTemporalMarker(()->{
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Pick-0.03);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Pick-0.03);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick -0.03);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick -0.03);
                     robot.intakeRightSlideServo.setPosition(0.1);
                     robot.intakeLeftSlideServo.setPosition(0.1);
                 })
                 .waitSeconds(0.2)
                 .addTemporalMarker(()->{robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);})
                 .addTemporalMarker(()->{
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
                 })
                 .waitSeconds(0.7)
                 .addTemporalMarker(()->{
@@ -146,8 +146,8 @@ public class LeftSideAuto extends LinearOpMode {
                 /** move to 2nd sample */
                 .lineToLinearHeading(new Pose2d(second_sample_x_coordinate,second_sample_y_coordinate,Math.toRadians(90)))
                 /** pick 2nd sample*/
-                .addTemporalMarker(()->{robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Pick+0.02);})
-                .addTemporalMarker(()->{robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Pick+0.02);})
+                .addTemporalMarker(()->{robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick +0.02);})
+                .addTemporalMarker(()->{robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick +0.02);})
                 .UNSTABLE_addTemporalMarkerOffset(-0.5,()->{robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);})
                 .addTemporalMarker(()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);})
                 .waitSeconds(0.5)
@@ -155,16 +155,16 @@ public class LeftSideAuto extends LinearOpMode {
                 .waitSeconds(0.5)
                 /**transfer 2nd sample*/
                 .addTemporalMarker(()->{
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Pick-0.03);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Pick-0.03);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick -0.03);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick -0.03);
                     robot.intakeRightSlideServo.setPosition(0.1);
                     robot.intakeLeftSlideServo.setPosition(0.1);
                 })
                 .waitSeconds(0.2)
                 .addTemporalMarker(()->{robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);})
                 .addTemporalMarker(()->{
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
                 })
                 .waitSeconds(0.6)
                 .addTemporalMarker(()->{

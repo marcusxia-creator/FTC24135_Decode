@@ -3,11 +3,9 @@ package org.firstinspires.ftc.teamcode.Auto;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.robot.Robot;
 
 import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence;
@@ -42,8 +40,8 @@ public class RightSideAuto extends LinearOpMode {
         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
         robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
         robot.intakeWristServo.setPosition(0.3);
-        robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
-        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
+        robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
+        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
         robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
@@ -113,8 +111,8 @@ public class RightSideAuto extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
                 })
                 .waitSeconds(0.5+hSlideWaitTimer)
                 .addTemporalMarker(() -> {
@@ -123,8 +121,8 @@ public class RightSideAuto extends LinearOpMode {
                 .waitSeconds(0.15)
                 /** 3.1 segment ---->  Transfer 2nd specimen*/
                 .addTemporalMarker(() -> {
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                 })
                 .waitSeconds(wristWaitTimer)
@@ -192,8 +190,8 @@ public class RightSideAuto extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
                 })
                 .waitSeconds(0.5+hSlideWaitTimer)
                 .addTemporalMarker(() -> {
@@ -202,8 +200,8 @@ public class RightSideAuto extends LinearOpMode {
                 .waitSeconds(0.15)
                 /** 4.1 segment ----> Transfer 3rd specimen*/
                 .addTemporalMarker(() -> {
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                 })
                 .waitSeconds(wristWaitTimer)
@@ -248,8 +246,8 @@ public class RightSideAuto extends LinearOpMode {
                         Slides_Move(-950, 0.9);
                         robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                         robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
-                        robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
-                        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
+                        robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
+                        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
                 })
                 .waitSeconds(0.7)
                 .build();
