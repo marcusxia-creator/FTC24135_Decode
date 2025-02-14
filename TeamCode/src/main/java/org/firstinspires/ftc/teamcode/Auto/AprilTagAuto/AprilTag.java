@@ -17,10 +17,6 @@ public class AprilTag {
 
     HashMap<Integer, Double []> AprilTagID = new HashMap<>();
 
-    double[] robotOffSet = {
-            0, /**x**/
-            0, /**y**/
-    };
 
     public AprilTag(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
