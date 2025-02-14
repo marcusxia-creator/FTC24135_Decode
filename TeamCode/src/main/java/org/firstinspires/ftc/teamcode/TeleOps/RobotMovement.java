@@ -15,10 +15,11 @@ public class RobotMovement {
     private final GamepadEx gamepad_2;
 
     //Declare robot
-    private final RobotHardware robot;
+    /** Change it back private final RobotHardware robot; **/
+    private final TestBotHardware robot;
 
     //Declare constructor
-    public RobotMovement (RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2) {
+    public RobotMovement (/**Change it back!!! RobotHardware **/TestBotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2) {
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
         this.robot = robot;

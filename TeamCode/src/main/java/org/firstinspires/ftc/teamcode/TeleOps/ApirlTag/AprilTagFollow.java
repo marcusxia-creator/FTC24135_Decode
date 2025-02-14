@@ -66,6 +66,7 @@ public class AprilTagFollow extends LinearOpMode {
             if (!tagProcessor.getDetections().isEmpty()) {
                 AprilTagDetection tag = tagProcessor.getDetections().get(0);
 
+
                 if (tag.ftcPose.x < 0.3 && tag.ftcPose.x > -0.3 && tag.ftcPose.y < 16 && tag.ftcPose.y > 15) {
                     stopRobot();
                 }

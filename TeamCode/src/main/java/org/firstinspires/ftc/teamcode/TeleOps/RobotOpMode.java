@@ -15,6 +15,7 @@ public class RobotOpMode extends OpMode {
     public RobotMovement robotMovement;
     public RobotIntake robotIntake;
     public RobotDeposit robotDeposit;
+    public AprilTag aprilTag;
 
     public GamepadEx gamepadCo1;                    //For gamepad
     public GamepadEx gamepadCo2;
@@ -32,7 +33,7 @@ public class RobotOpMode extends OpMode {
         robot.initIMU();
 
         //Initializing robot drive train
-        robotMovement = new RobotMovement(robot, gamepadCo1, gamepadCo2);
+        /** Change it back !!! robotMovement = new RobotMovement(robot, gamepadCo1, gamepadCo2); **/
 
         //Initializing robot intake
         robotIntake = new RobotIntake(robot, gamepadCo1, gamepadCo2, gamepad1, gamepad2);
@@ -41,6 +42,9 @@ public class RobotOpMode extends OpMode {
         //Initializing deposit
         robotDeposit = new RobotDeposit(robot, gamepadCo1, gamepadCo2);
         robotDeposit.init();
+
+        aprilTag = new AprilTag(hardwareMap);
+        aprilTag.init();
 
         telemetry.addLine("RobotInitialized");
         telemetry.update();
@@ -68,7 +72,12 @@ public class RobotOpMode extends OpMode {
             //Servotest.test();
         }
 
+        aprilTag.aprilTagUpdate();
+        aprilTag.tagAxis();
+
         telemetry.addData("Intake Slide State", robotIntake.intakeState);
+        telemetry.addData("AprilTag coordinates", aprilTag.aprilTagUpdate());
+        telemetry.addData("AprilTag Info", aprilTag.tagAxis());
     }
 
     public enum RUNMODE {

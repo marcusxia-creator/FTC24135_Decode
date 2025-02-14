@@ -1,10 +1,8 @@
-package org.firstinspires.ftc.teamcode.Auto.AprilTagAuto;
+package org.firstinspires.ftc.teamcode.TeleOps;
 
 import android.util.Size;
 
 import androidx.annotation.NonNull;
-
-import java.util.HashMap; // import the HashMap class
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -12,6 +10,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
+import java.util.HashMap;
 
 public class AprilTag {
 
@@ -21,6 +21,7 @@ public class AprilTag {
 
     private static Integer[] aprilTagCoordinateArray = {null, null};
     private static Double[] tagInfo = {null, null, null, null};
+    private static int tagID = 0;
 
     public AprilTag(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
@@ -41,8 +42,6 @@ public class AprilTag {
                 .build();
 
 
-        visionPortal.resumeLiveView();
-        visionPortal.resumeLiveView();
 
     }
 
@@ -70,7 +69,7 @@ public class AprilTag {
         return aprilTagCoordinate;
     }
 
-    private Integer[] aprilTagUpdate () {
+    public Integer[] aprilTagUpdate () {
         if (!tagProcessor.getDetections().isEmpty()) {
 
             AprilTagDetection tag = tagProcessor.getDetections().get(0);
@@ -80,7 +79,7 @@ public class AprilTag {
         return aprilTagCoordinateArray;
     }
 
-    private Double[] tagAxis () {
+    public Double[] tagAxis () {
         if (!tagProcessor.getDetections().isEmpty()) {
             AprilTagDetection tag = tagProcessor.getDetections().get(0);
 
@@ -90,6 +89,15 @@ public class AprilTag {
             tagInfo[3] = tag.ftcPose.yaw;
         }
         return tagInfo;
+    }
+
+    public int tagID () {
+        if (!tagProcessor.getDetections().isEmpty()) {
+            AprilTagDetection tag = tagProcessor.getDetections().get(0);
+
+            tagID = tag.id;
+        }
+        return tagID;
     }
 
 
