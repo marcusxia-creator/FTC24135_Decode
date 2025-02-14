@@ -37,8 +37,12 @@ public class TestBotOpMode extends OpMode {
         aprilTag.aprilTagUpdate();
         aprilTag.tagAxis();
 
-        telemetry.addData("AprilTag coordinates", aprilTag.aprilTagUpdate());
-        telemetry.addData("AprilTag Info", aprilTag.tagAxis()[0]);
+        telemetry.addData("AprilTag coordinates x axis", aprilTag.aprilTagUpdate()[0]);
+        telemetry.addData("AprilTag coordinates y axis", aprilTag.aprilTagUpdate()[1]);
+        telemetry.addData("AprilTag Info (Robot x axis)", aprilTag.tagAxis()[0]);
+        telemetry.addData("AprilTag Info (Robot y axis)", aprilTag.tagAxis()[1]);
+        telemetry.addData("AprilTag Info (Robot bearing)", aprilTag.tagAxis()[2]);
+        telemetry.addData("AprilTag Info (Robot yaw)", aprilTag.tagAxis()[3]);
         telemetry.addData("TagID", aprilTag.tagID());
         telemetry.update();
     }

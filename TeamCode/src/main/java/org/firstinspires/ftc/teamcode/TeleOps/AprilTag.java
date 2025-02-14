@@ -42,14 +42,10 @@ public class AprilTag {
                 .build();
 
 
-
     }
 
     @NonNull
     public static HashMap<Integer, Integer[]> aprilTagMsg() {
-        HashMap<String, Double> robotOffSet = new HashMap<>();
-        robotOffSet.put("x", null);
-        robotOffSet.put("y", null); /** Put the actual value later **/
 
         HashMap<Integer, Integer[]> aprilTagCoordinate = new HashMap<>();
         Integer[] aprilTagCoordinateArrayID11 = new Integer[]{-72, 48};
@@ -68,6 +64,17 @@ public class AprilTag {
 
         return aprilTagCoordinate;
     }
+
+    @NonNull
+    public static HashMap<String, Double> robotOffset() {
+
+        HashMap<String,Double> robotOffset = new HashMap<>();
+        robotOffset.put("x", null);
+        robotOffset.put("y", null); /** Put the actual value later **/
+
+        return robotOffset;
+    }
+
 
     public Integer[] aprilTagUpdate () {
         if (!tagProcessor.getDetections().isEmpty()) {
