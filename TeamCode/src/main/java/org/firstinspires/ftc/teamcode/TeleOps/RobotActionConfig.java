@@ -29,9 +29,9 @@ public class RobotActionConfig {
     public static double intake_Arm_Transfer            = 0.08;  // intake arm transfer pos
     public static double intake_Arm_Wait                = 0.4; // FOR AUTO MODE ONLY
 
-    public static double intake_Wrist_Retract           = 0.20; /** Needs change**/
-    public static double intake_Wrist_Idle              = 0.20;
-    public static double intake_Wrist_Pick              = 0.64;
+    public static double intake_Wrist_Retract           = 0.20;
+    public static double intake_Wrist_Idle              = 0.20; /** Needs change**/
+    public static double intake_Wrist_Pick              = 0.1; /** new servo changed this to 1 for pick **/
     public static double intake_Wrist_Transfer          = 0.09;
 
     public static double intake_Claw_Open               = 0.0; //range(0.0 - 0.27)
@@ -76,7 +76,7 @@ public class RobotActionConfig {
     public static double transferTime                   = 0.6;   // sample transfer time for close deposit claw
     public static double DEBOUNCE_THRESHOLD             = 0.25; // debounce_Threshold
     //TIME CONFIGURATION - INTAKE
-    public static double intakeSlideExtendTime          = 0.9; // intake slide extension time
+    public static double intakeSlideExtendTime          = 0.4; // intake slide extension time
     public static double intakeWristRotationTime        = 0.4; // intake slide extension time
     public static long lastPressedTime                  = 0; //limitSwitch timer
     public static final long debounceDelay              = 100; //limitSwitch debouncer
