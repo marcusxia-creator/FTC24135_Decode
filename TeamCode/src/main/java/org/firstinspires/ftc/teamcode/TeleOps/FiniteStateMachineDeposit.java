@@ -368,7 +368,7 @@ public class FiniteStateMachineDeposit {
 
     // Helper method to check if the lift is within the desired position threshold
     private boolean IsLiftAtPosition(int targetPosition) {
-        return Math.abs(robot.liftMotorLeft.getCurrentPosition() - targetPosition) < 16 && Math.abs(robot.liftMotorRight.getCurrentPosition() - targetPosition) < 15;
+        return Math.abs(robot.liftMotorLeft.getCurrentPosition() - targetPosition) < 15 && Math.abs(robot.liftMotorRight.getCurrentPosition() - targetPosition) < 15;
     }
     private boolean IsLiftDownAtPosition(int targetPosition) {
         return Math.abs(robot.liftMotorLeft.getCurrentPosition() - targetPosition) < 25 && Math.abs(robot.liftMotorRight.getCurrentPosition() - targetPosition) < 25;
