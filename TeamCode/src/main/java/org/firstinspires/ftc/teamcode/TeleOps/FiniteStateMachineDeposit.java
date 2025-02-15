@@ -9,6 +9,9 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
+import org.opencv.core.Mat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -181,30 +184,29 @@ public class FiniteStateMachineDeposit {
                     liftTimer.reset();
                 }
                 // Blue and Red for choose again -- x for high basket, y for dropping
-                if (detectedColor.equals("Blue") || detectedColor.equals("Red")) {
-                    if (((gamepad_1.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1) ||
-                            (gamepad_2.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1)) &&
-                            isButtonDebounced()) {
+                if (detectedColor.equals("Blue") || detectedColor.equals("Red") && ((gamepad_1.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1) ||
+                    (gamepad_2.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1)) &&
+                    isButtonDebounced()) {
                         liftState = LIFTSTATE.LIFT_HIGHBASKET;
                         liftTimer.reset();
-                    }
                 }
                 break;
             case LIFT_SPECIMEN_BRANCH:
-                if (detectedColor.equals("Blue") || detectedColor.equals("Red")){
-                    if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1) ||
+                if (detectedColor.equals("Blue") || detectedColor.equals("Red") || detectedColor.equals("Black")){
+                    /*if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1) ||
                             (gamepad_2.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1)) &&
                             isButtonDebounced()) {
+
+                     */
                         liftState = LIFTSTATE.LIFT_HIGHBAR;
                         liftTimer.reset();
-                    }
                 }
 
             case LIFT_HIGHBASKET:
                 if (!detectedColor.equals("Black")) {
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
                     if (liftTimer.seconds() >= 0.25) {
-                        setLiftTarget(RobotActionConfig.deposit_Slide_Highbasket_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
+                        slidesToHeightMM(RobotActionConfig.deposit_Slide_Highbasket_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
                         // Move deposit Arm & wrist servo to dump prep position
                         if(liftTimer.seconds()>=0.5) {
                             robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump_Prep);
@@ -247,7 +249,7 @@ public class FiniteStateMachineDeposit {
             case LIFT_RETRACT:
                 // Check if the lift has reached the low position
                 if(Servo_AtPosition(RobotActionConfig.deposit_Claw_Open) && liftTimer.seconds()>= RobotActionConfig.retractTime) {
-                    setLiftTarget(RobotActionConfig.deposit_Slide_Down_Pos, RobotActionConfig.deposit_Slide_DownLiftPower);
+                   slidesToHeightMM(RobotActionConfig.deposit_Slide_Down_Pos, RobotActionConfig.deposit_Slide_DownLiftPower);
                 }
                 if (IsLiftDownAtPosition(RobotActionConfig.deposit_Slide_Down_Pos)||LSisPressed(currentTime)) {
                     robot.liftMotorLeft.setPower(0); // Stop the motor after reaching the low position
@@ -278,7 +280,7 @@ public class FiniteStateMachineDeposit {
                 //driveStrafe(RobotActionConfig.strafeDist);
                 robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);                                            // move the intake away to give space to specimen hook
                 if(liftTimer.seconds()>RobotActionConfig.waitTime){
-                    setLiftTarget(RobotActionConfig.deposit_Slide_Highbar_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);        // rise up lift
+                    slidesToHeightMM(RobotActionConfig.deposit_Slide_Highbar_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);        // rise up lift
                     if (IsLiftAtPosition(RobotActionConfig.deposit_Slide_Highbar_Pos)) {                                            // if vertical slide reached the position
                         robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);                                      // set the deposit arm and deposit wrist to hook position.
                         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
@@ -335,13 +337,13 @@ public class FiniteStateMachineDeposit {
         //if (runtime.seconds() > 100){
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
                     && isButtonDebounced()){
-                setLiftTarget(RobotActionConfig.deposit_Slide_Hang_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
+            slidesToHeightMM(RobotActionConfig.deposit_Slide_Hang_Pos, RobotActionConfig.deposit_Slide_DownLiftPower);
         }
 
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_DOWN)&&gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
                 &&isButtonDebounced()) {
             int slides_Current_Position = robot.liftMotorLeft.getCurrentPosition();
-            setLiftTarget(slides_Current_Position - 500, RobotActionConfig.deposit_Slide_DownLiftPower);
+            slidesToHeightMM(slides_Current_Position - 500, RobotActionConfig.deposit_Slide_DownLiftPower);
             if (gamepad_1.wasJustReleased(GamepadKeys.Button.DPAD_DOWN) && gamepad_1.wasJustReleased(GamepadKeys.Button.LEFT_BUMPER)) {
                 robot.liftMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 robot.liftMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -417,14 +419,6 @@ public class FiniteStateMachineDeposit {
         }
         return false;
     }
-    private void setLiftTarget(int targetPosition, double power) {
-        robot.liftMotorLeft.setTargetPosition(targetPosition);
-        robot.liftMotorRight.setTargetPosition(targetPosition);
-        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.liftMotorLeft.setPower(power);
-        robot.liftMotorRight.setPower(power);
-    }
 
     //Auto drive method helper
     private void driveBackward(double distanceCm) {
@@ -466,43 +460,17 @@ public class FiniteStateMachineDeposit {
         robot.backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    private void driveStrafe(double distanceCm) {
-        // Calculate target ticks based on distance
-        double circumference = RobotActionConfig.WHEEL_DIAMETER_CM * Math.PI;
-        double rotationsNeeded = distanceCm / circumference;
-        int targetTicks = (int) (rotationsNeeded * RobotActionConfig.TICKS_PER_REVOLUTION * RobotActionConfig.GEAR_RATIO);
 
-        // Set target positions
-        robot.frontLeftMotor.setTargetPosition(robot.frontLeftMotor.getCurrentPosition() + targetTicks);
-        robot.frontRightMotor.setTargetPosition(robot.frontRightMotor.getCurrentPosition() - targetTicks);
-        robot.backLeftMotor.setTargetPosition(robot.backLeftMotor.getCurrentPosition() - targetTicks);
-        robot.backRightMotor.setTargetPosition(robot.backRightMotor.getCurrentPosition() + targetTicks);
+    private void slidesToHeightMM (double targetHeightMM, double power) {
+        int targetSlideTicks = (int) (targetHeightMM * RobotActionConfig.TICKS_PER_MM_Slides);
+        power = Range.clip(power, 0, 1);
+        robot.liftMotorLeft.setTargetPosition(robot.liftMotorLeft.getCurrentPosition() + targetSlideTicks);
+        robot.liftMotorRight.setTargetPosition(robot.liftMotorRight.getCurrentPosition() + targetSlideTicks);
 
-        // Set motors to run to position
-        robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        // Set motor power
-        robot.frontLeftMotor.setPower(0.5);
-        robot.frontRightMotor.setPower(0.5);
-        robot.backLeftMotor.setPower(0.5);
-        robot.backRightMotor.setPower(0.5);
-
-        // Wait until motion is complete
-        while (robot.frontLeftMotor.isBusy() && robot.frontRightMotor.isBusy()) {
-
-        }
-
-        // Stop motors and reset mode
-        robot.frontLeftMotor.setPower(0);
-        robot.frontRightMotor.setPower(0);
-        robot.backLeftMotor.setPower(0);
-        robot.backRightMotor.setPower(0);
-        robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.liftMotorLeft.setPower(power);
+        robot.liftMotorRight.setPower(power);
     }
 }

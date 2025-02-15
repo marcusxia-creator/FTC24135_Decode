@@ -177,26 +177,26 @@ public class ServoTest{
         if (gamepad_2.getButton(DPAD_LEFT) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             servoposition = robot.intakeWristServo.getPosition();
-            servoposition2 = robot.intakeLeftSlideServo.getPosition();
+            //servoposition2 = robot.intakeLeftSlideServo.getPosition();
             //use to be 0.01
             servoposition += 0.01;
-            servoposition2 += 0.01;
+            //servoposition2 += 0.01;
             robot.intakeWristServo.setPosition(Range.clip(servoposition,0,1));
-            robot.intakeLeftSlideServo.setPosition(Range.clip(servoposition2,0,1));
-            robot.intakeRightSlideServo.setPosition(Range.clip(servoposition2,0,1));
+            //robot.intakeLeftSlideServo.setPosition(Range.clip(servoposition2,0,1));
+            //robot.intakeRightSlideServo.setPosition(Range.clip(servoposition2,0,1));
         }
 
         // gamepad2 DPAD_RIGHT for intake wrist servo
         if (gamepad_2.getButton(DPAD_RIGHT) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             servoposition = robot.intakeWristServo.getPosition();
-            servoposition2 = robot.intakeLeftSlideServo.getPosition();
+            //servoposition2 = robot.intakeLeftSlideServo.getPosition();
             //use to be 0.01
             servoposition -= 0.01;
-            servoposition2 -= 0.01;
+            //servoposition2 -= 0.01;
             robot.intakeWristServo.setPosition(Range.clip(servoposition, 0, 1));
-            robot.intakeLeftSlideServo.setPosition(Range.clip(servoposition2,0,1));
-            robot.intakeRightSlideServo.setPosition(Range.clip(servoposition2,0,1));
+            //robot.intakeLeftSlideServo.setPosition(Range.clip(servoposition2,0,1));
+            //robot.intakeRightSlideServo.setPosition(Range.clip(servoposition2,0,1));
         }
 
         //gamepad2 X for intake claw rotation

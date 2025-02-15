@@ -44,7 +44,8 @@ public class FiniteStateMachineIntake {
 
         /** For specimens */
         INTAKE_SPECIMEN_RETRACT,
-        INTAKE_DROP_OFF
+        INTAKE_DROP_OFF,
+        INTAKE_COLOR_SAMPLE_DROP
     }
 
     // Robot and Gamepad Member
@@ -111,6 +112,7 @@ public class FiniteStateMachineIntake {
                 }
                 break;
             case INTAKE_EXTEND:
+                robot.depositClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 intakeClawState = INTAKECLAWSTATE.OPEN;
 
@@ -209,20 +211,20 @@ public class FiniteStateMachineIntake {
                 depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.OPEN);
 
                 // Check if the intakeslide has reached the position
-                if (intakeTimer.seconds() > RobotActionConfig.intakeSlideExtendTime) {              // wait 0.5 second for slide retract 2/3
+                if (intakeTimer.seconds() > RobotActionConfig.intakeSlideRetractSetPointTime) {              // wait 0.5 second for slide retract 2/3
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);        // set intake arm  to transfer
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);       // set intake arm to transfer
                     //robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                 }
-                if (intakeTimer.seconds() > RobotActionConfig.intakeSlideExtendTime + RobotActionConfig.intakeWristRotationTime) {                  // wait another  0.5second to retract slide again.
+                if (intakeTimer.seconds() > RobotActionConfig.intakeSlideRetractSetPointTime + RobotActionConfig.intakeWristRotationTime) {                  // wait another  0.5second to retract slide again.
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);     // set slide retract
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 }
-                if (depositArmState == FiniteStateMachineDeposit.LIFTSTATE.LIFT_START && intakeTimer.seconds() >= RobotActionConfig.transferTime + RobotActionConfig.intakeSlideExtendTime) {
+                if (depositArmState == FiniteStateMachineDeposit.LIFTSTATE.LIFT_START && intakeTimer.seconds() > RobotActionConfig.transferTime) {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                     depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.CLOSE);
                 }
-                if (intakeTimer.seconds() >= RobotActionConfig.transferTime + RobotActionConfig.intakeSlideExtendTime+RobotActionConfig.waitTime) {
+                if (intakeTimer.seconds() >= RobotActionConfig.transferTime + 0.15) {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                     intakeClawState = INTAKECLAWSTATE.OPEN;
                     intakeState = INTAKESTATE.INTAKE_START;
@@ -243,12 +245,16 @@ public class FiniteStateMachineIntake {
                     intakeState = INTAKESTATE.INTAKE_DROP_OFF;
                 }
                 break;
+
             case INTAKE_DROP_OFF:
                 if ((gamepad_1.getButton(DPAD_LEFT) || gamepad_2.getButton(DPAD_LEFT)) && isButtonDebounced()) {
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Slide_Extension);
+                    robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     intakeTimer.reset();
+                    intakeState = INTAKESTATE.INTAKE_COLOR_SAMPLE_DROP;
                 }
+                break;
+            case INTAKE_COLOR_SAMPLE_DROP:
                 if (intakeTimer.seconds() > RobotActionConfig.intakeSlideExtendTime) {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 }
