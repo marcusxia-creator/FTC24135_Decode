@@ -17,7 +17,7 @@ public class RobotActionConfig {
 
     //Intake Configure
     public static double intake_Slide_Extension         = 0.29;// range(0.1 - 0.65)
-    public static double intake_Slide_Retract           = 0.03;
+    public static double intake_Slide_Retract           = 0.06;
     public static double intake_slide_Retract_Set       = 0.1;
     public static double intake_Slide_Extension_Wait   = 0.16; // FOR AUTO MODE ONLY
 
