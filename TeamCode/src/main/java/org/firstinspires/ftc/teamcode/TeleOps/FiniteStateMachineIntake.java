@@ -224,7 +224,7 @@ public class FiniteStateMachineIntake {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                     depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.CLOSE);
                 }
-                if (intakeTimer.seconds() >= RobotActionConfig.transferTime + 0.15) {
+                if (intakeTimer.seconds() >= RobotActionConfig.transferTime + 0.4) {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                     intakeClawState = INTAKECLAWSTATE.OPEN;
                     intakeState = INTAKESTATE.INTAKE_START;

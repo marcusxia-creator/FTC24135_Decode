@@ -156,13 +156,15 @@ public class BasicTeleOps extends OpMode {
             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorLeft.setPower(0.3);                                          // Make sure lift motor is on
             robot.liftMotorRight.setPower(0.3);
-            while (robot.liftMotorLeft.isBusy()&&robot.liftMotorRight.isBusy()){
+            /*while (robot.liftMotorLeft.isBusy()&&robot.liftMotorRight.isBusy()){
                 if(LSisPressed()){
                     robot.liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
                     robot.liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
                     break;
                 }
             }
+
+             */
             depositArmDrive.Init();
         }
 
@@ -243,7 +245,7 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Heading ", robot.imu.getRobotYawPitchRollAngles().getYaw());
         telemetry.addData("Color Sensor", FiniteStateMachineDeposit.detectedColor);
         telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
-        telemetry.addData("Limit Switch Pressed", robot.limitSwitch.getState());
+        //telemetry.addData("Limit Switch Pressed", robot.limitSwitch.getState());
         telemetry.update();
     }
 
@@ -268,8 +270,10 @@ public class BasicTeleOps extends OpMode {
         }
     }
     //limit switch control
-    private boolean LSisPressed() {
+    /*private boolean LSisPressed() {
             return robot.limitSwitch.getState();
     }
+
+     */
 
 }
