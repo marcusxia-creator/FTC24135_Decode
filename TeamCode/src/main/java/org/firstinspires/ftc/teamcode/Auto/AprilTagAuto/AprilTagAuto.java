@@ -13,16 +13,18 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-public class AprilTag {
+public class AprilTagAuto {
 
     private static AprilTagProcessor tagProcessor;
     private static VisionPortal visionPortal;
     private static HardwareMap hardwareMap;
 
-    private static Integer[] aprilTagCoordinateArray = {null, null};
-    private static Double[] tagInfo = {null, null, null, null};
+    public static Integer[] aprilTagCoordinateArray = {null, null};
+    public static Long[] tagInfo = {null, null, null, null};
+    private static HashMap <String, Double> robotFieldCoordinate = new HashMap<>();
+    private static int tagID = 0;
 
-    public AprilTag(HardwareMap hardwareMap) {
+    public AprilTagAuto(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
     }
 
@@ -41,24 +43,20 @@ public class AprilTag {
                 .build();
 
 
-        visionPortal.resumeLiveView();
-        visionPortal.resumeLiveView();
+        visionPortal.resumeStreaming();
 
     }
 
     @NonNull
     public static HashMap<Integer, Integer[]> aprilTagMsg() {
-        HashMap<String, Double> robotOffSet = new HashMap<>();
-        robotOffSet.put("x", null);
-        robotOffSet.put("y", null); /** Put the actual value later **/
 
         HashMap<Integer, Integer[]> aprilTagCoordinate = new HashMap<>();
         Integer[] aprilTagCoordinateArrayID11 = new Integer[]{-72, 48};
-        Integer[] aprilTagCoordinateArrayID12 = new Integer[]{0, 72};
-        Integer[] aprilTagCoordinateArrayID13 = new Integer[]{72, 48};
-        Integer[] aprilTagCoordinateArrayID14 = new Integer[]{72, -48};
-        Integer[] aprilTagCoordinateArrayID15 = new Integer[]{0, -72};
-        Integer[] aprilTagCoordinateArrayID16 = new Integer[]{-72, -48};
+        Integer[] aprilTagCoordinateArrayID12 = new Integer[]{  0, 72};
+        Integer[] aprilTagCoordinateArrayID13 = new Integer[]{ 72, 48};
+        Integer[] aprilTagCoordinateArrayID14 = new Integer[]{ 72,-48};
+        Integer[] aprilTagCoordinateArrayID15 = new Integer[]{ 0 ,-72};
+        Integer[] aprilTagCoordinateArrayID16 = new Integer[]{-72,-48};
 
         aprilTagCoordinate.put(11, aprilTagCoordinateArrayID11);
         aprilTagCoordinate.put(12, aprilTagCoordinateArrayID12);
@@ -70,7 +68,16 @@ public class AprilTag {
         return aprilTagCoordinate;
     }
 
-    private Integer[] aprilTagUpdate () {
+    @NonNull
+    public static Double[] robotOffSet() {
+
+        /** This is the test bot config, the actual bot is different **/
+
+        return new Double[]{-4.38, 3.25};
+    }
+
+    public Integer[] aprilTagUpdate() {
+
         if (!tagProcessor.getDetections().isEmpty()) {
 
             AprilTagDetection tag = tagProcessor.getDetections().get(0);
@@ -80,20 +87,44 @@ public class AprilTag {
         return aprilTagCoordinateArray;
     }
 
-    private Double[] tagAxis () {
+    public Long[] tagAxis() {
+
         if (!tagProcessor.getDetections().isEmpty()) {
             AprilTagDetection tag = tagProcessor.getDetections().get(0);
 
-            tagInfo[0] = tag.ftcPose.x;
-            tagInfo[1] = tag.ftcPose.y;
-            tagInfo[2] = tag.ftcPose.bearing;
-            tagInfo[3] = tag.ftcPose.yaw;
+            tagInfo[0] = Math.round (tag.ftcPose.x * 100) /100;
+            tagInfo[1] = Math.round (tag.ftcPose.y * 100) /100;
+            tagInfo[2] = Math.round (tag.ftcPose.bearing * 100) /100;
+            tagInfo[3] = Math.round (tag.ftcPose.yaw * 100) /100;
         }
         return tagInfo;
     }
 
+    public int tagID () {
 
-    //public static double getPose () {
-        //return
-    //}
+        if (!tagProcessor.getDetections().isEmpty()) {
+            AprilTagDetection tag = tagProcessor.getDetections().get(0);
+
+            tagID = tag.id;
+        }
+        return tagID;
+    }
+
+    public HashMap<String, Double> robotFieldCoordinate() {
+
+        aprilTagUpdate();
+        tagAxis();
+
+        Integer[] aprilTagCoordinate = {aprilTagUpdate()[0], aprilTagUpdate()[1]};
+        Double[] robotValueOffSet = {robotOffSet()[0], robotOffSet()[1]};
+        Long[] robotCoordinate = {tagAxis()[0],tagAxis()[1]};
+
+        if ((aprilTagCoordinateArray[0] != null && aprilTagCoordinateArray[1] != null) && (tagInfo[0] != null && tagInfo[1] != null)) {
+            robotFieldCoordinate.put("x", (robotCoordinate[0] + robotValueOffSet[0]) + aprilTagCoordinate[0]);
+            robotFieldCoordinate.put("y", (robotCoordinate[1] + robotValueOffSet[1]) + aprilTagCoordinate[1]);
+        }
+
+        return robotFieldCoordinate;
+    }
+
 }
