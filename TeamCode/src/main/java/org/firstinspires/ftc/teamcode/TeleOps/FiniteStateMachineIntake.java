@@ -113,7 +113,7 @@ public class FiniteStateMachineIntake {
                 }
                 break;
             case INTAKE_EXTEND:
-                robot.depositClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
+                depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.OPEN);
                 robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 intakeClawState = INTAKECLAWSTATE.OPEN;
 
@@ -213,7 +213,7 @@ public class FiniteStateMachineIntake {
                 // set deposit claw state -- open
                 depositArmState = depositArmDrive.liftState;
                 depositArmDrive.SetDepositstate(FiniteStateMachineDeposit.LIFTSTATE.LIFT_START);
-                robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
+                //robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                 depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.OPEN);
 
                 // Check if the intakeslide has reached the position
@@ -227,7 +227,7 @@ public class FiniteStateMachineIntake {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 }
                 if (depositArmState == FiniteStateMachineDeposit.LIFTSTATE.LIFT_START && intakeTimer.seconds() > RobotActionConfig.transferTime) {
-                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
+                    //robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                     depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.CLOSE);
                 }
                 if (intakeTimer.seconds() >= RobotActionConfig.transferTime + 0.4) {

@@ -243,6 +243,7 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Intake Slide Position", robot.intakeRightSlideServo.getPosition());
         telemetry.addLine("---------------------");
         telemetry.addData("Heading ", robot.imu.getRobotYawPitchRollAngles().getYaw());
+        telemetry.addData("Color Sensor", RobotActionConfig.hsvValues[0]);
         telemetry.addData("Color Sensor", FiniteStateMachineDeposit.detectedColor);
         telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
         telemetry.addData("Limit Switch Pressed", robot.limitSwitch.getState());

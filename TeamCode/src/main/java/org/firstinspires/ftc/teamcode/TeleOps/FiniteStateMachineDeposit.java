@@ -127,7 +127,7 @@ public class FiniteStateMachineDeposit {
         colorRanges.add(new ColorRange("Black", 163, 166));
         colorRanges.add(new ColorRange("Red", 15, 25));
         colorRanges.add(new ColorRange("Blue", 220, 230));
-        colorRanges.add(new ColorRange("Yellow", 70, 80));
+        colorRanges.add(new ColorRange("Yellow", 75, 85));
     }
 
     // Deposit Arm Control
@@ -199,12 +199,12 @@ public class FiniteStateMachineDeposit {
                     liftTimer.reset();
                 }
                 break;
+
             case LIFT_SPECIMEN_BRANCH:
                 if (detectedColor.equals("Blue") || detectedColor.equals("Red") || detectedColor.equals("Black")) {
                     if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1) ||
                             (gamepad_2.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1)) &&
                             isButtonDebounced()) {
-
 
                         liftState = LIFTSTATE.LIFT_HIGHBAR;
                         liftTimer.reset();
@@ -222,6 +222,7 @@ public class FiniteStateMachineDeposit {
                             robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump_Prep);
                             robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                             liftTimer.reset();
+                            liftUpTimeout.reset();
                             liftState = LIFTSTATE.LIFT_SAMPLE_EXTEND;
                         }
                     }
@@ -232,7 +233,7 @@ public class FiniteStateMachineDeposit {
 
             case LIFT_SAMPLE_EXTEND:
                 // Check if the lift has reached the high position
-                if (IsLiftAtPosition(RobotActionConfig.deposit_Slide_Highbasket_Pos) || liftUpTimeout.seconds() > RobotActionConfig.timeOut) {
+                if (IsLiftAtPosition(RobotActionConfig.deposit_Slide_Highbasket_Pos)) {
                     //move deposit arm to dump
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
                     // Move deposit wrist servo to dump position
