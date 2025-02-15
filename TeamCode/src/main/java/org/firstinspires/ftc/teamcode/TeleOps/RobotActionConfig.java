@@ -42,7 +42,7 @@ public class RobotActionConfig {
 
     //Deposit Config
     public static int deposit_Slide_Down_Pos            = 15;   //range (0-3300), 50 to prevent hard hit.
-    public static int deposit_Slide_Highbar_Pos         = 254;  //slides Position Configure
+    public static int deposit_Slide_Highbar_Pos         = 235;  //slides Position Configure
     public static int deposit_Slide_Highbasket_Pos      = 740; //highest point
     public static int deposit_Slide_Hang_Pos            = 790;
     static final double COUNTS_PER_MOTOR_GOBILDA_435 = 384.5;
@@ -92,7 +92,7 @@ public class RobotActionConfig {
     public static double deposit_Slide_UpLiftPower      = 1.0;  //slides power
     public static double deposit_Slide_DownLiftPower    = 0.7;  //slides power
 
-    public static double backwardDist                   =-90;
+    public static double backwardDist                   =-30;
 
     public static double accel_Slowness                 = 0.25;
     public static double decel_Slowness                 = 0.6;
