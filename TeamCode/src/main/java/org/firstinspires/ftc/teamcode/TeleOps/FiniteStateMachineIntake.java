@@ -9,6 +9,7 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -164,8 +165,8 @@ public class FiniteStateMachineIntake {
                      */
 
                     if ((gamepad_1.getButton(DPAD_RIGHT) || gamepad_2.getButton(DPAD_RIGHT)) && isButtonDebounced()) {
-                        intakeClawState = INTAKECLAWSTATE.CLOSE;
-                        robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
+                        robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Grab);
+                        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Grab);
                         //retract
                         intakeTimer.reset();
                         intakeState = INTAKESTATE.INTAKE_SAMPLE_RETRACT;
@@ -176,8 +177,8 @@ public class FiniteStateMachineIntake {
                      */
 
                     if ((gamepad_1.getButton(DPAD_LEFT) || gamepad_2.getButton(DPAD_LEFT)) && isButtonDebounced()) {
-                        intakeClawState = INTAKECLAWSTATE.CLOSE;
-                        robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
+                        robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Grab);
+                        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Grab);
                         //retract
                         intakeTimer.reset();
                         intakeState = INTAKESTATE.INTAKE_SPECIMEN_RETRACT;
@@ -189,12 +190,17 @@ public class FiniteStateMachineIntake {
             case INTAKE_SAMPLE_RETRACT:
                 // Wait for the pickup time to pass
                 if (intakeTimer.seconds() > RobotActionConfig.waitTime) {
+                    robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
+                    intakeClawState = INTAKECLAWSTATE.CLOSE;
+                }
+                if (intakeTimer.seconds() > RobotActionConfig.waitTime + RobotActionConfig.waitTime) {
+                    robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
                     robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Idle);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Idle);
-                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);        // set wrist to transfer position
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                 }
-                if (intakeTimer.seconds() > RobotActionConfig.waitTime + RobotActionConfig.intakeWristRotationTime) {
+                if (intakeTimer.seconds() > RobotActionConfig.waitTime + RobotActionConfig.intakeWristRotationTime + RobotActionConfig.waitTime) {
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_slide_Retract_Set);// set slide retract 2/3
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_slide_Retract_Set);// set slide retract 2/3
                     intakeTimer.reset();
@@ -234,12 +240,16 @@ public class FiniteStateMachineIntake {
             /** For specimen picking **/
             case INTAKE_SPECIMEN_RETRACT:
                 if (intakeTimer.seconds() > RobotActionConfig.waitTime) {
+                    robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
+                    intakeClawState = INTAKECLAWSTATE.CLOSE;
+                }
+                if (intakeTimer.seconds() > RobotActionConfig.waitTime + RobotActionConfig.waitTime) {
                     robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Idle);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Idle);
                 }
 
-                if (intakeTimer.seconds() > RobotActionConfig.waitTime + RobotActionConfig.intakeWristRotationTime) {
+                if (intakeTimer.seconds() > RobotActionConfig.waitTime + RobotActionConfig.intakeWristRotationTime + RobotActionConfig.waitTime) {
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     intakeState = INTAKESTATE.INTAKE_DROP_OFF;

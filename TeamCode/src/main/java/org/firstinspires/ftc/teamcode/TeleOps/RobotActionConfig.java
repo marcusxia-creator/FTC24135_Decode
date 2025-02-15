@@ -17,7 +17,7 @@ public class RobotActionConfig {
 
     //Intake Configure
     public static double intake_Slide_Extension         = 0.29;// range(0.1 - 0.65)
-    public static double intake_Slide_Retract           = 0.06;
+    public static double intake_Slide_Retract           = 0.04;
     public static double intake_slide_Retract_Set       = 0.1;
     public static double intake_Slide_Extension_Wait   = 0.16; // FOR AUTO MODE ONLY
 
@@ -25,11 +25,14 @@ public class RobotActionConfig {
 
     public static double intake_Arm_Initial             = 0.12; //initial arm position, range(0-0.56, 0: lowest, 0.56:fully retracted).
     public static double intake_Arm_Left_Pick = 0.42; //intake arm pick pos
-    public static double intake_Arm_Right_Pick = 0.42 + 0.02;
+    public static double intake_Arm_Right_Pick = intake_Arm_Left_Pick + 0.02; //0.02 is the offset for gear
+
+    public static double intake_Arm_Left_Grab = 0.43;
+    public static double intake_Arm_Right_Grab = intake_Arm_Left_Grab + 0.02;
     public static double intake_Arm_Left_Idle = 0.26;
-    public static double intake_Arm_Right_Idle = 0.26 + 0.02;// intake arm lift a bit before retract
+    public static double intake_Arm_Right_Idle = intake_Arm_Left_Idle + 0.02;// intake arm lift a bit before retract
     public static double intake_Arm_Left_Transfer = 0.14;
-    public static double intake_Arm_Right_Transfer = 0.14 + 0.02;// intake arm transfer pos
+    public static double intake_Arm_Right_Transfer = intake_Arm_Left_Transfer + 0.02;// intake arm transfer pos
     public static double intake_Arm_Wait                = 0.4; // FOR AUTO MODE ONLY
 
     public static double intake_Wrist_Retract           = 0.20;
@@ -41,10 +44,10 @@ public class RobotActionConfig {
     public static double intake_Claw_Close              = 0.27;
 
     //Deposit Config
-    public static int deposit_Slide_Down_Pos            = 15;   //range (0-3300), 50 to prevent hard hit.
-    public static int deposit_Slide_Highbar_Pos         = 235;  //slides Position Configure
-    public static int deposit_Slide_Highbasket_Pos      = 740; //highest point
-    public static int deposit_Slide_Hang_Pos            = 790;
+    public static int deposit_Slide_Down_Pos            = 15;   //unit in mm, to prevent hard hit.
+    public static int deposit_Slide_Highbar_Pos         = 235;  //unit in mm, slides Position Configure
+    public static int deposit_Slide_Highbasket_Pos      = 750; //unit in mm, highest point
+    public static int deposit_Slide_Hang_Pos            = 790; //unit in mm
     static final double COUNTS_PER_MOTOR_GOBILDA_435 = 384.5;
     public static double TICKS_PER_MM_Slides = COUNTS_PER_MOTOR_GOBILDA_435 / 120;
 
