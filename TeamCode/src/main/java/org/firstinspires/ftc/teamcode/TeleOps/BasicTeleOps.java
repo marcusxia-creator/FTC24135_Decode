@@ -63,7 +63,7 @@ import java.util.List;
  */
 
 @Config
-@TeleOp(name = "TeleOps_League_Tournament", group = "org.firstinspires.ftc.teamcode")
+@TeleOp(name = "TeleOps_Champion_Prep", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOps extends OpMode {
 
     //Control State Variable
