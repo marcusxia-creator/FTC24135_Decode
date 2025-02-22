@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Auto.drive.GoBildaPinpointDriver;
+
 /*
 Hardware config:
 Motor:
@@ -83,6 +85,9 @@ public class RobotHardware {
 
     public IMU imu; //IMU
     public HardwareMap hardwareMap;
+
+    public GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
+
 
     public void init(HardwareMap hardwareMap) {
 
@@ -166,5 +171,12 @@ public class RobotHardware {
                 ));
         imu.initialize(myIMUparameters);
         imu.resetYaw();
+    }
+
+    public void initPinPoint() {
+        odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+        odo.setOffsets(-149.225, -165.1); //these are tuned for 3110-0002-0001 Product Insight #1
+        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
     }
 }
