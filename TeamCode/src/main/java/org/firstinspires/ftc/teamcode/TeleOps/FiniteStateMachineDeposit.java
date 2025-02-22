@@ -214,7 +214,7 @@ public class FiniteStateMachineDeposit {
 
             case LIFT_HIGHBASKET:
                 if (!detectedColor.equals("Black")) {
-                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_highbasketpause);
                     if (liftTimer.seconds() >= 0.25) {
                         slidesToHeightMM(RobotActionConfig.deposit_Slide_Highbasket_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
                         // Move deposit Arm & wrist servo to dump prep position

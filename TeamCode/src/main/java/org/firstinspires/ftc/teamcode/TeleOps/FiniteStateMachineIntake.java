@@ -88,7 +88,7 @@ public class FiniteStateMachineIntake {
         robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
         robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
-        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
+        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
     }
 
     //FSM Loop Control
@@ -235,7 +235,7 @@ public class FiniteStateMachineIntake {
                     //robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                     depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.CLOSE);
                 }
-                if (intakeTimer.seconds() >= RobotActionConfig.transferTime + 0.4) {
+                if (intakeTimer.seconds() > RobotActionConfig.transferTime + 0.4) {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                     intakeClawState = INTAKECLAWSTATE.OPEN;
                     intakeState = INTAKESTATE.INTAKE_START;
@@ -276,8 +276,8 @@ public class FiniteStateMachineIntake {
                 if (intakeTimer.seconds() > RobotActionConfig.intakeSlideExtendTime + RobotActionConfig.waitTime) {
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer+0.2);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer+0.2);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer+0.2);
 
                     intakeState = INTAKESTATE.INTAKE_START;

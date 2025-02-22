@@ -35,8 +35,8 @@ public class RobotActionConfig {
     public static double intake_Arm_Right_Transfer = intake_Arm_Left_Transfer + 0.02;// intake arm transfer pos
     public static double intake_Arm_Wait                = 0.4; // FOR AUTO MODE ONLY
 
-    public static double intake_Wrist_Retract           = 0.20;
-    public static double intake_Wrist_Idle              = 0.20; /** Needs change**/
+    public static double intake_Wrist_highbasketpause   = 0.9;
+    public static double intake_Wrist_Idle              = 0.20; /** for high basket,  **/
     public static double intake_Wrist_Pick              = 0; /** new servo changed this to 1 for pick **/
     public static double intake_Wrist_Transfer          = 1;
 
