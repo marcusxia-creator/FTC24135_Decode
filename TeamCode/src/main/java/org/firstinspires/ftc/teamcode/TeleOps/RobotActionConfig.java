@@ -24,15 +24,15 @@ public class RobotActionConfig {
     public static double intake_Rotation_Mid            = 0.46; // range(0-1, 0.49 at the middle for installation
 
     public static double intake_Arm_Initial             = 0.12; //initial arm position, range(0-0.56, 0: lowest, 0.56:fully retracted).
-    public static double intake_Arm_Left_Pick = 0.42; //intake arm pick pos
-    public static double intake_Arm_Right_Pick = intake_Arm_Left_Pick + 0.02; //0.02 is the offset for gear
+    public static double intake_Arm_Left_Pick           = 0.42; //intake arm pick pos
+    public static double intake_Arm_Right_Pick          = intake_Arm_Left_Pick + 0.02; //0.02 is the offset for gear
 
-    public static double intake_Arm_Left_Grab = 0.43;
-    public static double intake_Arm_Right_Grab = intake_Arm_Left_Grab + 0.02;
-    public static double intake_Arm_Left_Idle = 0.26;
-    public static double intake_Arm_Right_Idle = intake_Arm_Left_Idle + 0.02;// intake arm lift a bit before retract
-    public static double intake_Arm_Left_Transfer = 0.14;
-    public static double intake_Arm_Right_Transfer = intake_Arm_Left_Transfer + 0.02;// intake arm transfer pos
+    public static double intake_Arm_Left_Grab           = 0.43;
+    public static double intake_Arm_Right_Grab          = intake_Arm_Left_Grab + 0.02;
+    public static double intake_Arm_Left_Idle           = 0.26;
+    public static double intake_Arm_Right_Idle          = intake_Arm_Left_Idle + 0.02;// intake arm lift a bit before retract
+    public static double intake_Arm_Left_Transfer       = 0.14;
+    public static double intake_Arm_Right_Transfer      = intake_Arm_Left_Transfer + 0.02;// intake arm transfer pos
     public static double intake_Arm_Wait                = 0.4; // FOR AUTO MODE ONLY
 
     public static double intake_Wrist_highbasketpause   = 0.9;
@@ -48,8 +48,8 @@ public class RobotActionConfig {
     public static int deposit_Slide_Highbar_Pos         = 230;  //unit in mm, slides Position Configure
     public static int deposit_Slide_Highbasket_Pos      = 750; //unit in mm, highest point
     public static int deposit_Slide_Hang_Pos            = 805; //unit in mm
-    static final double COUNTS_PER_MOTOR_GOBILDA_435 = 384.5;
-    public static double TICKS_PER_MM_Slides = COUNTS_PER_MOTOR_GOBILDA_435 / 120;
+    static final double COUNTS_PER_MOTOR_GOBILDA_435    = 384.5;
+    public static double TICKS_PER_MM_Slides            = COUNTS_PER_MOTOR_GOBILDA_435 / 120;
 
     public static double deposit_Wrist_Dump             = 0.22; //range(0.22-0.64), 0: installation position
     public static double deposit_Wrist_Transfer         = 0.52; // 176 deg ~ 0.003 is 1 deg
@@ -95,7 +95,7 @@ public class RobotActionConfig {
     public static double deposit_Slide_UpLiftPower      = 1.0;  //slides power
     public static double deposit_Slide_DownLiftPower    = 0.7;  //slides power
 
-    public static double backwardDist                   =-30;
+    public static double backwardDist                   =-20;   //distance in cm
 
     public static double accel_Slowness                 = 0.25;
     public static double decel_Slowness                 = 0.6;
