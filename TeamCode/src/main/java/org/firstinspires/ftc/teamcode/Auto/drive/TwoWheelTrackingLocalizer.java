@@ -39,9 +39,9 @@ import java.util.List;
 public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
     public static double TICKS_PER_REV = 2000;
     public static double WHEEL_RADIUS = 0.944882; // in
-    public static double GEAR_RATIO = 1.5; // output (wheel) speed / input (encoder) speed
+    public static double GEAR_RATIO = 1.0; // output (wheel) speed / input (encoder) speed
 
-    public static double PARALLEL_X = -1.375; // X is the up and down direction
+    public static double PARALLEL_X = -1.125; // X is the up and down direction
     public static double PARALLEL_Y = -5.875; // Y is the strafe direction
 
     public static double PERPENDICULAR_X = -6.5;
@@ -74,8 +74,7 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
 
     @Override
     public double getHeading() {
-        pinpointPos = pinpoint.getPosition();
-        return pinpointPos.getHeading(AngleUnit.RADIANS);
+        return pinpoint.getHeading();
     }
 
     @Override
