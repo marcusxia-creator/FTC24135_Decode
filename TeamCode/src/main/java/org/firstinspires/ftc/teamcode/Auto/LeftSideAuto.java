@@ -213,7 +213,7 @@ public class LeftSideAuto extends LinearOpMode {
     }
 
     private void Slides_Move(int targetPosition, double speed) {
-        // targetPosition in cm - raise slides
+        // targetPosition in mm - raise slides
         int targetTick = (int) (targetPosition * RobotActionConfig.TICKS_PER_MM_Slides);
         robot.liftMotorLeft.setTargetPosition(targetTick);
         robot.liftMotorRight.setTargetPosition(targetTick);

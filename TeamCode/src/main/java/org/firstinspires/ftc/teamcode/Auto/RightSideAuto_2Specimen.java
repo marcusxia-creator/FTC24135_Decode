@@ -39,7 +39,7 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
 
         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
         robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
-        robot.intakeWristServo.setPosition(0.3);
+        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_highbasketpause );
         robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
         robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
@@ -159,7 +159,7 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
                 /** move out */
                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate - 10, Math.toRadians(-90)))
                 .addTemporalMarker(() -> {
-                    Slides_Move(-950, 0.9);
+                    Slides_Move(RobotActionConfig.deposit_Slide_Down_Pos, 0.9);
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                 })
