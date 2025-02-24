@@ -183,9 +183,10 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
         }
     }
 
-    private void Slides_Move(int dist, double speed) {
-        robot.liftMotorLeft.setTargetPosition(dist);
-        robot.liftMotorRight.setTargetPosition(dist);
+    private void Slides_Move(int targetPosition, double speed) {
+        int targetTick = (int) (targetPosition * RobotActionConfig.TICKS_PER_MM_Slides);
+        robot.liftMotorLeft.setTargetPosition(targetTick);
+        robot.liftMotorRight.setTargetPosition(targetTick);
         robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.liftMotorLeft.setPower(speed);
