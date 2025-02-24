@@ -14,6 +14,8 @@ public class RobotActionConfig {
     public static double TICKS_PER_REVOLUTION           = 537.7;
     public static double GEAR_RATIO                     = 1.5;
     public static double TICKS_PER_CM                   = 56;
+    public static double TICKS_PER_mm                   = 3.204;
+
 
     //Intake Configure
     public static double intake_Slide_Extension         = 0.29; // range(0.1 - 0.65)

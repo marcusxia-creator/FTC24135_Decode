@@ -73,7 +73,7 @@ public class LeftSideAuto extends LinearOpMode {
         TrajectorySequence trajSeq = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(basket_x_coordinate,basket_y_coordinate,Math.toRadians(45)))                                //run to basket
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{drive.setDrivePower(new Pose2d(0,0,0));})
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{Slides_Move(RobotActionConfig.deposit_Slide_Highbasket_Pos,1);})     // dist in cm - raise slides
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{Slides_Move(RobotActionConfig.deposit_Slide_Highbasket_Pos,1);})     // targetPosition in cm - raise slides
                 .UNSTABLE_addTemporalMarkerOffset(-0.8,()->{
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump_Prep);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
@@ -96,7 +96,7 @@ public class LeftSideAuto extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(first_sample_x_coordinate,first_sample_y_coordinate,Math.toRadians(90)))                    //move to 1st sample
                 /** pick 1st sample*/
                 .addTemporalMarker(()->{robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick +0.02);})
-                .addTemporalMarker(()->{robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick +0.02);})
+                .addTemporalMarker(()->{robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Pick +0.02);})
                 .UNSTABLE_addTemporalMarkerOffset(-0.5,()->{robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);})
                 .addTemporalMarker(()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);})
                 .waitSeconds(0.5)
@@ -113,7 +113,7 @@ public class LeftSideAuto extends LinearOpMode {
                 .addTemporalMarker(()->{robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);})
                 .addTemporalMarker(()->{
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
                 })
                 .waitSeconds(0.7)
                 .addTemporalMarker(()->{
@@ -148,7 +148,7 @@ public class LeftSideAuto extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(second_sample_x_coordinate,second_sample_y_coordinate,Math.toRadians(90)))
                 /** pick 2nd sample*/
                 .addTemporalMarker(()->{robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick +0.02);})
-                .addTemporalMarker(()->{robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick +0.02);})
+                .addTemporalMarker(()->{robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Pick +0.02);})
                 .UNSTABLE_addTemporalMarkerOffset(-0.5,()->{robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);})
                 .addTemporalMarker(()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);})
                 .waitSeconds(0.5)
@@ -157,7 +157,7 @@ public class LeftSideAuto extends LinearOpMode {
                 /**transfer 2nd sample*/
                 .addTemporalMarker(()->{
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick -0.03);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick -0.03);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Pick -0.03);
                     robot.intakeRightSlideServo.setPosition(0.1);
                     robot.intakeLeftSlideServo.setPosition(0.1);
                 })
@@ -165,7 +165,7 @@ public class LeftSideAuto extends LinearOpMode {
                 .addTemporalMarker(()->{robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);})
                 .addTemporalMarker(()->{
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
                 })
                 .waitSeconds(0.6)
                 .addTemporalMarker(()->{
@@ -212,16 +212,35 @@ public class LeftSideAuto extends LinearOpMode {
 
     }
 
-    private void Slides_Move(int dist, double speed) {
-        int targetTick = (int) (dist * RobotActionConfig.TICKS_PER_CM);
+    private void Slides_Move(int targetPosition, double speed) {
+        // targetPosition in cm - raise slides
+        int targetTick = (int) (targetPosition * RobotActionConfig.TICKS_PER_MM_Slides);
         robot.liftMotorLeft.setTargetPosition(targetTick);
         robot.liftMotorRight.setTargetPosition(targetTick);
         robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.liftMotorLeft.setPower(speed);
         robot.liftMotorRight.setPower(speed);
-        while (robot.liftMotorLeft.isBusy() || robot.liftMotorRight.isBusy()){
-            if(LSisPressed(200)|| IsLiftDownAtPosition(dist) ){
+        /**
+        while ((robot.liftMotorLeft.isBusy() || robot.liftMotorRight.isBusy()) && opModeIsActive()){
+            if(LSisPressed(200)|| IsLiftDownAtPosition(targetPosition) ){
+                Slides_Stop();
+                break;
+            }
+        }
+         */
+    }
+    private void Slides_MoveDown(int targetPosition, double speed) {
+        // targetPosition in cm - raise slides
+        int targetTick = (int) (targetPosition * RobotActionConfig.TICKS_PER_MM_Slides);
+        robot.liftMotorLeft.setTargetPosition(targetTick);
+        robot.liftMotorRight.setTargetPosition(targetTick);
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.liftMotorLeft.setPower(speed);
+        robot.liftMotorRight.setPower(speed);
+        while ((robot.liftMotorLeft.isBusy() || robot.liftMotorRight.isBusy()) && opModeIsActive()){
+            if(LSisPressed(200)|| IsLiftDownAtPosition(targetPosition) ){
                 Slides_Stop();
             }
         }

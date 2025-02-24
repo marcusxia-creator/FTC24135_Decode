@@ -41,7 +41,7 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
         robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
         robot.intakeWristServo.setPosition(0.3);
         robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
-        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
+        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
         robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
@@ -110,7 +110,7 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Pick);
                 })
                 .waitSeconds(1.0+hSlideWaitTimer)
                 .addTemporalMarker(() -> {
@@ -120,7 +120,7 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
                 /** 2.1 segment ---->  Transfer 2nd specimen*/
                 .addTemporalMarker(() -> {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                 })
                 .waitSeconds(wristWaitTimer)

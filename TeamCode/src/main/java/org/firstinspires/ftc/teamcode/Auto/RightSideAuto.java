@@ -112,7 +112,7 @@ public class RightSideAuto extends LinearOpMode {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Pick);
                 })
                 .waitSeconds(0.5+hSlideWaitTimer)
                 .addTemporalMarker(() -> {
@@ -122,7 +122,7 @@ public class RightSideAuto extends LinearOpMode {
                 /** 3.1 segment ---->  Transfer 2nd specimen*/
                 .addTemporalMarker(() -> {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                 })
                 .waitSeconds(wristWaitTimer)
@@ -201,7 +201,7 @@ public class RightSideAuto extends LinearOpMode {
                 /** 4.1 segment ----> Transfer 3rd specimen*/
                 .addTemporalMarker(() -> {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                 })
                 .waitSeconds(wristWaitTimer)
@@ -247,7 +247,7 @@ public class RightSideAuto extends LinearOpMode {
                         robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                         robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                         robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
-                        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
+                        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Pick);
                 })
                 .waitSeconds(0.7)
                 .build();
