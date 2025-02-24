@@ -15,7 +15,7 @@ public class RobotActionConfig {
     public static double GEAR_RATIO                     = 1.5;
     static final double COUNTS_PER_MOTOR_GOBILDA_435    = 384.5;
     static final double SlidePullyCircummerance         = Math.PI*38.2;                                 // unit in mm
-    public static double TICKS_PER_MM_Slides            = COUNTS_PER_MOTOR_GOBILDA_435 / SlidePullyCircummerance;           // tick per mm
+    static final double TICKS_PER_MM_Slides            = COUNTS_PER_MOTOR_GOBILDA_435 / SlidePullyCircummerance; // tick per mm
 
 
     //Intake Configure
