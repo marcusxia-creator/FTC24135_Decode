@@ -40,14 +40,14 @@ public class RobotActionConfig {
     public static double intake_Arm_Right_Transfer      = intake_Arm_Left_Transfer + 0.02;              // intake arm transfer position
     public static double intake_Arm_Wait                = 0.4;                                          // FOR AUTO MODE ONLY
 
-    /**Intake Wrist range(0-0.43, lowest :0.43, fully back for transfer:0.14 )*/
+    /**Intake Wrist range(0-1, lowest :0, fully back for transfer:1 )*/
     /** Todo Intake Wrist installation poisition ?? and value??*/
-    public static double intake_Wrist_highbasketpause   = 0.9;                                          /** for high basket,  **/
-    public static double intake_Wrist_Idle              = 0.20;                                         /** for high basket,  **/
-    public static double intake_Wrist_Pick              = 0;                                            /** new servo changed this to 1 for pick **/
+    public static double intake_Wrist_highbasketpause   = 0.9;                                          /** upright when high basket  **/
+    public static double intake_Wrist_Idle              = 0.20;                                         /** for specimen pick ready  **/
+    public static double intake_Wrist_Pick              = 0;                                            /** new servo changed this to 0 for pick **/
     public static double intake_Wrist_Transfer          = 1;
 
-    /**Intake Claw range(0-0.43, lowest :0.43, fully back for transfer:0.14 )*/
+    /**Intake Claw range(0-0.27 lowest :0, fully close 0.27 )*/
     /** Todo Intake Claw installation poisition ?? and value??*/
     public static double intake_Claw_Open               = 0.0;                                          //range(0.0 - 0.27)
     public static double intake_Claw_Close              = 0.27;
@@ -67,14 +67,15 @@ public class RobotActionConfig {
     public static double deposit_Wrist_Flat_Pos         = 0.30;
     public static double deposit_Wrist_Retract_Pos      = 0.25;                                         // FOR AUTO MODE ONLY
 
-    /**Deposit_Arm  range(0-0.43, lowest :0.43, fully back for transfer:0.14 )*/
+    /**Deposit_Arm  range(0.4 - 0.95, lowest : , fully back for transfer:0.14 )*/
     /** Todo Deposit Arm installation poisition ?? and value??*/
-    public static double deposit_Arm_Pick               = 1;                                            // 0 is pick position.
+    public static double deposit_Arm_Pick               = 1;                                            // Installation position: 1 full parallel to ground facing out..
     public static double deposit_Arm_Dump               = 0.7;                                          // range (0-1) 0: installation position 180 deg
-    public static double deposit_Arm_Transfer           = 0.05;                                         // 0 is rest position.
+    public static double deposit_Arm_Dump_Prep          = 0.4;                                          // deposit arm dump pre-ready position.
+    public static double deposit_Arm_Transfer           = 0.05;                                         //
     public static double deposit_Arm_hang_Pos           = 0.25;                                         // hang position
     public static double deposit_Arm_Hook               = 0.95;                                         // deposit arm hook position
-    public static double deposit_Arm_Dump_Prep          = 0.4;                                          // deposit arm hook position
+
 
     /**Deposit_Claw  range(0-0.43, lowest :0.43, fully back for transfer:0.14 )*/
     /** Todo Deposit Claw installation poisition ?? and value??*/
