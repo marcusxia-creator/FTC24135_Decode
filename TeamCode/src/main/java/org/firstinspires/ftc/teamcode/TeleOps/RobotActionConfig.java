@@ -99,4 +99,6 @@ public class RobotActionConfig {
 
     public static double accel_Slowness                 = 0.25;
     public static double decel_Slowness                 = 0.6;
+
+    public static int slideTickThreshold                = 30;
 }

@@ -368,12 +368,12 @@ public class FiniteStateMachineDeposit {
     // Helper method to check if the lift is within the desired position threshold
     private boolean IsLiftAtPosition(int targetPosition) {
         int targetTicks = (int) (targetPosition * RobotActionConfig.TICKS_PER_MM_Slides);
-        return Math.abs(robot.liftMotorLeft.getCurrentPosition() - targetTicks) < 30 && Math.abs(robot.liftMotorRight.getCurrentPosition() - targetTicks) < 15;
+        return Math.abs(robot.liftMotorLeft.getCurrentPosition() - targetTicks) < RobotActionConfig.slideTickThreshold && Math.abs(robot.liftMotorRight.getCurrentPosition() - targetTicks) < RobotActionConfig.slideTickThreshold;
     }
 
     private boolean IsLiftDownAtPosition(int targetPosition) {
         int targetTicks = (int) (targetPosition * RobotActionConfig.TICKS_PER_MM_Slides);
-        return Math.abs(robot.liftMotorLeft.getCurrentPosition() - targetTicks) < 15 && Math.abs(robot.liftMotorRight.getCurrentPosition() - targetTicks) < 25;
+        return Math.abs(robot.liftMotorLeft.getCurrentPosition() - targetTicks) < RobotActionConfig.slideTickThreshold/2 && Math.abs(robot.liftMotorRight.getCurrentPosition() - targetTicks) < RobotActionConfig.slideTickThreshold/2;
     }
 
     private boolean Servo_AtPosition(double servoClawPosition) {
@@ -465,9 +465,7 @@ public class FiniteStateMachineDeposit {
 
         // Wait until motion is complete
         while (robot.frontLeftMotor.isBusy() && robot.frontRightMotor.isBusy()) {
-
         }
-
         // Stop motors and reset mode
         robot.frontLeftMotor.setPower(0);
         robot.frontRightMotor.setPower(0);
