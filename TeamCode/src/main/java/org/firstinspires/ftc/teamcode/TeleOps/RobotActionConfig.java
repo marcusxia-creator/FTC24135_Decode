@@ -10,8 +10,8 @@ public class RobotActionConfig {
 
     //drive chassis
     public static double powerFactor                    = 1;
-    public static double WHEEL_DIAMETER_CM              = 9.6;
-    public static double TICKS_PER_REVOLUTION           = 537.7;
+    public static double WHEEL_DIAMETER_CM              = 9.6;                                          // unit in cm.
+    public static double COUNTS_PER_MOTOR_GOBILDA_312   = 537.7;
     public static double GEAR_RATIO                     = 1.5;
     static final double COUNTS_PER_MOTOR_GOBILDA_435    = 384.5;
     static final double SlidePullyCircummerance         = Math.PI*38.2;                                 // unit in mm
