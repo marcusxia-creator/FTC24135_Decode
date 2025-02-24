@@ -390,8 +390,6 @@ public class FiniteStateMachineDeposit {
 
     }
 
-
-
     //Claw CONTROL Handler ---- GLOBAL CONTROL ----> BUTTON A
     private void ClawManualControl() {
         if (((gamepad_1.getButton(GamepadKeys.Button.A) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.6) ||
@@ -443,7 +441,7 @@ public class FiniteStateMachineDeposit {
         // Calculate target ticks based on distance
         double circumference = RobotActionConfig.WHEEL_DIAMETER_CM * Math.PI;
         double rotationsNeeded = distanceCm / circumference;
-        int targetTicks = (int) (rotationsNeeded * RobotActionConfig.TICKS_PER_REVOLUTION / RobotActionConfig.GEAR_RATIO);
+        int targetTicks = (int) (rotationsNeeded * RobotActionConfig.COUNTS_PER_MOTOR_GOBILDA_312 / RobotActionConfig.GEAR_RATIO);
 
         // Set target positions
         robot.frontLeftMotor.setTargetPosition(robot.frontLeftMotor.getCurrentPosition() - targetTicks);
