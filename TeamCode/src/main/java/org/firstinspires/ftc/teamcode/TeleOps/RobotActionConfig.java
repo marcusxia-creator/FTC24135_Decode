@@ -77,7 +77,7 @@ public class RobotActionConfig {
     public static double deposit_Arm_Hook               = 0.95;                                         // deposit arm hook position
 
 
-    /**Deposit_Claw  range(0-0.43, lowest :0.43, fully back for transfer:0.14 )*/
+    /**Deposit_Claw  range(0-0.4, lowest :0., fully open: 0.36 )*/
     /** Todo Deposit Claw installation poisition ?? and value??*/
     public static double deposit_Claw_Open              = 0.36;                                         //deposit claw open position
     public static double deposit_Claw_Close             = 0.08;                                         //deposit claw close position
@@ -112,7 +112,7 @@ public class RobotActionConfig {
     //distnace
     public static double backwardDist                   = -20;                                           // distance in cm, retract distance after hook specimen on high bar
 
-    // TeleOp Speed Control accel factor.
+    //TeleOp Speed Control accel factor.
     public static double accel_Slowness                 = 0.25;                                         // drive control speed accel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
     public static double decel_Slowness                 = 0.6;                                          // drive control speed deaccel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
 
