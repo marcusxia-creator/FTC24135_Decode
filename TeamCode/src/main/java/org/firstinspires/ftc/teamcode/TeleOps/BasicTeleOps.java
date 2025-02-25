@@ -210,7 +210,7 @@ public class BasicTeleOps extends OpMode {
             depositArmDrive.DepositArmLoop();
             FiniteStateMachineDeposit.LIFTSTATE liftState = depositArmDrive.liftState;
             FiniteStateMachineDeposit.DEPOSITCLAWSTATE depositClawState = depositArmDrive.depositClawState;
-            detectedColor = FiniteStateMachineDeposit.getDetectedColor();
+            detectedColor = depositArmDrive.getDetectedColor();
             //Intake Arm Control
             intakeArmDrive.IntakeArmLoop();
             FiniteStateMachineIntake.INTAKESTATE intakeState = intakeArmDrive.intakeState;
@@ -222,6 +222,9 @@ public class BasicTeleOps extends OpMode {
             telemetry.addData("Intake State", intakeState);
             telemetry.addData("Intake Claw State", intakeClawState);
             telemetry.addLine("---------------------");
+            telemetry.addData("Color Sensor", RobotActionConfig.hsvValues[0]);
+            telemetry.addData("Detected Color",detectedColor);
+            telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
         } else {
             servoTest.ServoTestLoop();
         }
@@ -245,9 +248,6 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Intake Slide Position", robot.intakeRightSlideServo.getPosition());
         telemetry.addLine("---------------------");
         telemetry.addData("Heading ", robot.imu.getRobotYawPitchRollAngles().getYaw());
-        telemetry.addData("Color Sensor", RobotActionConfig.hsvValues[0]);
-        telemetry.addData("Detected Color",detectedColor);
-        telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
         telemetry.addData("Limit Switch Pressed", robot.limitSwitch.getState());
         telemetry.update();
     }

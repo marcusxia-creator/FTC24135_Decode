@@ -90,7 +90,7 @@ public class FiniteStateMachineDeposit {
 
     // COLOR LIST
     List<ColorRange> colorRanges = new ArrayList<>();
-    public static String detectedColor = "None";
+    public String detectedColor = "None";
 
     // hsvValues is an array that will hold the hue, saturation, and value information.
     public float hue;
@@ -195,7 +195,7 @@ public class FiniteStateMachineDeposit {
                     liftTimer.reset();
                 }
                 // Blue and Red for choose again -- x for high basket, y for dropping
-                if (detectedColor.equals("Blue") || detectedColor.equals("Red") && ((gamepad_1.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1) ||
+                if ((detectedColor.equals("Blue") || detectedColor.equals("Red")) && ((gamepad_1.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1) ||
                         (gamepad_2.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1)) &&
                         isButtonDebounced()) {
                     liftState = LIFTSTATE.LIFT_HIGHBASKET;
@@ -368,7 +368,7 @@ public class FiniteStateMachineDeposit {
         DepositClawSwitch();
     }
 
-    public static String getDetectedColor(){
+    public String getDetectedColor(){
         return detectedColor;
     }
     // Helper method to check if the lift is within the desired position threshold
@@ -468,7 +468,7 @@ public class FiniteStateMachineDeposit {
         robot.backRightMotor.setPower(0.5);
 
         // Wait until motion is complete
-        while (robot.frontLeftMotor.isBusy() && robot.frontRightMotor.isBusy()) {
+        while (robot.frontLeftMotor.isBusy() && robot.frontRightMotor.isBusy()){
         }
         // Stop motors and reset mode
         robot.frontLeftMotor.setPower(0);
