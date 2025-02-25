@@ -41,11 +41,11 @@ public class PinpointTrackingLocalizer  extends TwoTrackingWheelLocalizer {
     public static double WHEEL_RADIUS = 0.944882; // in
     public static double GEAR_RATIO = 1.0; // output (wheel) speed / input (encoder) speed
 
-    public static double PARALLEL_X = -1.125; // X is the up and down direction
+    public static double PARALLEL_X = -0.875; // X is the up and down direction
     public static double PARALLEL_Y = -5.875; // Y is the strafe direction
 
-    public static double PERPENDICULAR_X = -6.5;
-    public static double PERPENDICULAR_Y = -0.5;
+    public static double PERPENDICULAR_X = -5.1672;
+    public static double PERPENDICULAR_Y = -1;
 
     public static double mmToinch = 0.0393701;
     Pose2D pinpointPos;
