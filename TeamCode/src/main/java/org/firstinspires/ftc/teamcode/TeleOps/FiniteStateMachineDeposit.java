@@ -73,6 +73,7 @@ public class FiniteStateMachineDeposit {
             this.hueMax = hueMax;
         }
     }
+    static float hsvValues[]                     = {0F,0F,0F};                                   // set color sensor value
 
     /**
      * member DECLEAR
@@ -90,12 +91,14 @@ public class FiniteStateMachineDeposit {
 
     // COLOR LIST
     List<ColorRange> colorRanges = new ArrayList<>();
-    public static String detectedColor;
+    public static String detectedColor = "None";
 
     // hsvValues is an array that will hold the hue, saturation, and value information.
     public float hue;
     public float value;
-    public boolean empty;
+    public boolean empty =true;
+
+
 
     /**
      * constructor
@@ -126,7 +129,7 @@ public class FiniteStateMachineDeposit {
         /** create a list color threshold ranges*/
         colorRanges.add(new ColorRange("Black", 163, 166));
         colorRanges.add(new ColorRange("Red", 15, 25));
-        colorRanges.add(new ColorRange("Blue", 220, 230));
+        colorRanges.add(new ColorRange("Blue", 200, 230));
         colorRanges.add(new ColorRange("Yellow", 75, 85));
     }
 
@@ -138,19 +141,20 @@ public class FiniteStateMachineDeposit {
                 robot.colorSensor.red() * 8,
                 robot.colorSensor.green() * 8,
                 robot.colorSensor.blue() * 8,
-                RobotActionConfig.hsvValues);
-        hue = RobotActionConfig.hsvValues[0];
-        value = RobotActionConfig.hsvValues[2];
-
-        //detect the color
-        detectedColor = "None";
-        empty = true;
+                hsvValues);
+        hue = hsvValues[0];
+        value = hsvValues[2];
 
         //LOOP THROUGH THE colorRange to check the color
         for (ColorRange range : colorRanges) {
             if (hue > range.hueMin && hue < range.hueMax) {
                 detectedColor = range.colorName;
                 empty = false;
+                break;
+            }
+            else{
+                detectedColor = "None";
+                empty = true;
                 break;
             }
         }
@@ -365,6 +369,9 @@ public class FiniteStateMachineDeposit {
         DepositClawSwitch();
     }
 
+    public static String getDetectedColor(){
+        return detectedColor;
+    }
     // Helper method to check if the lift is within the desired position threshold
     private boolean IsLiftAtPosition(int targetPosition) {
         int targetTicks = (int) (targetPosition * RobotActionConfig.TICKS_PER_MM_Slides);
