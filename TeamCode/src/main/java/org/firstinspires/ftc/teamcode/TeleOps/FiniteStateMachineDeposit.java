@@ -73,7 +73,6 @@ public class FiniteStateMachineDeposit {
             this.hueMax = hueMax;
         }
     }
-    static float hsvValues[]                     = {0F,0F,0F};                                   // set color sensor value
 
     /**
      * member DECLEAR
@@ -97,8 +96,7 @@ public class FiniteStateMachineDeposit {
     public float hue;
     public float value;
     public boolean empty =true;
-
-
+    static float hsvValues[] = {0F,0F,0F};                                   // set color sensor value
 
     /**
      * constructor
@@ -142,9 +140,12 @@ public class FiniteStateMachineDeposit {
                 robot.colorSensor.green() * 8,
                 robot.colorSensor.blue() * 8,
                 hsvValues);
+        RobotActionConfig.hsvValues = hsvValues;
         hue = hsvValues[0];
         value = hsvValues[2];
 
+        detectedColor = "None"; // Default value before looping
+        empty = true;
         //LOOP THROUGH THE colorRange to check the color
         for (ColorRange range : colorRanges) {
             if (hue > range.hueMin && hue < range.hueMax) {
@@ -152,12 +153,10 @@ public class FiniteStateMachineDeposit {
                 empty = false;
                 break;
             }
-            else{
-                detectedColor = "None";
-                empty = true;
-                break;
-            }
         }
+        // for debugging steps only.
+        telemetry.addData("Final Detected Color", detectedColor);
+        telemetry.update();
 
         /** FSM Loop*/
         switch (liftState) {
