@@ -8,6 +8,7 @@ import android.graphics.Color;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -134,7 +135,15 @@ public class FiniteStateMachineDeposit {
     // Deposit Arm Control
     public void DepositArmLoop() {
         long currentTime = System.currentTimeMillis();
-        /** determine the Color */
+        ///debuging color sensor
+        NormalizedRGBA colors = robot.colorSensor.getNormalizedColors();
+        // Update the hsvValues array by passing it to Color.colorToHSV()
+        Color.colorToHSV(colors.toColor(), hsvValues);
+        RobotActionConfig.hsvValues = hsvValues;
+        hue = hsvValues[0];
+        value = hsvValues[2];
+
+        /** determine the Color
         Color.RGBToHSV(
                 robot.colorSensor.red() * 8,
                 robot.colorSensor.green() * 8,
@@ -143,6 +152,7 @@ public class FiniteStateMachineDeposit {
         RobotActionConfig.hsvValues = hsvValues;
         hue = hsvValues[0];
         value = hsvValues[2];
+         */
 
         detectedColor = "None"; // Default value before looping
         empty = true;
@@ -154,7 +164,7 @@ public class FiniteStateMachineDeposit {
                 break;
             }
         }
-        // for debugging steps only.
+        /// for debugging steps only.
         telemetry.addData("Final Detected Color", detectedColor);
         telemetry.update();
 
