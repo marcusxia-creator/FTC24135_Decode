@@ -222,7 +222,7 @@ public class BasicTeleOps extends OpMode {
             telemetry.addData("Intake State", intakeState);
             telemetry.addData("Intake Claw State", intakeClawState);
             telemetry.addLine("---------------------");
-            telemetry.addData("Color Sensor", RobotActionConfig.hsvValues[0]);
+            telemetry.addData("Color Sensor Hue", RobotActionConfig.hsvValues[0]);
             telemetry.addData("Detected Color",detectedColor);
             telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
         } else {
