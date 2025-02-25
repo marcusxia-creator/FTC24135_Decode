@@ -86,7 +86,7 @@ public class LeftSideAuto extends LinearOpMode {
                 .waitSeconds(0.3)                                                                                                           // this is wait time for dropping sample - wait for open claw to drop
                 .addTemporalMarker(()->{robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);})                        // at global time 1.5 second mark to back to transfer position
                 .addTemporalMarker(()->{robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);})                    //wrist transfer
-                .UNSTABLE_addTemporalMarkerOffset(0.2,()->{Slides_Move(RobotActionConfig.deposit_Slide_Down_Pos,0.9);})                                          // Lower slides dist in mm
+                .UNSTABLE_addTemporalMarkerOffset(0.2,()->{Slides_MoveDown(RobotActionConfig.deposit_Slide_Down_Pos,0.9);})                                          // Lower slides dist in mm
                 .waitSeconds(1.5)       // wait time to lower slides.
                 .addTemporalMarker(() -> {
                     Slides_Stop();
