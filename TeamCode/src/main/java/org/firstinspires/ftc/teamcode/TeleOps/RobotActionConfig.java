@@ -20,8 +20,8 @@ public class RobotActionConfig {
 
     //Intake Configure
     public static double intake_Slide_Extension         = 0.29;                                         // range(0.04 - 0.29)
-    public static double intake_Slide_Retract           = 0.04;
-    public static double intake_slide_Retract_Set       = 0.1;
+    public static double intake_Slide_Retract           = 0.04;                                         // 0.01 = 3deg rotation of gobilda servo
+    public static double intake_slide_Retract_Set       = 0.07;
     public static double intake_Slide_Extension_Wait    = 0.16;                                         // FOR AUTO MODE ONLY
 
     public static double intake_Rotation_Mid            = 0.46;                                         // range(0-1, 0.46 at the middle for installation
@@ -45,7 +45,7 @@ public class RobotActionConfig {
     public static double intake_Wrist_highbasketpause   = 0.9;                                          /** upright when high basket  **/
     public static double intake_Wrist_Idle              = 0.20;                                         /** for specimen pick ready  **/
     public static double intake_Wrist_Pick              = 0;                                            /** new servo changed this to 0 for pick **/
-    public static double intake_Wrist_Transfer          = 1;
+    public static double intake_Wrist_Transfer          = 1;                                            // Axon servo - 0-1 = 0-180deg. 0.01 = 1.8 deg
 
     /**Intake Claw range(0-0.27 lowest :0, fully close 0.27 )*/
     /** Todo Intake Claw installation poisition ?? and value??*/
@@ -70,7 +70,7 @@ public class RobotActionConfig {
     /**Deposit_Arm  range(0.4 - 0.95, lowest : , fully back for transfer:0.14 )*/
     /** Todo Deposit Arm installation poisition ?? and value??*/
     public static double deposit_Arm_Pick               = 1;                                            // Installation position: 1 full parallel to ground facing out..
-    public static double deposit_Arm_Dump               = 0.7;                                          // range (0-1) 0: installation position 180 deg
+    public static double deposit_Arm_Dump               = 0.7;                                          // Axon servo -  0-180deg with range (0-1) 0: installation position 180 deg
     public static double deposit_Arm_Dump_Prep          = 0.4;                                          // deposit arm dump pre-ready position.
     public static double deposit_Arm_Transfer           = 0.05;                                         //
     public static double deposit_Arm_hang_Pos           = 0.25;                                         // hang position
