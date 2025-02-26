@@ -46,7 +46,7 @@ public class LeftSideAuto extends LinearOpMode {
     public static double rightPark_heading = 180;
 
 
-    public ElapsedTime timer = new ElapsedTime();
+    private ElapsedTime timer = new ElapsedTime();
 
     float timer_log;
 
@@ -73,7 +73,7 @@ public class LeftSideAuto extends LinearOpMode {
         TrajectorySequence trajSeq = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(basket_x_coordinate,basket_y_coordinate,Math.toRadians(45)))                                //run to basket
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{drive.setDrivePower(new Pose2d(0,0,0));})
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{Slides_Move(RobotActionConfig.deposit_Slide_Highbasket_Pos,1);})     // targetPosition in cm - raise slides
+                .UNSTABLE_addTemporalMarkerOffset(-0.5,()->{Slides_Move(RobotActionConfig.deposit_Slide_Highbasket_Pos,1);})     // targetPosition in cm - raise slides
                 .UNSTABLE_addTemporalMarkerOffset(-0.8,()->{
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump_Prep);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
@@ -83,15 +83,15 @@ public class LeftSideAuto extends LinearOpMode {
                 .addTemporalMarker(()->{robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Dump);})                        // Wrist dump
                 .waitSeconds(0.2)
                 .addTemporalMarker(()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);})                          // open claw
-                .waitSeconds(0.3)                                                                                                           // this is wait time for dropping sample - wait for open claw to drop
+                .waitSeconds(0.2)                                                                                                           // this is wait time for dropping sample - wait for open claw to drop
                 .addTemporalMarker(()->{robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);})                        // at global time 1.5 second mark to back to transfer position
                 .addTemporalMarker(()->{robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);})                    //wrist transfer
-                .UNSTABLE_addTemporalMarkerOffset(0.2,()->{Slides_MoveDown(RobotActionConfig.deposit_Slide_Down_Pos,0.9);})                                          // Lower slides dist in mm
-                .waitSeconds(1.5)       // wait time to lower slides.
+                .UNSTABLE_addTemporalMarkerOffset(0.0,()->{Slides_MoveDown(RobotActionConfig.deposit_Slide_Down_Pos,0.9);})                                          // Lower slides dist in mm
+                .waitSeconds(1.25)       // wait time to lower slides.
                 .addTemporalMarker(() -> {
                     Slides_Stop();
                 })
-                .waitSeconds(0.25)      // wait 0.25 seconds to stationary the robot
+                .waitSeconds(0.25)      // wait 0.25 seconds to stationary the robot --- may not need.
                 /** move to 1st sample*/
                 .lineToLinearHeading(new Pose2d(first_sample_x_coordinate,first_sample_y_coordinate,Math.toRadians(90)))                    //move to 1st sample
                 /** pick 1st sample*/
