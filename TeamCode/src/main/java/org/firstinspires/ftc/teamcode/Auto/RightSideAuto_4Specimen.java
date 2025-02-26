@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Auto.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
@@ -17,16 +18,16 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 @Config
 public class RightSideAuto_4Specimen extends LinearOpMode {
 
-    public static double highbar_x_coordinate = -3;
-    public static double highbar_y_coordinate = -31;
-    public static double highbar_x_coordinate2 = 0;
-    public static double highbar_x_coordinate3 = 3;
-    public static double specimen_pickup_x_coordinate = 29;
-    public static double specimen_pickup_y_coordinate = -49;
-    public static double first_sample_pickup_x_coordinate = 48;
-    public static double first_sample_pickup_y_coordinate = -52;
-    public static double second_sample_pickup_x_coordinate = 58;
-    public static double second_sample_pickup_y_coordinate = -52;
+    public static double highbar_x_coordinate = PointToDrive.highbar_x_coordinate;
+    public static double highbar_y_coordinate = PointToDrive.highbar_y_coordinate;
+    public static double highbar_x_coordinate2 = PointToDrive.highbar_x_coordinate2;
+    public static double highbar_x_coordinate3 = PointToDrive.highbar_x_coordinate3;
+    public static double specimen_pickup_x_coordinate = PointToDrive.specimen_pickup_x_coordinate;
+    public static double specimen_pickup_y_coordinate = PointToDrive.specimen_pickup_y_coordinate;
+    public static double first_sample_pickup_x_coordinate = PointToDrive.first_Color_sample_pickup_x_coordinate;
+    public static double first_sample_pickup_y_coordinate = PointToDrive.first_Color_sample_pickup_y_coordinate;
+    public static double second_sample_pickup_x_coordinate = PointToDrive.second_Color_sample_pickup_x_coordinate;
+    public static double second_sample_pickup_y_coordinate = PointToDrive.second_Color_sample_pickup_y_coordinate;
     public static double clawOpenTimer = 0.2;
     public static double waitTimer = 0.25;
     public static double vSlideWaitTimer = 2*waitTimer;
@@ -392,6 +393,7 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
         if (!isStopRequested())
             drive.followTrajectorySequence(trajSeq);
 
+        PoseStorage.currentPose = drive.getPoseEstimate();
         while (opModeIsActive()) {
             telemetry.addData("Slides Left Position: ", robot.liftMotorLeft.getCurrentPosition());
             telemetry.addData("Slides Right Position: ", robot.liftMotorRight.getCurrentPosition());
