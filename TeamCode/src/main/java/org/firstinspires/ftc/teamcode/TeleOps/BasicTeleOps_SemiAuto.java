@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.BACK;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
@@ -8,6 +9,7 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
+import org.firstinspires.ftc.teamcode.Auto.PointToDrive;
 import org.firstinspires.ftc.teamcode.Auto.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 
@@ -96,6 +98,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
     private ElapsedTime debounceTimer = new ElapsedTime();  // Timer for debouncing
 
     private boolean lBstartPressed = false;                 // For Button State
+    private boolean autoPressed = false;                    // for auto control combination buttons states
 
     //Bulk Reading
     private List<LynxModule> allHubs;                       // Bulk Reading
@@ -103,17 +106,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
     //for color
     private String detectedColor;
 
-    /**Semi Auto Position Setup*/
-    // The coordinates we want the bot to automatically go to when we press the A button
-    Vector2d targetAVector = new Vector2d(45, 45);
-    // The heading we want the bot to end on for targetA
-    double targetAHeading = Math.toRadians(90);
-
-    // The location we want the bot to automatically go to when we press the B button
-    Vector2d targetBVector = new Vector2d(-15, 25);
-
-    // The angle we want to align to when we press Y
-    double targetAngle = Math.toRadians(45);
+    private int n = 1; // for semi auto count
 
 
     @Override
@@ -151,8 +144,10 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
-        //Robot Control State
+        //Robot Drive State
         RobotDrive.DriveMode currentDriveMode = robotDrive.getDriveMode();
+
+        //Robot Control State
 
         //Reset the motor encoder
 
@@ -164,7 +159,8 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         //Telemetry
         telemetry.addLine("-------------------");
         telemetry.addData("Status", " initialized Motors and Encoder and IMU and Arm Control");
-        telemetry.addData("Control Mode", currentDriveMode.name());
+        telemetry.addData("Control Mode", controlState.name());
+        telemetry.addData("Drive Mode", currentDriveMode.name());
         telemetry.addLine("-------------------");
         telemetry.addData("Vertical slide Encoder_left",robot.liftMotorLeft.getCurrentPosition());
         telemetry.addData("Vertical slide Encoder_right",robot.liftMotorRight.getCurrentPosition());
@@ -218,7 +214,6 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         }
 
         // Robot Drivetrain
-        //robotDrive.DriveLoop(); // Use RobotDrive methods
         RobotDrive.DriveMode currentDriveMode = robotDrive.getDriveMode();
 
         //Control Mode Selection
@@ -233,7 +228,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         //RUN Mode Selection
         switch (controlState) {
             case DRIVE_CONTROL:
-                robotDrive.DriveLoop(); // Use RobotDrive methods
+                robotDrive.DriveLoop(); // Use RobotDrive methods to drive the robot
                 if (controlState == ControlState.DRIVE_CONTROL) {
                     //Deposit Arm Control
                     depositArmDrive.DepositArmLoop();
@@ -257,15 +252,52 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                 } else {
                     servoTest.ServoTestLoop();
                 }
-                if ((gamepadCo1.getButton(Y) && gamepadCo1.getButton(LEFT_BUMPER)) && !lBstartPressed) {
+                /** AutoMode Control */
+                if ((gamepadCo1.getButton(Y) && gamepadCo1.getButton(LEFT_BUMPER)) && !autoPressed && isButtonDebounced()) {
+                    /**Global Control ----> Handle Auto Drive if 'Left_trigger + Y' button is pressed*/
+                    autoPressed = true;
+                    double X = Math.abs(poseEstimate.getX());
+                    double Y = Math.abs(poseEstimate.getY());
+                    double offset = ((n - 1) % 10) + 1.5;
+                    double target_X =  PointToDrive.highbar_x_coordinate_left + offset;
+                    /**Semi Auto Position Setup*/
+                    // The coordinates we want the bot to automatically go to when we press the Y button
+                    Vector2d targetAVector = new Vector2d(target_X, PointToDrive.highbar_y_coordinate);
+                    // The heading we want the bot to end on for targetA
+                    double targetAHeading = Math.toRadians(-90);
+
                     Trajectory traj1 = drive.trajectoryBuilder(poseEstimate)
                             .splineTo(targetAVector, targetAHeading)
                             .build();
-                    drive.followTrajectoryAsync(traj1);
-                    controlState = ControlState.AUTOMATIC_CONTROL;
+                    if (((X > 0) || (X < 60)) && ((Y > 12) || (Y < 72))) {
+                        drive.followTrajectoryAsync(traj1);
+                        n +=1;
+                        controlState = ControlState.AUTOMATIC_CONTROL;
+                    }
+                }else if((gamepadCo1.getButton(A) && gamepadCo1.getButton(LEFT_BUMPER)) && !autoPressed && isButtonDebounced()){
+                    /**Global Control ----> Handle Auto Drive if 'Left_trigger + A' button is pressed*/
+                    autoPressed = true;
+                    double X = Math.abs(poseEstimate.getX());
+                    double Y = Math.abs(poseEstimate.getY());
+                    /**Semi Auto Position Setup*/
+                    // The coordinates we want the bot to automatically go to when we press the "Left bumper+A" button
+                    Vector2d targetBVector = new Vector2d(PointToDrive.specimen_pickup_x_coordinate, PointToDrive.specimen_pickup_y_coordinate);
+                    // The heading we want the bot to end on for targetA
+                    double targetAHeading = Math.toRadians(-45);
+
+                    Trajectory traj2 = drive.trajectoryBuilder(poseEstimate)
+                            .splineTo(targetBVector, targetAHeading)
+                            .build();
+                    if ((((13 - X) >= 0) || (X > 13)) && ((Y > 12) || (Y < 72))) {
+                        drive.followTrajectoryAsync(traj2);
+                        controlState = ControlState.AUTOMATIC_CONTROL;
+                    }
+                } else if (!(gamepadCo1.getButton(Y)||gamepadCo1.getButton(B)) && gamepadCo1.getButton(LEFT_BUMPER)){
+                    autoPressed = false;
                 }
             case AUTOMATIC_CONTROL:
-                if ((gamepadCo1.getButton(B) && gamepadCo1.getButton(LEFT_BUMPER)) && !lBstartPressed) {
+                //State Control ----> Handle Auto Cancel Action if 'B' button is pressed
+                if ((gamepadCo1.getButton(B) && gamepadCo1.getButton(LEFT_BUMPER)) && isButtonDebounced()) {
                     drive.breakFollowing();
                     controlState = ControlState.DRIVE_CONTROL;
                 }
@@ -327,6 +359,15 @@ public class BasicTeleOps_SemiAuto extends OpMode {
     //limit switch control
     private boolean LSisPressed() {
             return robot.limitSwitch.getState();
+    }
+
+    // Debouncer helper
+    private boolean isButtonDebounced() {
+        if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+            debounceTimer.reset();
+            return true;
+        }
+        return false;
     }
 
 }
