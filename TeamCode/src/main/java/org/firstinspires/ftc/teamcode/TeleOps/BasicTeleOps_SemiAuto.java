@@ -1,12 +1,22 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.BACK;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.START;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
+
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
+import org.firstinspires.ftc.teamcode.Auto.drive.PoseStorage;
+import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.LynxModule.BulkData;
@@ -56,14 +66,14 @@ import java.util.List;
  *  * A                 ----> TO TOGGLE DEPOSIT CLAW OPEN.CLOSE
  */
 
-@Config
 @TeleOp(name = "TeleOps_Champion_Prep_SemiAuto", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOps_SemiAuto extends OpMode {
 
     //Control State Variable
     public enum ControlState {
-        RUN,
-        TEST
+        DRIVE_CONTROL,
+        TEST,
+        AUTOMATIC_CONTROL
     }
 
     //Robot
@@ -73,6 +83,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
     //Robot drive
     public RobotDrive robotDrive;                           //For robot drive
+    public SampleMecanumDriveCancelable drive;                        //For robot semiAuto drive
 
     //Robot Intake & Deposit
     public FiniteStateMachineDeposit depositArmDrive;       //For Robot Deposit Arm
@@ -80,7 +91,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
     public ServoTest servoTest;                             //For Servo Testing
 
-    private ControlState controlState = ControlState.RUN;   // Control State
+    private ControlState controlState = ControlState.DRIVE_CONTROL;   // Control State
 
     private ElapsedTime debounceTimer = new ElapsedTime();  // Timer for debouncing
 
@@ -92,11 +103,24 @@ public class BasicTeleOps_SemiAuto extends OpMode {
     //for color
     private String detectedColor;
 
+    /**Semi Auto Position Setup*/
+    // The coordinates we want the bot to automatically go to when we press the A button
+    Vector2d targetAVector = new Vector2d(45, 45);
+    // The heading we want the bot to end on for targetA
+    double targetAHeading = Math.toRadians(90);
+
+    // The location we want the bot to automatically go to when we press the B button
+    Vector2d targetBVector = new Vector2d(-15, 25);
+
+    // The angle we want to align to when we press Y
+    double targetAngle = Math.toRadians(45);
+
+
     @Override
     public void init() {
 
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
+        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        SampleMecanumDriveCancelable drive = new SampleMecanumDriveCancelable(hardwareMap);
         // Initialize hardware in RobotHardware
         robot = new RobotHardware();
         robot.init(hardwareMap);
@@ -132,6 +156,11 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
         //Reset the motor encoder
 
+        /** transfer the currentPose from end of Auto -- each Auto code need to
+         * add PoseStorage.currentPose = drive.getPoseEstimate(); at the end of the AutoCode
+         * */
+        drive.setPoseEstimate(PoseStorage.currentPose);
+
         //Telemetry
         telemetry.addLine("-------------------");
         telemetry.addData("Status", " initialized Motors and Encoder and IMU and Arm Control");
@@ -144,6 +173,9 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
     @Override
     public void loop () {
+        drive.update();
+        Pose2d poseEstimate = drive.getPoseEstimate();
+
         long currentTime = System.currentTimeMillis();
         // Button B to reset vertical slide position to bottom.
         if (gamepadCo1.getButton(BACK) && debounceTimer.seconds()>0.2){
@@ -186,7 +218,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         }
 
         // Robot Drivetrain
-        robotDrive.DriveLoop(); // Use RobotDrive methods
+        //robotDrive.DriveLoop(); // Use RobotDrive methods
         RobotDrive.DriveMode currentDriveMode = robotDrive.getDriveMode();
 
         //Control Mode Selection
@@ -199,28 +231,54 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         }
 
         //RUN Mode Selection
-        if (controlState == ControlState.RUN) {
-            //Deposit Arm Control
-            depositArmDrive.DepositArmLoop();
-            FiniteStateMachineDeposit.LIFTSTATE liftState = depositArmDrive.liftState;
-            FiniteStateMachineDeposit.DEPOSITCLAWSTATE depositClawState = depositArmDrive.depositClawState;
-            detectedColor = depositArmDrive.getDetectedColor();
-            //Intake Arm Control
-            intakeArmDrive.IntakeArmLoop();
-            FiniteStateMachineIntake.INTAKESTATE intakeState = intakeArmDrive.intakeState;
-            FiniteStateMachineIntake.INTAKECLAWSTATE intakeClawState = intakeArmDrive.intakeClawState;
-            telemetry.addLine("---------------------");
-            telemetry.addData("Deposit State", liftState);
-            telemetry.addData("Deposit Claw State", depositClawState);
-            telemetry.addLine("---------------------");
-            telemetry.addData("Intake State", intakeState);
-            telemetry.addData("Intake Claw State", intakeClawState);
-            telemetry.addLine("---------------------");
-            telemetry.addData("Color Sensor Hue", RobotActionConfig.hsvValues[0]);
-            telemetry.addData("Detected Color",detectedColor);
-            telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
-        } else {
-            servoTest.ServoTestLoop();
+        switch (controlState) {
+            case DRIVE_CONTROL:
+                robotDrive.DriveLoop(); // Use RobotDrive methods
+                if (controlState == ControlState.DRIVE_CONTROL) {
+                    //Deposit Arm Control
+                    depositArmDrive.DepositArmLoop();
+                    FiniteStateMachineDeposit.LIFTSTATE liftState = depositArmDrive.liftState;
+                    FiniteStateMachineDeposit.DEPOSITCLAWSTATE depositClawState = depositArmDrive.depositClawState;
+                    detectedColor = depositArmDrive.getDetectedColor();
+                    //Intake Arm Control
+                    intakeArmDrive.IntakeArmLoop();
+                    FiniteStateMachineIntake.INTAKESTATE intakeState = intakeArmDrive.intakeState;
+                    FiniteStateMachineIntake.INTAKECLAWSTATE intakeClawState = intakeArmDrive.intakeClawState;
+                    telemetry.addLine("---------------------");
+                    telemetry.addData("Deposit State", liftState);
+                    telemetry.addData("Deposit Claw State", depositClawState);
+                    telemetry.addLine("---------------------");
+                    telemetry.addData("Intake State", intakeState);
+                    telemetry.addData("Intake Claw State", intakeClawState);
+                    telemetry.addLine("---------------------");
+                    telemetry.addData("Color Sensor Hue", RobotActionConfig.hsvValues[0]);
+                    telemetry.addData("Detected Color", detectedColor);
+                    telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
+                } else {
+                    servoTest.ServoTestLoop();
+                }
+                if ((gamepadCo1.getButton(Y) && gamepadCo1.getButton(LEFT_BUMPER)) && !lBstartPressed) {
+                    Trajectory traj1 = drive.trajectoryBuilder(poseEstimate)
+                            .splineTo(targetAVector, targetAHeading)
+                            .build();
+                    drive.followTrajectoryAsync(traj1);
+                    controlState = ControlState.AUTOMATIC_CONTROL;
+                }
+            case AUTOMATIC_CONTROL:
+                if ((gamepadCo1.getButton(B) && gamepadCo1.getButton(LEFT_BUMPER)) && !lBstartPressed) {
+                    drive.breakFollowing();
+                    controlState = ControlState.DRIVE_CONTROL;
+                }
+
+                // If drive finishes its task, cede control to the driver
+                if (!drive.isBusy()) {
+                    controlState = ControlState.DRIVE_CONTROL;
+                }
+                break;
+            default:
+                telemetry.addData("Error", "Unexpected Control Mode: " + controlState);
+                controlState = ControlState.DRIVE_CONTROL;
+                break;
         }
 
         // Telemetry
@@ -260,8 +318,8 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
     //Control State Toggle
     private void toggleControlState () {
-        if (controlState != ControlState.RUN) {
-            controlState = ControlState.RUN;
+        if (controlState != ControlState.DRIVE_CONTROL) {
+            controlState = ControlState.DRIVE_CONTROL;
         } else {
             controlState = ControlState.TEST;
         }
