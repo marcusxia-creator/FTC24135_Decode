@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Auto.drive;
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.localization.Localizer;
 import com.acmerobotics.roadrunner.localization.TwoTrackingWheelLocalizer;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -14,6 +16,7 @@ import org.firstinspires.ftc.teamcode.Auto.drive.GoBildaPinpointDriver;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /*
  * Sample tracking wheel localizer implementation assuming the standard configuration:
@@ -64,6 +67,7 @@ public class PinpointTrackingLocalizer  extends TwoTrackingWheelLocalizer {
         this.pinpoint = pinpoint;
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        pinpoint.update();
         pinpointVel = pinpoint.getVelocity();
         pinpointPos = pinpoint.getPosition();
 
@@ -97,32 +101,20 @@ public class PinpointTrackingLocalizer  extends TwoTrackingWheelLocalizer {
         // TODO: If your encoder velocity can exceed 32767 counts / second (such as the REV Through Bore and other
         //  competing magnetic encoders), change Encoder.getRawVelocity() to Encoder.getCorrectedVelocity() to enable a
         //  compensation method
+        double heading =  pinpoint.getHeading();
+        double cosA = Math.cos(heading);
+        double sinA = Math.sin(heading);
+        // Extract the world velocity components
+        double worldVx = pinpoint.getVelX()/25.4;  //convert to inch/s
+        double worldVy = pinpoint.getVelY()/25.4;  //convert to inch/s
 
+        // Apply the rotation (note the use of heading rather than -heading due to trigonometric identities)
+        double robotVx = worldVx * cosA + worldVy * sinA;
+        double robotVy = -worldVx * sinA + worldVy * cosA;
         return Arrays.asList(
-                pinpointVel.getX(DistanceUnit.INCH),
-                pinpointVel.getY(DistanceUnit.INCH)*-1
+                robotVx,
+                robotVy
         );
-    }
-
-    @Override
-    public Pose2d getPoseVelocity() {
-        // Option A: Let the super class handle it if it does forward kinematics
-        // return super.getPoseVelocity();
-
-        // Option B: Return Pinpoint's velocity directly (bypassing RR's wheel-based derivative)
-        Pose2D velocity = pinpoint.getVelocity();
-        double xVel  = velocity.getX(DistanceUnit.INCH);
-        double yVel  = velocity.getY(DistanceUnit.INCH);
-        double angVel = Math.toRadians(velocity.getHeading(AngleUnit.DEGREES));
-
-        return new Pose2d(xVel, yVel, angVel);
-    }
-
-    //updates
-    @Override
-    public void update() {
-        super.update();     // let Road Runner do its usual steps
-        pinpoint.update();  // fetch fresh data from the Pinpoint
     }
 }
 
