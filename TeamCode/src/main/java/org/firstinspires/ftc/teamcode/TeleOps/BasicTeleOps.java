@@ -95,8 +95,7 @@ public class BasicTeleOps extends OpMode {
     //Bulk Reading
     private List<LynxModule> allHubs;                       // Bulk Reading
 
-    //for color
-    private String detectedColor;
+    //for color-empty
 
     @Override
     public void init() {
@@ -116,8 +115,9 @@ public class BasicTeleOps extends OpMode {
         robotDrive.Init();                                                              // Initialize RobotDrive
 
         //Deposit Arm control
-        depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive); // Pass parameters as needed);
-        //depositArmDrive.Init();
+        depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry); // Pass parameters as needed);
+        depositArmDrive.Init();
+        depositArmDrive.colorRangeIni();
 
 
         //Intake Arm Control
@@ -138,6 +138,9 @@ public class BasicTeleOps extends OpMode {
 
         //Reset the motor encoder
 
+        //get color ranges
+        List<FiniteStateMachineDeposit.ColorRange> colorRanges = depositArmDrive.getColorRanges();
+
         //Telemetry
         telemetry.addLine("-------------------");
         telemetry.addData("Status", " initialized Motors and Encoder and IMU and Arm Control");
@@ -145,13 +148,19 @@ public class BasicTeleOps extends OpMode {
         telemetry.addLine("-------------------");
         telemetry.addData("Vertical slide Encoder_left",robot.liftMotorLeft.getCurrentPosition());
         telemetry.addData("Vertical slide Encoder_right",robot.liftMotorRight.getCurrentPosition());
+        telemetry.addLine("-------------------");
+        for (FiniteStateMachineDeposit.ColorRange range : colorRanges) {
+            telemetry.addData("Color Range", "Name: " + range.colorName +
+                    ", HueMin: " + range.hueMin +
+                    ", HueMax: " + range.hueMax);
+        }
         telemetry.update();
         }
 
     @Override
     public void loop () {
         long currentTime = System.currentTimeMillis();
-        // Button B to reset vertical slide position to bottom.
+        // Button Back to reset vertical slide position to bottom.
         if (gamepadCo1.getButton(BACK) && debounceTimer.seconds()>0.2){
             debounceTimer.reset();
             robot.liftMotorLeft.setTargetPosition(0);
@@ -179,9 +188,12 @@ public class BasicTeleOps extends OpMode {
                 if (hub.equals(allHubs.get(0))) { // Assuming the first hub is Control Hub
                     int frontLeftMotor = bulkData.getMotorCurrentPosition(robot.frontLeftMotor.getPortNumber());
                     int frontRightMotor = bulkData.getMotorCurrentPosition(robot.frontRightMotor.getPortNumber());
-
+                    int backLeftMotor = bulkData.getMotorCurrentPosition(robot.backLeftMotor.getPortNumber());
+                    int backRightMotor = bulkData.getMotorCurrentPosition(robot.backRightMotor.getPortNumber());
                     telemetry.addData("Drive Motor FL Motor (Control Hub) Position", frontLeftMotor);
                     telemetry.addData("Drive Motor FR Motor (Control Hub) Position", frontRightMotor);
+                    telemetry.addData("Drive Motor BL Motor (Control Hub) Position", backLeftMotor);
+                    telemetry.addData("Drive Motor BR Motor (Control Hub) Position", backRightMotor);
                 } else if (hub.equals(allHubs.get(1))) { // Assuming the second hub is Expansion Hub
                     int liftLeftMotor = bulkData.getMotorCurrentPosition(robot.liftMotorLeft.getPortNumber());
                     int  liftRightMotor= bulkData.getMotorCurrentPosition(robot.liftMotorRight.getPortNumber());
@@ -210,7 +222,7 @@ public class BasicTeleOps extends OpMode {
             depositArmDrive.DepositArmLoop();
             FiniteStateMachineDeposit.LIFTSTATE liftState = depositArmDrive.liftState;
             FiniteStateMachineDeposit.DEPOSITCLAWSTATE depositClawState = depositArmDrive.depositClawState;
-            detectedColor = depositArmDrive.getDetectedColor();
+            String detectedColor = depositArmDrive.getDetectedColor();
             //Intake Arm Control
             intakeArmDrive.IntakeArmLoop();
             FiniteStateMachineIntake.INTAKESTATE intakeState = intakeArmDrive.intakeState;

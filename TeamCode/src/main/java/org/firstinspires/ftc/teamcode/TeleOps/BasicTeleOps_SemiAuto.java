@@ -114,7 +114,9 @@ public class BasicTeleOps_SemiAuto extends OpMode {
     public void init() {
 
         //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        SampleMecanumDriveCancelable drive = new SampleMecanumDriveCancelable(hardwareMap);
+        //Initialize RR drive
+        drive = new SampleMecanumDriveCancelable(hardwareMap);
+
         // Initialize hardware in RobotHardware
         robot = new RobotHardware();
         robot.init(hardwareMap);
@@ -128,8 +130,9 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         robotDrive.Init();                                                              // Initialize RobotDrive
 
         //Deposit Arm control
-        depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive); // Pass parameters as needed);
-        //depositArmDrive.Init();
+        depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry); // Pass parameters as needed);
+        depositArmDrive.Init();
+        depositArmDrive.colorRangeIni();
 
 
         //Intake Arm Control
@@ -140,6 +143,9 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         servoTest = new ServoTest(robot, gamepadCo1, gamepadCo2);
         //servoTest.ServoTestInit();
 
+        //Map in Roanrunner drive
+        drive = new SampleMecanumDriveCancelable(hardwareMap);
+
         // get bulk reading
         allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) {
@@ -148,8 +154,8 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         //Robot Drive State
         RobotDrive.DriveMode currentDriveMode = robotDrive.getDriveMode();
 
-        //Robot Control State
-
+        //get color ranges
+        List<FiniteStateMachineDeposit.ColorRange> colorRanges = depositArmDrive.getColorRanges();
         //Reset the motor encoder
 
         /** transfer the currentPose from end of Auto -- each Auto code need to
@@ -168,6 +174,11 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         telemetry.addLine("-------------------");
         telemetry.addData("Vertical slide Encoder_left",robot.liftMotorLeft.getCurrentPosition());
         telemetry.addData("Vertical slide Encoder_right",robot.liftMotorRight.getCurrentPosition());
+        for (FiniteStateMachineDeposit.ColorRange range : colorRanges) {
+            telemetry.addData("Color Range", "Name: " + range.colorName +
+                    ", HueMin: " + range.hueMin +
+                    ", HueMax: " + range.hueMax);
+        }
         telemetry.update();
         }
 
@@ -205,9 +216,12 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                 if (hub.equals(allHubs.get(0))) { // Assuming the first hub is Control Hub
                     int frontLeftMotor = bulkData.getMotorCurrentPosition(robot.frontLeftMotor.getPortNumber());
                     int frontRightMotor = bulkData.getMotorCurrentPosition(robot.frontRightMotor.getPortNumber());
-
+                    int backLeftMotor = bulkData.getMotorCurrentPosition(robot.backLeftMotor.getPortNumber());
+                    int backRightMotor = bulkData.getMotorCurrentPosition(robot.backRightMotor.getPortNumber());
                     telemetry.addData("Drive Motor FL Motor (Control Hub) Position", frontLeftMotor);
                     telemetry.addData("Drive Motor FR Motor (Control Hub) Position", frontRightMotor);
+                    telemetry.addData("Drive Motor BL Motor (Control Hub) Position", backLeftMotor);
+                    telemetry.addData("Drive Motor BR Motor (Control Hub) Position", backRightMotor);
                 } else if (hub.equals(allHubs.get(1))) { // Assuming the second hub is Expansion Hub
                     int liftLeftMotor = bulkData.getMotorCurrentPosition(robot.liftMotorLeft.getPortNumber());
                     int  liftRightMotor= bulkData.getMotorCurrentPosition(robot.liftMotorRight.getPortNumber());

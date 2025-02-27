@@ -12,6 +12,8 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +35,7 @@ public class FiniteStateMachineDeposit {
     private final RobotHardware robot;
     //bring in the finitemachinestateintake
     private final FiniteStateMachineIntake intake;
-
+    private Telemetry telemetry;
     /**
      * Deposit Arm State
      */
@@ -87,11 +89,11 @@ public class FiniteStateMachineDeposit {
     private ElapsedTime runtime = new ElapsedTime(); // Independent timer
     private ElapsedTime liftUpTimeout = new ElapsedTime();
 
-    private final double DEBOUNCE_THRESHOLD = 0.2; // Debouncing threshold for button presses
+    private String detectedColor = "None";
 
     // COLOR LIST
     List<ColorRange> colorRanges = new ArrayList<>();
-    public String detectedColor = "None";
+    //public String detectedColor = "None";
 
     // hsvValues is an array that will hold the hue, saturation, and value information.
     public float hue;
@@ -102,7 +104,7 @@ public class FiniteStateMachineDeposit {
     /**
      * constructor
      */
-    public FiniteStateMachineDeposit(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2, FiniteStateMachineIntake intake) {
+    public FiniteStateMachineDeposit(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2, FiniteStateMachineIntake intake, Telemetry telemetry) {
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
         this.robot = robot;
@@ -126,10 +128,12 @@ public class FiniteStateMachineDeposit {
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
 
         /** create a list color threshold ranges*/
-        colorRanges.add(new ColorRange("Black", 163, 166));
-        colorRanges.add(new ColorRange("Red", 15, 25));
-        colorRanges.add(new ColorRange("Blue", 200, 230));
-        colorRanges.add(new ColorRange("Yellow", 75, 85));
+    }
+    public void colorRangeIni(){
+        colorRanges.add(new ColorRange("Black", 156, 180));
+        colorRanges.add(new ColorRange("Red", 15, 30));
+        colorRanges.add(new ColorRange("Blue", 200, 240));
+        colorRanges.add(new ColorRange("Yellow", 67, 90));
     }
 
     // Deposit Arm Control
@@ -153,21 +157,17 @@ public class FiniteStateMachineDeposit {
         hue = hsvValues[0];
         value = hsvValues[2];
          */
-
-        detectedColor = "None"; // Default value before looping
         empty = true;
         //LOOP THROUGH THE colorRange to check the color
+        // Default value before looping
+        detectedColor = "None";
         for (ColorRange range : colorRanges) {
-            if (hue > range.hueMin && hue < range.hueMax) {
+            if (hue >= range.hueMin && hue <= range.hueMax) {
                 detectedColor = range.colorName;
                 empty = false;
                 break;
             }
         }
-        /// for debugging steps only.
-        telemetry.addData("Final Detected Color", detectedColor);
-        telemetry.update();
-
         /** FSM Loop*/
         switch (liftState) {
             case LIFT_START:
@@ -216,11 +216,14 @@ public class FiniteStateMachineDeposit {
                 break;
 
             case LIFT_SPECIMEN_BRANCH:
-                if (detectedColor.equals("Blue") || detectedColor.equals("Red") || detectedColor.equals("Black")) {
+                if (detectedColor.equals("Black")){
+                    liftState = LIFTSTATE.LIFT_HIGHBAR;
+                    liftTimer.reset();
+                }
+                else if(detectedColor.equals("Blue") || detectedColor.equals("Red") ) {
                     if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1) ||
                             (gamepad_2.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1)) &&
                             isButtonDebounced()) {
-
                         liftState = LIFTSTATE.LIFT_HIGHBAR;
                         liftTimer.reset();
                     }
@@ -380,8 +383,13 @@ public class FiniteStateMachineDeposit {
         DepositClawSwitch();
     }
 
+    // Color return helper
     public String getDetectedColor(){
         return detectedColor;
+    }
+
+    public List<ColorRange> getColorRanges() {
+        return colorRanges;
     }
     // Helper method to check if the lift is within the desired position threshold
     private boolean IsLiftAtPosition(int targetPosition) {
