@@ -130,11 +130,11 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 })
                 .waitSeconds(0.2)
-                .addTemporalMarker(() -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.0,() -> {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                 })
-                .waitSeconds(0.1)
-                .UNSTABLE_addTemporalMarkerOffset(0.3,() -> {
+                .waitSeconds(0.2)
+                .UNSTABLE_addTemporalMarkerOffset(0.0,() -> {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                 })
@@ -147,7 +147,7 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
                 })
 
                 ///Grab 2nd sample
-                .UNSTABLE_addTemporalMarkerOffset(0,() -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.0,() -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
