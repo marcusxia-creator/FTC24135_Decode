@@ -10,11 +10,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Auto.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
-@Autonomous(name="RightSideAuto_4Specimen", group="org.firstinspires.ftc.teamcode.Auto")
+@Autonomous(name="RightSideAuto_4Specimen_gw_test", group="org.firstinspires.ftc.teamcode.Auto")
 @Config
 public class RightSideAuto_4Specimen extends LinearOpMode {
 
@@ -30,7 +31,7 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
     public static double second_sample_pickup_y_coordinate = PointToDrive.second_Color_sample_pickup_y_coordinate;
     public static double clawOpenTimer = 0.2;
     public static double waitTimer = 0.25;
-    public static double vSlideWaitTimer = 2*waitTimer;
+    public static double vSlideWaitTimer = 0.5;
     public static double hSlideWaitTimer =  0.35;
     public static double wristWaitTimer = 0.25;
 
@@ -40,7 +41,7 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        SampleMecanumDriveCancelable drive = new SampleMecanumDriveCancelable(hardwareMap);
         robot.init(hardwareMap);
         vSlides = new VerticalSlide(robot);
 
