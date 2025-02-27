@@ -157,7 +157,6 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // TODO: if desired, use setLocalizer() to change the localization method
-        // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
         setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this));
         //setLocalizer(new PinpointTrackingLocalizer(pinpoint));
 
