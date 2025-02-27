@@ -22,6 +22,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -78,6 +79,8 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
     private IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
+    private GoBildaPinpointDriver pinpoint;
+
     public SampleMecanumDriveCancelable(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
@@ -129,6 +132,8 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
         rightRear = hardwareMap.get(DcMotorEx.class, "BR_Motor");
         rightFront = hardwareMap.get(DcMotorEx.class, "FR_Motor");
 
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"Poinpoint");
+
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
         for (DcMotorEx motor : motors) {
@@ -148,10 +153,13 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
         setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this));
+        //setLocalizer(new PinpointTrackingLocalizer(pinpoint));
 
         trajectorySequenceRunner = new TrajectorySequenceRunnerCancelable(follower, HEADING_PID);
     }
