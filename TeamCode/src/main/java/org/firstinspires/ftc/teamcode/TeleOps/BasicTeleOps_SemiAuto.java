@@ -28,6 +28,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import java.security.AuthProvider;
 import java.util.List;
 
 /** config
@@ -154,7 +155,9 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         /** transfer the currentPose from end of Auto -- each Auto code need to
          * add PoseStorage.currentPose = drive.getPoseEstimate(); at the end of the AutoCode
          * */
-        drive.setPoseEstimate(PoseStorage.currentPose);
+        Pose2d startPose = new Pose2d(7.5, -64, Math.toRadians(-90));// this is for manual testing.
+        //drive.setPoseEstimate(PoseStorage.currentPose);
+        drive.setPoseEstimate(startPose);
 
         //Telemetry
         telemetry.addLine("-------------------");
@@ -216,6 +219,9 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         // Robot Drivetrain
         RobotDrive.DriveMode currentDriveMode = robotDrive.getDriveMode();
 
+        // Initialized an AutoHandler
+        AutoDriveHandler autoDriveHandler = new AutoDriveHandler(drive, poseEstimate, 1);
+
         //Control Mode Selection
         if ((gamepadCo1.getButton(START) && gamepadCo1.getButton(LEFT_BUMPER)) && !lBstartPressed) {
             toggleControlState();
@@ -249,6 +255,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                     telemetry.addData("Color Sensor Hue", RobotActionConfig.hsvValues[0]);
                     telemetry.addData("Detected Color", detectedColor);
                     telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
+
                 } else {
                     servoTest.ServoTestLoop();
                 }
@@ -256,22 +263,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                 if ((gamepadCo1.getButton(Y) && gamepadCo1.getButton(LEFT_BUMPER)) && !autoPressed && isButtonDebounced()) {
                     /**Global Control ----> Handle Auto Drive if 'Left_trigger + Y' button is pressed*/
                     autoPressed = true;
-                    double X = Math.abs(poseEstimate.getX());
-                    double Y = Math.abs(poseEstimate.getY());
-                    double offset = ((n - 1) % 10) + 1.5;
-                    double target_X =  PointToDrive.highbar_x_coordinate_left + offset;
-                    /**Semi Auto Position Setup*/
-                    // The coordinates we want the bot to automatically go to when we press the Y button
-                    Vector2d targetAVector = new Vector2d(target_X, PointToDrive.highbar_y_coordinate);
-                    // The heading we want the bot to end on for targetA
-                    double targetAHeading = Math.toRadians(-90);
-
-                    Trajectory traj1 = drive.trajectoryBuilder(poseEstimate)
-                            .splineTo(targetAVector, targetAHeading)
-                            .build();
-                    if (((X > 0) || (X < 60)) && ((Y > 12) || (Y < 72))) {
-                        drive.followTrajectoryAsync(traj1);
-                        n +=1;
+                    if(autoDriveHandler.handleButtonY()){
                         controlState = ControlState.AUTOMATIC_CONTROL;
                     }
                 }else if((gamepadCo1.getButton(A) && gamepadCo1.getButton(LEFT_BUMPER)) && !autoPressed && isButtonDebounced()){
@@ -288,7 +280,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                     Trajectory traj2 = drive.trajectoryBuilder(poseEstimate)
                             .splineTo(targetBVector, targetAHeading)
                             .build();
-                    if ((((13 - X) >= 0) || (X > 13)) && ((Y > 12) || (Y < 72))) {
+                    if ((((13 - X) >= 0) || (X > 13)) && ((Y > 12) || (Y < 65))) {
                         drive.followTrajectoryAsync(traj2);
                         controlState = ControlState.AUTOMATIC_CONTROL;
                     }
@@ -333,6 +325,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         telemetry.addLine("---------------------");
         telemetry.addData("Heading ", robot.imu.getRobotYawPitchRollAngles().getYaw());
         telemetry.addData("Limit Switch Pressed", robot.limitSwitch.getState());
+        telemetry.addData("PoseEstimate",poseEstimate);
         telemetry.update();
     }
 
