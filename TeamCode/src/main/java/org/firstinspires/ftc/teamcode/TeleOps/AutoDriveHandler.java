@@ -29,12 +29,8 @@ public class AutoDriveHandler {
         double offset = ((n - 1) % 10) + 1.5;
         double target_X = PointToDrive.highbar_x_coordinate_left + offset;
 
-        // Create the target vector and heading.
-        Vector2d targetAVector = new Vector2d(target_X, PointToDrive.highbar_y_coordinate);
-        double targetAHeading = Math.toRadians(-90);
-
         Trajectory traj1 = drive.trajectoryBuilder(poseEstimate)
-                .splineTo(targetAVector, targetAHeading)
+                .lineToLinearHeading(new Pose2d(target_X, PointToDrive.highbar_y_coordinate, Math.toRadians(-90)))
                 .build();
         // Validate position ranges before following trajectory.
         if (((X > 0) || (X < 60)) && ((Y > 12) || (Y < 72))) {
@@ -52,12 +48,8 @@ public class AutoDriveHandler {
     public boolean handleButtonA() {
         double X = Math.abs(poseEstimate.getX());
         double Y = Math.abs(poseEstimate.getY());
-        Vector2d targetBVector = new Vector2d(PointToDrive.specimen_pickup_x_coordinate,
-                PointToDrive.specimen_pickup_y_coordinate);
-        double targetAHeading = Math.toRadians(-45);
-
         Trajectory traj2 = drive.trajectoryBuilder(poseEstimate)
-                .splineTo(targetBVector, targetAHeading)
+                .lineToLinearHeading(new Pose2d(PointToDrive.specimen_pickup_x_coordinate, PointToDrive.specimen_pickup_y_coordinate, Math.toRadians(-45)))
                 .build();
         if ((((13 - X) >= 0) || (X > 13)) && ((Y > 12) || (Y < 72))) {
             drive.followTrajectoryAsync(traj2);

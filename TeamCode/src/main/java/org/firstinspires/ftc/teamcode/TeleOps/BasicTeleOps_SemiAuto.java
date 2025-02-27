@@ -284,19 +284,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                 }else if((gamepadCo1.getButton(A) && gamepadCo1.getButton(LEFT_BUMPER)) && !autoPressed && isButtonDebounced()){
                     /**Global Control ----> Handle Auto Drive if 'Left_trigger + A' button is pressed*/
                     autoPressed = true;
-                    double X = Math.abs(poseEstimate.getX());
-                    double Y = Math.abs(poseEstimate.getY());
-                    /**Semi Auto Position Setup*/
-                    // The coordinates we want the bot to automatically go to when we press the "Left bumper+A" button
-                    Vector2d targetBVector = new Vector2d(PointToDrive.specimen_pickup_x_coordinate, PointToDrive.specimen_pickup_y_coordinate);
-                    // The heading we want the bot to end on for targetA
-                    double targetAHeading = Math.toRadians(-45);
-
-                    Trajectory traj2 = drive.trajectoryBuilder(poseEstimate)
-                            .splineTo(targetBVector, targetAHeading)
-                            .build();
-                    if ((((13 - X) >= 0) || (X > 13)) && ((Y > 12) || (Y < 65))) {
-                        drive.followTrajectoryAsync(traj2);
+                    if(autoDriveHandler.handleButtonA()){
                         controlState = ControlState.AUTOMATIC_CONTROL;
                     }
                 } else if (!(gamepadCo1.getButton(Y)||gamepadCo1.getButton(B)) && gamepadCo1.getButton(LEFT_BUMPER)){

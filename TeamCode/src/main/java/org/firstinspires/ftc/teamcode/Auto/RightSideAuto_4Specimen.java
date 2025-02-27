@@ -59,6 +59,18 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
 
         drive.setPoseEstimate(startPose);
 
+        TrajectorySequence trajSeq2 = drive.trajectorySequenceBuilder(startPose)
+                //extend slides to specimen scoring position
+                .addTemporalMarker(() -> {
+                    vSlides.slidesMove(RobotActionConfig.deposit_Slide_Highbar_Pos, 0.9);
+                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
+                })
+
+                //drive to bar
+                .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate, Math.toRadians(-90)))
+                .build();
+
         TrajectorySequence trajSeq = drive.trajectorySequenceBuilder(startPose)
                 //extend slides to specimen scoring position
                 .addTemporalMarker(() -> {
@@ -66,6 +78,7 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
                 })
+
                 //drive to bar
                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate, Math.toRadians(-90)))
                 //Hook 1st specimen
@@ -435,11 +448,7 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
             long timeout = 2500;  // Set a timeout of 5 seconds to avoid getting stuck
 
             while (opModeIsActive() && (robot.liftMotorLeft.isBusy() || robot.liftMotorRight.isBusy())) {
-                if (!lSisPressed(System.currentTimeMillis())) {  // Pass actual time
-                    Slides_Stop();
-                    break;
-                }
-                if (System.currentTimeMillis() - startTime > timeout) {  // Safety timeout
+                if (isLimitSwitchPressedFor200ms()) {  // Pass actual time
                     Slides_Stop();
                     break;
                 }
@@ -448,10 +457,38 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
     }
 
     /**HELPER METHODS*/
+    /** limit switch helper
     private boolean lSisPressed(long currentTime) {
         if (currentTime - RobotActionConfig.lastPressedTime > RobotActionConfig.debounceDelay) {
             RobotActionConfig.lastPressedTime = currentTime;
             return robot.limitSwitch.getState();  // Invert if switch is normally open
+        }
+        return false;
+    }*/
+    private long limitSwitchPressStartTime = 0;
+
+    // Original method that returns the current state of the limit switch.
+    private boolean lSisPressed() {
+        return robot.limitSwitch.getState();  // Invert if switch is normally open
+    }
+
+    /**
+     * Returns true only if the limit switch has been pressed continuously for at least 200ms.
+     */
+    private boolean isLimitSwitchPressedFor200ms() {
+        if (lSisPressed()) {
+            // If the switch is pressed and we haven't recorded the start time yet,
+            // record the current time.
+            if (limitSwitchPressStartTime == 0) {
+                limitSwitchPressStartTime = System.currentTimeMillis();
+            }
+            // Check if 200ms have elapsed.
+            if (System.currentTimeMillis() - limitSwitchPressStartTime >= 100) {
+                return true;
+            }
+        } else {
+            // If the switch is not pressed, reset the timer.
+            limitSwitchPressStartTime = 0;
         }
         return false;
     }
