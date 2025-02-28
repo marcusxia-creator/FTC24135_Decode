@@ -505,19 +505,19 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
     }
 
     //DEPOSIT SYSTEM Action Helper
-    private void depositSysRetract() {
+    public void depositSysRetract() {
         depositTransferPosition();
         vSlides.slidesMoveDown(RobotActionConfig.deposit_Slide_Down_Pos, 0.8);
     }
 
     ///VERTICAL SLIDES FEATURE MOVE
-    private void extendDepositSysScoring(){
+    public void extendDepositSysScoring(){
         vSlides.slidesMove(RobotActionConfig.deposit_Slide_Highbar_Pos, 1);
         robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
         depositHookPosition();
     }
 
-    private void intakeSpecimenPickReady(){
+    public void intakeSpecimenPickReady(){
         robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
         robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
@@ -526,7 +526,7 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
         robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
     }
 
-    private void intakeSpecimenPick(){
+    public void intakeSpecimenPick(){
         robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
         robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
         robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
