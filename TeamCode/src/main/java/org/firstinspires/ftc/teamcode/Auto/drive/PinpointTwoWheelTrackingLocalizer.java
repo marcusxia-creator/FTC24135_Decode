@@ -4,20 +4,12 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.localization.Localizer;
 import com.acmerobotics.roadrunner.localization.TwoTrackingWheelLocalizer;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Auto.drive.GoBildaPinpointDriver;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /*
  * Sample tracking wheel localizer implementation assuming the standard configuration:
@@ -41,7 +33,7 @@ import java.util.Objects;
  *
  */
 @Config
-public class PinpointTrackingLocalizer  extends TwoTrackingWheelLocalizer {
+public class PinpointTwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
     public static double TICKS_PER_REV = 2000;
     public static double WHEEL_RADIUS = 0.944882; // in
     public static double GEAR_RATIO = 1.0; // output (wheel) speed / input (encoder) speed
@@ -63,7 +55,7 @@ public class PinpointTrackingLocalizer  extends TwoTrackingWheelLocalizer {
     // Perpendicular is perpendicular to the forward axis
     private GoBildaPinpointDriver pinpoint;
 
-    public PinpointTrackingLocalizer(GoBildaPinpointDriver pinpoint) {
+    public PinpointTwoWheelTrackingLocalizer(GoBildaPinpointDriver pinpoint) {
         super(Arrays.asList(
                 new Pose2d(PARALLEL_X, PARALLEL_Y, 0),
                 new Pose2d(PERPENDICULAR_X, PERPENDICULAR_Y, Math.toRadians(90))
