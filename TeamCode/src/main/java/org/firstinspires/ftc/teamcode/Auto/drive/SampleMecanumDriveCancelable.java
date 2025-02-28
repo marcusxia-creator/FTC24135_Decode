@@ -57,8 +57,8 @@ import static org.firstinspires.ftc.teamcode.Auto.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDriveCancelable extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 1.8);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(3.5, 0, 0.18);
 
     public static double LATERAL_MULTIPLIER = 1;
 
@@ -132,7 +132,7 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
         rightRear = hardwareMap.get(DcMotorEx.class, "BR_Motor");
         rightFront = hardwareMap.get(DcMotorEx.class, "FR_Motor");
 
-        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"Poinpoint");
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"Pinpoint");
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         pinpoint.resetPosAndIMU();
         pinpoint.update();
@@ -231,6 +231,7 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
     }
 
     public void update() {
+        pinpoint.update();
         updatePoseEstimate();
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);

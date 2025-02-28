@@ -50,7 +50,6 @@ public class PinpointTrackingLocalizer  extends TwoTrackingWheelLocalizer {
     public static double PERPENDICULAR_X = -5.1672;
     public static double PERPENDICULAR_Y = -1;
 
-    public static double mmToinch = 0.0393701;
     Pose2D pinpointPos;
     Pose2D pinpointVel;
 
@@ -101,6 +100,7 @@ public class PinpointTrackingLocalizer  extends TwoTrackingWheelLocalizer {
         // TODO: If your encoder velocity can exceed 32767 counts / second (such as the REV Through Bore and other
         //  competing magnetic encoders), change Encoder.getRawVelocity() to Encoder.getCorrectedVelocity() to enable a
         //  compensation method
+        pinpoint.update();
         double heading =  pinpoint.getHeading();
         double cosA = Math.cos(heading);
         double sinA = Math.sin(heading);
