@@ -133,6 +133,9 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
         rightFront = hardwareMap.get(DcMotorEx.class, "FR_Motor");
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"Poinpoint");
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        pinpoint.resetPosAndIMU();
+        pinpoint.update();
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
@@ -157,8 +160,9 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // TODO: if desired, use setLocalizer() to change the localization method
-        setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this));
-        //setLocalizer(new PinpointTrackingLocalizer(pinpoint));
+        //setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this));
+        setLocalizer(new PinpointTrackingLocalizer(pinpoint));
+
 
         trajectorySequenceRunner = new TrajectorySequenceRunnerCancelable(follower, HEADING_PID);
     }
@@ -337,6 +341,10 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
 
     public static TrajectoryAccelerationConstraint getAccelerationConstraint(double maxAccel) {
         return new ProfileAccelerationConstraint(maxAccel);
+    }
+
+    public void resetPosAndIMU(){
+        pinpoint.resetPosAndIMU(); //resets the position to 0 and recalibrates the IMU
     }
 }
 
