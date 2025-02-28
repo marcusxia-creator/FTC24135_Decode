@@ -53,8 +53,17 @@ public class RightAuto_4Specimen_Steps extends LinearOpMode {
         Pose2d startPose = new Pose2d(7.5, -64, Math.toRadians(-90));
 
         drive.setPoseEstimate(startPose);
-
         TrajectorySequence trajSeq = drive.trajectorySequenceBuilder(startPose)
+                .addTemporalMarker(() -> {
+                    Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Pos, 0.9);
+                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
+                })
+                //drive to bar
+                .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate-2, Math.toRadians(-90)))
+                .build();
+
+        TrajectorySequence trajSeq1 = drive.trajectorySequenceBuilder(startPose)
                 //extend slides to specimen scoring position
                 .addTemporalMarker(() -> {
                     Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Pos, 0.9);
@@ -78,12 +87,12 @@ public class RightAuto_4Specimen_Steps extends LinearOpMode {
                 //back out of bar position -1st time
                 //drop slides and put arm back to transfer position
                 /// retract deposit arm back to transfter while moving
-                .UNSTABLE_addTemporalMarkerOffset(0.0, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.0, () -> {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                 })
                 /// retract deposit slide back to transfter while moving
-                .UNSTABLE_addTemporalMarkerOffset(0.0, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.0, () -> {
                     Slides_Move(RobotActionConfig.deposit_Slide_Down_Pos, 0.8); //Move Slides Down
                 })
                 /** 2nd Segment --> GRAB SAMPLES FOR SPECIMENS*/
