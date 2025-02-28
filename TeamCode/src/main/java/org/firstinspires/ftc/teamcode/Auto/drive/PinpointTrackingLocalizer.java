@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Auto.drive;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.localization.Localizer;
@@ -39,16 +40,20 @@ import java.util.Objects;
  *    \--------------/
  *
  */
+@Config
 public class PinpointTrackingLocalizer  extends TwoTrackingWheelLocalizer {
     public static double TICKS_PER_REV = 2000;
     public static double WHEEL_RADIUS = 0.944882; // in
     public static double GEAR_RATIO = 1.0; // output (wheel) speed / input (encoder) speed
 
-    public static double PARALLEL_X = -0.875; // X is the up and down direction
-    public static double PARALLEL_Y = -5.875; // Y is the strafe direction
+    public static double PARALLEL_X = -0.875; ///-0.875; // X is the up and down direction
+    public static double PARALLEL_Y = -5.875; ///-5.875; // Y is the strafe direction
 
-    public static double PERPENDICULAR_X = -5.1672;
-    public static double PERPENDICULAR_Y = -1;
+    public static double PERPENDICULAR_X = -5.1672; ///-5.1672;
+    public static double PERPENDICULAR_Y = -1; ///-1;
+
+    public static double x_offset = -149.225; // unit in mm
+    public static double y_offset = -165.1; // unit in mm
 
     Pose2D pinpointPos;
     Pose2D pinpointVel;
@@ -66,10 +71,9 @@ public class PinpointTrackingLocalizer  extends TwoTrackingWheelLocalizer {
         this.pinpoint = pinpoint;
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
-        pinpoint.update();
-        pinpointVel = pinpoint.getVelocity();
-        pinpointPos = pinpoint.getPosition();
-
+        //
+        this.pinpoint.setOffsets(x_offset,y_offset);
+        this.pinpoint.resetPosAndIMU();
     }
     public static double encoderTicksToInches(double ticks) {
         return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV;
@@ -82,7 +86,7 @@ public class PinpointTrackingLocalizer  extends TwoTrackingWheelLocalizer {
 
     @Override
     public Double getHeadingVelocity() {
-        return pinpointVel.getHeading(AngleUnit.RADIANS);
+        return pinpoint.getHeadingVelocity();
     }
 
     @NonNull

@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence;
 
 /*
@@ -30,7 +30,7 @@ public class FollowerPIDTuner extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        SampleMecanumDriveCancelable drive = new SampleMecanumDriveCancelable(hardwareMap);
 
         Pose2d startPose = new Pose2d(-DISTANCE / 2, -DISTANCE / 2, 0);
 

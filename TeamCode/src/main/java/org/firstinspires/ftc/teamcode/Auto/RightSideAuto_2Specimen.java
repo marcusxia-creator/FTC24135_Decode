@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
@@ -34,7 +34,7 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        SampleMecanumDriveCancelable drive = new SampleMecanumDriveCancelable(hardwareMap);
         robot.init(hardwareMap);
 
         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);

@@ -6,10 +6,9 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
@@ -52,7 +51,7 @@ public class LeftSideAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        SampleMecanumDriveCancelable drive = new SampleMecanumDriveCancelable(hardwareMap);
 
         robot.init(hardwareMap);
 

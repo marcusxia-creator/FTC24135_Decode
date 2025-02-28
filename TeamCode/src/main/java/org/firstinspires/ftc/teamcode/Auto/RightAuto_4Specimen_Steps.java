@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
@@ -60,7 +59,7 @@ public class RightAuto_4Specimen_Steps extends LinearOpMode {
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
                 })
                 //drive to bar
-                .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate-2, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate, Math.toRadians(-90)))
                 .build();
 
         TrajectorySequence trajSeq1 = drive.trajectorySequenceBuilder(startPose)
@@ -421,7 +420,7 @@ public class RightAuto_4Specimen_Steps extends LinearOpMode {
                 })
                 .waitSeconds(0.1)
                 /** ----> Extend slides to OB ZONE*/
-                .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(-45)))
                 .UNSTABLE_addTemporalMarkerOffset(-0.3, ()  -> {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
