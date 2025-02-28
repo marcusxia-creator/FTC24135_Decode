@@ -17,7 +17,6 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -133,9 +132,6 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
         rightFront = hardwareMap.get(DcMotorEx.class, "FR_Motor");
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"Pinpoint");
-        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
-        pinpoint.resetPosAndIMU();
-        pinpoint.update();
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
@@ -161,8 +157,7 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
 
         // TODO: if desired, use setLocalizer() to change the localization method
         //setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this));
-        setLocalizer(new PinpointTrackingLocalizer(pinpoint));
-
+        setLocalizer(new PinpointTwoWheelTrackingLocalizer(pinpoint));
 
         trajectorySequenceRunner = new TrajectorySequenceRunnerCancelable(follower, HEADING_PID);
     }
