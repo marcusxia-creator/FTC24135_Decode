@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
-@Autonomous(name="RightSideAuto_4Specimen_Step", group="org.firstinspires.ftc.teamcode.Auto")
+@Autonomous(name="RightSideAuto_4Specimen_gw_test_Step", group="org.firstinspires.ftc.teamcode.Auto")
 @Config
 public class RightAuto_4Specimen_Steps extends LinearOpMode {
 
