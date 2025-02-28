@@ -131,15 +131,15 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.7,() -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.75,() -> {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                 })
                 /// Return to transfer position - While Robot is moving - overlapping with next move
-                .UNSTABLE_addTemporalMarkerOffset(0.75,() -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.95,() -> {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                 })
-                .waitSeconds(0.7) // 0.7 after open deposit claw then move robot, deposit arm back to transfer while robot moving
+                .waitSeconds(0.75) // 0.7 after open deposit claw then move robot, deposit arm back to transfer while robot moving
             /**Move to 2nd sample*/
                 /// 2nd sample -- Moving
                 .lineToLinearHeading(new Pose2d(second_sample_pickup_x_coordinate, second_sample_pickup_y_coordinate, Math.toRadians(90)))
