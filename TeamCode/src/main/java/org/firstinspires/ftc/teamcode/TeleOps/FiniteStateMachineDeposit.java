@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static java.lang.Thread.sleep;
 
@@ -172,8 +173,8 @@ public class FiniteStateMachineDeposit {
         switch (liftState) {
             case LIFT_START:
                 /** DECIDE THE COLOR FOR HIGH BASKET LIFT TRANSFER - Button X - Debounce the button press X for starting the lift extend */
-                if (((gamepad_1.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1) ||
-                        (gamepad_2.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1)) &&
+                if (((gamepad_1.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_BUMPER)) ||
+                        (gamepad_2.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_BUMPER))) &&
                         isButtonDebounced()) {
                     liftTimer.reset();
                     liftUpTimeout.reset();
@@ -181,8 +182,8 @@ public class FiniteStateMachineDeposit {
                 }
 
                 // "Y" button to set deposit arm to hook specimen position
-                if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1) ||
-                        (gamepad_2.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1)) &&
+                if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_BUMPER))  ||
+                        (gamepad_2.getButton(GamepadKeys.Button.Y) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_BUMPER))) &&
                         isButtonDebounced()) {
                     liftTimer.reset();
                     liftUpTimeout.reset();
@@ -207,8 +208,8 @@ public class FiniteStateMachineDeposit {
                     liftTimer.reset();
                 }
                 // Blue and Red for choose again -- x for high basket, y for dropping
-                if ((detectedColor.equals("Blue") || detectedColor.equals("Red")) && ((gamepad_1.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1) ||
-                        (gamepad_2.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1)) &&
+                if ((detectedColor.equals("Blue") || detectedColor.equals("Red")) && ((gamepad_1.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_BUMPER)) ||
+                        (gamepad_2.getButton(GamepadKeys.Button.X) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_BUMPER))) &&
                         isButtonDebounced()) {
                     liftState = LIFTSTATE.LIFT_HIGHBASKET;
                     liftTimer.reset();
@@ -221,8 +222,8 @@ public class FiniteStateMachineDeposit {
                     liftTimer.reset();
                 }
                 else if(detectedColor.equals("Blue") || detectedColor.equals("Red") ) {
-                    if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1) ||
-                            (gamepad_2.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1)) &&
+                    if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_BUMPER)) ||
+                            (gamepad_2.getButton(GamepadKeys.Button.Y) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_BUMPER))) &&
                             isButtonDebounced()) {
                         liftState = LIFTSTATE.LIFT_HIGHBAR;
                         liftTimer.reset();

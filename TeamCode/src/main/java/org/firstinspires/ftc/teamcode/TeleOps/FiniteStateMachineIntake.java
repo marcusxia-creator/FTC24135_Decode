@@ -195,7 +195,7 @@ public class FiniteStateMachineIntake {
             case INTAKE_SAMPLE_RETRACT:
                 // Wait for the pickup time to pass
                 if (intakeTimer.seconds() > RobotActionConfig.waitTime) {
-                    //robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close); // it is not necessary as intake claw is controlled by state, state drive the open/close
+                    robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close); // it is not necessary as intake claw is controlled by state, state drive the open/close
                     intakeClawState = INTAKECLAWSTATE.CLOSE;
                 }
                 if (intakeTimer.seconds() > RobotActionConfig.waitTime + RobotActionConfig.waitTime) {

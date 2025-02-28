@@ -77,19 +77,19 @@ public class RightAuto_4Specimen_Steps extends LinearOpMode {
                 .waitSeconds(0.1)
                 //back out of bar position -1st time
                 //drop slides and put arm back to transfer position
-
-                /** 2nd Segment --> GRAB SAMPLES FOR SPECIMENS*/
-                /**Move to 1st sample*/
-                .lineToLinearHeading(new Pose2d(first_sample_pickup_x_coordinate, first_sample_pickup_y_coordinate, Math.toRadians(90)))
                 /// retract deposit arm back to transfter while moving
-                .UNSTABLE_addTemporalMarkerOffset(-1.0, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.0, () -> {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                 })
                 /// retract deposit slide back to transfter while moving
-                .UNSTABLE_addTemporalMarkerOffset(-1.5, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.0, () -> {
                     Slides_Move(RobotActionConfig.deposit_Slide_Down_Pos, 0.8); //Move Slides Down
                 })
+                /** 2nd Segment --> GRAB SAMPLES FOR SPECIMENS*/
+                /**Move to 1st sample*/
+                .lineToLinearHeading(new Pose2d(first_sample_pickup_x_coordinate, first_sample_pickup_y_coordinate, Math.toRadians(90)))
+
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                     Slides_Stop();
