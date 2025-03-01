@@ -71,7 +71,7 @@ public class RightSideAuto_3Specimen extends LinearOpMode {
                 })
                 .waitSeconds(clawOpenTimer)
                 .addTemporalMarker(() -> {
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Retract_Pos);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 })
                 .waitSeconds(0.15)
                 //back out of bar position -1st time
@@ -158,7 +158,7 @@ public class RightSideAuto_3Specimen extends LinearOpMode {
                 })
                 .waitSeconds(clawOpenTimer)
                 .addTemporalMarker(() -> {
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Retract_Pos);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 })
                 .waitSeconds(0.15)
                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate - 10, Math.toRadians(-90)))
@@ -234,7 +234,7 @@ public class RightSideAuto_3Specimen extends LinearOpMode {
                 })
                 .waitSeconds(clawOpenTimer)
                 .addTemporalMarker(() -> {
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Retract_Pos);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 })
                 .waitSeconds(0.15)
                 //Back out robot

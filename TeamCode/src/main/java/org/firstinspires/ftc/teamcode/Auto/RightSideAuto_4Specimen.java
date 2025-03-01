@@ -86,7 +86,7 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0.08, () -> {
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Retract_Pos);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 })
                 .waitSeconds(0.1)
 
@@ -249,7 +249,7 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0.08, () -> {
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Retract_Pos);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 })
                 .waitSeconds(0.1)
             /// move to 3rd specimen to pick up
@@ -314,7 +314,7 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                  })
                  .UNSTABLE_addTemporalMarkerOffset(0.08, () -> {
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Retract_Pos);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                  })
                  .waitSeconds(0.1)
             /// ----> move to 4th specimen pick up position
@@ -383,7 +383,7 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
                 })
                 .waitSeconds(0.08)
                 .addTemporalMarker(() -> {
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Retract_Pos);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 })
                 .waitSeconds(0.1)
                 .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(-45)))

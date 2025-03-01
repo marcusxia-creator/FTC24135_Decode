@@ -71,7 +71,7 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
                 })
                 .waitSeconds(clawOpenTimer)
                 .addTemporalMarker(() -> {
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Retract_Pos);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 })
                 .waitSeconds(waitTimer)
 
@@ -153,7 +153,7 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
                 })
                 .waitSeconds(clawOpenTimer)
                 .addTemporalMarker(() -> {
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Retract_Pos);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 })
                 .waitSeconds(waitTimer*2)
                 /** move out */
