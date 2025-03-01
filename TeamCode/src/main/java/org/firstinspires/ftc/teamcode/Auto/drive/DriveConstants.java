@@ -48,7 +48,7 @@ public class DriveConstants {
      */
     public static double WHEEL_RADIUS = 1.8898; // in
     public static double GEAR_RATIO = 1.5; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 12.15; // 15.47 in
+    public static double TRACK_WIDTH = 12.15; // 15.47 in   --- 12.15in is the physical trackwidth
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -58,7 +58,7 @@ public class DriveConstants {
      */
     public static double kV = 0.015;  // 0.012 -(20250225)
     public static double kA = 0.0035;
-    public static double kStatic = 0.1;  //0.1 -(20250225)
+    public static double kStatic = 0.05;  //0.1 -(20250225); 0.05 -(20250301) - seems better on the PID
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,

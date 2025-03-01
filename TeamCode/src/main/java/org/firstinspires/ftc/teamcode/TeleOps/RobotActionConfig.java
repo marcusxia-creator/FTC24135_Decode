@@ -44,8 +44,8 @@ public class RobotActionConfig {
     /** Todo Intake Wrist installation poisition ?? and value??*/
     public static double intake_Wrist_highbasketpause   = 0.9;                                          /** upright when high basket  **/
     public static double intake_Wrist_Idle              = 0.20;                                         /** for specimen pick ready  **/
-    public static double intake_Wrist_Pick              = 0;                                            /** new servo changed this to 0 for pick **/
-    public static double intake_Wrist_Transfer          = 1;                                            // Axon servo - 0-1 = 0-180deg. 0.01 = 1.8 deg
+    public static double intake_Wrist_Pick              = 0.0;                                            /** new servo changed this to 0 for pick **/
+    public static double intake_Wrist_Transfer          = 1.0;                                            // Axon servo - 0-1 = 0-180deg. 0.01 = 1.8 deg
 
     /**Intake Claw range(0-0.27 lowest :0, fully close 0.27 )*/
     /** Todo Intake Claw installation poisition ?? and value??*/

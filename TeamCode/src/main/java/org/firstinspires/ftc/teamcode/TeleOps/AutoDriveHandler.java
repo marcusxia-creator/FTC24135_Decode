@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Auto.PointToDrive;
 import org.firstinspires.ftc.teamcode.Auto.RightSideAuto_4Specimen;
@@ -16,10 +17,15 @@ public class AutoDriveHandler {
     private int n;
     private RightSideAuto_4Specimen rightAuto;
 
-    public AutoDriveHandler(SampleMecanumDriveCancelable drive, Pose2d poseEstimate, int initialN) {
+    private VerticalSlide vSlides;
+
+    private RobotHardware robot;
+    public AutoDriveHandler(SampleMecanumDriveCancelable drive, RobotHardware robot,Pose2d poseEstimate, int initialN) {
         this.drive = drive;
+        this.robot = robot;
         this.poseEstimate = poseEstimate;
         this.n = initialN;
+        vSlides = new VerticalSlide(this.robot);
     }
 
     /**
@@ -33,8 +39,14 @@ public class AutoDriveHandler {
         double target_X = PointToDrive.highbar_x_coordinate_left + offset;
 
         TrajectorySequence traj1 = drive.trajectorySequenceBuilder(poseEstimate)
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{vSlides.slidesMove(RobotActionConfig.deposit_Slide_Highbar_Pos,RobotActionConfig.deposit_Slide_UpLiftPower);})
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);})
+
                 .lineToLinearHeading(new Pose2d(target_X, PointToDrive.highbar_y_coordinate, Math.toRadians(-90)))
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{rightAuto.extendDepositSysScoring();})
+
+                .UNSTABLE_addTemporalMarkerOffset(0.1,()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);})
+                .UNSTABLE_addTemporalMarkerOffset(0.2,()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);})
                 .build();
         // Validate position ranges before following trajectory.
         if (((X > 0) || (X < 60)) && ((Y > 12) || (Y < 72))) {
@@ -55,8 +67,11 @@ public class AutoDriveHandler {
         double Y = Math.abs(poseEstimate.getY());
         TrajectorySequence traj2 = drive.trajectorySequenceBuilder(poseEstimate)
                 .lineToLinearHeading(new Pose2d(PointToDrive.specimen_pickup_x_coordinate, PointToDrive.specimen_pickup_y_coordinate, Math.toRadians(-45)))
-                .UNSTABLE_addTemporalMarkerOffset(-0.5,()->{rightAuto.depositSysRetract();})
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{rightAuto.intakeSpecimenPick();})
+                .UNSTABLE_addTemporalMarkerOffset(-1,()->{
+                    vSlides.slidesMoveDown(RobotActionConfig.deposit_Slide_Down_Pos, 0.8);
+                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);})
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{intakeSpecimenPick();})
                 .build();
         if ((((13 - X) >= 0) || (X > 13)) && ((Y > 12) || (Y < 72))) {
             drive.followTrajectorySequence(traj2);
@@ -68,6 +83,55 @@ public class AutoDriveHandler {
     // Optionally, you might provide setter methods to update poseEstimate
     public void updatePose(Pose2d newPose) {
         this.poseEstimate = newPose;
+    }
+
+    private void intakeSpecimenPickReady(){
+        robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
+        robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
+        robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
+        robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Wait);
+        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Wait);
+        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
+    }
+
+    private void intakeSpecimenPick(){
+        robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
+        robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
+        robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
+        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Pick);
+    }
+
+    /** Slides subclass for vertical slides moving helper method.*/
+    class VerticalSlide {
+        RobotHardware robot;
+        private VerticalSlide(RobotHardware robot){
+            this.robot = robot;
+        }
+        private void Slides_Stop() {
+            robot.liftMotorLeft.setPower(0);
+            robot.liftMotorRight.setPower(0);
+        }
+
+        private void slidesMove(double targetPosition, double speed) {
+            int targetTick = (int) (targetPosition * RobotActionConfig.TICKS_PER_MM_Slides);
+            robot.liftMotorLeft.setTargetPosition(targetTick);
+            robot.liftMotorRight.setTargetPosition(targetTick);
+            robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.liftMotorLeft.setPower(speed);
+            robot.liftMotorRight.setPower(speed);
+        }
+
+        private void slidesMoveDown(double targetPosition, double speed) {
+            int targetTick = (int) (targetPosition * RobotActionConfig.TICKS_PER_MM_Slides);
+            robot.liftMotorLeft.setTargetPosition(targetTick);
+            robot.liftMotorRight.setTargetPosition(targetTick);
+            robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.liftMotorLeft.setPower(speed);
+            robot.liftMotorRight.setPower(speed);
+        }
+
     }
 }
 

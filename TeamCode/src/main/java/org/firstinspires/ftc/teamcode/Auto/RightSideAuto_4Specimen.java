@@ -63,10 +63,8 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
                 //extend slides to specimen scoring position
                 .addTemporalMarker(() -> {
                     vSlides.slidesMove(RobotActionConfig.deposit_Slide_Highbar_Pos, 0.9);
-                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
+                    depositHookPosition();
                 })
-
                 //drive to bar
                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate, Math.toRadians(-90)))
                 .build();
@@ -404,7 +402,7 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
         timer.reset();
         long currentTime = System.currentTimeMillis();
         if (!isStopRequested())
-            drive.followTrajectorySequence(trajSeq);
+            drive.followTrajectorySequence(trajSeq2);
 
         PoseStorage.currentPose = drive.getPoseEstimate();
         while (opModeIsActive()) {
@@ -530,7 +528,7 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
         robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
         robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
         robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
-        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
+        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Pick);
     }
 
     private void executeTransfer(){

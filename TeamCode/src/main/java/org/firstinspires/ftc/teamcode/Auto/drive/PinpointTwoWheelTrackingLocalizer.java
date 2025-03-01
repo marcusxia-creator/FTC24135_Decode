@@ -44,8 +44,8 @@ public class PinpointTwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer
     public static double PERPENDICULAR_X = -5.1672; ///-5.1672;
     public static double PERPENDICULAR_Y = -1; ///-1;
 
-    public static double x_offset = -149.225; // unit in mm
-    public static double y_offset = -165.1; // unit in mm
+    public static double x_offset = -149.225; // unit in mm    or change to -5.875=149.225
+    public static double y_offset = -131.2468; // unit in mm     or change to -5.1672=131.2468
 
     Pose2D pinpointPos;
     Pose2D pinpointVel;

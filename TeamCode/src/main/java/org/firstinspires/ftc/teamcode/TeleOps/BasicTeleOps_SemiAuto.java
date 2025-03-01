@@ -164,7 +164,6 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         Pose2d startPose = new Pose2d(7.5, -64, Math.toRadians(-90));// this is for manual testing.
         //drive.setPoseEstimate(PoseStorage.currentPose);
         drive.setPoseEstimate(startPose);
-        drive.update();
 
         //Telemetry
         telemetry.addLine("-------------------");
@@ -235,7 +234,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         RobotDrive.DriveMode currentDriveMode = robotDrive.getDriveMode();
 
         // Initialized an AutoHandler
-        AutoDriveHandler autoDriveHandler = new AutoDriveHandler(drive, poseEstimate, 1);
+        AutoDriveHandler autoDriveHandler = new AutoDriveHandler(drive,robot, poseEstimate, 1);
 
         //Control Mode Selection
         if ((gamepadCo1.getButton(START) && gamepadCo1.getButton(LEFT_BUMPER)) && !lBstartPressed) {
