@@ -53,10 +53,10 @@ public class RobotActionConfig {
     public static double intake_Claw_Close              = 0.27;
 
     //Deposit Config
-    public static int deposit_Slide_Down_Pos            = 15;                                            //unit in mm, to prevent hard hit.
-    public static int deposit_Slide_Highbar_Pos         = 255;                                          //unit in mm, slides Position Configure
+    public static int deposit_Slide_Down_Pos            = 4;                                            //unit in mm, to prevent hard hit.
+    public static int deposit_Slide_Highbar_Pos         = 240;                                          //unit in mm, slides Position Configure
     public static int deposit_Slide_Highbasket_Pos      = 770;                                          //unit in mm, highbasket point
-    public static int deposit_Slide_Hang_Pos            = 805;                                          //unit in mm, highest point
+    public static int deposit_Slide_Hang_Pos            = 825;                                          //unit in mm, highest point
 
     /**Deposit Wrist  range(0-0.43, lowest :0.43, fully back for transfer:0.14 )*/
     /** Todo Deposit Wrist installation poisition ?? and value??*/

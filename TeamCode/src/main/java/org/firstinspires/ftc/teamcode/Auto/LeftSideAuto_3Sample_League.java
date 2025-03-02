@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 @Autonomous(name="LeftSideAuto_League", group="org.firstinspires.ftc.teamcode.Auto")
 @Config
-public class LeftSideAuto_League extends LinearOpMode {
+public class LeftSideAuto_3Sample_League extends LinearOpMode {
 
     RobotHardware robot = new RobotHardware();                          //RobotHardware is from TeleOps.
     static final double COUNTS_PER_MOTOR_GOBILDA_435 = 384.5;
