@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 public class RightAuto_4Specimen_Steps extends LinearOpMode {
 
     public static double highbar_x_coordinate = -3;
-    public static double highbar_y_coordinate = -30.5;
+    public static double highbar_y_coordinate = -31.5;
     public static double highbar_x_coordinate2 = 0;
     public static double highbar_x_coordinate3 = 3;
     public static double specimen_pickup_x_coordinate = 29;
@@ -59,7 +59,7 @@ public class RightAuto_4Specimen_Steps extends LinearOpMode {
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
                 })
                 //drive to bar
-                .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(highbar_x_coordinate-6, highbar_y_coordinate, Math.toRadians(-90)))
                 .build();
 
         TrajectorySequence trajSeq1 = drive.trajectorySequenceBuilder(startPose)
@@ -70,7 +70,7 @@ public class RightAuto_4Specimen_Steps extends LinearOpMode {
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
                 })
                 //drive to bar
-                .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(highbar_x_coordinate-3, highbar_y_coordinate, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
@@ -121,30 +121,30 @@ public class RightAuto_4Specimen_Steps extends LinearOpMode {
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                 })
                 // retract slide slightly overlap with intake arm retract to transfer
-                .UNSTABLE_addTemporalMarkerOffset(0.15, () ->{
+                .UNSTABLE_addTemporalMarkerOffset(0.1, () ->{
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 })//intake slide retract time is 0.25s
-                .UNSTABLE_addTemporalMarkerOffset(0.45, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.0, () -> {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.55, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.1, () -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 })
                 ///Drop sample into OB Zone
-                .UNSTABLE_addTemporalMarkerOffset(0.65, () ->  {
+                .UNSTABLE_addTemporalMarkerOffset(1.25, () ->  {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.85,() -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.5,() -> {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                 })
                 /// Return to transfer position - While Robot is moving - overlapping with next move
-                .UNSTABLE_addTemporalMarkerOffset(0.95,() -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.6,() -> {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                 })
-                .waitSeconds(0.85) // 0.85 when open deposit claw then move robot, deposit arm back to transfer while robot moving
+                .waitSeconds(1.2) // 0.95 when open deposit claw then move robot, deposit arm back to transfer while robot moving
                 /**Move to 2nd sample                                                               ----total: 5.7secs */
                 /// 2nd sample -- Moving
                 .lineToLinearHeading(new Pose2d(second_sample_pickup_x_coordinate, second_sample_pickup_y_coordinate, Math.toRadians(90)))
@@ -174,30 +174,30 @@ public class RightAuto_4Specimen_Steps extends LinearOpMode {
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                 })
                 // retract slide slightly overlap with intake arm retract to transfer
-                .UNSTABLE_addTemporalMarkerOffset(0.15, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.1, () -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.45, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.0, () -> {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.55, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.1, () -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 })
                 ///Drop 2nd sample at OB Zone
-                .UNSTABLE_addTemporalMarkerOffset(0.65, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.25, () -> {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.85,() -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.5,() -> {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                 })
                 /// Return to transfer position - While Robot is moving - overlapping with next move
-                .UNSTABLE_addTemporalMarkerOffset(0.95,() -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.6,() -> {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                 })
-                .waitSeconds(0.9) // 0.9 when open deposit claw and ensure sample dropped, then move robot, deposit arm back to transfer while robot moving
+                .waitSeconds(1.5) // 0.9 when open deposit claw and ensure sample dropped, then move robot, deposit arm back to transfer while robot moving
                 /** 3rd SEGMENT --> MOVE TO SPECIMEN PICKUP POSITION                                ----total: 9.7sec */
                 /// ---->  2nd SPECIMEN -- Move to 2nd specimen on ground - it takes 1seconds
                 .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(-45)))
@@ -233,28 +233,28 @@ public class RightAuto_4Specimen_Steps extends LinearOpMode {
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                 })
                 //0.15 sec later to retract slide
-                .UNSTABLE_addTemporalMarkerOffset(0.15,() -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.1,() -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.45, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.0, () -> {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.55, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.1, () -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.65, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.15, () -> {
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
                 })
                 //extend vertical slides to scoring position - while robot is moving
-                .UNSTABLE_addTemporalMarkerOffset(0.65, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.2, () -> {
                     Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Pos, 0.9);
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
                 })
-                .waitSeconds(0.55)                                                                  ///wait 0.55 sec until completion of transfer
+                .waitSeconds(1.15)                                                                  ///wait 0.55 sec until completion of transfer
                 /// ---> 2nd SPECIMEN -- Moving to the high bar to 2nd specimen scoring             ----total 14 sec, moving need 2sec = 16s
-                .lineToLinearHeading(new Pose2d(highbar_x_coordinate2, highbar_y_coordinate, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(highbar_x_coordinate2-6, highbar_y_coordinate, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
@@ -290,13 +290,13 @@ public class RightAuto_4Specimen_Steps extends LinearOpMode {
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Wait);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.4, () -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
                 })
-                .waitSeconds(0.5+hSlideWaitTimer)
+                .waitSeconds(0.4+hSlideWaitTimer)
                 /// ----> 3rd SPECIMEN -- Grabbing
                 .addTemporalMarker(() -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
@@ -308,28 +308,28 @@ public class RightAuto_4Specimen_Steps extends LinearOpMode {
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.15, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.1, () -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.4, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.0, () -> {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.1, () -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.55, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.15, () -> {
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
                 })
                 /// ---->  3rd SPECIMEN -- raise up slides to scoring position                      ----total 22.6sec
-                .UNSTABLE_addTemporalMarkerOffset(0.55, ()  -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.25, ()  -> {
                     Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Pos, 0.9);
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
                 })
-                .waitSeconds(0.55) // ---> the wait time is up to the point vertical slide rises up.
+                .waitSeconds(1.1) // ---> the wait time is up to the point vertical slide rises up.
                 /// ---->  3rd SPECIMEN -- move to bar for hook while vertical slide moving up
-                .lineToLinearHeading(new Pose2d(highbar_x_coordinate3, highbar_y_coordinate, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(highbar_x_coordinate3-6, highbar_y_coordinate, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
@@ -365,13 +365,13 @@ public class RightAuto_4Specimen_Steps extends LinearOpMode {
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
                 })
                 /// ----> 4th SPECIMEN -- extend slide to pick position
-                .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.4, () -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
                 })
-                .waitSeconds(hSlideWaitTimer+0.5)
+                .waitSeconds(hSlideWaitTimer+0.4)
                 .addTemporalMarker(() -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
                 })
@@ -387,22 +387,22 @@ public class RightAuto_4Specimen_Steps extends LinearOpMode {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.4, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.0, () -> {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.1, () -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 })
-                .waitSeconds(0.6)
+                .waitSeconds(1.1)
                 //----> 4th SPECIMEN ---- rising slides to scoring position
                 .addTemporalMarker(() -> {
                     Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Pos, 0.9);
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
                 })
-                .waitSeconds(vSlideWaitTimer)
+                .waitSeconds(0.25)
                 //----> 4th SPECIMEN ---- moving to highbar
-                .lineToLinearHeading(new Pose2d(highbar_x_coordinate3, highbar_y_coordinate, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(highbar_x_coordinate3-6, highbar_y_coordinate, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
@@ -432,7 +432,7 @@ public class RightAuto_4Specimen_Steps extends LinearOpMode {
         waitForStart();
 
         if (!isStopRequested())
-            drive.followTrajectorySequence(trajSeq);
+            drive.followTrajectorySequence(trajSeq1);
 
         while (opModeIsActive()) {
             telemetry.addData("Slides Position: ", robot.liftMotorLeft.getCurrentPosition());
