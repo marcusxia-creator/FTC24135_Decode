@@ -46,7 +46,14 @@ public class AutoDriveHandler {
                 .lineToLinearHeading(new Pose2d(target_X, PointToDrive.highbar_y_coordinate, Math.toRadians(-90)))
 
                 .UNSTABLE_addTemporalMarkerOffset(0.1,()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);})
-                .UNSTABLE_addTemporalMarkerOffset(0.2,()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);})
+                .UNSTABLE_addTemporalMarkerOffset(0.25,()->{robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);})
+                .waitSeconds(0.5)
+                .lineToLinearHeading(new Pose2d(PointToDrive.specimen_pickup_x_coordinate, PointToDrive.specimen_pickup_y_coordinate, Math.toRadians(-45)))
+                .UNSTABLE_addTemporalMarkerOffset(-1.25,()->{
+                    vSlides.slidesMoveDown(RobotActionConfig.deposit_Slide_Down_Pos, 0.8);
+                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);})
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{vSlides.Slides_Stop();})
                 .build();
         // Validate position ranges before following trajectory.
         if (((X > 0) || (X < 60)) && ((Y > 12) || (Y < 72))) {
@@ -67,11 +74,11 @@ public class AutoDriveHandler {
         double Y = Math.abs(poseEstimate.getY());
         TrajectorySequence traj2 = drive.trajectorySequenceBuilder(poseEstimate)
                 .lineToLinearHeading(new Pose2d(PointToDrive.specimen_pickup_x_coordinate, PointToDrive.specimen_pickup_y_coordinate, Math.toRadians(-45)))
-                .UNSTABLE_addTemporalMarkerOffset(-1,()->{
+                .UNSTABLE_addTemporalMarkerOffset(-1.5,()->{
                     vSlides.slidesMoveDown(RobotActionConfig.deposit_Slide_Down_Pos, 0.8);
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);})
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{intakeSpecimenPick();})
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{vSlides.Slides_Stop();})
                 .build();
         if ((((13 - X) >= 0) || (X > 13)) && ((Y > 12) || (Y < 72))) {
             drive.followTrajectorySequence(traj2);
@@ -99,6 +106,7 @@ public class AutoDriveHandler {
         robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
         robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
         robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Pick);
+        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
     }
 
     /** Slides subclass for vertical slides moving helper method.*/

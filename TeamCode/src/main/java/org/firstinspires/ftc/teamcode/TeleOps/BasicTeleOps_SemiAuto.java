@@ -280,8 +280,10 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                     if(autoDriveHandler.handleButtonY()){
                         controlState = ControlState.AUTOMATIC_CONTROL;
                     }
-                }else if((gamepadCo1.getButton(A) && gamepadCo1.getButton(LEFT_BUMPER)) && !autoPressed && isButtonDebounced()){
-                    /**Global Control ----> Handle Auto Drive if 'Left_trigger + A' button is pressed*/
+                }
+                /**
+                if((gamepadCo1.getButton(A) && gamepadCo1.getButton(LEFT_BUMPER)) && !autoPressed && isButtonDebounced()){
+                    ////**Global Control ----> Handle Auto Drive if 'Left_trigger + A' button is pressed
                     autoPressed = true;
                     if(autoDriveHandler.handleButtonA()){
                         controlState = ControlState.AUTOMATIC_CONTROL;
@@ -289,6 +291,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                 } else if (!(gamepadCo1.getButton(Y)||gamepadCo1.getButton(B)) && gamepadCo1.getButton(LEFT_BUMPER)){
                     autoPressed = false;
                 }
+                */
             case AUTOMATIC_CONTROL:
                 //State Control ----> Handle Auto Cancel Action if 'B' button is pressed
                 if ((gamepadCo1.getButton(B) && gamepadCo1.getButton(LEFT_BUMPER)) && isButtonDebounced()) {
