@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 @Autonomous(name="LeftSideAuto_League", group="org.firstinspires.ftc.teamcode.Auto")
 @Config
-public class LeftSideAuto extends LinearOpMode {
+public class LeftSideAuto_League extends LinearOpMode {
 
     RobotHardware robot = new RobotHardware();                          //RobotHardware is from TeleOps.
     static final double COUNTS_PER_MOTOR_GOBILDA_435 = 384.5;
@@ -72,7 +72,8 @@ public class LeftSideAuto extends LinearOpMode {
         TrajectorySequence trajSeq = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(basket_x_coordinate,basket_y_coordinate,Math.toRadians(45)))                                //run to basket
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{drive.setDrivePower(new Pose2d(0,0,0));})
-                .UNSTABLE_addTemporalMarkerOffset(-0.5,()->{Slides_Move(RobotActionConfig.deposit_Slide_Highbasket_Pos,1);})     // targetPosition in cm - raise slides
+                .UNSTABLE_addTemporalMarkerOffset(-0.5,()->{
+                    Slides_Move(RobotActionConfig.deposit_Slide_Highbasket_Pos,1);})     // targetPosition in cm - raise slides
                 .UNSTABLE_addTemporalMarkerOffset(-0.8,()->{
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump_Prep);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
@@ -220,14 +221,6 @@ public class LeftSideAuto extends LinearOpMode {
         robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.liftMotorLeft.setPower(speed);
         robot.liftMotorRight.setPower(speed);
-        /**
-        while ((robot.liftMotorLeft.isBusy() || robot.liftMotorRight.isBusy()) && opModeIsActive()){
-            if(LSisPressed(200)|| IsLiftDownAtPosition(targetPosition) ){
-                Slides_Stop();
-                break;
-            }
-        }
-         */
     }
     private void Slides_MoveDown(int targetPosition, double speed) {
         // targetPosition in cm - raise slides
