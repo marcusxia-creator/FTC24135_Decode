@@ -23,9 +23,9 @@ Control hub motor:
                 port 3: BR_Motor
 Expansion hub motor:
                 port 0: VS_Left_Motor
-                port 2: VS_Right_Motor
+                port 3: VS_Right_Motor
                 port 1: par (encoder for odometry pod in X direction - parallel direction)
-                port 3: perp (encoder for odometry pod in Y direction - perpendicular direction)
+                port 2: perp (encoder for odometry pod in Y direction - perpendicular direction)
 
 Servo:
 Control hub:
