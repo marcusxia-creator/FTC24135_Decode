@@ -9,7 +9,7 @@ public class RobotActionConfig {
      */
 
     //drive chassis
-    public static double powerFactor                    = 1;
+    public static double powerFactor                    = 0.9;
     public static double WHEEL_DIAMETER_CM              = 9.6;                                          // unit in cm.
     public static double COUNTS_PER_MOTOR_GOBILDA_312   = 537.7;
     public static double GEAR_RATIO                     = 1.5;
@@ -55,7 +55,7 @@ public class RobotActionConfig {
     //Deposit Config
     public static int deposit_Slide_Down_Pos            = 4;                                            //unit in mm, to prevent hard hit.
     public static int deposit_Slide_Highbar_Pos         = 240;                                          //unit in mm, slides Position Configure
-    public static int deposit_Slide_Highbasket_Pos      = 770;                                          //unit in mm, highbasket point
+    public static int deposit_Slide_Highbasket_Pos      = 790;                                          //unit in mm, highbasket point
     public static int deposit_Slide_Hang_Pos            = 900;                                          //unit in mm, highest point
 
     /**Deposit Wrist  range(0-0.43, lowest :0.43, fully back for transfer:0.14 )*/
