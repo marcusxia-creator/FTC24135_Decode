@@ -127,11 +127,11 @@ public class FiniteStateMachineDeposit {
         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
         robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
-
-        /** create a list color threshold ranges*/
     }
+
+    /** create a list color threshold ranges*/
     public void colorRangeIni(){
-        colorRanges.add(new ColorRange("Black", 156, 180));
+        colorRanges.add(new ColorRange("Black", 156, 178));
         colorRanges.add(new ColorRange("Red", 15, 30));
         colorRanges.add(new ColorRange("Blue", 200, 240));
         colorRanges.add(new ColorRange("Yellow", 67, 90));
