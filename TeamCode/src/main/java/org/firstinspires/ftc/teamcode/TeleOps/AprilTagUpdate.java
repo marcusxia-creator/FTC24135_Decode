@@ -79,6 +79,8 @@ public class AprilTagUpdate {
             Integer[] coordinates = getAprilTagCoordinates().get(tag.id);
             if (coordinates != null) {
                 aprilTagCoordinateArray = coordinates;
+            }else{
+                aprilTagCoordinateArray = new Integer[]{null, null};
             }
         }
     }
