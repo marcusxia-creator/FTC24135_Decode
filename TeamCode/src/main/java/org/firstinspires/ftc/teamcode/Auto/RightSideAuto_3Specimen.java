@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.Auto.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
@@ -254,11 +255,12 @@ public class RightSideAuto_3Specimen extends LinearOpMode {
 
         waitForStart();
 
-        if (!isStopRequested())
+        if (!isStopRequested()) {
             drive.followTrajectorySequence(trajSeq);
-
+        }
+        PoseStorage.currentPose = drive.getPoseEstimate();
         while (opModeIsActive()) {
-            telemetry.addData("Slides Position: ", robot.liftMotorLeft.getCurrentPosition());
+            telemetry.addData("Slides Position", robot.liftMotorLeft.getCurrentPosition());
         }
     }
 

@@ -43,7 +43,7 @@ public class LeftSideAuto_3Sample_League extends LinearOpMode {
     public static double third_sample_heading = 114;
 
     public static double rightPark_x_coordiante = -20;
-    public static double rightPark_y_coordiante = 8;
+    public static double rightPark_y_coordiante = 0;
     public static double rightPark_heading = 180;
 
 
