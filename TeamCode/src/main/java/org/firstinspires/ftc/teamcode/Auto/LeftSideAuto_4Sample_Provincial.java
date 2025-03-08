@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 @Autonomous(name="LeftSideAuto_4_Sample", group="org.firstinspires.ftc.teamcode.Auto")
 @Config
-public class LeftSideAuto_Provincial extends LinearOpMode {
+public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
 
     RobotHardware robot = new RobotHardware();                          //RobotHardware is from TeleOps.
     static final double COUNTS_PER_MOTOR_GOBILDA_435 = 384.5;
@@ -30,8 +30,8 @@ public class LeftSideAuto_Provincial extends LinearOpMode {
     public static double dumpTime = 0.5; // deposit time need to rotate deposit arm then open claw
 
     //movement positions
-    public static double basket_x_coordinate = -58.5;
-    public static double basket_y_coordinate = -58.5;
+    public static double basket_x_coordinate = -54.5;
+    public static double basket_y_coordinate = -54.5;
     public static double first_sample_x_coordinate = -49;
     public static double first_sample_y_coordinate = -53;
     public static double second_sample_x_coordinate = -59.75;
@@ -80,6 +80,7 @@ public class LeftSideAuto_Provincial extends LinearOpMode {
                 })
                 .lineToLinearHeading(new Pose2d(basket_x_coordinate,basket_y_coordinate,Math.toRadians(45)))                                //run to basket
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{drive.setDrivePower(new Pose2d(0,0,0));})                                                                                                    // wait slide riseup
+                .waitSeconds(0.5)
                 .addTemporalMarker(()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);})                          // open claw
                 .waitSeconds(0.4)                                                                                                           // this is wait time for dropping sample - wait for open claw to drop
                 .addTemporalMarker(()->{
@@ -249,8 +250,9 @@ public class LeftSideAuto_Provincial extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(rightPark_x_coordiante,rightPark_y_coordiante,Math.toRadians(rightPark_heading)))
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{
                     robot.depositArmServo.setPosition(0.4);
-                    robot.depositWristServo.setPosition(0.05);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 })
+                .waitSeconds(2)
                 .build();
 
         waitForStart();
@@ -281,14 +283,6 @@ public class LeftSideAuto_Provincial extends LinearOpMode {
         robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.liftMotorLeft.setPower(speed);
         robot.liftMotorRight.setPower(speed);
-        /*
-        while ((robot.liftMotorLeft.isBusy() || robot.liftMotorRight.isBusy()) && opModeIsActive()){
-            if(LSisPressed(200)|| IsLiftDownAtPosition(targetPosition) ){
-                Slides_Stop();
-            }
-        }
-
-         */
     }
 
     private void Slides_Stop(){

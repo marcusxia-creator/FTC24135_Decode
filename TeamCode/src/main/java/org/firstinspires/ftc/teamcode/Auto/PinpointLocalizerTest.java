@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 import java.util.Locale;
 
 @TeleOp(name = "Test_Pinpoint_Odometry", group = "TeleOps")
+@Disabled
 public class PinpointLocalizerTest extends LinearOpMode {
 
     GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
