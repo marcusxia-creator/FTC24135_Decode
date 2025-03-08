@@ -162,8 +162,8 @@ public class BasicTeleOps_SemiAuto extends OpMode {
          * add PoseStorage.currentPose = drive.getPoseEstimate(); at the end of the AutoCode
          * */
         Pose2d startPose = new Pose2d(7.5, -64, Math.toRadians(-90));// this is for manual testing.
-        //drive.setPoseEstimate(PoseStorage.currentPose);
-        drive.setPoseEstimate(startPose);
+        drive.setPoseEstimate(PoseStorage.currentPose);
+        //drive.setPoseEstimate(startPose);
 
         //Telemetry
         telemetry.addLine("-------------------");
