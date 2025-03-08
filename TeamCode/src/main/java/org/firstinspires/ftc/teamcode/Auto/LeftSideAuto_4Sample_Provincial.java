@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Auto.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
@@ -261,7 +262,13 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
         if (!isStopRequested()) {
             drive.followTrajectorySequence(trajSeq);
         }
-
+        /// update the currentPose
+        PoseStorage.currentPose = drive.getPoseEstimate();
+        while (opModeIsActive()) {
+            telemetry.addData("Slides Left Position: ", robot.liftMotorLeft.getCurrentPosition());
+            telemetry.addData("Slides Right Position: ", robot.liftMotorRight.getCurrentPosition());
+            telemetry.update();
+        }
     }
 
     private void Slides_Move(int targetPosition, double speed) {
