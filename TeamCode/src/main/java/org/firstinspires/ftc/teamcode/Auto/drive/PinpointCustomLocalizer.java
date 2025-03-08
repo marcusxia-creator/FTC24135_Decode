@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class PinpointCumstomLocalizer implements Localizer {
+public class PinpointCustomLocalizer implements Localizer {
 
     public static double TICKS_PER_REV = 2000;
     public static double WHEEL_RADIUS = 0.944882; // in
@@ -33,7 +33,7 @@ public class PinpointCumstomLocalizer implements Localizer {
 
     private GoBildaPinpointDriver pinpoint;
 
-    public PinpointCumstomLocalizer(GoBildaPinpointDriver pinpoint, Pose2d initialPose){
+    public PinpointCustomLocalizer(GoBildaPinpointDriver pinpoint, Pose2d initialPose){
         this.pinpoint = pinpoint;
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);

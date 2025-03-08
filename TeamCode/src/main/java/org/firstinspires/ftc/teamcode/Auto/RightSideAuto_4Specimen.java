@@ -16,8 +16,6 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 @Autonomous(name="RightSideAuto_4Specimen_gw_test", group="org.firstinspires.ftc.teamcode.Auto")
-@Disabled
-@Config
 public class RightSideAuto_4Specimen extends LinearOpMode {
 
     public static double highbar_x_coordinate = PointToDrive.highbar_x_coordinate;
@@ -61,6 +59,31 @@ public class RightSideAuto_4Specimen extends LinearOpMode {
         Pose2d startPose = new Pose2d(7.5, -64, Math.toRadians(-90));
 
         drive.setPoseEstimate(startPose);
+
+        TrajectorySequence trajSeq1 = drive.trajectorySequenceBuilder(startPose)
+                //extend slides to specimen scoring position
+                .addTemporalMarker(() -> {depositSysScoring();})
+                //drive to bar
+                .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate, Math.toRadians(-90)))
+                //Hook 1st specimen
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
+                })
+                //flat the wrist
+                .UNSTABLE_addTemporalMarkerOffset(0.08, () -> {
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
+                })
+                //wait 0.1 second
+                .waitSeconds(0.1)
+                /** Move to 1st sample on ground - while deposit retracting */
+                .lineToLinearHeading(new Pose2d(first_sample_pickup_x_coordinate, first_sample_pickup_y_coordinate, Math.toRadians(90)))
+                .UNSTABLE_addTemporalMarkerOffset(-1,()->{depositSysRetract();})
+                .UNSTABLE_addTemporalMarkerOffset(-0.75,()->{intakeSamplePick();})
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    drive.setDrivePower(new Pose2d(0, 0, 0));
+                    vSlides.Slides_Stop();
+                })
+                .build();
 
         TrajectorySequence trajSeq2 = drive.trajectorySequenceBuilder(startPose)
                 //extend slides to specimen scoring position

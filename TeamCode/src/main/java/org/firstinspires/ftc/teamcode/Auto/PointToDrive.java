@@ -7,8 +7,8 @@ public class PointToDrive {
     public static double highbar_y_coordinate = -32;
     public static double highbar_x_coordinate2 = -3;
     public static double highbar_x_coordinate3 = 0;
-    public static double specimen_pickup_x_coordinate = 29;
-    public static double specimen_pickup_y_coordinate = -49;
+    public static double specimen_pickup_x_coordinate = 23;
+    public static double specimen_pickup_y_coordinate = -43;
     public static double first_Color_sample_pickup_x_coordinate = 48;
     public static double first_Color_sample_pickup_y_coordinate = -52;
     public static double second_Color_sample_pickup_x_coordinate = 58;
