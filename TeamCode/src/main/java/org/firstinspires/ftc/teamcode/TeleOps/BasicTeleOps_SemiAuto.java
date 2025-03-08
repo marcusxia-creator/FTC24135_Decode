@@ -280,7 +280,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                     if(autoDriveHandler.handleButtonY()){
                         controlState = ControlState.AUTOMATIC_CONTROL;
                     }
-                } else if (!(gamepadCo1.getButton(Y)||gamepadCo1.getButton(B)) && gamepadCo1.getButton(LEFT_BUMPER)) {
+                } else if (!(gamepadCo1.getButton(Y)||gamepadCo1.getButton(B)) && !gamepadCo1.getButton(LEFT_BUMPER)) {
                         autoPressed = false;
                 }
                 /**
