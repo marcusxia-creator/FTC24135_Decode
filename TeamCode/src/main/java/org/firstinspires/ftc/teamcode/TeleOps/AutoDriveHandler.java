@@ -1,12 +1,10 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Auto.PointToDrive;
-import org.firstinspires.ftc.teamcode.Auto.RightSideAuto_4Specimen;
+import org.firstinspires.ftc.teamcode.Auto.RightSideAuto_4Specimen_Original;
 import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence;
 
@@ -15,7 +13,7 @@ public class AutoDriveHandler {
     private SampleMecanumDriveCancelable drive;
     private Pose2d poseEstimate;
     private int n;
-    private RightSideAuto_4Specimen rightAuto;
+    private RightSideAuto_4Specimen_Original rightAuto;
 
     private VerticalSlide vSlides;
 

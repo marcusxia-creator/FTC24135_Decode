@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.Auto;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -12,9 +13,10 @@ import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
-@Autonomous(name="RightSideAuto_4Specimen_gw_test_Transfer", group="org.firstinspires.ftc.teamcode.Auto")
+@Autonomous(name="RightSideAuto_4Specimen_Test_ActionSystem", group="org.firstinspires.ftc.teamcode.Auto")
+@Disabled
 @Config
-public class RightAuto_4Specimen_Transfer extends LinearOpMode {
+public class RightAuto_4Specimen_ActionSystem extends LinearOpMode {
 
     public static double highbar_x_coordinate = -3;
     public static double highbar_y_coordinate = -31.5;

@@ -1,7 +1,6 @@
 
 package org.firstinspires.ftc.teamcode.Auto;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -16,7 +15,8 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 @Autonomous(name="RightSideAuto_4Specimen_gw_test", group="org.firstinspires.ftc.teamcode.Auto")
-public class RightSideAuto_4Specimen extends LinearOpMode {
+@Disabled
+public class RightSideAuto_4Specimen_Original extends LinearOpMode {
 
     public static double highbar_x_coordinate = PointToDrive.highbar_x_coordinate;
     public static double highbar_y_coordinate = PointToDrive.highbar_y_coordinate;
