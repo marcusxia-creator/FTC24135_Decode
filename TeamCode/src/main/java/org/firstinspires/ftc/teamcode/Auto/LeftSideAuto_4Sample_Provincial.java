@@ -31,15 +31,15 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
     public static double dumpTime = 0.5; // deposit time need to rotate deposit arm then open claw
 
     //movement positions
-    public static double basket_x_coordinate = -54.5;
-    public static double basket_y_coordinate = -54.5;
-    public static double first_sample_x_coordinate = -49;
+    public static double basket_x_coordinate = -55.5;
+    public static double basket_y_coordinate = -55.5;
+    public static double first_sample_x_coordinate = -50;
     public static double first_sample_y_coordinate = -53;
-    public static double second_sample_x_coordinate = -59.75;
+    public static double second_sample_x_coordinate = -60;
     public static double second_sample_y_coordinate = -53;
-    public static double third_sample_x_coordinate = -53.5;
-    public static double third_sample_y_coordinate = -47;
-    public static double third_sample_heading = 124;
+    public static double third_sample_x_coordinate = -49;
+    public static double third_sample_y_coordinate = -44;
+    public static double third_sample_heading = 141;
 
     public static double rightPark_x_coordiante = -20;
     public static double rightPark_y_coordiante = 8;
@@ -208,6 +208,8 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                 /** pick 3rd sample*/
                 .addTemporalMarker(()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);})
                 .waitSeconds(0.5)
+                .lineToLinearHeading(new Pose2d(basket_x_coordinate,basket_y_coordinate,Math.toRadians(45)))                                //run to basket
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{drive.setDrivePower(new Pose2d(0,0,0));})
                 .addTemporalMarker(() -> {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
@@ -233,8 +235,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Dump);
                 })
-                .lineToLinearHeading(new Pose2d(basket_x_coordinate,basket_y_coordinate,Math.toRadians(45)))                                //run to basket
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{drive.setDrivePower(new Pose2d(0,0,0));})                      // wait slide riseup
+                // wait slide riseup
                 .waitSeconds(0.8)
                 .addTemporalMarker(()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);})                          // open claw
                 .waitSeconds(0.5)                                                                                                           // this is wait time for dropping sample - wait for open claw to drop

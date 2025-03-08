@@ -9,7 +9,7 @@ public class RobotActionConfig {
      */
 
     //drive chassis
-    public static double powerFactor                    = 0.9;
+    public static double powerFactor                    = 1;
     public static double WHEEL_DIAMETER_CM              = 9.6;                                          // unit in cm.
     public static double COUNTS_PER_MOTOR_GOBILDA_312   = 537.7;
     public static double GEAR_RATIO                     = 1.5;
@@ -32,7 +32,7 @@ public class RobotActionConfig {
     public static double intake_Arm_Left_Pick           = 0.42; //intake arm pick pos
     public static double intake_Arm_Right_Pick          = intake_Arm_Left_Pick + 0.02;                  //0.02 is the offset for left Arm gear
 
-    public static double intake_Arm_Left_Grab           = 0.43;                                         //grab position is the lowest
+    public static double intake_Arm_Left_Grab           = 0.44; //original is 0.43                                         //grab position is the lowest
     public static double intake_Arm_Right_Grab          = intake_Arm_Left_Grab + 0.02;
     public static double intake_Arm_Left_Idle           = 0.26;                                         // intake arm lift a bit before retract
     public static double intake_Arm_Right_Idle          = intake_Arm_Left_Idle + 0.02;
