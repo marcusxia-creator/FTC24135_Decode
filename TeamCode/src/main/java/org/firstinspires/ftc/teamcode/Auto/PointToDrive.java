@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Auto;
 
 public class PointToDrive {
     // Specimen Drive Points
-    public static double highbar_x_coordinate_left = -5;
+    public static double highbar_x_coordinate_left = -8;
     public static double highbar_x_coordinate = -6;
     public static double highbar_y_coordinate = -32;
     public static double highbar_x_coordinate2 = -3;

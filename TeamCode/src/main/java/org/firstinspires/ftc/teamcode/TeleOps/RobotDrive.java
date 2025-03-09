@@ -38,6 +38,8 @@ public class RobotDrive {
     private double powerFactor;
     private Object drive_power;
 
+    private double rotate_Slowness = 0.6;
+
     public RobotDrive(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2) {
         this.robot = robot;
         this.gamepad_1 = gamepad_1;
@@ -86,11 +88,11 @@ public class RobotDrive {
         if (Math.abs(gamepad_1.getRightY()) > 0.1 || Math.abs(gamepad_1.getRightX()) > 0.1 || Math.abs(gamepad_1.getLeftX()) > 0.1) {
             drive = deadband(-gamepad_1.getRightY(),0.1);
             strafe = deadband(gamepad_1.getRightX(),0.1);
-            rotate = deadband(gamepad_1.getLeftX(),0.1);
+            rotate = deadband(gamepad_1.getLeftX(),0.1) * rotate_Slowness;
         } else if (Math.abs(gamepad_2.getRightY()) > 0.1 || Math.abs(gamepad_2.getRightX()) > 0.1 || Math.abs(gamepad_2.getLeftX()) > 0.1) {
             drive = deadband(-gamepad_2.getRightY(),0.1);
             strafe = deadband(gamepad_2.getRightX(),0.1);
-            rotate = deadband(gamepad_2.getLeftX(),0.1);
+            rotate = deadband(gamepad_2.getLeftX(),0.1) * rotate_Slowness;
         }
 
         // Get robot's current heading

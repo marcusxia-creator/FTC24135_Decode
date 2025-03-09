@@ -135,7 +135,7 @@ public class FiniteStateMachineIntake {
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
 
                     rotationPosition = robot.intakeRotationServo.getPosition();
-                    intakeArmPosition = (robot.intakeRightArmServo.getPosition());
+                    intakeArmPosition = robot.intakeLeftArmServo.getPosition();
                     /** claw rotation - LEFT BUMPER */
                     if ((gamepad_1.getButton(LEFT_BUMPER) || gamepad_2.getButton(LEFT_BUMPER)) && isButtonDebounced()) {
                         //use to be 0.01
@@ -154,7 +154,7 @@ public class FiniteStateMachineIntake {
                         //use to be 0.01
                         intakeArmPosition -= 0.05;
                         robot.intakeLeftArmServo.setPosition(Range.clip(intakeArmPosition, 0.1, 0.42));
-                        robot.intakeRightArmServo.setPosition(Range.clip(intakeArmPosition, 0.1, 0.42));
+                        robot.intakeRightArmServo.setPosition(Range.clip(intakeArmPosition + 0.02, 0.1, 0.42));
                     }
 
                     /** intake arm down DPAD DOWN */
@@ -162,7 +162,7 @@ public class FiniteStateMachineIntake {
                         //use to be 0.01
                         intakeArmPosition += 0.05;
                         robot.intakeLeftArmServo.setPosition(Range.clip(intakeArmPosition, 0.1, 0.42));
-                        robot.intakeRightArmServo.setPosition(Range.clip(intakeArmPosition, 0.1, 0.42));
+                        robot.intakeRightArmServo.setPosition(Range.clip(intakeArmPosition + 0.02, 0.1, 0.42));
                     }
 
                     /** intake retract for sample transfer
