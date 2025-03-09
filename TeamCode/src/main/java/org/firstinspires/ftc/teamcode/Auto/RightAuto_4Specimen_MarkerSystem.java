@@ -17,10 +17,10 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 @Config
 public class RightAuto_4Specimen_MarkerSystem extends LinearOpMode {
 
-    public static double highbar_x_coordinate = -3;
+    public static double highbar_x_coordinate = -5;
     public static double highbar_y_coordinate = -31.5;
-    public static double highbar_x_coordinate2 = 0;
-    public static double highbar_x_coordinate3 = 3;
+    public static double highbar_x_coordinate2 = -3;
+    public static double highbar_x_coordinate3 = 0;
     public static double specimen_pickup_x_coordinate = 29;
     public static double specimen_pickup_y_coordinate = -49;
     public static double first_sample_pickup_x_coordinate = 29.32;

@@ -2,13 +2,13 @@ package org.firstinspires.ftc.teamcode.Auto;
 
 public class PointToDrive {
     // Specimen Drive Points
-    public static double highbar_x_coordinate_left = -8;
+    public static double highbar_x_coordinate_left = -6;
     public static double highbar_x_coordinate = -6;
     public static double highbar_y_coordinate = -32;
     public static double highbar_x_coordinate2 = -3;
     public static double highbar_x_coordinate3 = 0;
-    public static double specimen_pickup_x_coordinate = 23;
-    public static double specimen_pickup_y_coordinate = -43;
+    public static double specimen_pickup_x_coordinate = 23.5;
+    public static double specimen_pickup_y_coordinate = -50;
     public static double first_Color_sample_pickup_x_coordinate = 48;
     public static double first_Color_sample_pickup_y_coordinate = -52;
     public static double second_Color_sample_pickup_x_coordinate = 58;
