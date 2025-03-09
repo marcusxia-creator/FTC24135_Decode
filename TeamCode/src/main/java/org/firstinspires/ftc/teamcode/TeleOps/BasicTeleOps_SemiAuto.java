@@ -4,11 +4,14 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.BACK;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_STICK_BUTTON;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.START;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
+import org.firstinspires.ftc.robotcontroller.external.samples.ConceptGamepadTouchpad;
 import org.firstinspires.ftc.teamcode.Auto.PointToDrive;
 import org.firstinspires.ftc.teamcode.Auto.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
@@ -271,7 +274,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                     servoTest.ServoTestLoop();
                 }
                 /** AutoMode Control */
-                if ((gamepadCo1.getButton(Y) && gamepadCo1.getButton(LEFT_BUMPER)) && !autoPressed && isButtonDebounced()) {
+                if ((gamepadCo1.getButton(Y) && gamepadCo1.getButton(LEFT_STICK_BUTTON) && !autoPressed && isButtonDebounced())){
                     /**Global Control ----> Handle Auto Drive if 'Left_trigger + Y' button is pressed*/
                     autoPressed = true;
                     if(autoDriveHandler.handleButtonY()){
