@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
-@Autonomous(name="RightSideAuto_4Specimen", group="org.firstinspires.ftc.teamcode.Auto")
+@Autonomous(name="RightSideAuto_4Specimen_Transfer", group="org.firstinspires.ftc.teamcode.Auto")
 @Config
 public class RightAuto_4Specimen_MarkerSystem extends LinearOpMode {
 
