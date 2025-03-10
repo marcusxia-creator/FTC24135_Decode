@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static org.firstinspires.ftc.teamcode.Auto.RightSideAuto_3Specimen.hSlideWaitTimer;
 import static org.firstinspires.ftc.teamcode.Auto.RightSideAuto_3Specimen.wristWaitTimer;
+import static org.firstinspires.ftc.teamcode.TeleOps.BasicTeleOps_SemiAuto.initialRun;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -16,6 +17,8 @@ public class AutoDriveHandler {
     private SampleMecanumDriveCancelable drive;
     private Pose2d poseEstimate;
     private int n;
+
+    private boolean _initialRun;
     private RightSideAuto_4Specimen_Original rightAuto;
 
     private VerticalSlide vSlides;
@@ -25,8 +28,8 @@ public class AutoDriveHandler {
         this.drive = drive;
         this.robot = robot;
         this.poseEstimate = poseEstimate;
-        this.n = initialN;
         vSlides = new VerticalSlide(this.robot);
+        this.n = initialN;
     }
 
     /**
@@ -34,12 +37,35 @@ public class AutoDriveHandler {
      * @return true if the auto drive was initiated.
      */
     public boolean handleButtonY() {
-        double X = Math.abs(poseEstimate.getX());
-        double Y = Math.abs(poseEstimate.getY());
+        double X = poseEstimate.getX();
+        double Y = poseEstimate.getY();
         double offset = ((n - 1) % 10) + 1.5;
         double target_X = PointToDrive.highbar_x_coordinate_left + offset;
+        TrajectorySequence traj_Initial = drive.trajectorySequenceBuilder(poseEstimate)
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{vSlides.slidesMove(RobotActionConfig.deposit_Slide_Highbar_Pos,RobotActionConfig.deposit_Slide_UpLiftPower);})
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);})
+                .lineToLinearHeading(new Pose2d(target_X, PointToDrive.highbar_y_coordinate, Math.toRadians(-90)))
+                .UNSTABLE_addTemporalMarkerOffset(0.1,()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);})
+                .UNSTABLE_addTemporalMarkerOffset(0.15,()->{robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);})
+                .waitSeconds(0.4)
+                .lineToLinearHeading(new Pose2d(PointToDrive.specimen_pickup_x_coordinate, PointToDrive.specimen_pickup_y_coordinate, Math.toRadians(-33)))
+                .UNSTABLE_addTemporalMarkerOffset(-0.75,()->{
+                    vSlides.slidesMoveDown(RobotActionConfig.deposit_Slide_Down_Pos, 0.8);
+                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
+                    robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
+                    robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
+                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Wait);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Wait);
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{vSlides.Slides_Stop();})
+                .waitSeconds(1)
+                .build();
 
-        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(poseEstimate)
+        TrajectorySequence traj_normal = drive.trajectorySequenceBuilder(poseEstimate)
                 .addTemporalMarker(()->{
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
@@ -50,7 +76,7 @@ public class AutoDriveHandler {
                 .addTemporalMarker(() -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
                 })
-                .waitSeconds(0.15)
+                .waitSeconds(0.2)
                 .addTemporalMarker(() -> {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
@@ -91,10 +117,17 @@ public class AutoDriveHandler {
                 .waitSeconds(1)
                 .build();
         // Validate position ranges before following trajectory.
-        if (((X > 0) || (X < 60)) && ((Y > 12) || (Y < 72))) {
-            drive.followTrajectorySequence(traj1);
-            n++; // increment n for next use
-            return true; // indicate that auto-drive was started
+        if (((X > -10) || (X < 60)) && ((Y > 12) || (Y < 72))) {
+            if(initialRun){
+                drive.followTrajectorySequence(traj_Initial);
+                initialRun = false;
+                return true;
+            }
+            else{
+                drive.followTrajectorySequence(traj_normal);
+                n++; // increment n for next use
+                return true; // indicate that auto-drive was started
+            }
         }
         return false;
     }

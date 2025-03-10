@@ -6,6 +6,7 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.BACK;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_STICK_BUTTON;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_STICK_BUTTON;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.START;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
 
@@ -109,6 +110,8 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
     //for color
     private String detectedColor;
+
+    public static boolean initialRun = true;
 
     @Override
     public void init() {
@@ -274,30 +277,23 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                     servoTest.ServoTestLoop();
                 }
                 /** AutoMode Control */
-                if ((gamepadCo1.getButton(Y) && gamepadCo1.getButton(LEFT_STICK_BUTTON) && !autoPressed && isButtonDebounced())){
+                if ((gamepadCo1.getButton(LEFT_STICK_BUTTON) && !autoPressed && isButtonDebounced())){
                     /**Global Control ----> Handle Auto Drive if 'Left_trigger + Y' button is pressed*/
                     autoPressed = true;
                     if(autoDriveHandler.handleButtonY()){
+                        initialRun = false;
                         controlState = ControlState.AUTOMATIC_CONTROL;
                     }
-                } else if (!(gamepadCo1.getButton(Y)||gamepadCo1.getButton(B)) && !gamepadCo1.getButton(LEFT_STICK_BUTTON)) {
+                } else if (!gamepadCo1.getButton(LEFT_STICK_BUTTON)) {
                         autoPressed = false;
                 }
-                /**
-                if((gamepadCo1.getButton(A) && gamepadCo1.getButton(LEFT_BUMPER)) && !autoPressed && isButtonDebounced()){
-                    ////**Global Control ----> Handle Auto Drive if 'Left_trigger + A' button is pressed
-                    autoPressed = true;
-                    if(autoDriveHandler.handleButtonA()){
-                        controlState = ControlState.AUTOMATIC_CONTROL;
-                    }
-                } else if (!(gamepadCo1.getButton(Y)||gamepadCo1.getButton(B)) && gamepadCo1.getButton(LEFT_BUMPER)){
-                    autoPressed = false;
-                }
-                */
+                break;
+
             case AUTOMATIC_CONTROL:
                 //State Control ----> Handle Auto Cancel Action if 'LEFT_BUMPER + B' button is pressed
-                if ((gamepadCo1.getButton(B) && gamepadCo1.getButton(LEFT_STICK_BUTTON)) && isButtonDebounced()) {
+                if (gamepadCo1.getButton(RIGHT_STICK_BUTTON) && isButtonDebounced()) {
                     drive.breakFollowing();
+                    initialRun = true;
                     controlState = ControlState.DRIVE_CONTROL;
                 }
 
@@ -309,15 +305,17 @@ public class BasicTeleOps_SemiAuto extends OpMode {
             default:
                 telemetry.addData("Error", "Unexpected Control Mode: " + controlState);
                 controlState = ControlState.DRIVE_CONTROL;
+                initialRun = true;
                 break;
         }
 
         // Telemetry
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", currentDriveMode.name());
+        /**
         telemetry.addLine("---------------------");
-        telemetry.addData("VS Left Position", robot.liftMotorLeft.getCurrentPosition());
-        telemetry.addData("VS Right Position", robot.liftMotorRight.getCurrentPosition());
+        //telemetry.addData("VS Left Position", robot.liftMotorLeft.getCurrentPosition());
+        //telemetry.addData("VS Right Position", robot.liftMotorRight.getCurrentPosition());
         telemetry.addLine("---------------------");
         telemetry.addData("Deposit Arm Position", robot.depositArmServo.getPosition());
         telemetry.addData("Deposit Wrist Position", robot.depositWristServo.getPosition());
@@ -329,10 +327,13 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         telemetry.addData("Intake Claw Position", robot.intakeClawServo.getPosition());
         telemetry.addData("Intake Slide Position", robot.intakeLeftSlideServo.getPosition());
         telemetry.addData("Intake Slide Position", robot.intakeRightSlideServo.getPosition());
+         */
         telemetry.addLine("---------------------");
         telemetry.addData("Heading ", robot.imu.getRobotYawPitchRollAngles().getYaw());
+
         telemetry.addData("Limit Switch Pressed", robot.limitSwitch.getState());
         telemetry.addData("PoseEstimate",poseEstimate);
+        telemetry.addData("Auto Initial Run",initialRun);
         telemetry.update();
     }
 
