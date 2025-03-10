@@ -23,8 +23,8 @@ public class RightSideAuto_3Specimen extends LinearOpMode {
     public static double highbar_x_coordinate3 = 0;
     public static double specimen_pickup_x_coordinate = PointToDrive.specimen_pickup_x_coordinate;
     public static double specimen_pickup_y_coordinate = PointToDrive.specimen_pickup_y_coordinate;
-    public static double bar_out_point_1_X = 36;
-    public static double bar_out_point_1_Y = -55;
+    public static double bar_out_point_1_X = 24;
+    public static double bar_out_point_1_Y = -50;
     public static double first_sample_start_point_1_X = 42;
     public static double first_sample_start_point_1_Y = -8;
 
@@ -105,7 +105,7 @@ public class RightSideAuto_3Specimen extends LinearOpMode {
                 })
                 //.waitSeconds(waitTimer-0.15)
                 /** 2nd Segment --> push ground sample for specimen*/
-                .lineToLinearHeading(new Pose2d(first_sample_start_point_1_X, first_sample_start_point_1_Y, Math.toRadians(-90)))
+                .splineToLinearHeading(new Pose2d(first_sample_start_point_1_X, first_sample_start_point_1_Y, Math.toRadians(-90)),Math.toRadians(-90))
                 .lineToLinearHeading(new Pose2d(first_sample_stop_point_1_X, first_sample_stop_point_1_Y, Math.toRadians(-90)))
                 .lineToLinearHeading(new Pose2d(first_sample_start_point_2_X, first_sample_start_point_2_Y, Math.toRadians(-90)))
                 .lineToLinearHeading(new Pose2d(first_sample_stop_point_2_X, first_sample_stop_point_2_Y, Math.toRadians(-90)))
