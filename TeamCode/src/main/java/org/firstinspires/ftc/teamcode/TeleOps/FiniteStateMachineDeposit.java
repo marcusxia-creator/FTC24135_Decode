@@ -118,6 +118,7 @@ public class FiniteStateMachineDeposit {
         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
         robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
+        depositClawState = DEPOSITCLAWSTATE.OPEN;
     }
 
     /** create a list color threshold ranges*/

@@ -140,7 +140,6 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
         //Deposit Arm control
         depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry); // Pass parameters as needed);
-        depositArmDrive.Init();
         depositArmDrive.colorRangeIni();
 
 
@@ -192,18 +191,19 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                     ", HueMax: " + range.hueMax);
         }
         telemetry.update();
+        resetRuntime();
         }
 
     @Override
     public void loop () {
-        resetRuntime();
+        //resetRuntime(); need to review how it impact the runtime.
         drive.update();
         Pose2d poseEstimate = drive.getPoseEstimate();
         Pose2d pinpointPose = drive.updatePinpointPosition();
         // Update pose dynamically in AutoDriveHandler
         autoDriveHandler.updatePoseEstimate(poseEstimate);
 
-        long currentTime = System.currentTimeMillis();
+
         // Button B to reset vertical slide position to bottom.
         if (gamepadCo1.getButton(BACK) && debounceTimer.seconds()>0.2){
             debounceTimer.reset();
@@ -282,7 +282,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                     telemetry.addLine("---------------------");
                     telemetry.addData("Color Sensor Hue", RobotActionConfig.hsvValues[0]);
                     telemetry.addData("Detected Color", detectedColor);
-                    telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
+                    //telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
 
                 } else {
                     servoTest.ServoTestLoop();
@@ -321,7 +321,9 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         }
 
         //Refresh frequency
-        double newTime = getRuntime();
+        long currentTime = System.currentTimeMillis();
+        //double newTime = getRuntime();
+        double newTime = currentTime;
         double loopTime = newTime-oldTime;
         double frequency = 1/loopTime;
         oldTime = newTime;
