@@ -33,7 +33,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequenceBuilder;
-import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequenceRunnerCancelable;
 import org.firstinspires.ftc.teamcode.Auto.util.LynxModuleUtil;
 
@@ -360,6 +359,10 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
         pinpoint.update();
         Pose2d pose = new Pose2d(pinpoint.getPosY(), pinpoint.getPosY(),pinpoint.getPosition().getHeading(AngleUnit.RADIANS));
         return (pose);
+    }
+
+    public double pinPointFrequency(){
+        return (pinpoint.getFrequency());
     }
 }
 

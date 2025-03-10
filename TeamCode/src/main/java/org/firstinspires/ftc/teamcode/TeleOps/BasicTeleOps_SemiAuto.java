@@ -116,6 +116,9 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
     private AutoDriveHandler autoDriveHandler;
 
+    //For time
+    double oldTime = 0;
+
     @Override
     public void init() {
 
@@ -193,6 +196,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
     @Override
     public void loop () {
+        resetRuntime();
         drive.update();
         Pose2d poseEstimate = drive.getPoseEstimate();
         Pose2d pinpointPose = drive.updatePinpointPosition();
@@ -316,6 +320,12 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                 break;
         }
 
+        //Refresh frequency
+        double newTime = getRuntime();
+        double loopTime = newTime-oldTime;
+        double frequency = 1/loopTime;
+        oldTime = newTime;
+
         // Telemetry
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", currentDriveMode.name());
@@ -341,6 +351,9 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         telemetry.addData("Auto Initial Run",initialRun);
         telemetry.addData("PoseEstimate",poseEstimate);
         telemetry.addData("Pinpoint Pose",pinpointPose);
+        telemetry.addLine("---------Frequency--------");
+        telemetry.addData("Pinpoint Frequency", drive.pinPointFrequency()); //prints/gets the current refresh rate of the Pinpoint
+        telemetry.addData("REV Hub Frequency: ", frequency); //prints the control system refresh rate
         telemetry.update();
     }
 
