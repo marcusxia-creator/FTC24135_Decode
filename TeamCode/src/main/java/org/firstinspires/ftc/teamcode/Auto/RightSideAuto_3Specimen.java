@@ -21,8 +21,8 @@ public class RightSideAuto_3Specimen extends LinearOpMode {
     public static double highbar_y_coordinate = -32;
     public static double highbar_x_coordinate2 = -2.5;
     public static double highbar_x_coordinate3 = 0;
-    public static double specimen_pickup_x_coordinate = 29;
-    public static double specimen_pickup_y_coordinate = -47;
+    public static double specimen_pickup_x_coordinate = 29.5;
+    public static double specimen_pickup_y_coordinate = -46.5;
     public static double first_sample_pickup_x_coordinate = 26;
     public static double first_sample_pickup_y_coordinate = -38;
 
@@ -60,7 +60,7 @@ public class RightSideAuto_3Specimen extends LinearOpMode {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
                 })
-                            //.waitSeconds(vSlideWaitTimer)
+                //.waitSeconds(vSlideWaitTimer)
                 //drive to bar
                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
@@ -76,7 +76,7 @@ public class RightSideAuto_3Specimen extends LinearOpMode {
                 })
                 .waitSeconds(0.15)
                 //back out of bar position -1st time
-                .lineToLinearHeading(new Pose2d(24, -60, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(36, -60, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
@@ -92,8 +92,8 @@ public class RightSideAuto_3Specimen extends LinearOpMode {
                 })
                 .waitSeconds(waitTimer-0.05)
                 /** 2nd Segment --> push red sample for specimen*/
-                .lineToLinearHeading(new Pose2d(57, -8, Math.toRadians(-90)))
-                .lineToLinearHeading(new Pose2d(57, -56, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(42, -8, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(52, -60, Math.toRadians(-90)))
 
                 /** 3nd Segment --> move to pick 2nd Specimen*/
                 .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(-45)))
@@ -242,13 +242,13 @@ public class RightSideAuto_3Specimen extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(-45)))
                 /** ----> Extend slides to OB ZONE */
                 .addTemporalMarker(() -> {
-                        robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
-                        robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
-                        Slides_Move(RobotActionConfig.deposit_Slide_Down_Pos, 0.9);
-                        robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
-                        robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
-                        robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
-                        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Pick);
+                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
+                    Slides_Move(RobotActionConfig.deposit_Slide_Down_Pos, 0.9);
+                    robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
+                    robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Pick);
                 })
                 .waitSeconds(0.7)
                 .build();

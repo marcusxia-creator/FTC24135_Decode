@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_STICK_BUTTON;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static java.lang.Thread.sleep;
 
@@ -182,12 +183,12 @@ public class FiniteStateMachineDeposit {
                 }
 
                 // "Y" button to set deposit arm to hook specimen position
-                if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_BUMPER))  ||
-                        (gamepad_2.getButton(GamepadKeys.Button.Y) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_BUMPER))) &&
+                if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_STICK_BUTTON))  ||
+                        (gamepad_2.getButton(GamepadKeys.Button.Y) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_STICK_BUTTON))) &&
                         isButtonDebounced()) {
                     liftTimer.reset();
                     liftUpTimeout.reset();
-                    liftState = LIFTSTATE.LIFT_SPECIMEN_BRANCH;
+                    liftState = LIFTSTATE.LIFT_HIGHBAR;
                 }
 
                 // "Right trigger + Y" button to set deposit arm to hook specimen position
@@ -216,7 +217,7 @@ public class FiniteStateMachineDeposit {
                 }
                 break;
 
-            case LIFT_SPECIMEN_BRANCH:
+            /*case LIFT_SPECIMEN_BRANCH:
                 if (detectedColor.equals("Black")){
                     liftState = LIFTSTATE.LIFT_HIGHBAR;
                     liftTimer.reset();
@@ -230,6 +231,8 @@ public class FiniteStateMachineDeposit {
                     }
                 }
                 break;
+
+             */
 
             case LIFT_HIGHBASKET:
                 if (!detectedColor.equals("Black")) {

@@ -40,6 +40,13 @@ public class AutoDriveHandler {
         double target_X = PointToDrive.highbar_x_coordinate_left + offset;
 
         TrajectorySequence traj1 = drive.trajectorySequenceBuilder(poseEstimate)
+                .addTemporalMarker(()->{
+                    robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
+                    robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Pick);
+                })
+                .waitSeconds(0.5+hSlideWaitTimer)
                 .addTemporalMarker(() -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
                 })
@@ -82,13 +89,6 @@ public class AutoDriveHandler {
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{vSlides.Slides_Stop();})
                 .waitSeconds(1)
-                .addTemporalMarker(()->{
-                    robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
-                    robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
-                })
-                .waitSeconds(0.5+hSlideWaitTimer)
                 .build();
         // Validate position ranges before following trajectory.
         if (((X > 0) || (X < 60)) && ((Y > 12) || (Y < 72))) {
