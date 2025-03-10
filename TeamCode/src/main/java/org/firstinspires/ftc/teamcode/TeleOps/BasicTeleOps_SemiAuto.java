@@ -111,7 +111,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
     //for color
     private String detectedColor;
 
-    public static boolean initialRun = true;
+    public static boolean initialRun;
 
     @Override
     public void init() {
@@ -166,6 +166,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
          * */
         //Pose2d startPose = new Pose2d(7.5, -64, Math.toRadians(-90));// this is for manual testing.
         drive.setPoseEstimate(PoseStorage.currentPose);
+        initialRun = true;
         //drive.setPoseEstimate(startPose);
 
         //Telemetry
@@ -237,7 +238,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         RobotDrive.DriveMode currentDriveMode = robotDrive.getDriveMode();
 
         // Initialized an AutoHandler
-        AutoDriveHandler autoDriveHandler = new AutoDriveHandler(drive,robot, poseEstimate, 1);
+        AutoDriveHandler autoDriveHandler = new AutoDriveHandler(drive,robot, poseEstimate, 1,depositArmDrive);
 
         //Control Mode Selection
         if ((gamepadCo1.getButton(START) && gamepadCo1.getButton(LEFT_BUMPER)) && !lBstartPressed) {
