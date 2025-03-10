@@ -59,7 +59,7 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
         robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
 
         Pose2d startPose = new Pose2d(7.5, -64, Math.toRadians(-90));
-
+        drive.pinpointSetPose(startPose);
         drive.setPoseEstimate(startPose);
         ///-----------------------------------------------------------------------
 
