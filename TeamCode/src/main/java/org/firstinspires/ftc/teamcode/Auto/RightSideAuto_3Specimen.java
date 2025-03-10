@@ -23,6 +23,13 @@ public class RightSideAuto_3Specimen extends LinearOpMode {
     public static double highbar_x_coordinate3 = 0;
     public static double specimen_pickup_x_coordinate = PointToDrive.specimen_pickup_x_coordinate;
     public static double specimen_pickup_y_coordinate = PointToDrive.specimen_pickup_y_coordinate;
+    public static double bar_out_point_1_X = 36;
+    public static double bar_out_point_1_Y = -50;
+    public static double first_sample_start_point_1_X = 44;
+    public static double first_sample_start_point_1_Y = 0;
+
+    public static double first_sample_stop_point_1_X = 52;
+    public static double first_sample_stop_point_1_Y = -55;
     public static double first_sample_pickup_x_coordinate = 26;
     public static double first_sample_pickup_y_coordinate = -38;
 
@@ -76,7 +83,7 @@ public class RightSideAuto_3Specimen extends LinearOpMode {
                 })
                 .waitSeconds(0.15)
                 //back out of bar position -1st time
-                .lineToLinearHeading(new Pose2d(36, -60, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(bar_out_point_1_X, -bar_out_point_1_Y, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
@@ -92,8 +99,8 @@ public class RightSideAuto_3Specimen extends LinearOpMode {
                 })
                 .waitSeconds(waitTimer-0.15)
                 /** 2nd Segment --> push ground sample for specimen*/
-                .splineToLinearHeading(new Pose2d(42, -8, Math.toRadians(-90)),Math.toRadians(-90))
-                .splineToLinearHeading(new Pose2d(52, -60, Math.toRadians(-90)),Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(first_sample_start_point_1_X, first_sample_start_point_1_Y, Math.toRadians(-90)),Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(first_sample_stop_point_1_X, first_sample_stop_point_1_Y, Math.toRadians(-90)),Math.toRadians(-90))
 
                 /** 3nd Segment --> move to pick 2nd Specimen*/
                 .splineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(-45)),Math.toRadians(-90))
