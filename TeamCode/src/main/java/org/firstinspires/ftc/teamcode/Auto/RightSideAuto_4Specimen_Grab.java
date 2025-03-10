@@ -101,7 +101,7 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     Slides_Stop();
                 })
-                //.waitSeconds(waitTimer-0.15)
+                ///-----------------------------------------------------------------------
                 /** --> push ground sample for specimen*/
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
@@ -151,6 +151,12 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
                 })
                 .waitSeconds(0.25)
+                /** waiting for testing
+                .lineToLinearHeading(new Pose2d(first_sample_point_2_X, first_sample_point_2_Y, Math.toRadians(-45)))
+                .UNSTABLE_addTemporalMarkerOffset(0,() -> {
+                    robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
+                })
+                 */
                 .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(-45)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
@@ -159,6 +165,8 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 })
                 .waitSeconds(0.2)
+                ///-----------------------------------------------------------------------
+                /** --> start to pick specimen -------------------------- */
                 .UNSTABLE_addTemporalMarkerOffset(0,() -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
@@ -168,7 +176,6 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Wait);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
                 })
-                /** --> start to pick specimen -------------------------- */
                 .UNSTABLE_addTemporalMarkerOffset(1.0, () -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
