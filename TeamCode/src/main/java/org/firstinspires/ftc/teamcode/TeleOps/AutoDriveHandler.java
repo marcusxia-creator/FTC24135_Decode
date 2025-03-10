@@ -25,13 +25,20 @@ public class AutoDriveHandler {
 
     private final FiniteStateMachineDeposit depositArmDrive;
 
-    public AutoDriveHandler(SampleMecanumDriveCancelable drive, RobotHardware robot, Pose2d poseEstimate, int initialN, FiniteStateMachineDeposit depositArmDrive) {
+    public AutoDriveHandler(SampleMecanumDriveCancelable drive, RobotHardware robot, int initialN, FiniteStateMachineDeposit depositArmDrive) {
         this.drive = drive;
         this.robot = robot;
-        this.poseEstimate = poseEstimate;
         this.depositArmDrive = depositArmDrive;
         vSlides = new VerticalSlide(this.robot);
         this.n = initialN;
+        this.poseEstimate = new Pose2d(0, 0, 0); // Default placeholder pose
+    }
+
+    /**
+     * Updates poseEstimate dynamically.
+     */
+    public void updatePoseEstimate(Pose2d newPose) {
+        this.poseEstimate = newPose;
     }
 
     /**

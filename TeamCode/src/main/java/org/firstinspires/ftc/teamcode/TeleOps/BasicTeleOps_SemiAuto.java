@@ -113,6 +113,8 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
     public static boolean initialRun;
 
+    private AutoDriveHandler autoDriveHandler;
+
     @Override
     public void init() {
 
@@ -165,9 +167,12 @@ public class BasicTeleOps_SemiAuto extends OpMode {
          * add PoseStorage.currentPose = drive.getPoseEstimate(); at the end of the AutoCode
          * */
         //Pose2d startPose = new Pose2d(7.5, -64, Math.toRadians(-90));// this is for manual testing.
+        //drive.setPoseEstimate(startPose);
         drive.setPoseEstimate(PoseStorage.currentPose);
         initialRun = true;
-        //drive.setPoseEstimate(startPose);
+
+        //// Initialized an AutoHandler
+        autoDriveHandler = new AutoDriveHandler(drive,robot, 1,depositArmDrive);
 
         //Telemetry
         telemetry.addLine("-------------------");
@@ -189,6 +194,8 @@ public class BasicTeleOps_SemiAuto extends OpMode {
     public void loop () {
         drive.update();
         Pose2d poseEstimate = drive.getPoseEstimate();
+        // Update pose dynamically in AutoDriveHandler
+        autoDriveHandler.updatePoseEstimate(poseEstimate);
 
         long currentTime = System.currentTimeMillis();
         // Button B to reset vertical slide position to bottom.
@@ -236,9 +243,6 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
         // Robot Drivetrain
         RobotDrive.DriveMode currentDriveMode = robotDrive.getDriveMode();
-
-        // Initialized an AutoHandler
-        AutoDriveHandler autoDriveHandler = new AutoDriveHandler(drive,robot, poseEstimate, 1,depositArmDrive);
 
         //Control Mode Selection
         if ((gamepadCo1.getButton(START) && gamepadCo1.getButton(LEFT_BUMPER)) && !lBstartPressed) {
