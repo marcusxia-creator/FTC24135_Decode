@@ -29,6 +29,8 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequenceRunner;
@@ -132,8 +134,6 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
         rightRear = hardwareMap.get(DcMotorEx.class, "BR_Motor");
         rightFront = hardwareMap.get(DcMotorEx.class, "FR_Motor");
 
-        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"Pinpoint");
-
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
         for (DcMotorEx motor : motors) {
@@ -155,6 +155,14 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
         // TODO: reverse any motors using DcMotor.setDirection()
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        /// Setup pinpoint
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"Pinpoint");
+        pinpoint.setOffsets(-149.225,-131.2468);
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        pinpoint.resetPosAndIMU();
+
 
         // TODO: if desired, use setLocalizer() to change the localization method
         //setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this));
@@ -342,6 +350,16 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
 
     public void resetPosAndIMU(){
         pinpoint.resetPosAndIMU(); //resets the position to 0 and recalibrates the IMU
+    }
+
+    public void pinpointSetPose(Pose2d pose){
+        final Pose2D converted_Pose =new Pose2D(DistanceUnit.INCH, pose.getX(), pose.getY(), AngleUnit.DEGREES, Math.toDegrees(pose.getHeading()));
+        pinpoint.setPosition(converted_Pose); //resets the position to 0 and recalibrates the IMU
+    }
+    public Pose2d updatePinpointPosition(){
+        pinpoint.update();
+        Pose2d pose = new Pose2d(pinpoint.getPosY(), pinpoint.getPosY(),pinpoint.getPosition().getHeading(AngleUnit.RADIANS));
+        return (pose);
     }
 }
 

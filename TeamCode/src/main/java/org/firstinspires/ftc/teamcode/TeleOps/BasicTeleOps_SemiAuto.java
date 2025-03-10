@@ -13,6 +13,7 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.ConceptGamepadTouchpad;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.PointToDrive;
 import org.firstinspires.ftc.teamcode.Auto.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
@@ -194,6 +195,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
     public void loop () {
         drive.update();
         Pose2d poseEstimate = drive.getPoseEstimate();
+        Pose2d pinpointPose = drive.updatePinpointPosition();
         // Update pose dynamically in AutoDriveHandler
         autoDriveHandler.updatePoseEstimate(poseEstimate);
 
@@ -335,10 +337,10 @@ public class BasicTeleOps_SemiAuto extends OpMode {
          */
         telemetry.addLine("---------------------");
         telemetry.addData("Heading ", robot.imu.getRobotYawPitchRollAngles().getYaw());
-
         telemetry.addData("Limit Switch Pressed", robot.limitSwitch.getState());
-        telemetry.addData("PoseEstimate",poseEstimate);
         telemetry.addData("Auto Initial Run",initialRun);
+        telemetry.addData("PoseEstimate",poseEstimate);
+        telemetry.addData("Pinpoint Pose",pinpointPose);
         telemetry.update();
     }
 
