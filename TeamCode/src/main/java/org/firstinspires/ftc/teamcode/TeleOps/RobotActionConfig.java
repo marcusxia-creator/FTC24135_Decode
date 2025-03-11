@@ -20,7 +20,7 @@ public class RobotActionConfig {
 
     //Intake Configure
     public static double intake_Slide_Extension         = 0.29;                                         // range(0.04 - 0.29)
-    public static double intake_Slide_Retract           = 0.06;                                         // 0.01 = 3deg rotation of gobilda servo
+    public static double intake_Slide_Retract           = 0.04;                                         // 0.01 = 3deg rotation of gobilda servo
     public static double intake_slide_Retract_Set       = 0.07;
     public static double intake_Slide_Extension_Wait    = 0.16;                                         // FOR AUTO MODE ONLY
 

@@ -38,7 +38,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
     public static double second_sample_x_coordinate = -60;
     public static double second_sample_y_coordinate = -53;
     public static double third_sample_x_coordinate = -47;
-    public static double third_sample_y_coordinate = -42.5;
+    public static double third_sample_y_coordinate = -41;
     public static double third_sample_heading = 150;
 
     public static double rightPark_x_coordiante = -20;
@@ -208,26 +208,31 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                 /** pick 3rd sample*/
                 .addTemporalMarker(()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);})
                 .waitSeconds(0.5)
-                .lineToLinearHeading(new Pose2d(basket_x_coordinate,basket_y_coordinate,Math.toRadians(45)))                                //run to basket
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{drive.setDrivePower(new Pose2d(0,0,0));})
-                .UNSTABLE_addTemporalMarkerOffset(-0.7,() -> {
+                .addTemporalMarker(()->{
+                    robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
+                    robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
+                })
+                .waitSeconds(0.3)
+                .UNSTABLE_addTemporalMarkerOffset(0,() -> {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                     robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
                 })
                 //0.15 sec later to retract slide
-                .UNSTABLE_addTemporalMarkerOffset(-0.6,() -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.15,() -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.3, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.0, () -> {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.4, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(1.1, () -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 })
-                .waitSeconds(0.6)
+                .waitSeconds(1.5)
+                .lineToLinearHeading(new Pose2d(basket_x_coordinate,basket_y_coordinate,Math.toRadians(45)))                                //run to basket
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{drive.setDrivePower(new Pose2d(0,0,0));})
                 .addTemporalMarker(()-> {
                     Slides_Move(RobotActionConfig.deposit_Slide_Highbasket_Pos, 1);
                 })
