@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
 
     public static double highbar_x_coordinate = -5;
-    public static double highbar_y_coordinate = -32.5;
+    public static double highbar_y_coordinate = -32;
     public static double highbar_x_coordinate2 = -2.5;
     public static double highbar_x_coordinate3 = -3.75;
     public static double specimen_pickup_x_coordinate = PointToDrive.specimen_pickup_x_coordinate;
@@ -71,7 +71,6 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
                 })
-                //.waitSeconds(vSlideWaitTimer)
                 //drive to bar
                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
@@ -88,16 +87,13 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                 .waitSeconds(0.05)
                 //back out of bar position -1st time
                 .lineToLinearHeading(new Pose2d(bar_out_point_1_X, bar_out_point_1_Y, Math.toRadians(-90)))
-                //.UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                //    drive.setDrivePower(new Pose2d(0, 0, 0));
-                //})
+
                 //drop slides and put arm back to transfer position
                 .UNSTABLE_addTemporalMarkerOffset(-0.85, () -> {
                     Slides_Move(RobotActionConfig.deposit_Slide_Down_Pos, 0.8); //Move Slides Down
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                 })
-                //.waitSeconds(vSlideWaitTimer-0.25)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     Slides_Stop();
                 })
@@ -283,7 +279,6 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
                 })
-                //.waitSeconds(vSlideWaitTimer-0.25)
                 /** --> Score 3rd specimen*/
                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate3, highbar_y_coordinate, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
@@ -385,13 +380,6 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
         robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.liftMotorLeft.setPower(speed);
         robot.liftMotorRight.setPower(speed);
-        /**
-         *         while (opModeIsActive() && !atposition) {
-         *             telemetry.addData("Slide mode","Running");
-         *             telemetry.update();
-         *         }
-         */
-
     }
 
     private void Slides_Stop(){
