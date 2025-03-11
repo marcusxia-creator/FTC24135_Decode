@@ -331,7 +331,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         // Telemetry
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", currentDriveMode.name());
-        /**
+
         telemetry.addLine("---------------------");
         //telemetry.addData("VS Left Position", robot.liftMotorLeft.getCurrentPosition());
         //telemetry.addData("VS Right Position", robot.liftMotorRight.getCurrentPosition());
@@ -346,7 +346,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         telemetry.addData("Intake Claw Position", robot.intakeClawServo.getPosition());
         telemetry.addData("Intake Slide Position", robot.intakeLeftSlideServo.getPosition());
         telemetry.addData("Intake Slide Position", robot.intakeRightSlideServo.getPosition());
-         */
+
         telemetry.addLine("---------------------");
         telemetry.addData("Heading ", robot.imu.getRobotYawPitchRollAngles().getYaw());
         telemetry.addData("Limit Switch Pressed", robot.limitSwitch.getState());

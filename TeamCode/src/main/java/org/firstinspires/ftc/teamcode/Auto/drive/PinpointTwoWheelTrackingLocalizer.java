@@ -62,10 +62,9 @@ public class PinpointTwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer
         ));
         this.pinpoint = pinpoint;
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
-        //pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
-        //
-        //this.pinpoint.setOffsets(x_offset,y_offset);
-        //this.pinpoint.resetPosAndIMU();
+        this.pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        this.pinpoint.setOffsets(x_offset,y_offset);
+        this.pinpoint.resetPosAndIMU();
     }
     public static double encoderTicksToInches(double ticks) {
         return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV;
