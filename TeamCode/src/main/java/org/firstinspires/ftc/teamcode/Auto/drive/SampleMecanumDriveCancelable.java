@@ -102,7 +102,7 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
         myIMUparameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                        RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
+                        RevHubOrientationOnRobot.UsbFacingDirection.LEFT
                 ));
         imu.initialize(myIMUparameters);
 
