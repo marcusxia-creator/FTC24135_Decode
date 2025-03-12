@@ -284,7 +284,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                     telemetry.addData("Detected Color", detectedColor);
                     //telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
 
-                } else {
+                } else if(controlState == ControlState.TEST) {
                     servoTest.ServoTestLoop();
                 }
                 /** AutoMode Control */
@@ -325,7 +325,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         //double newTime = getRuntime();
         double newTime = currentTime;
         double loopTime = newTime-oldTime;
-        double frequency = 1/loopTime;
+        double frequency = 1000/loopTime;
         oldTime = newTime;
 
         // Telemetry
