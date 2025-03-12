@@ -263,30 +263,26 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         switch (controlState) {
             case DRIVE_CONTROL:
                 robotDrive.DriveLoop(); // Use RobotDrive methods to drive the robot
-                if (controlState == ControlState.DRIVE_CONTROL) {
-                    //Deposit Arm Control
-                    depositArmDrive.DepositArmLoop();
-                    FiniteStateMachineDeposit.LIFTSTATE liftState = depositArmDrive.liftState;
-                    FiniteStateMachineDeposit.DEPOSITCLAWSTATE depositClawState = depositArmDrive.depositClawState;
-                    detectedColor = depositArmDrive.getDetectedColor();
-                    //Intake Arm Control
-                    intakeArmDrive.IntakeArmLoop();
-                    FiniteStateMachineIntake.INTAKESTATE intakeState = intakeArmDrive.intakeState;
-                    FiniteStateMachineIntake.INTAKECLAWSTATE intakeClawState = intakeArmDrive.intakeClawState;
-                    telemetry.addLine("---------------------");
-                    telemetry.addData("Deposit State", liftState);
-                    telemetry.addData("Deposit Claw State", depositClawState);
-                    telemetry.addLine("---------------------");
-                    telemetry.addData("Intake State", intakeState);
-                    telemetry.addData("Intake Claw State", intakeClawState);
-                    telemetry.addLine("---------------------");
-                    telemetry.addData("Color Sensor Hue", RobotActionConfig.hsvValues[0]);
-                    telemetry.addData("Detected Color", detectedColor);
-                    //telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
+                //Deposit Arm Control
+                depositArmDrive.DepositArmLoop();
+                FiniteStateMachineDeposit.LIFTSTATE liftState = depositArmDrive.liftState;
+                FiniteStateMachineDeposit.DEPOSITCLAWSTATE depositClawState = depositArmDrive.depositClawState;
+                detectedColor = depositArmDrive.getDetectedColor();
+                //Intake Arm Control
+                intakeArmDrive.IntakeArmLoop();
+                FiniteStateMachineIntake.INTAKESTATE intakeState = intakeArmDrive.intakeState;
+                FiniteStateMachineIntake.INTAKECLAWSTATE intakeClawState = intakeArmDrive.intakeClawState;
+                telemetry.addLine("---------------------");
+                telemetry.addData("Deposit State", liftState);
+                telemetry.addData("Deposit Claw State", depositClawState);
+                telemetry.addLine("---------------------");
+                telemetry.addData("Intake State", intakeState);
+                telemetry.addData("Intake Claw State", intakeClawState);
+                telemetry.addLine("---------------------");
+                telemetry.addData("Color Sensor Hue", RobotActionConfig.hsvValues[0]);
+                telemetry.addData("Detected Color", detectedColor);
+                //telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
 
-                } else if(controlState == ControlState.TEST) {
-                    servoTest.ServoTestLoop();
-                }
                 /** AutoMode Control */
                 if ((gamepadCo1.getButton(LEFT_STICK_BUTTON) && !autoPressed && isButtonDebounced())){
                     /**Global Control ----> Handle Auto Drive if 'Left_trigger + Y' button is pressed*/
@@ -298,6 +294,9 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                 } else if (!gamepadCo1.getButton(LEFT_STICK_BUTTON)) {
                         autoPressed = false;
                 }
+                break;
+            case TEST:
+                servoTest.ServoTestLoop();
                 break;
 
             case AUTOMATIC_CONTROL:
