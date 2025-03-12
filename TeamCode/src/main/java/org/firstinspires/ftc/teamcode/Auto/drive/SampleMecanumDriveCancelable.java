@@ -357,7 +357,7 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
     }
     public Pose2d updatePinpointPosition(){
         pinpoint.update();
-        Pose2d pose = new Pose2d(pinpoint.getPosY(), pinpoint.getPosY(),pinpoint.getPosition().getHeading(AngleUnit.RADIANS));
+        Pose2d pose = new Pose2d(pinpoint.getPosX(), pinpoint.getPosY(),pinpoint.getPosition().getHeading(AngleUnit.RADIANS));
         return (pose);
     }
 
