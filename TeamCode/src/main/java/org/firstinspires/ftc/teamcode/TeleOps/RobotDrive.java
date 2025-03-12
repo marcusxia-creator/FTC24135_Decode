@@ -19,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * * Joy Left X                 : Turn
  * * Left Trigger               : Fine Movement + Joystick
  * * START                      : Field centric / Robot centric toggle
- * * Back                       : Reset Yaw angle
+ * * Back                       : Reset Yaw angle --- removed
  * Gamepad 1 override Gamepad 2
  */
 
@@ -63,15 +63,19 @@ public class RobotDrive {
             startPressed = false;
         }
 
-        // Reset IMU heading using button back and reset odometry
+        /** Reset IMU heading using button back and reset odometry
+         * * need to remove this feature, as back button reseting imu may interfer with Roadrunner pose estimation.
+         * * back button is using for retracting slide after auto phase and initial start of teleops
+
         if (gamepad_1.getButton(BACK) || gamepad_2.getButton(BACK) && !backPressed) {
-            robot.initIMU();
+            //robot.initIMU();
             //robot.resetDriveEncoders();
             debounceTimer.reset();
             backPressed = true;
         } else if (!gamepad_1.getButton(BACK) || !gamepad_2.getButton(BACK)) {
             backPressed = false;
         }
+         */
 
         if(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.4 || gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.4){
             double factor = Math.max(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER), gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
