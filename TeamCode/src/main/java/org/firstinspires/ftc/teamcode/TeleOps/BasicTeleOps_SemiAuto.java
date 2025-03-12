@@ -289,7 +289,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
                 /** AutoMode Control */
                 if ((gamepadCo1.getButton(LEFT_STICK_BUTTON) && !autoPressed && isButtonDebounced())){
-                    /**Global Control ----> Handle Auto Drive if 'Left_trigger + Y' button is pressed*/
+                    /**Global Control ----> Handle Auto Drive if 'LeftSTICK' button is pressed*/
                     autoPressed = true;
                     if(autoDriveHandler.handleButtonY()){
                         initialRun = false;
@@ -336,19 +336,17 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         telemetry.addData("Drive Mode", currentDriveMode.name());
 
         telemetry.addLine("---------------------");
-        //telemetry.addData("VS Left Position", robot.liftMotorLeft.getCurrentPosition());
-        //telemetry.addData("VS Right Position", robot.liftMotorRight.getCurrentPosition());
-        telemetry.addLine("---------------------");
         telemetry.addData("Deposit Arm Position", robot.depositArmServo.getPosition());
         telemetry.addData("Deposit Wrist Position", robot.depositWristServo.getPosition());
         telemetry.addData("Deposit Claw Position", robot.depositClawServo.getPosition());
+
         telemetry.addLine("---------------------");
         telemetry.addData("Intake Arm Left Position", robot.intakeLeftArmServo.getPosition());
         telemetry.addData("Intake Arm Right Position", robot.intakeRightArmServo.getPosition());
         telemetry.addData("Intake Wrist Position", robot.intakeWristServo.getPosition());
         telemetry.addData("Intake Claw Position", robot.intakeClawServo.getPosition());
-        telemetry.addData("Intake Slide Position", robot.intakeLeftSlideServo.getPosition());
-        telemetry.addData("Intake Slide Position", robot.intakeRightSlideServo.getPosition());
+        telemetry.addData("Intake Slide LEFT Position", robot.intakeLeftSlideServo.getPosition());
+        telemetry.addData("Intake Slide RIGHT Position", robot.intakeRightSlideServo.getPosition());
 
         telemetry.addLine("---------------------");
         telemetry.addData("Heading ", robot.imu.getRobotYawPitchRollAngles().getYaw());
@@ -356,6 +354,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         telemetry.addData("Auto Initial Run",initialRun);
         telemetry.addData("PoseEstimate",poseEstimate);
         telemetry.addData("Pinpoint Pose",pinpointPose);
+
         telemetry.addLine("---------Frequency--------");
         telemetry.addData("Pinpoint Frequency", drive.pinPointFrequency()); //prints/gets the current refresh rate of the Pinpoint
         telemetry.addData("REV Hub Frequency: ", frequency); //prints the control system refresh rate
