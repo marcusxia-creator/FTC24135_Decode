@@ -178,6 +178,10 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Pick);
                 })
+                .UNSTABLE_addTemporalMarkerOffset(1.15,()->{
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Grab);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Grab);
+                })
                 .waitSeconds(1.25)
                 .addTemporalMarker(() -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
@@ -250,6 +254,10 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
                 })
+                .UNSTABLE_addTemporalMarkerOffset(1.15,()->{
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Grab);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Grab);
+                })
                 .waitSeconds(1.25)
                 .addTemporalMarker(() -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
@@ -315,6 +323,10 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(0.45,()->{
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Grab);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Grab);
                 })
                 .waitSeconds(0.75)
                 .addTemporalMarker(() -> {
