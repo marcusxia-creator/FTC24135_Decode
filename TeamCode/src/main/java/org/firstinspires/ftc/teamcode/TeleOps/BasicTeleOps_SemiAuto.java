@@ -44,34 +44,38 @@ import java.util.List;
 
 /** Control Config
  * TeleOps Control - Global Control Button
- *  * LEFT BUMPER + START ----> control state -  Run vs ServoTest
- *  * Back Bumper         ----> reset the vertical slide at the start of the teleops
+ *  * LEFT BUMPER + START           ----> control state -  Run vs ServoTest -- GAMEPAD #1 ONLY
+ *  * LEFT STICK BUTTON             ----> control state -  SEMI-AUTO TRIGGER -- THEN INTO AUTO DRIVE FOR SPECIMEN SCORING -- GAMEPAD #1 ONLY
+ *  * RIGHT STICK BUTTON            ----> control state -  SEMI-AUTO CANCEL  -- CANCEL THE AUTO DRIVE FOR SPECIMEN SCORING -- GAMEPAD #1 ONLY
+ *  * BACK BUTTON ALONE             ----> reset the vertical slide AND DEPOSIT ARM BACK TO TRANSFER at the start of the TeleOps
+ * -----------------------------------------------------------------------------------------------
  * DRIVETRAIN Control - Global Control Button
- *  * Right STICK       ---->  Y and X movement and diagonal
- *  * Left STICK        ---->  Turn
- *  * START             ---->  Field and Robot centric selection
- *  * BACK              ---->  reset IMU Yaw Angle
- *  * LEFT Trigger + STICKs ---->  fine movement - depending on the pressed level (0.2 - 0.8)
- *
+ *  * Right STICK                   ---->  Y and X movement and diagonal
+ *  * Left STICK                    ---->  Turn
+ *  * START                         ---->  Field and Robot centric selection
+ *  * BACK                          ---->  reset IMU Yaw Angle
+ *  * LEFT Trigger + DRVING JOYSTICKs VALUE ---->  fine movement - depending on the pressed level (0.2 - 0.8)
+ * -----------------------------------------------------------------------------------------------
  * DEPOSIT ARM
  * --- LOCAL STATE
- *  * X                         ---->high basket drop series - local state - LIFT_START
- *  * Y                         ---->deposit arm flip to the back side - local state - LIFT_START
+ *  * X                             ---->high basket drop series - local state - LIFT_START
+ *  * Y                             ---->deposit arm flip to the back side - local state - LIFT_START
  * --- GLOBAL STATE
- *  * B                 ----> TO CANCEL DEPOSIT SYSTEM
- *  *                   ----> SLIDE AND DEPOSIT WRIST AND DEPOSIT ARM BACK TO "TRANSFER POSITION"
- *  * Right Trigger + A ----> TO TOGGLE DEPOSIT CLAW OPEN.CLOSE
- *
+ *  * B                             ----> TO CANCEL DEPOSIT SYSTEM
+ *  *                               ----> SLIDE AND DEPOSIT WRIST AND DEPOSIT ARM BACK TO "TRANSFER POSITION"
+ *  * Right Trigger + A             ----> TO TOGGLE DEPOSIT CLAW OPEN.CLOSE
+ *-----------------------------------------------------------------------------------------------
  *  INTAKE ARM
  *  * --- LOCAL STATE - INTAKE PICK
- *  * DPAD_RIGHT                  ----> intake extend and set pick position action series - local state - INTAKE_START
- *  * DPAD_LEFT                   ----> intake retract - local state - INTAKE_PICK
- *  * LEFT_BUMPER / RIGHT_BUMPER  ---->  for INTAKE CLAW ROTATION
- *  * DPAD_UP / DPAD_DOWN  ---->  for INTAKE ARM UP AND DOWN
- *  *   *
+ *  * DPAD_RIGHT                    ----> intake extend and set pick position action series - local state - INTAKE_START
+ *  * DPAD_LEFT                     ----> intake retract - local state - INTAKE_PICK
+ *  * LEFT_BUMPER / RIGHT_BUMPER    ---->  for INTAKE CLAW ROTATION
+ *  * DPAD_UP / DPAD_DOWN           ---->  for INTAKE ARM UP AND DOWN
+ *  -----------------------------------------------------------------------------------------------
  *  * --- GLOBAL STATE
- *  * Right Trigger + DPAD_RIGHT ----> to lower the intake arm for near side pick up
- *  * A                 ----> TO TOGGLE DEPOSIT CLAW OPEN.CLOSE
+ *  * Right Trigger + DPAD_RIGHT    ----> to lower the intake arm for near side pick up
+ *  * A                             ----> TO TOGGLE INTAKE CLAW OPEN/CLOSE
+ *  * Right bumper + A              ----> To TOGGLE DEPOSIT CLAW OPEN/CLOSE
  */
 
 @TeleOp(name = "TeleOps_Champion_Prep_SemiAuto", group = "org.firstinspires.ftc.teamcode")
