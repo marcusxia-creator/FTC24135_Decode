@@ -28,15 +28,15 @@ Expansion hub motor:
                 port 2: perp (encoder for odometry pod in Y direction - perpendicular direction)
 
 Servo:
-Control hub:
-                port 0: Intake_Wrist_Servo
-                port 1: Intake_Arm_Left_Servo
-                port 2: Deposit_Wrist_Servo
-                port 3: Deposit_Claw_Servo
-                port 4: Deposit_Arm_Servo
-                port 5: Empty
+EXP hub:
+                port 3: Intake_Wrist_Servo
+                port 5: Intake_Arm_Left_Servo
+                port 0: Deposit_Wrist_Servo
+                port 1: Deposit_Claw_Servo
+                port 2: Deposit_Arm_Servo
+                port 4: Empty
 
-Expansion hub:
+Control hub:
                 port 0: Empty
                 port 1: Intake_Slide_Right_Servo
                 port 2: Intake_Slide_Left_Servo
