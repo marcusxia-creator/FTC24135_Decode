@@ -38,7 +38,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
     public static double second_sample_x_coordinate = -60;
     public static double second_sample_y_coordinate = -53;
     public static double third_sample_x_coordinate = -47;
-    public static double third_sample_y_coordinate = -41;
+    public static double third_sample_y_coordinate = -39.5;
     public static double third_sample_heading = 150;
 
     public static double rightPark_x_coordiante = -21.5;
