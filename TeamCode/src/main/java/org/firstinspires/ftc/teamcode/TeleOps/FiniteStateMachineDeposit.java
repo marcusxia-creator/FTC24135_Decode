@@ -86,6 +86,7 @@ public class FiniteStateMachineDeposit {
     //TIME
     private ElapsedTime liftTimer = new ElapsedTime(); // Timer for controlling dumping time
     private ElapsedTime debounceTimer = new ElapsedTime(); // Timer for debouncing
+    private ElapsedTime debounceTimer_switch = new ElapsedTime(); // Timer for debouncing
     private ElapsedTime runtime = new ElapsedTime(); // Independent timer
     private ElapsedTime liftUpTimeout = new ElapsedTime();
 
@@ -351,13 +352,14 @@ public class FiniteStateMachineDeposit {
     }
     //Limit switch state
     private boolean LSisPressed(long currentTime) {
-        if(currentTime - RobotActionConfig.lastPressedTime > RobotActionConfig.debounceDelay){
-            RobotActionConfig.lastPressedTime = currentTime;
-            return robot.limitSwitch.getState();
-        } else{
-            return false;
+        boolean switchState = robot.limitSwitch.getState(); // Read switch state
+
+        if (switchState && debounceTimer_switch.milliseconds() > RobotActionConfig.debounceDelay) {
+            debounceTimer_switch.reset(); // Reset timer only when pressed after debounce time
+            return true;
         }
 
+        return false; // Ignore bouncing or rapid re-pressing
     }
 
     //Claw CONTROL Handler ---- GLOBAL CONTROL ----> BUTTON A
