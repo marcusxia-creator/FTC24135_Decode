@@ -226,7 +226,7 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 })
-                .waitSeconds(0.15)
+                .waitSeconds(0.1)
                 /** --> go back to pickup position for 3rd specimen- */
                 .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(-45)))
                 //drop slides and go back to transfer position while robot is moving to pick up position
