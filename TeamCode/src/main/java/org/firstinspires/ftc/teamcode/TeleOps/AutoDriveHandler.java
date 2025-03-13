@@ -151,34 +151,6 @@ public class AutoDriveHandler {
         return false;
     }
 
-    /**
-     * Executes the auto-drive action for the A button.
-     * Drive to Specimen Pick up position
-     * @return true if the auto drive was initiated.
-     */
-    public boolean handleButtonA() {
-        double X = Math.abs(poseEstimate.getX());
-        double Y = Math.abs(poseEstimate.getY());
-        TrajectorySequence traj2 = drive.trajectorySequenceBuilder(poseEstimate)
-                .lineToLinearHeading(new Pose2d(PointToDrive.specimen_pickup_x_coordinate, PointToDrive.specimen_pickup_y_coordinate, Math.toRadians(-45)))
-                .UNSTABLE_addTemporalMarkerOffset(-1.5,()->{
-                    vSlides.slidesMoveDown(RobotActionConfig.deposit_Slide_Down_Pos, 0.8);
-                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);})
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{vSlides.Slides_Stop();})
-                .build();
-        if ((((13 - X) >= 0) || (X > 13)) && ((Y > 12) || (Y < 72))) {
-            drive.followTrajectorySequence(traj2);
-            return true;
-        }
-        return false;
-    }
-
-    // Optionally, you might provide setter methods to update poseEstimate
-    public void updatePose(Pose2d newPose) {
-        this.poseEstimate = newPose;
-    }
-
     private void intakeSpecimenPickReady(){
         robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
         robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
