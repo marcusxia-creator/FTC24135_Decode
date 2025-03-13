@@ -25,6 +25,8 @@ public class AutoDriveHandler {
 
     private final FiniteStateMachineDeposit depositArmDrive;
 
+    private long limitSwitchPressStartTime;
+
     public AutoDriveHandler(SampleMecanumDriveCancelable drive, RobotHardware robot, int initialN, FiniteStateMachineDeposit depositArmDrive) {
         this.drive = drive;
         this.robot = robot;
@@ -222,8 +224,41 @@ public class AutoDriveHandler {
             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorLeft.setPower(speed);
             robot.liftMotorRight.setPower(speed);
+
+            while (robot.liftMotorLeft.isBusy() || robot.liftMotorRight.isBusy()) {
+                if (isLimitSwitchPressedFor200ms()) {  // Pass actual time
+                    Slides_Stop();
+                    break;
+                }
+            }
         }
 
+    }
+    /**HELPER METHODS*/
+    /**
+     * Returns true only if the limit switch has been pressed continuously for at least 200ms.
+     */
+
+    private boolean lSisPressed() {
+        limitSwitchPressStartTime = 0;
+        return robot.limitSwitch.getState();  // Invert if switch is normally open
+    }
+    private boolean isLimitSwitchPressedFor200ms() {
+        if (lSisPressed()) {
+            // If the switch is pressed and we haven't recorded the start time yet,
+            // record the current time.
+            if (limitSwitchPressStartTime == 0) {
+                limitSwitchPressStartTime = System.currentTimeMillis();
+            }
+            // Check if 200ms have elapsed.
+            if (System.currentTimeMillis() - limitSwitchPressStartTime >= 100) {
+                return true;
+            } else {
+                // If the switch is not pressed, reset the timer.
+                limitSwitchPressStartTime = 0;
+            }
+        }
+        return false;
     }
 }
 
