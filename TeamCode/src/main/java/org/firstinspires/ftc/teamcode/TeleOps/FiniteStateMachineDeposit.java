@@ -86,7 +86,7 @@ public class FiniteStateMachineDeposit {
     //TIME
     private ElapsedTime liftTimer = new ElapsedTime(); // Timer for controlling dumping time
     private ElapsedTime debounceTimer = new ElapsedTime(); // Timer for debouncing
-    private ElapsedTime debounceTimer_switch = new ElapsedTime(); // Timer for debouncing
+    private ElapsedTime holdTimer = new ElapsedTime(); // Timer for limit switch debouncing
     private ElapsedTime runtime = new ElapsedTime(); // Independent timer
     private ElapsedTime liftUpTimeout = new ElapsedTime();
 
@@ -238,7 +238,7 @@ public class FiniteStateMachineDeposit {
                 // Check if the lift has reached the low position
                 if (Servo_AtPosition(RobotActionConfig.deposit_Claw_Open) && liftTimer.seconds() >= RobotActionConfig.retractTime) {
                     slidesToHeightMM(RobotActionConfig.deposit_Slide_Down_Pos, RobotActionConfig.deposit_Slide_DownLiftPower);
-                    if (IsLiftDownAtPosition(RobotActionConfig.deposit_Slide_Down_Pos) || LSisPressed(currentTime)
+                    if (IsLiftDownAtPosition(RobotActionConfig.deposit_Slide_Down_Pos) || LSisPressed()
                     ) {
                         robot.liftMotorLeft.setPower(0); // Stop the motor after reaching the low position
                         robot.liftMotorRight.setPower(0);
@@ -351,15 +351,17 @@ public class FiniteStateMachineDeposit {
         return Math.abs(robot.depositClawServo.getPosition() - servoClawPosition) < 0.01;
     }
     //Limit switch state
-    private boolean LSisPressed(long currentTime) {
+    private boolean LSisPressed() {
         boolean switchState = robot.limitSwitch.getState(); // Read switch state
 
-        if (switchState && debounceTimer_switch.milliseconds() > RobotActionConfig.debounceDelay) {
-            debounceTimer_switch.reset(); // Reset timer only when pressed after debounce time
-            return true;
+        if (switchState) {
+            if (holdTimer.milliseconds() >= RobotActionConfig.debounceDelay) {
+                return true; // Return true only if held for at least 200ms
+            }
+        } else {
+            holdTimer.reset(); // Reset timer when switch is released
         }
-
-        return false; // Ignore bouncing or rapid re-pressing
+        return false;
     }
 
     //Claw CONTROL Handler ---- GLOBAL CONTROL ----> BUTTON A
