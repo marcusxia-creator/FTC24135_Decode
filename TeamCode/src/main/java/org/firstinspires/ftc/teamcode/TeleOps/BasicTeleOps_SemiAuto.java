@@ -200,7 +200,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
     @Override
     public void loop () {
-        //resetRuntime(); need to review how it impact the runtime.
+        //update the pose through the drive -roadrunner.
         drive.update();
         Pose2d poseEstimate = drive.getPoseEstimate();
         Pose2d pinpointPose = drive.updatePinpointPosition();
