@@ -38,7 +38,8 @@ public class RobotActionConfig {
     public static double intake_Arm_Right_Idle          = intake_Arm_Left_Idle + 0.02;
     public static double intake_Arm_Left_Transfer       = 0.14;
     public static double intake_Arm_Right_Transfer      = intake_Arm_Left_Transfer + 0.02;              // intake arm transfer position
-    public static double intake_Arm_Wait                = 0.4;                                          // FOR AUTO MODE ONLY
+    public static double intake_Arm_Left_Wait           = 0.4;                                          // FOR AUTO MODE ONLY
+    public static double intake_Arm_Right_Wait          = intake_Arm_Left_Wait+0.02;                    // FOR AUTO MODE ONLY
 
     /**Intake Wrist range(0-1, lowest :0, fully back for transfer:1 )*/
     /** Todo Intake Wrist installation poisition ?? and value??*/
