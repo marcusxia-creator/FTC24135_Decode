@@ -110,7 +110,7 @@ public class RobotActionConfig {
     public static double deposit_Slide_DownLiftPower    = 0.7;                                          // slides down power
 
     //distnace
-    public static double backwardDist                   = -20;                                           // distance in cm, retract distance after hook specimen on high bar
+    public static double backwardDist                   = -25;                                           // distance in cm, retract distance after hook specimen on high bar
 
     //TeleOp Speed Control accel factor.
     public static double accel_Slowness                 = 0.25;                                         // drive control speed accel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest

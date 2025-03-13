@@ -426,10 +426,10 @@ public class FiniteStateMachineDeposit {
         robot.backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Set motor power
-        robot.frontLeftMotor.setPower(0.5);
-        robot.frontRightMotor.setPower(0.5);
-        robot.backLeftMotor.setPower(0.5);
-        robot.backRightMotor.setPower(0.5);
+        robot.frontLeftMotor.setPower(0.85);
+        robot.frontRightMotor.setPower(0.85);
+        robot.backLeftMotor.setPower(0.85);
+        robot.backRightMotor.setPower(0.85);
 
         // Wait until motion is complete
         while (robot.frontLeftMotor.isBusy() && robot.frontRightMotor.isBusy()){
