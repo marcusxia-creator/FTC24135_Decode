@@ -304,7 +304,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                 break;
 
             case AUTOMATIC_CONTROL:
-                //State Control ----> Handle Auto Cancel Action if 'LEFT_BUMPER + B' button is pressed
+                //State Control ----> Handle Auto Cancel Action if 'Right_Stick Button' button is pressed
                 if (gamepadCo1.getButton(RIGHT_STICK_BUTTON) && isButtonDebounced()) {
                     drive.breakFollowing();
                     initialRun = true;
