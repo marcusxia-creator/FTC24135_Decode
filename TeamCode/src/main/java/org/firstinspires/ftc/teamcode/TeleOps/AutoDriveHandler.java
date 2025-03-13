@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.TeleOps.BasicTeleOps_SemiAuto.initi
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Auto.PointToDrive;
 import org.firstinspires.ftc.teamcode.Auto.RightSideAuto_4Specimen_Original;
@@ -25,7 +26,7 @@ public class AutoDriveHandler {
 
     private final FiniteStateMachineDeposit depositArmDrive;
 
-    private long limitSwitchPressStartTime;
+    private ElapsedTime holdTimer = new ElapsedTime();
 
     public AutoDriveHandler(SampleMecanumDriveCancelable drive, RobotHardware robot, int initialN, FiniteStateMachineDeposit depositArmDrive) {
         this.drive = drive;
@@ -226,7 +227,7 @@ public class AutoDriveHandler {
             robot.liftMotorRight.setPower(speed);
 
             while (robot.liftMotorLeft.isBusy() || robot.liftMotorRight.isBusy()) {
-                if (isLimitSwitchPressedFor200ms()) {  // Pass actual time
+                if (lSisPressed()) {  // Pass actual time
                     Slides_Stop();
                     break;
                 }
@@ -240,23 +241,14 @@ public class AutoDriveHandler {
      */
 
     private boolean lSisPressed() {
-        limitSwitchPressStartTime = 0;
-        return robot.limitSwitch.getState();  // Invert if switch is normally open
-    }
-    private boolean isLimitSwitchPressedFor200ms() {
-        if (lSisPressed()) {
-            // If the switch is pressed and we haven't recorded the start time yet,
-            // record the current time.
-            if (limitSwitchPressStartTime == 0) {
-                limitSwitchPressStartTime = System.currentTimeMillis();
+        boolean switchState = robot.limitSwitch.getState(); // Read switch state
+
+        if (switchState) {
+            if (holdTimer.milliseconds() >= RobotActionConfig.debounceDelay) {
+                return true; // Return true only if held for at least 200ms
             }
-            // Check if 200ms have elapsed.
-            if (System.currentTimeMillis() - limitSwitchPressStartTime >= 100) {
-                return true;
-            } else {
-                // If the switch is not pressed, reset the timer.
-                limitSwitchPressStartTime = 0;
-            }
+        } else {
+            holdTimer.reset(); // Reset timer when switch is released
         }
         return false;
     }
