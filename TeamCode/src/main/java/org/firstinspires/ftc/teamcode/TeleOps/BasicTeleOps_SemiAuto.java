@@ -316,11 +316,6 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                     controlState = ControlState.DRIVE_CONTROL;
                 }
                 break;
-            default:
-                telemetry.addData("Error", "Unexpected Control Mode: " + controlState);
-                controlState = ControlState.DRIVE_CONTROL;
-                initialRun = true;
-                break;
         }
 
         //Refresh frequency
@@ -334,7 +329,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         // Telemetry
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", currentDriveMode.name());
-
+        /**
         telemetry.addLine("---------------------");
         telemetry.addData("Deposit Arm Position", robot.depositArmServo.getPosition());
         telemetry.addData("Deposit Wrist Position", robot.depositWristServo.getPosition());
@@ -347,17 +342,19 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         telemetry.addData("Intake Claw Position", robot.intakeClawServo.getPosition());
         telemetry.addData("Intake Slide LEFT Position", robot.intakeLeftSlideServo.getPosition());
         telemetry.addData("Intake Slide RIGHT Position", robot.intakeRightSlideServo.getPosition());
-
+        */
         telemetry.addLine("---------------------");
         telemetry.addData("Heading ", robot.imu.getRobotYawPitchRollAngles().getYaw());
         telemetry.addData("Limit Switch Pressed", robot.limitSwitch.getState());
+        telemetry.addLine("---------------------");
         telemetry.addData("Auto Initial Run",initialRun);
         telemetry.addData("PoseEstimate",poseEstimate);
         telemetry.addData("Pinpoint Pose",pinpointPose);
-
+        /**
         telemetry.addLine("---------Frequency--------");
         telemetry.addData("Pinpoint Frequency", drive.pinPointFrequency()); //prints/gets the current refresh rate of the Pinpoint
         telemetry.addData("REV Hub Frequency: ", frequency); //prints the control system refresh rate
+         */
         telemetry.update();
     }
 
