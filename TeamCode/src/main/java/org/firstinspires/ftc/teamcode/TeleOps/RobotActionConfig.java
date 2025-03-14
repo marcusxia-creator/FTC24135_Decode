@@ -21,7 +21,7 @@ public class RobotActionConfig {
     //Intake Configure
     public static double intake_Slide_Extension         = 0.29;                                         // range(0.04 - 0.29)
     public static double intake_Slide_Retract           = 0.04;                                         // 0.01 = 3deg rotation of gobilda servo
-    public static double intake_slide_Retract_Set       = 0.07;
+    public static double intake_slide_Retract_Set       = 0.035;
     public static double intake_Slide_Extension_Wait    = 0.16;                                         // FOR AUTO MODE ONLY
 
     public static double intake_Rotation_Mid            = 0.46;                                         // range(0-1, 0.46 at the middle for installation
@@ -36,7 +36,7 @@ public class RobotActionConfig {
     public static double intake_Arm_Right_Grab          = intake_Arm_Left_Grab + 0.02;
     public static double intake_Arm_Left_Idle           = 0.26;                                         // intake arm lift a bit before retract
     public static double intake_Arm_Right_Idle          = intake_Arm_Left_Idle + 0.02;
-    public static double intake_Arm_Left_Transfer       = 0.14;
+    public static double intake_Arm_Left_Transfer       = 0.11;
     public static double intake_Arm_Right_Transfer      = intake_Arm_Left_Transfer + 0.02;              // intake arm transfer position
     public static double intake_Arm_Left_Wait           = 0.4;                                          // FOR AUTO MODE ONLY
     public static double intake_Arm_Right_Wait          = intake_Arm_Left_Wait+0.02;                    // FOR AUTO MODE ONLY

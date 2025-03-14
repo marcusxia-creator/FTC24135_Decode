@@ -201,12 +201,14 @@ public class AutoDriveHandler {
             robot.liftMotorLeft.setPower(speed);
             robot.liftMotorRight.setPower(speed);
 
-            while (robot.liftMotorLeft.isBusy() || robot.liftMotorRight.isBusy()) {
+            /*while (robot.liftMotorLeft.isBusy() || robot.liftMotorRight.isBusy()) {
                 if (lSisPressed()) {  // Pass actual time
                     Slides_Stop();
                     break;
                 }
             }
+
+             */
         }
 
     }
