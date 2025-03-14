@@ -207,6 +207,14 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         // Update pose dynamically in AutoDriveHandler
         autoDriveHandler.updatePoseEstimate(poseEstimate);
 
+        //reset pose
+        if (gamepadCo2.getButton(BACK) && debounceTimer.seconds() > 0.2) {
+            debounceTimer.reset();
+            Pose2d startPose = new Pose2d(7.5, -64, Math.toRadians(-90));// this is for manual testing.
+            drive.setPoseEstimate(startPose);
+            initialRun = true;
+        }
+
 
         // Button B to reset vertical slide position to bottom.
         if (gamepadCo1.getButton(BACK) && debounceTimer.seconds()>0.2){
@@ -327,7 +335,9 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         oldTime = newTime;
 
         // Telemetry
-        telemetry.addData("Run Mode", controlState);
+        telemetry.addData("Run Mode", controlState.name());
+        telemetry.addData("Drive state",drive.isBusy());
+        telemetry.addLine("---------------------");
         telemetry.addData("Drive Mode", currentDriveMode.name());
         /**
         telemetry.addLine("---------------------");
