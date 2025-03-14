@@ -155,9 +155,6 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         servoTest = new ServoTest(robot, gamepadCo1, gamepadCo2);
         //servoTest.ServoTestInit();
 
-        //Map in Roanrunner drive
-        drive = new SampleMecanumDriveCancelable(hardwareMap);
-
         // get bulk reading
         allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) {
@@ -176,7 +173,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         Pose2d startPose = new Pose2d(7.5, -64, Math.toRadians(-90));// this is for manual testing.
         drive.setPoseEstimate(startPose);
         //drive.setPoseEstimate(PoseStorage.currentPose);
-        initialRun = true;
+        initialRun = true; //For specimen semi-auto control
 
         //// Initialized an AutoHandler
         autoDriveHandler = new AutoDriveHandler(drive,robot, 1,depositArmDrive);
