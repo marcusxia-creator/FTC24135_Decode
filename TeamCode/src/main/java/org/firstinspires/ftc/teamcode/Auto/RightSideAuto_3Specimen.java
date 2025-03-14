@@ -119,8 +119,8 @@ public class RightSideAuto_3Specimen extends LinearOpMode {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Wait);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Wait);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Wait);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Wait);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(1, () -> {
@@ -191,8 +191,8 @@ public class RightSideAuto_3Specimen extends LinearOpMode {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Wait);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Wait);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Wait);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Wait);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(1.0, () -> {

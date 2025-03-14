@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.Auto.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
@@ -102,8 +103,8 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Wait);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Wait);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Wait);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Wait);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(1.0, () -> {
@@ -177,7 +178,7 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
 
         if (!isStopRequested())
             drive.followTrajectorySequence(trajSeq);
-
+        PoseStorage.currentPose = drive.getPoseEstimate();
         while (opModeIsActive()) {
             telemetry.addData("Slides Position: ", robot.liftMotorLeft.getCurrentPosition());
         }
@@ -191,13 +192,6 @@ public class RightSideAuto_2Specimen extends LinearOpMode {
         robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.liftMotorLeft.setPower(speed);
         robot.liftMotorRight.setPower(speed);
-        /**
-         *         while (opModeIsActive() && !atposition) {
-         *             telemetry.addData("Slide mode","Running");
-         *             telemetry.update();
-         *         }
-         */
-
     }
 
     private void Slides_Stop(){
