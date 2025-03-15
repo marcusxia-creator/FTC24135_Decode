@@ -26,7 +26,7 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
     public static double bar_out_point_1_X = 24;
     public static double bar_out_point_1_Y = -55;
 
-    public static double first_sample_point_1_X = 27;
+    public static double first_sample_point_1_X = 28;
     public static double first_sample_point_1_Y = -43.7; //heading = 45
 
     public static double first_sample_point_2_X = 33;

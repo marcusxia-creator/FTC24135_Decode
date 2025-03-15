@@ -31,13 +31,13 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
     public static double dumpTime = 0.5; // deposit time need to rotate deposit arm then open claw
 
     //movement positions
-    public static double basket_x_coordinate = -58.5;    //55.5 for Competition Basket, 58.5 for Home Basket
-    public static double basket_y_coordinate = -58.5;
-    public static double first_sample_x_coordinate = -49;
+    public static double basket_x_coordinate = -55.5;    //55.5 for Competition Basket, 58.5 for Home Basket
+    public static double basket_y_coordinate = -55.5;
+    public static double first_sample_x_coordinate = -51;
     public static double first_sample_y_coordinate = -53;
-    public static double second_sample_x_coordinate = -59.3;
+    public static double second_sample_x_coordinate = -60.8;
     public static double second_sample_y_coordinate = -53;
-    public static double third_sample_x_coordinate = -46;
+    public static double third_sample_x_coordinate = -47.5;
     public static double third_sample_y_coordinate = -39.5;
     public static double third_sample_heading = 150;
 
@@ -102,6 +102,11 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                 })
                 /** move to 1st sample*/
                 /** pick 1st sample*/
+                .addTemporalMarker(()->{
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Grab);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Grab);
+                })
+                .waitSeconds(0.2)
                 .addTemporalMarker(()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);})
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
@@ -153,6 +158,11 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                 })
                 /** move to 2nd sample*/
                 /** pick 2nd sample*/
+                .addTemporalMarker(()->{
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Grab);
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Grab);
+                })
+                .waitSeconds(0.2)
                 .addTemporalMarker(()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);})
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
@@ -188,7 +198,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                     robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);                                              // at global time 1.5 second mark to back to transfer position
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                 })
-                .waitSeconds(0.4)
+                .waitSeconds(0.7)
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{
                     Slides_MoveDown(RobotActionConfig.deposit_Slide_Down_Pos,0.9);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
