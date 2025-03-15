@@ -38,7 +38,7 @@ public class RobotDrive {
     private double powerFactor;
     private Object drive_power;
 
-    private double rotate_Slowness = 0.6;
+    private double rotate_Slowness = 0.75;
 
     public RobotDrive(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2) {
         this.robot = robot;
