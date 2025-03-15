@@ -207,7 +207,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         //reset pose
         if (gamepadCo2.getButton(BACK) && debounceTimer.seconds() > 0.2) {
             debounceTimer.reset();
-            Pose2d startPose = new Pose2d(7.5, -64, Math.toRadians(-90));// this is for manual testing.
+            Pose2d startPose = new Pose2d(0, -32, Math.toRadians(-90));// this is for manual testing.
             drive.setPoseEstimate(startPose);
             initialRun = true;
         }

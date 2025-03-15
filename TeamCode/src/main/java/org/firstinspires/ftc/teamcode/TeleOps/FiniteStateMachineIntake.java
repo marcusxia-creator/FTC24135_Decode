@@ -124,13 +124,13 @@ public class FiniteStateMachineIntake {
                 if(intakeTimer.seconds()>RobotActionConfig.intakeWristRotationTime) {
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
-                    if(intakeTimer.seconds()>(RobotActionConfig.intakeWristRotationTime+RobotActionConfig.intakeSlideExtendTime)) {
-                        robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
-                        robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Pick);
-                        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
-                        intakeTimer.reset();
-                        intakeState = INTAKESTATE.INTAKE_PICK;
-                    }
+                }
+                if(intakeTimer.seconds()>(RobotActionConfig.intakeWristRotationTime+RobotActionConfig.intakeSlideExtendTime)) {
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Pick);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Pick);
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
+                    intakeTimer.reset();
+                    intakeState = INTAKESTATE.INTAKE_PICK;
                 }
                 break;
             case INTAKE_PICK:
