@@ -42,7 +42,7 @@ public class RobotActionConfig {
     public static double intake_Arm_Right_Wait          = intake_Arm_Left_Wait+0.02;                    // FOR AUTO MODE ONLY
 
     /**Intake Wrist range(0-1, lowest :0, fully back for transfer:1 )*/
-    /** Todo Intake Wrist installation poisition ?? and value??*/
+    /** Todo Intake Wrist installation poiition ?? and value??*/
     public static double intake_Wrist_highbasketpause   = 0.58;                                          /** upright when high basket  **/
     public static double intake_Wrist_Idle              = 0.20;                                         /** for specimen pick ready  **/
     public static double intake_Wrist_Pick              = 0.1;                                            /** new servo changed this to 0 for pick **/
