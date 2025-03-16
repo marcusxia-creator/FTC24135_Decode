@@ -24,7 +24,7 @@ public class RobotActionConfig {
     public static double intake_slide_Retract_Set       = 0.025;
     public static double intake_Slide_Extension_Wait    = 0.16;                                         // FOR AUTO MODE ONLY
 
-    public static double intake_Rotation_Mid            = 0.46;                                         // range(0-1, 0.46 at the middle for installation
+    public static double intake_Rotation_Mid            = 0.5;                                         // range(0-1, 0.46 at the middle for installation
 
     /**Arm range(0-0.43, lowest :0.43, fully back for transfer:0.14 )*/
     /** Todo Intake Arm installation poisition ?? and value??*/
@@ -43,15 +43,15 @@ public class RobotActionConfig {
 
     /**Intake Wrist range(0-1, lowest :0, fully back for transfer:1 )*/
     /** Todo Intake Wrist installation poiition ?? and value??*/
-    public static double intake_Wrist_highbasketpause   = 0.58;                                          /** upright when high basket  **/
-    public static double intake_Wrist_Idle              = 0.20;                                         /** for specimen pick ready  **/
-    public static double intake_Wrist_Pick              = 0.1;                                            /** new servo changed this to 0 for pick **/
-    public static double intake_Wrist_Transfer          = 0.68;    //1                                        // Axon servo - 0-1 = 0-180deg. 0.01 = 1.8 deg
+    public static double intake_Wrist_highbasketpause   = 0.16;       //0.58                                      /** upright when high basket - 0.58 for axon servo ** /
+    public static double intake_Wrist_Idle              = 0.55;      //0.2                                        /** for specimen pick ready - 0.2 for axon servo **/
+    public static double intake_Wrist_Pick              = 0.64;      //0.1                                        /** new servo changed this to 0 for pick - 0.1 for axon servo  **/
+    public static double intake_Wrist_Transfer          = 0.1;    //0.68                                          // Axon servo - 0-1 = 0-180deg. 0.01 = 1.8 deg----- 00.68 for axon servo.
 
     /**Intake Claw range(0-0.27 lowest :0, fully close 0.27 )*/
     /** Todo Intake Claw installation poisition ?? and value??*/
     public static double intake_Claw_Open               = 0.0;                                          //range(0.0 - 0.27)
-    public static double intake_Claw_Close              = 0.27;
+    public static double intake_Claw_Close              = 0.28;
 
     //Deposit Config
     public static int deposit_Slide_Down_Pos            = 4;                                            //unit in mm, to prevent hard hit.
