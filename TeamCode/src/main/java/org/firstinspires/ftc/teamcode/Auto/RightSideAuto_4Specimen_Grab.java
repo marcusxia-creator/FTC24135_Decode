@@ -33,7 +33,7 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
     public static double first_sample_point_2_Y = -47; //heading = -45
 
     public static double second_sample_point_1_X = 39;
-    public static double second_sample_point_1_Y = -44.5; //heading = 45
+    public static double second_sample_point_1_Y = -45; //heading = 45
 
     public static double clawOpenTimer = 0.1;
     public static double waitTimer = 0.25;
@@ -189,11 +189,16 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
                 })
                 .waitSeconds(0.2)
-                /** ---->  Transfer 2nd specimen*/
-                .addTemporalMarker(() -> {
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
+                })
+                /** --> Transfer 2nd specimen*/
+                .UNSTABLE_addTemporalMarkerOffset(0.1, () -> {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
-                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
+                })
+                .waitSeconds (wristWaitTimer)
+                .addTemporalMarker(() -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 })
@@ -203,10 +208,7 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0.9, () -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(1.1, () -> {
-                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
-                })
-                .waitSeconds(1.1)
+                .waitSeconds(1.0)
                 //extend slides to scoring position
                 .addTemporalMarker(() -> {
                     Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Pos, 0.9);
@@ -264,11 +266,13 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
                 })
                 .waitSeconds(0.2)
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
+                })
                 /** --> Transfer 3rd specimen*/
-                .addTemporalMarker(() -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.1, () -> {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
-                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                 })
                 .waitSeconds(wristWaitTimer)
                 .addTemporalMarker(() -> {
@@ -335,10 +339,12 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                 })
                 .waitSeconds(0.2)
                 /** --> Transfer 4th specimen*/
-                .addTemporalMarker(() -> {
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(0.1,() -> {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
-                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                 })
                 .waitSeconds(wristWaitTimer)
                 .addTemporalMarker(() -> {

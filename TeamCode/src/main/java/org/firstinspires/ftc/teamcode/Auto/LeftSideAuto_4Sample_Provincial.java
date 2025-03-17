@@ -35,7 +35,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
     public static double basket_y_coordinate = -55.5;
     public static double first_sample_x_coordinate = -50;
     public static double first_sample_y_coordinate = -53;
-    public static double second_sample_x_coordinate = -60.5;
+    public static double second_sample_x_coordinate = -60;
     public static double second_sample_y_coordinate = -53.5;
     public static double third_sample_x_coordinate = -47.5;
     public static double third_sample_y_coordinate = -39.5;
@@ -108,11 +108,14 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                 })
                 .waitSeconds(0.2)
                 .addTemporalMarker(()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);})
-                .waitSeconds(0.5)
+                .waitSeconds(0.1)
+                .addTemporalMarker(() -> {
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
+                })
+                .waitSeconds(0.4)
                 .addTemporalMarker(() -> {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
-                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                 })
                 //0.15 sec later to retract slide
                 .UNSTABLE_addTemporalMarkerOffset(0.1,() -> {
@@ -164,11 +167,14 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                 })
                 .waitSeconds(0.2)
                 .addTemporalMarker(()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);})
-                .waitSeconds(0.5)
+                .waitSeconds(0.1)
+                .addTemporalMarker(() -> {
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
+                })
+                .waitSeconds(0.4)
                 .addTemporalMarker(() -> {
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
-                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                 })
                 //0.15 sec later to retract slide
                 .UNSTABLE_addTemporalMarkerOffset(0.1,() -> {
@@ -226,12 +232,15 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
                 })
-                .waitSeconds(0.3)
-                .UNSTABLE_addTemporalMarkerOffset(0,() -> {
-                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
-                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
+                .waitSeconds(0.1)
+                .addTemporalMarker(() -> {
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                     robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
+                })
+                .waitSeconds(0.4)
+                .addTemporalMarker(() -> {
+                    robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Transfer);
+                    robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Transfer);
                 })
                 //0.15 sec later to retract slide
                 .UNSTABLE_addTemporalMarkerOffset(0.15,() -> {

@@ -102,7 +102,7 @@ public class RobotActionConfig {
     public static double DEBOUNCE_THRESHOLD             = 0.25;                                         // debounce_Threshold
     public static double waitTime                       = 0.2;                                          // general wait time
     public static long lastPressedTime                  = 0;                                            // limitSwitch timer
-    public static final long debounceDelay              = 200;                                          // unit in ms, limitSwitch debouncer in ms
+    public static final long debounceDelay              = 100;                                          // unit in ms, limitSwitch debouncer in ms
     public static double timeOut                        = 1.5;
 
     //DEPOSIT vertical slide power
