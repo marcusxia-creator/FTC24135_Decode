@@ -72,7 +72,7 @@ public class RobotActionConfig {
     public static double deposit_Arm_Pick               = 1;                                            // Installation position: 1 full parallel to ground facing out..
     public static double deposit_Arm_Dump               = 0.7;                                          // Axon servo -  0-180deg with range (0-1) 0: installation position 180 deg
     public static double deposit_Arm_Dump_Prep          = 0.4;                                          // deposit arm dump pre-ready position.
-    public static double deposit_Arm_Transfer           = 0.05;                                         //
+    public static double deposit_Arm_Transfer           = 0.04;                                         //
     public static double deposit_Arm_hang_Pos           = 0.25;                                         // hang position
     public static double deposit_Arm_Hook               = 0.95;                                         // deposit arm hook position
 
