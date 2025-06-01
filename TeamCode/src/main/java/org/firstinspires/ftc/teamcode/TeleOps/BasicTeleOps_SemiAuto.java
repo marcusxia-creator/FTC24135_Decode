@@ -163,8 +163,6 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         //Robot Drive State
         RobotDrive.DriveMode currentDriveMode = robotDrive.getDriveMode();
 
-        //get color ranges
-        List<FiniteStateMachineDeposit.ColorRange> colorRanges = depositArmDrive.getColorRanges();
         //Reset the motor encoder
 
         /** transfer the currentPose from end of Auto -- each Auto code need to
@@ -186,11 +184,6 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         telemetry.addLine("-------------------");
         telemetry.addData("Vertical slide Encoder_left",robot.liftMotorLeft.getCurrentPosition());
         telemetry.addData("Vertical slide Encoder_right",robot.liftMotorRight.getCurrentPosition());
-        for (FiniteStateMachineDeposit.ColorRange range : colorRanges) {
-            telemetry.addData("Color Range", "Name: " + range.colorName +
-                    ", HueMin: " + range.hueMin +
-                    ", HueMax: " + range.hueMax);
-        }
         telemetry.update();
         resetRuntime();
         }
@@ -276,7 +269,6 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                 depositArmDrive.DepositArmLoop();
                 FiniteStateMachineDeposit.LIFTSTATE liftState = depositArmDrive.liftState;
                 FiniteStateMachineDeposit.DEPOSITCLAWSTATE depositClawState = depositArmDrive.depositClawState;
-                detectedColor = depositArmDrive.getDetectedColor();
                 //Intake Arm Control
                 intakeArmDrive.IntakeArmLoop();
                 FiniteStateMachineIntake.INTAKESTATE intakeState = intakeArmDrive.intakeState;
@@ -303,9 +295,6 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                 } else if (!gamepadCo1.getButton(LEFT_STICK_BUTTON)) {
                         autoPressed = false;
                 }
-                break;
-            case TEST:
-                servoTest.ServoTestLoop();
                 break;
 
             case AUTOMATIC_CONTROL:
@@ -338,13 +327,12 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         telemetry.addData("Drive Mode", currentDriveMode.name());
 
         telemetry.addLine("---------------------");
-        telemetry.addData("Deposit Arm Position", robot.depositArmServo.getPosition());
+        telemetry.addData("Deposit Arm Position", robot.depositLeftArmServo.getPosition());
         telemetry.addData("Deposit Wrist Position", robot.depositWristServo.getPosition());
         telemetry.addData("Deposit Claw Position", robot.depositClawServo.getPosition());
 
         telemetry.addLine("---------------------");
-        telemetry.addData("Intake Arm Left Position", robot.intakeLeftArmServo.getPosition());
-        telemetry.addData("Intake Arm Right Position", robot.intakeRightArmServo.getPosition());
+        telemetry.addData("Intake Arm Left Position", robot.intakeArmServo.getPosition());
         telemetry.addData("Intake Wrist Position", robot.intakeWristServo.getPosition());
         telemetry.addData("Intake Claw Position", robot.intakeClawServo.getPosition());
         telemetry.addData("Intake Slide LEFT Position", robot.intakeLeftSlideServo.getPosition());

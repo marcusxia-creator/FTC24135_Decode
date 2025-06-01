@@ -117,14 +117,14 @@ public class BasicTeleOps extends OpMode {
         robotDrive.Init();                                                              // Initialize RobotDrive
 
         //Deposit Arm control
-        depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry); // Pass parameters as needed);
-        depositArmDrive.Init();
-        depositArmDrive.colorRangeIni();
+        //depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry); // Pass parameters as needed);
+        //depositArmDrive.Init();
+        //depositArmDrive.colorRangeIni();
 
 
         //Intake Arm Control
-        intakeArmDrive = new FiniteStateMachineIntake(robot, gamepadCo1,gamepadCo2, depositArmDrive);
-        intakeArmDrive.Init();
+        //intakeArmDrive = new FiniteStateMachineIntake(robot, gamepadCo1,gamepadCo2, depositArmDrive);
+       //intakeArmDrive.Init();
 
         //Servo Testing
         servoTest = new ServoTest(robot, gamepadCo1, gamepadCo2);
@@ -140,9 +140,6 @@ public class BasicTeleOps extends OpMode {
 
         //Reset the motor encoder
 
-        //get color ranges
-        List<FiniteStateMachineDeposit.ColorRange> colorRanges = depositArmDrive.getColorRanges();
-
         //Telemetry
         telemetry.addLine("-------------------");
         telemetry.addData("Status", " initialized Motors and Encoder and IMU and Arm Control");
@@ -151,11 +148,6 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Vertical slide Encoder_left",robot.liftMotorLeft.getCurrentPosition());
         telemetry.addData("Vertical slide Encoder_right",robot.liftMotorRight.getCurrentPosition());
         telemetry.addLine("-------------------");
-        for (FiniteStateMachineDeposit.ColorRange range : colorRanges) {
-            telemetry.addData("Color Range", "Name: " + range.colorName +
-                    ", HueMin: " + range.hueMin +
-                    ", HueMax: " + range.hueMax);
-        }
         telemetry.update();
         }
 
@@ -163,7 +155,7 @@ public class BasicTeleOps extends OpMode {
     public void loop () {
         long currentTime = System.currentTimeMillis();
         // Button Back to reset vertical slide position to bottom.
-        if (gamepadCo1.getButton(BACK) && debounceTimer.seconds()>0.2){
+        /*if (gamepadCo1.getButton(BACK) && debounceTimer.seconds()>0.2){
             debounceTimer.reset();
             robot.liftMotorLeft.setTargetPosition(0);
             robot.liftMotorRight.setTargetPosition(0);
@@ -181,6 +173,8 @@ public class BasicTeleOps extends OpMode {
             // when position is back to 0, deposit is initialized.
             depositArmDrive.Init();
         }
+
+         */
 
         //Bulk Reading for Motors
         for (LynxModule hub : allHubs) {
@@ -219,12 +213,11 @@ public class BasicTeleOps extends OpMode {
         }
 
         //RUN Mode Selection
-        if (controlState == ControlState.RUN) {
+        /*if (controlState == ControlState.RUN) {
             //Deposit Arm Control
             depositArmDrive.DepositArmLoop();
             FiniteStateMachineDeposit.LIFTSTATE liftState = depositArmDrive.liftState;
             FiniteStateMachineDeposit.DEPOSITCLAWSTATE depositClawState = depositArmDrive.depositClawState;
-            String detectedColor = depositArmDrive.getDetectedColor();
             //Intake Arm Control
             intakeArmDrive.IntakeArmLoop();
             FiniteStateMachineIntake.INTAKESTATE intakeState = intakeArmDrive.intakeState;
@@ -237,11 +230,10 @@ public class BasicTeleOps extends OpMode {
             telemetry.addData("Intake Claw State", intakeClawState);
             telemetry.addLine("---------------------");
             telemetry.addData("Color Sensor Hue", RobotActionConfig.hsvValues[0]);
-            telemetry.addData("Detected Color",detectedColor);
             telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
-        } else {
-            servoTest.ServoTestLoop();
         }
+        
+         */
 
         // Telemetry
         telemetry.addData("Run Mode", controlState);
@@ -250,12 +242,11 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("VS Left Position", robot.liftMotorLeft.getCurrentPosition());
         telemetry.addData("VS Right Position", robot.liftMotorRight.getCurrentPosition());
         telemetry.addLine("---------------------");
-        telemetry.addData("Deposit Arm Position", robot.depositArmServo.getPosition());
+        telemetry.addData("Deposit Arm Position", robot.depositLeftArmServo.getPosition());
         telemetry.addData("Deposit Wrist Position", robot.depositWristServo.getPosition());
         telemetry.addData("Deposit Claw Position", robot.depositClawServo.getPosition());
         telemetry.addLine("---------------------");
-        telemetry.addData("Intake Arm Left Position", robot.intakeLeftArmServo.getPosition());
-        telemetry.addData("Intake Arm Right Position", robot.intakeRightArmServo.getPosition());
+        telemetry.addData("Intake Arm Left Position", robot.intakeArmServo.getPosition());
         telemetry.addData("Intake Wrist Position", robot.intakeWristServo.getPosition());
         telemetry.addData("Intake Claw Position", robot.intakeClawServo.getPosition());
         telemetry.addData("Intake Slide Position", robot.intakeLeftSlideServo.getPosition());

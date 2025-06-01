@@ -49,7 +49,7 @@ public class FiniteStateMachineDeposit {
         LIFT_SAMPLE_EXTEND,
         LIFT_SAMPLE_DUMP,
         LIFT_RETRACT,
-        COLOR_SAMPLE_DROP,
+        LIFT_WALL_PICK,
         LIFT_HIGHBAR,
         LIFT_SPECIMEN_HOOK,
         LIFT_SPECIMEN_SCORE,
@@ -67,16 +67,6 @@ public class FiniteStateMachineDeposit {
      * ColorRange class used as an object for color threshold variable
      * it is similar to dictionary
      */
-    class ColorRange {
-        public String colorName;
-        public int hueMin, hueMax;
-
-        public ColorRange(String colorName, int hueMin, int hueMax) {
-            this.colorName = colorName;
-            this.hueMin = hueMin;
-            this.hueMax = hueMax;
-        }
-    }
 
     /**
      * member DECLEAR
@@ -90,8 +80,6 @@ public class FiniteStateMachineDeposit {
     private ElapsedTime holdTimer = new ElapsedTime(); // Timer for limit switch debouncing
     private ElapsedTime runtime = new ElapsedTime(); // Independent timer
     private ElapsedTime liftUpTimeout = new ElapsedTime();
-
-    private String detectedColor = "None";
 
     // COLOR LIST
     List<ColorRange> colorRanges = new ArrayList<>();
@@ -118,7 +106,7 @@ public class FiniteStateMachineDeposit {
     public void Init() {
         liftTimer.reset();
         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
-        robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+        robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
         depositClawState = DEPOSITCLAWSTATE.OPEN;
     }
@@ -133,26 +121,6 @@ public class FiniteStateMachineDeposit {
 
     // Deposit Arm Control
     public void DepositArmLoop() {
-        long currentTime = System.currentTimeMillis();
-        ///debuging color sensor
-        NormalizedRGBA colors = robot.colorSensor.getNormalizedColors();
-        // Update the hsvValues array by passing it to Color.colorToHSV()
-        Color.colorToHSV(colors.toColor(), hsvValues);
-        RobotActionConfig.hsvValues = hsvValues;
-        hue = hsvValues[0];
-        value = hsvValues[2];
-
-        empty = true;
-        //LOOP THROUGH THE colorRange to check the color
-        // Default value before looping
-        detectedColor = "None";
-        for (ColorRange range : colorRanges) {
-            if (hue >= range.hueMin && hue <= range.hueMax) {
-                detectedColor = range.colorName;
-                empty = false;
-                break;
-            }
-        }
         /** FSM Loop*/
         switch (liftState) {
             case LIFT_START:
@@ -171,20 +139,17 @@ public class FiniteStateMachineDeposit {
                         isButtonDebounced()) {
                     liftTimer.reset();
                     liftUpTimeout.reset();
-                    liftState = LIFTSTATE.LIFT_HIGHBAR;
+                    liftState = LIFTSTATE.LIFT_WALL_PICK;
                 }
 
                 break;
 
             case LIFT_SAMPLE_BRANCH:
-                // yellow color to high basket
-                if (detectedColor.equals("Yellow") || empty) {
                     liftState = LIFTSTATE.LIFT_HIGHBASKET;
                     liftTimer.reset();
-                }
                 // Blue and Red for choose again -- x for high basket, y for dropping
-                if ((detectedColor.equals("Blue") || detectedColor.equals("Red")) && ((gamepad_1.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_BUMPER)) ||
-                        (gamepad_2.getButton(GamepadKeys.Button.X) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_BUMPER))) &&
+                if ((gamepad_1.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_BUMPER)) ||
+                        (gamepad_2.getButton(GamepadKeys.Button.X) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_BUMPER)) &&
                         isButtonDebounced()) {
                     liftState = LIFTSTATE.LIFT_HIGHBASKET;
                     liftTimer.reset();
@@ -192,29 +157,27 @@ public class FiniteStateMachineDeposit {
                 break;
 
             case LIFT_HIGHBASKET:
-                if (!detectedColor.equals("Black")) {
-                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_highbasketpause);
+                robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_highbasketpause);
                     if (liftTimer.seconds() >= 0.25) {
                         slidesToHeightMM(RobotActionConfig.deposit_Slide_Highbasket_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
                         // Move deposit Arm & wrist servo to dump prep position
                         if (liftTimer.seconds() >= 0.5) {
-                            robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump_Prep);
+                            robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump_Prep);
                             robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                             liftTimer.reset();
                             liftUpTimeout.reset();
                             liftState = LIFTSTATE.LIFT_SAMPLE_EXTEND;
+
                         }
                     }
-                } else {
-                    liftState = LIFTSTATE.LIFT_START;
-                }
                 break;
 
             case LIFT_SAMPLE_EXTEND:
                 // Check if the lift has reached the high position
                 if (IsLiftAtPosition(RobotActionConfig.deposit_Slide_Highbasket_Pos)) {
                     //move deposit arm to dump
-                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
+                    robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
+                    robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
                     // Move deposit wrist servo to dump position
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Dump);
                     liftTimer.reset();
@@ -228,7 +191,8 @@ public class FiniteStateMachineDeposit {
                     depositClawState = DEPOSITCLAWSTATE.OPEN;
                 }
                 if (liftTimer.seconds() >= RobotActionConfig.postDumpTime) {
-                    robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
+                    robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
+                    robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                     liftTimer.reset();
                     liftState = LIFTSTATE.LIFT_RETRACT;
@@ -257,7 +221,8 @@ public class FiniteStateMachineDeposit {
                 if (liftTimer.seconds() > RobotActionConfig.waitTime) {
                     slidesToHeightMM(RobotActionConfig.deposit_Slide_Highbar_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);        // rise up lift
                     if (IsLiftAtPosition(RobotActionConfig.deposit_Slide_Highbar_Pos)) {                                            // if vertical slide reached the position
-                        robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);                                      // set the deposit arm and deposit wrist to hook position.
+                        robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
+                        robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);// set the deposit arm and deposit wrist to hook position.
                         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
                         liftState = LIFTSTATE.LIFT_SPECIMEN_HOOK;
                     }
@@ -281,7 +246,8 @@ public class FiniteStateMachineDeposit {
                 if (liftTimer.seconds() > RobotActionConfig.waitTime) {                                                             // wait 0.2s
                     driveBackward(RobotActionConfig.backwardDist);                                                                  // Auto drive back
                     if(liftTimer.seconds() > RobotActionConfig.waitTime +0.75){
-                        robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+                        robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+                        robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                         liftState = LIFTSTATE.LIFT_RETRACT;
                         liftTimer.reset();
@@ -300,7 +266,8 @@ public class FiniteStateMachineDeposit {
                 && isButtonDebounced()) {
             depositClawState = DEPOSITCLAWSTATE.OPEN;
             robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
-            robot.depositArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+            robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+            robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
             robot.liftMotorLeft.setPower(0); // Stop the motor after reaching the low position
             robot.liftMotorRight.setPower(0);
             try {
@@ -332,13 +299,7 @@ public class FiniteStateMachineDeposit {
     }
 
     // Color return helper
-    public String getDetectedColor(){
-        return detectedColor;
-    }
 
-    public List<ColorRange> getColorRanges() {
-        return colorRanges;
-    }
     // Helper method to check if the lift is within the desired position threshold
     private boolean IsLiftAtPosition(int targetPosition) {
         int targetTicks = (int) (targetPosition * RobotActionConfig.TICKS_PER_MM_Slides);
