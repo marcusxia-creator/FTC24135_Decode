@@ -74,7 +74,7 @@ public class RobotActionConfig {
     public static double deposit_Arm_Dump_Prep          = 0.4;                                          // deposit arm dump pre-ready position.
     public static double deposit_Arm_Transfer           = 0.04;                                         //
     public static double deposit_Arm_hang_Pos           = 0.25;                                         // hang position
-    public static double deposit_Arm_Hook               = 0.95;                                         // deposit arm hook position
+    public static double deposit_Arm_Hook               = 0.95;// deposit arm hook position
 
 
     /**Deposit_Claw  range(0-0.4, lowest :0., fully open: 0.36 )*/

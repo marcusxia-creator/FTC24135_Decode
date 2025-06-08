@@ -104,7 +104,6 @@ public class RobotDrive {
 
         // Mecanum drive calculations
         setMecanumDrivePower(drive, strafe, rotate, currentHeading, powerFactor);
-
         // Update telemetry with the latest data
         // empty
     }// end of driveloop

@@ -17,13 +17,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+@Config
+@TeleOp (name = "Servo Test", group = "org.firstinspires.ftc.teamcode")
+public class ServoTest extends OpMode{
 
-
-public class ServoTest{
-
-    private final GamepadEx gamepad_1;
-    private final GamepadEx gamepad_2;
-    private final RobotHardware robot;
+    private GamepadEx gamepad_1;
+    private GamepadEx gamepad_2;
+    private RobotHardware robot;
 
     //declear initial servo position
     private double servoposition;
@@ -32,6 +32,13 @@ public class ServoTest{
     int delta_Position = 50;
     int current_Position;
     private static final double speed = 0.4;
+
+    double deadband(double input, double threshold) {
+        if (Math.abs(input) < threshold) { // Ignore small values
+            return 0.0;
+        }
+        return input;
+    }
 
    //
     private final ElapsedTime debounceTimer = new ElapsedTime(); // Timer for debouncing
@@ -42,8 +49,13 @@ public class ServoTest{
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
     }
-
+    @Override
     public void init(){
+        gamepad_1 = new GamepadEx(gamepad1);
+        gamepad_2 = new GamepadEx(gamepad2);
+
+        robot = new RobotHardware(hardwareMap);
+
         robot.depositLeftArmServo.setPosition(0.0);
         robot.depositRightArmServo.setPosition(0.0);
         robot.depositWristServo.setPosition(0.0);
@@ -63,7 +75,7 @@ public class ServoTest{
         robot.liftMotorLeft.setPower(speed);
         robot.liftMotorRight.setPower(speed);
     }
-
+    @Override
     public void loop() {
         /*deposit system setup*/
         // A for claw open
@@ -221,6 +233,51 @@ public class ServoTest{
             servoposition -= 0.01;
             robot.intakeRotationServo.setPosition(Range.clip(servoposition, 0, 1));
         }
+    }
+    public void DriveTest (){
+        double rotate_Slowness = 0.75;
+        double drive = 0.0;
+        double strafe = 0.0;
+        double rotate = 0.0;
+
+        if (Math.abs(gamepad_1.getRightY()) > 0.1 ||
+            Math.abs(gamepad_1.getRightX()) > 0.1 ||
+            Math.abs(gamepad_1.getLeftX()) > 0.1) {
+
+            drive = deadband(-gamepad_1.getRightY(), 0.1);
+            strafe = deadband(gamepad_1.getRightX(), 0.1);
+            rotate = deadband(gamepad_1.getLeftX() * rotate_Slowness, 0.1);
+
+            double frontLeft = drive + strafe + rotate;
+            double frontRight = drive - strafe - rotate;
+            double backLeft = drive - strafe + rotate;
+            double backRight = drive + strafe - rotate;
+
+            robot.frontLeftMotor.setPower(frontLeft);
+            robot.frontRightMotor.setPower(frontRight);
+            robot.backLeftMotor.setPower(backLeft);
+            robot.backRightMotor.setPower(backRight);
+        } else {
+            robot.frontLeftMotor.setPower(0);
+            robot.frontRightMotor.setPower(0);
+            robot.backLeftMotor.setPower(0);
+            robot.backRightMotor.setPower(0);
+
+        }
+
+        telemetry.addData("VS Left Position", robot.liftMotorLeft.getCurrentPosition());
+        telemetry.addData("VS Right Position", robot.liftMotorRight.getCurrentPosition());
+        telemetry.addLine("---------------------");
+        telemetry.addData("Deposit Arm Position", robot.depositLeftArmServo.getPosition());
+        telemetry.addData("Deposit Wrist Position", robot.depositWristServo.getPosition());
+        telemetry.addData("Deposit Claw Position", robot.depositClawServo.getPosition());
+        telemetry.addLine("---------------------");
+        telemetry.addData("Intake Arm Left Position", robot.intakeArmServo.getPosition());
+        telemetry.addData("Intake Wrist Position", robot.intakeWristServo.getPosition());
+        telemetry.addData("Intake Claw Position", robot.intakeClawServo.getPosition());
+        telemetry.addData("Intake Slide Position", robot.intakeLeftSlideServo.getPosition());
+        telemetry.addData("Intake Slide Position", robot.intakeRightSlideServo.getPosition());
+        telemetry.update();
 
     }
 

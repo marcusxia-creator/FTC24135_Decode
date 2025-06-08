@@ -131,7 +131,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         drive = new SampleMecanumDriveCancelable(hardwareMap);
 
         // Initialize hardware in RobotHardware
-        robot = new RobotHardware();
+        robot = new RobotHardware(hardwareMap);
         robot.init(hardwareMap);
 
         //gamepad

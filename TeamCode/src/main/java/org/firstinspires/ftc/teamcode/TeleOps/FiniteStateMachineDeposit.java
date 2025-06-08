@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_STICK_BUTTON;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.X;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static java.lang.Thread.sleep;
 
@@ -79,6 +81,7 @@ public class FiniteStateMachineDeposit {
     private ElapsedTime debounceTimer = new ElapsedTime(); // Timer for debouncing
     private ElapsedTime holdTimer = new ElapsedTime(); // Timer for limit switch debouncing
     private ElapsedTime runtime = new ElapsedTime(); // Independent timer
+    private ElapsedTime hangtime = new ElapsedTime();
     private ElapsedTime liftUpTimeout = new ElapsedTime();
 
     // COLOR LIST
@@ -213,6 +216,15 @@ public class FiniteStateMachineDeposit {
                     }
                 }
                 break;
+            case LIFT_WALL_PICK:
+                if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_STICK_BUTTON))  ||
+                        (gamepad_2.getButton(GamepadKeys.Button.Y) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_STICK_BUTTON)))
+                        && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+                    depositClawState = DEPOSITCLAWSTATE.OPEN;
+                    robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
+                    robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
+                    liftState = LIFTSTATE.LIFT_HIGHBAR;
+                }
 
             /**  2nd branch for specimen*/
             case LIFT_HIGHBAR:
@@ -281,17 +293,13 @@ public class FiniteStateMachineDeposit {
         //if (runtime.seconds() > 100){
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
                 && isButtonDebounced()) {
-            slidesToHeightMM(RobotActionConfig.deposit_Slide_Hang_Pos, RobotActionConfig.deposit_Slide_DownLiftPower);
-        }
-
-        if (gamepad_1.getButton(GamepadKeys.Button.DPAD_DOWN) && gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
-                && isButtonDebounced()) {
-            slidesToHeightMM(Math.max(0, getSlidesCurrentPositionMM() - 50), RobotActionConfig.deposit_Slide_UpLiftPower);
-            if (gamepad_1.wasJustReleased(GamepadKeys.Button.DPAD_DOWN) && gamepad_1.wasJustReleased(GamepadKeys.Button.LEFT_BUMPER)) {
-                robot.liftMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                robot.liftMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_hang_Pos);
+            robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_hang_Pos);
+            if (hangtime.seconds() > 0.5) {
             }
         }
+
+
 
         //Claw CONTROL  ---- GLOBAL CONTROL ----> BUTTON A
         ClawManualControl();

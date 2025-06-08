@@ -92,6 +92,9 @@ public class RobotHardware {
 
     public GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
 
+    public RobotHardware(HardwareMap hardwareMap) {
+    }
+
 
     public void init(HardwareMap hardwareMap) {
 
@@ -103,12 +106,13 @@ public class RobotHardware {
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
         //Lift motors
-        liftMotorLeft = hardwareMap.get(DcMotorEx.class,"VS_Left_Motor");
-        liftMotorRight = hardwareMap.get(DcMotorEx.class, "VS_Right_Motor");
+        liftMotorLeft = hardwareMap.get(DcMotorEx.class,"LS_Motor");
+        liftMotorRight = hardwareMap.get(DcMotorEx.class, "RS_Motor");
 
 
         /**set servos**/
         //Intake servo
+        intakeArmServo = hardwareMap.get(Servo.class, "Intake_Arm_Servo");
         intakeLeftSlideServo = hardwareMap.get(Servo.class, "Intake_Slide_Left_Servo");
         intakeRightSlideServo = hardwareMap.get(Servo.class, "Intake_Slide_Right_Servo");
         intakeWristServo = hardwareMap.get(Servo.class, "Intake_Wrist_Servo");

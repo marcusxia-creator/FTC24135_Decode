@@ -105,7 +105,7 @@ public class BasicTeleOps extends OpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         // Initialize hardware in RobotHardware
-        robot = new RobotHardware();
+        robot = new RobotHardware(hardwareMap);
         robot.init(hardwareMap);
 
         //gamepad
