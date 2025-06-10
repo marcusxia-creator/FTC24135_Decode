@@ -60,9 +60,6 @@ public class ServoTest extends OpMode {
         robot.liftMotorLeft.setPower(speed);
         robot.liftMotorRight.setPower(speed);
 
-        robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
     }
 
     @Override
@@ -106,8 +103,7 @@ public class ServoTest extends OpMode {
 
         if (gamepad_1.getButton(X) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
-            current_Position = robot.liftMotorLeft.getCurrentPosition() + delta_Position;
-            current_Position = robot.liftMotorRight.getCurrentPosition() + delta_Position;
+            current_Position = robot.liftMotorLeft.getCurrentPosition();
 
             robot.liftMotorLeft.setTargetPosition(Range.clip(current_Position + delta_Position,50,3500));
             robot.liftMotorRight.setTargetPosition(Range.clip(current_Position + delta_Position,50,3500));
@@ -116,22 +112,18 @@ public class ServoTest extends OpMode {
             robot.liftMotorLeft.setPower(speed);
             robot.liftMotorRight.setPower(speed);
 
-            robot.liftMotorLeft.setTargetPosition(Range.clip(current_Position, 50, 3500));
-            robot.liftMotorRight.setTargetPosition(Range.clip(current_Position, 50, 3500));
         }
 
         if (gamepad_1.getButton(Y) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
-            current_Position = robot.liftMotorLeft.getCurrentPosition() - delta_Position;
-            current_Position = robot.liftMotorRight.getCurrentPosition() + delta_Position;
+            current_Position = robot.liftMotorLeft.getCurrentPosition();
+
             robot.liftMotorLeft.setTargetPosition(Range.clip(current_Position - delta_Position,50,3500));
             robot.liftMotorRight.setTargetPosition(Range.clip(current_Position - delta_Position,50,3500));
             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorLeft.setPower(speed);
             robot.liftMotorRight.setPower(speed);
-            robot.liftMotorLeft.setTargetPosition(Range.clip(current_Position, 50, 3500));
-            robot.liftMotorRight.setTargetPosition(Range.clip(current_Position, 50, 3500));
         }
 
         // --- Intake System ---
