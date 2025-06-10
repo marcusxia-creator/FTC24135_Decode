@@ -53,15 +53,16 @@ public class ServoTest extends OpMode {
         robot.intakeTurretServo.setPosition(0.0);
 
         // Initialize lift motors
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.liftMotorLeft.setTargetPosition(50);
         robot.liftMotorRight.setTargetPosition(50);
         robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.liftMotorLeft.setPower(speed);
         robot.liftMotorRight.setPower(speed);
-        robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
     }
 
     @Override
