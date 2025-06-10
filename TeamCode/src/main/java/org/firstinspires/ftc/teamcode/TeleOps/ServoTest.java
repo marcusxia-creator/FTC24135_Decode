@@ -59,6 +59,8 @@ public class ServoTest extends OpMode {
         robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.liftMotorLeft.setPower(speed);
         robot.liftMotorRight.setPower(speed);
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
     }
 
