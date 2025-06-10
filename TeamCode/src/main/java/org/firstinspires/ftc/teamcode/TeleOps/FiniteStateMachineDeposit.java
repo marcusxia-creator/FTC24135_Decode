@@ -223,7 +223,9 @@ public class FiniteStateMachineDeposit {
                     depositClawState = DEPOSITCLAWSTATE.OPEN;
                     robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
-                    liftState = LIFTSTATE.LIFT_HIGHBAR;
+                    if (depositClawState == DEPOSITCLAWSTATE.CLOSE){
+                        liftState = LIFTSTATE.LIFT_HIGHBAR;
+                    }
                 }
                 break;
             /**  2nd branch for specimen*/

@@ -123,7 +123,7 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Intake Slide L", robot.intakeLeftSlideServo.getPosition());
         telemetry.addData("Intake Slide R", robot.intakeRightSlideServo.getPosition());
         telemetry.addData("Heading", robot.imu.getRobotYawPitchRollAngles().getYaw());
-        telemetry.addData("Limit Switch", robot.limitSwitch.getState());
+        //telemetry.addData("Limit Switch", robot.limitSwitch.getState());
         telemetry.update();
     }
 

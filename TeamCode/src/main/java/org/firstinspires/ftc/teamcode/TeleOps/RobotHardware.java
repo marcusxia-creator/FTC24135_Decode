@@ -153,7 +153,7 @@ public class RobotHardware {
         depositLeftArmServo.setDirection(Servo.Direction.REVERSE);
 
         //set slide motors direction
-        liftMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        liftMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         //Set the run mode of the motors

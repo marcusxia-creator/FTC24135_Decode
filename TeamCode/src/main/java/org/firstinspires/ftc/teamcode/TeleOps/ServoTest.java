@@ -20,8 +20,6 @@ public class ServoTest extends OpMode {
 
     private double servoposition;
     private double servoposition2;
-
-    private static final int iniPosition = 50;
     private static final int delta_Position = 50;
     private int current_Position;
 
@@ -55,12 +53,16 @@ public class ServoTest extends OpMode {
         robot.intakeTurretServo.setPosition(0.0);
 
         // Initialize lift motors
-        robot.liftMotorLeft.setTargetPosition(iniPosition);
-        robot.liftMotorRight.setTargetPosition(iniPosition);
+        robot.liftMotorLeft.setTargetPosition(50);
+        robot.liftMotorRight.setTargetPosition(50);
         robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.liftMotorLeft.setPower(speed);
         robot.liftMotorRight.setPower(speed);
+
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
     }
 
     @Override
@@ -105,6 +107,15 @@ public class ServoTest extends OpMode {
         if (gamepad_1.getButton(X) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             current_Position = robot.liftMotorLeft.getCurrentPosition() + delta_Position;
+            current_Position = robot.liftMotorRight.getCurrentPosition() + delta_Position;
+
+            robot.liftMotorLeft.setTargetPosition(Range.clip(current_Position + delta_Position,50,3500));
+            robot.liftMotorRight.setTargetPosition(Range.clip(current_Position + delta_Position,50,3500));
+            robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.liftMotorLeft.setPower(speed);
+            robot.liftMotorRight.setPower(speed);
+
             robot.liftMotorLeft.setTargetPosition(Range.clip(current_Position, 50, 3500));
             robot.liftMotorRight.setTargetPosition(Range.clip(current_Position, 50, 3500));
         }
@@ -112,6 +123,13 @@ public class ServoTest extends OpMode {
         if (gamepad_1.getButton(Y) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             current_Position = robot.liftMotorLeft.getCurrentPosition() - delta_Position;
+            current_Position = robot.liftMotorRight.getCurrentPosition() + delta_Position;
+            robot.liftMotorLeft.setTargetPosition(Range.clip(current_Position - delta_Position,50,3500));
+            robot.liftMotorRight.setTargetPosition(Range.clip(current_Position - delta_Position,50,3500));
+            robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.liftMotorLeft.setPower(speed);
+            robot.liftMotorRight.setPower(speed);
             robot.liftMotorLeft.setTargetPosition(Range.clip(current_Position, 50, 3500));
             robot.liftMotorRight.setTargetPosition(Range.clip(current_Position, 50, 3500));
         }
@@ -188,6 +206,7 @@ public class ServoTest extends OpMode {
         telemetry.addData("Intake Claw Position", robot.intakeClawServo.getPosition());
         telemetry.addData("Intake Slide Left Position", robot.intakeLeftSlideServo.getPosition());
         telemetry.addData("Intake Slide Right Position", robot.intakeRightSlideServo.getPosition());
+        telemetry.addData("Intake Turret Position", robot.intakeTurretServo.getPosition());
         telemetry.update();
     }
 }
