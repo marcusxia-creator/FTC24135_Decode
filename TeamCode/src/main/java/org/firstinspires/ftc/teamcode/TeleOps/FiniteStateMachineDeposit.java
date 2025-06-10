@@ -225,7 +225,7 @@ public class FiniteStateMachineDeposit {
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
                     liftState = LIFTSTATE.LIFT_HIGHBAR;
                 }
-
+                break;
             /**  2nd branch for specimen*/
             case LIFT_HIGHBAR:
                 //driveStrafe(RobotActionConfig.strafeDist);

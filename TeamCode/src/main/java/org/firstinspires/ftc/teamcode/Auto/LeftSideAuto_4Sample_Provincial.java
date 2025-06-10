@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto;
+/*package org.firstinspires.ftc.teamcode.Auto;
 
 
 import com.acmerobotics.dashboard.config.Config;
@@ -101,7 +101,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                     Slides_Stop();
                 })
                 /** move to 1st sample*/
-                /** pick 1st sample*/
+                /** pick 1st sample
                 .addTemporalMarker(()->{
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Grab);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Grab);
@@ -160,7 +160,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                     Slides_Stop();
                 })
                 /** move to 2nd sample*/
-                /** pick 2nd sample*/
+                /** pick 2nd sample
                 .addTemporalMarker(()->{
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Grab);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Grab);
@@ -220,7 +220,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                 .addTemporalMarker(()->{
                     drive.setDrivePower(new Pose2d(0,0,0));
                 })
-                /** pick 3rd sample*/
+                /** pick 3rd sample
                 .addTemporalMarker(()->{
                     robot.intakeRightArmServo.setPosition(RobotActionConfig.intake_Arm_Right_Grab);
                     robot.intakeLeftArmServo.setPosition(RobotActionConfig.intake_Arm_Left_Grab);
@@ -341,4 +341,4 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
         int targetTicks = (int) (targetPosition * RobotActionConfig.TICKS_PER_MM_Slides);
         return Math.abs(robot.liftMotorLeft.getCurrentPosition() - targetTicks) < RobotActionConfig.slideTickThreshold/2 && Math.abs(robot.liftMotorRight.getCurrentPosition() - targetTicks) < RobotActionConfig.slideTickThreshold/2;
     }
-}
+} */

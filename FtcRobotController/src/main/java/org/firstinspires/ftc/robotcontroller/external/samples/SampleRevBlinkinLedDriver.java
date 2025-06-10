@@ -104,7 +104,6 @@ public class SampleRevBlinkinLedDriver extends OpMode {
              * MANUAL mode: Nothing to do, setting the pattern as a result of a gamepad event.
              */
         }
-        return 0;
     }
 
     /*

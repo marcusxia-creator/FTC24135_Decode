@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOps;
+/***package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
@@ -76,7 +76,7 @@ import java.util.List;
  *  * Right Trigger + DPAD_RIGHT    ----> to lower the intake arm for near side pick up
  *  * A                             ----> TO TOGGLE INTAKE CLAW OPEN/CLOSE
  *  * Right bumper + A              ----> To TOGGLE DEPOSIT CLAW OPEN/CLOSE
- */
+
 
 @TeleOp(name = "TeleOps_Champion_Prep_SemiAuto", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOps_SemiAuto extends OpMode {
@@ -167,7 +167,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
         /** transfer the currentPose from end of Auto -- each Auto code need to
          * add PoseStorage.currentPose = drive.getPoseEstimate(); at the end of the AutoCode
-         * */
+         *
         Pose2d startPose = new Pose2d(7.5, -64, Math.toRadians(-90));// this is for manual testing.
         drive.setPoseEstimate(startPose);
         //drive.setPoseEstimate(PoseStorage.currentPose);
@@ -284,9 +284,9 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                 telemetry.addData("Detected Color", detectedColor);
                 //telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
 
-                /** AutoMode Control */
+                /** AutoMode Control
                 if ((gamepadCo1.getButton(LEFT_STICK_BUTTON) && !autoPressed && isButtonDebounced())){
-                    /**Global Control ----> Handle Auto Drive if 'LeftSTICK' button is pressed*/
+                    /**Global Control ----> Handle Auto Drive if 'LeftSTICK' button is pressed
                     autoPressed = true;
                     if(autoDriveHandler.handleButtonY()){
                         initialRun = false;
@@ -349,7 +349,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         telemetry.addLine("---------Frequency--------");
         telemetry.addData("Pinpoint Frequency", drive.pinPointFrequency()); //prints/gets the current refresh rate of the Pinpoint
         telemetry.addData("REV Hub Frequency: ", frequency); //prints the control system refresh rate
-         */
+         /
         telemetry.update();
     }
 
@@ -387,4 +387,4 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         return false;
     }
 
-}
+} */

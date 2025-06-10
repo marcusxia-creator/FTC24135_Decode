@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOps;
+/***package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static org.firstinspires.ftc.teamcode.Auto.RightSideAuto_3Specimen.hSlideWaitTimer;
 import static org.firstinspires.ftc.teamcode.Auto.RightSideAuto_3Specimen.wristWaitTimer;
@@ -39,7 +39,7 @@ public class AutoDriveHandler {
 
     /**
      * Updates poseEstimate dynamically.
-     */
+
     public void updatePoseEstimate(Pose2d newPose) {
         this.poseEstimate = newPose;
     }
@@ -47,7 +47,7 @@ public class AutoDriveHandler {
     /**
      * Executes the auto-drive action for the Y button.
      * @return true if the auto drive was initiated.
-     */
+
     public boolean handleButtonY() {
         double X = poseEstimate.getX();
         double Y = poseEstimate.getY();
@@ -167,7 +167,7 @@ public class AutoDriveHandler {
         robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
     }
 
-    /** Slides subclass for vertical slides moving helper method.*/
+    /** Slides subclass for vertical slides moving helper method.
     class VerticalSlide {
         RobotHardware robot;
         private VerticalSlide(RobotHardware robot){
@@ -204,14 +204,14 @@ public class AutoDriveHandler {
                 }
             }
 
-             */
+
         }
 
     }
     /**HELPER METHODS*/
     /**
      * Returns true only if the limit switch has been pressed continuously for at least 200ms.
-     */
+
 
     private boolean lSisPressed() {
         boolean switchState = robot.limitSwitch.getState(); // Read switch state
@@ -225,5 +225,5 @@ public class AutoDriveHandler {
         }
         return false;
     }
-}
+} */
 

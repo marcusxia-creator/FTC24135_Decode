@@ -125,12 +125,12 @@ public class RobotHardware {
         depositWristServo = hardwareMap.get(Servo.class, "Deposit_Wrist_Servo");
         depositClawServo = hardwareMap.get(Servo.class, "Deposit_Claw_Servo");
         //Color sensor
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "Color_Sensor");
-        colorSensor.setGain(2);
+        //colorSensor = hardwareMap.get(NormalizedColorSensor.class, "Color_Sensor");
+        //colorSensor.setGain(2);
         //colorSensor.enableLed(true); // this is for Non normalized colorSensor.
         //Limit Switch
-        limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
-        limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+        //limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
+       // limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         //set motor mode and motor direction
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed

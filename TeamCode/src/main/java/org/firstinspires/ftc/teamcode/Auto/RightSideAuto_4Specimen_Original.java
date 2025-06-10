@@ -1,4 +1,4 @@
-
+/***
 package org.firstinspires.ftc.teamcode.Auto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -75,7 +75,7 @@ public class RightSideAuto_4Specimen_Original extends LinearOpMode {
                 })
                 //wait 0.1 second
                 .waitSeconds(0.1)
-                /** Move to 1st sample on ground - while deposit retracting */
+                /** Move to 1st sample on ground - while deposit retracting
                 .lineToLinearHeading(new Pose2d(first_sample_pickup_x_coordinate, first_sample_pickup_y_coordinate, Math.toRadians(90)))
                 .UNSTABLE_addTemporalMarkerOffset(-1,()->{depositSysRetract();})
                 .UNSTABLE_addTemporalMarkerOffset(-0.75,()->{intakeSamplePick();})
@@ -100,7 +100,7 @@ public class RightSideAuto_4Specimen_Original extends LinearOpMode {
                 })
                 //wait 0.1 second
                 .waitSeconds(0.1)
-                /** Move to 1st sample on ground - while deposit retracting */
+                /** Move to 1st sample on ground - while deposit retracting
                 .lineToLinearHeading(new Pose2d(first_sample_pickup_x_coordinate, first_sample_pickup_y_coordinate, Math.toRadians(90)))
                 .UNSTABLE_addTemporalMarkerOffset(-1,()->{depositSysRetract();})
                 .UNSTABLE_addTemporalMarkerOffset(-0.75,()->{intakeSamplePick();})
@@ -214,7 +214,7 @@ public class RightSideAuto_4Specimen_Original extends LinearOpMode {
         }
     }
 
-    /** Slides subclass for vertical slides moving helper method.*/
+    /** Slides subclass for vertical slides moving helper method.
     class VerticalSlide {
         RobotHardware robot;
         private VerticalSlide(RobotHardware robot){
@@ -259,7 +259,7 @@ public class RightSideAuto_4Specimen_Original extends LinearOpMode {
     /**HELPER METHODS*/
     /**
      * Returns true only if the limit switch has been pressed continuously for at least 200ms.
-     */
+
 
     private boolean lSisPressed() {
         limitSwitchPressStartTime = 0;
@@ -356,4 +356,4 @@ public class RightSideAuto_4Specimen_Original extends LinearOpMode {
             // Optionally call idle() or update telemetry here.
         }
     }
-}
+} ***/
