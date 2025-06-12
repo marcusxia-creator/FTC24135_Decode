@@ -85,7 +85,7 @@ public class RobotHardware {
     ///for debug colorSensor
     public NormalizedColorSensor colorSensor;
 
-    public DigitalChannel limitSwitch;// Limit Switch
+    ///public DigitalChannel limitSwitch;// Limit Switch
 
     public IMU imu; //IMU
     public HardwareMap hardwareMap;

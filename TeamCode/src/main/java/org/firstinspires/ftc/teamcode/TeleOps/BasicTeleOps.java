@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.Auto.drive.StandardTrackingWheelLocalizer;
 import java.util.List;
 
 @Config
-@TeleOp(name = "TeleOps_Champion_Prep-gw", group = "org.firstinspires.ftc.teamcode")
+@TeleOp(name = "TeleOps_Premier", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOps extends OpMode {
 
     public enum ControlState { RUN, TEST }
@@ -106,8 +106,8 @@ public class BasicTeleOps extends OpMode {
             telemetry.addData("Deposit Claw State", depositArmDrive.depositClawState);
             telemetry.addData("Intake State", intakeArmDrive.intakeState);
             telemetry.addData("Intake Claw State", intakeArmDrive.intakeClawState);
-            telemetry.addData("Color Hue", RobotActionConfig.hsvValues[0]);
-            telemetry.addData("Color Value", RobotActionConfig.hsvValues[2]);
+            /**telemetry.addData("Color Hue", RobotActionConfig.hsvValues[0]);
+            telemetry.addData("Color Value", RobotActionConfig.hsvValues[2]); **/
         }
 
         telemetry.addData("Run Mode", controlState);
@@ -143,9 +143,11 @@ public class BasicTeleOps extends OpMode {
         controlState = (controlState == ControlState.RUN) ? ControlState.TEST : ControlState.RUN;
     }
 
+    /**
     private boolean LSisPressed() {
         return robot.limitSwitch.getState();
     }
+     */
 
     private void resetLiftEncoders() {
         robot.liftMotorLeft.setTargetPosition(0);
@@ -155,6 +157,7 @@ public class BasicTeleOps extends OpMode {
         robot.liftMotorLeft.setPower(0.3);
         robot.liftMotorRight.setPower(0.3);
 
+        /**
         while (robot.liftMotorLeft.isBusy() && robot.liftMotorRight.isBusy()) {
             if (LSisPressed()) {
                 robot.liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -162,5 +165,6 @@ public class BasicTeleOps extends OpMode {
                 break;
             }
         }
+         */
     }
 }

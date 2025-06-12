@@ -23,9 +23,10 @@ public class ServoTest extends OpMode {
     private static final int delta_Position = 50;
     private int current_Position;
 
-    private static final double speed = 0.4;
-    private static final double DEBOUNCE_THRESHOLD = 0.25;
+    private static final double speed = 0.8;
+
     private final ElapsedTime debounceTimer = new ElapsedTime();
+    private static final double DEBOUNCE_THRESHOLD = 0.25;
 
     private static boolean leftButtonPressed = false;
 
@@ -72,14 +73,12 @@ public class ServoTest extends OpMode {
         // --- Deposit System ---
         if (gamepad_1.getButton(A) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
-            servoposition = robot.depositClawServo.getPosition() + 0.01;
-            robot.depositClawServo.setPosition(Range.clip(servoposition, 0, 1));
+            robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
         }
 
         if (gamepad_1.getButton(B) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
-            servoposition = robot.depositClawServo.getPosition() - 0.01;
-            robot.depositClawServo.setPosition(Range.clip(servoposition, 0, 1));
+            robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
         }
 
         if (gamepad_1.getButton(DPAD_UP) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
@@ -113,12 +112,16 @@ public class ServoTest extends OpMode {
             debounceTimer.reset();
             current_Position = robot.liftMotorLeft.getCurrentPosition();
 
-            robot.liftMotorLeft.setTargetPosition(Range.clip(current_Position + delta_Position,20,1550));
-            robot.liftMotorRight.setTargetPosition(Range.clip(current_Position + delta_Position,20,1550));
+            robot.liftMotorLeft.setTargetPosition(1550);
+            robot.liftMotorRight.setTargetPosition(1550);
             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorLeft.setPower(speed);
             robot.liftMotorRight.setPower(speed);
+
+            robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Dump);
+            robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
+            robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
 
         }
 
@@ -182,12 +185,12 @@ public class ServoTest extends OpMode {
             servoposition = robot.intakeRotationServo.getPosition() - 0.01;
             robot.intakeRotationServo.setPosition(Range.clip(servoposition, 0, 1));
         }
-        if (gamepad_2.getButton(DPAD_LEFT) && gamepad_2.getButton(LEFT_BUMPER) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
+        if (gamepad_2.getButton(LEFT_BUMPER) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             servoposition = robot.intakeTurretServo.getPosition() - 0.01;
             robot.intakeTurretServo.setPosition(Range.clip(servoposition, 0, 1));
         }
-        if (gamepad_2.getButton(DPAD_RIGHT) && gamepad_2.getButton(LEFT_BUMPER) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
+        if (gamepad_2.getButton(RIGHT_BUMPER) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             servoposition = robot.intakeTurretServo.getPosition() + 0.01;
             robot.intakeTurretServo.setPosition(Range.clip(servoposition, 0, 1));
@@ -207,6 +210,7 @@ public class ServoTest extends OpMode {
         telemetry.addData("Intake Slide Left Position", robot.intakeLeftSlideServo.getPosition());
         telemetry.addData("Intake Slide Right Position", robot.intakeRightSlideServo.getPosition());
         telemetry.addData("Intake Turret Position", robot.intakeTurretServo.getPosition());
+        telemetry.addData("Intake Rotation Position", robot.intakeRotationServo.getPosition());
 
         if (gamepad_1.getButton(DPAD_LEFT)) {
             telemetry.addLine("Button pressed");

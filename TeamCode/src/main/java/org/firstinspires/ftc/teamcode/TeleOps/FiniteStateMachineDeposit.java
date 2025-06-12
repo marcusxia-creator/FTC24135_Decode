@@ -2,18 +2,13 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_STICK_BUTTON;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.X;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.VS_Retraction_Timer;
 import static java.lang.Thread.sleep;
-
-import android.graphics.Color;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -51,7 +46,7 @@ public class FiniteStateMachineDeposit {
         LIFT_SAMPLE_EXTEND,
         LIFT_SAMPLE_DUMP,
         LIFT_RETRACT,
-        LIFT_WALL_PICK,
+        LIFT_WALL_PICK_FRONT,
         LIFT_HIGHBAR,
         LIFT_SPECIMEN_HOOK,
         LIFT_SPECIMEN_SCORE,
@@ -83,6 +78,7 @@ public class FiniteStateMachineDeposit {
     private ElapsedTime runtime = new ElapsedTime(); // Independent timer
     private ElapsedTime hangtime = new ElapsedTime();
     private ElapsedTime liftUpTimeout = new ElapsedTime();
+    private ElapsedTime VSRetractTimer = new ElapsedTime();
 
     // COLOR LIST
     List<ColorRange> colorRanges = new ArrayList<>();
@@ -115,12 +111,6 @@ public class FiniteStateMachineDeposit {
     }
 
     /** create a list color threshold ranges*/
-    public void colorRangeIni(){
-        colorRanges.add(new ColorRange("Black", 156, 175));
-        colorRanges.add(new ColorRange("Red", 15, 30));
-        colorRanges.add(new ColorRange("Blue", 200, 240));
-        colorRanges.add(new ColorRange("Yellow", 67, 90));
-    }
 
     // Deposit Arm Control
     public void DepositArmLoop() {
@@ -142,7 +132,7 @@ public class FiniteStateMachineDeposit {
                         isButtonDebounced()) {
                     liftTimer.reset();
                     liftUpTimeout.reset();
-                    liftState = LIFTSTATE.LIFT_WALL_PICK;
+                    liftState = LIFTSTATE.LIFT_WALL_PICK_FRONT;
                 }
 
                 break;
@@ -206,7 +196,7 @@ public class FiniteStateMachineDeposit {
                 // Check if the lift has reached the low position
                 if (Servo_AtPosition(RobotActionConfig.deposit_Claw_Open) && liftTimer.seconds() >= RobotActionConfig.retractTime) {
                     slidesToHeightMM(RobotActionConfig.deposit_Slide_Down_Pos, RobotActionConfig.deposit_Slide_DownLiftPower);
-                    if (IsLiftDownAtPosition(RobotActionConfig.deposit_Slide_Down_Pos) || LSisPressed()
+                    if (IsLiftDownAtPosition(RobotActionConfig.deposit_Slide_Down_Pos)
                     ) {
                         robot.liftMotorLeft.setPower(0); // Stop the motor after reaching the low position
                         robot.liftMotorRight.setPower(0);
@@ -216,13 +206,13 @@ public class FiniteStateMachineDeposit {
                     }
                 }
                 break;
-            case LIFT_WALL_PICK:
+            case LIFT_WALL_PICK_FRONT:
                 if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_STICK_BUTTON))  ||
                         (gamepad_2.getButton(GamepadKeys.Button.Y) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_STICK_BUTTON)))
                         && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
                     depositClawState = DEPOSITCLAWSTATE.OPEN;
-                    robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
-                    robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
+                    robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick_Front);
+                    robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick_Front);
                     if (depositClawState == DEPOSITCLAWSTATE.CLOSE){
                         liftState = LIFTSTATE.LIFT_HIGHBAR;
                     }
@@ -312,18 +302,19 @@ public class FiniteStateMachineDeposit {
 
     // Helper method to check if the lift is within the desired position threshold
     private boolean IsLiftAtPosition(int targetPosition) {
-        int targetTicks = (int) (targetPosition * RobotActionConfig.TICKS_PER_MM_Slides);
+        int targetTicks = (int) (targetPosition);
         return Math.abs(robot.liftMotorLeft.getCurrentPosition() - targetTicks) < RobotActionConfig.slideTickThreshold && Math.abs(robot.liftMotorRight.getCurrentPosition() - targetTicks) < RobotActionConfig.slideTickThreshold;
     }
 
     private boolean IsLiftDownAtPosition(int targetPosition) {
-        int targetTicks = (int) (targetPosition * RobotActionConfig.TICKS_PER_MM_Slides);
+        int targetTicks = (int) (targetPosition);
         return Math.abs(robot.liftMotorLeft.getCurrentPosition() - targetTicks) < RobotActionConfig.slideTickThreshold/2 && Math.abs(robot.liftMotorRight.getCurrentPosition() - targetTicks) < RobotActionConfig.slideTickThreshold/2;
     }
 
     private boolean Servo_AtPosition(double servoClawPosition) {
         return Math.abs(robot.depositClawServo.getPosition() - servoClawPosition) < 0.01;
     }
+    /*
     //Limit switch state
     private boolean LSisPressed() {
         boolean switchState = robot.limitSwitch.getState(); // Read switch state
@@ -336,7 +327,8 @@ public class FiniteStateMachineDeposit {
             holdTimer.reset(); // Reset timer when switch is released
         }
         return false;
-    }
+
+     */
 
     //Claw CONTROL Handler ---- GLOBAL CONTROL ----> BUTTON A
     private void ClawManualControl() {
@@ -423,8 +415,8 @@ public class FiniteStateMachineDeposit {
         robot.backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    private void slidesToHeightMM(double targetHeightMM, double power) {
-        int targetSlideTicks = (int) (targetHeightMM * RobotActionConfig.TICKS_PER_MM_Slides);
+    private void slidesToHeightMM(double targetTicks, double power) {
+        int targetSlideTicks = (int) (targetTicks);
         power = Range.clip(power, 0, 1);
         robot.liftMotorLeft.setTargetPosition(targetSlideTicks);
         robot.liftMotorRight.setTargetPosition(targetSlideTicks);
@@ -438,6 +430,6 @@ public class FiniteStateMachineDeposit {
 
     private double getSlidesCurrentPositionMM() {
         int currentPositionTicks = (robot.liftMotorRight.getCurrentPosition() + robot.liftMotorLeft.getCurrentPosition()) / 2;
-        return (double) currentPositionTicks / RobotActionConfig.TICKS_PER_MM_Slides;
+        return (double) currentPositionTicks;
     }
 }
