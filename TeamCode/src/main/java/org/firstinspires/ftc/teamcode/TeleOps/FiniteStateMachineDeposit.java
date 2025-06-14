@@ -19,12 +19,12 @@ import java.util.List;
 
 
 /** Button Config for deposit
- * *X                           : high basket extend State          - LOCAL STATE - LIFT_START
- * * XX                         : red and blue high basket
- * * XY                         : red and blue sample drop
- * *Y                           : Specimen score                   - LOCAL STATE - LIFT_START
- * *B                           : Cancel;back to transfer pos       - GLOBAL STATE
- * *A                           : TOGGLE DEPOSIT CLAW OPEN/CLOSE    - GLOBAL STATE
+ * X                           : high basket extend State          - LOCAL STATE - LIFT_START
+ * * ->X                         : red and blue high basket
+ * * ->Y                         : red and blue sample drop
+ * Y                           : Specimen score                   - LOCAL STATE - LIFT_START
+ * B                           : Cancel;back to transfer pos       - GLOBAL STATE
+ * A                           : TOGGLE DEPOSIT CLAW OPEN/CLOSE    - GLOBAL STATE
  * *DPAD UP && LEFT BUMPER      : Hung                              - GLOBAL STATE -ACTIVE AFTER 100S
  * *DPAD DOWN && LEFT BUMPER    : Hung DOWN - 300 TICK EVERY PRESS  - GLOBAL STATE -ACTIVE AFTER 100S
  */
@@ -104,12 +104,10 @@ public class FiniteStateMachineDeposit {
     // Initialize Deposit Arm
     public void Init() {
         liftTimer.reset();
-        /*
         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
         robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
         depositClawState = DEPOSITCLAWSTATE.OPEN;
-         */
     }
 
     /** create a list color threshold ranges*/

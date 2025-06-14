@@ -167,14 +167,14 @@ public class ServoTest {
 
         if (gamepad_2.getButton(DPAD_LEFT) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
-            robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
-            robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
+            servoposition = robot.intakeWristServo.getPosition() - 0.01;
+            robot.intakeWristServo.setPosition(Range.clip(servoposition, 0, 1));
         }
 
         if (gamepad_2.getButton(DPAD_RIGHT) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
-            robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Grab);
-            robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
+            servoposition = robot.intakeWristServo.getPosition() + 0.01;
+            robot.intakeWristServo.setPosition(Range.clip(servoposition, 0, 1));
         }
 
         if (gamepad_2.getButton(X) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {

@@ -35,14 +35,14 @@ import java.util.List;
 @Config
 public class PinpointTwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
     public static double TICKS_PER_REV = 2000;
-    public static double WHEEL_RADIUS = 0.944882; // in
+    public static double WHEEL_RADIUS = 0.629921; // in
     public static double GEAR_RATIO = 1.0; // output (wheel) speed / input (encoder) speed
 
-    public static double PARALLEL_X = -0.875; ///-0.875; // X is the up and down direction
-    public static double PARALLEL_Y = -5.875; ///-5.875; // Y is the strafe direction
+    public static double PARALLEL_X = -6; ///-0.875; // X is the up and down direction
+    public static double PARALLEL_Y = 3.75; ///-5.875; // Y is the strafe direction
 
-    public static double PERPENDICULAR_X = -5.1672; ///-5.1672;
-    public static double PERPENDICULAR_Y = -1; ///-1;
+    public static double PERPENDICULAR_X = -6; ///-5.1672;
+    public static double PERPENDICULAR_Y = -4; ///-1;
 
     public static double x_offset = -149.225; // unit in mm    or change to -5.875=149.225
     public static double y_offset = -131.2468; // unit in mm     or change to -5.1672=131.2468
