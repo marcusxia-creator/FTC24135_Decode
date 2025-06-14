@@ -140,8 +140,6 @@ public class FiniteStateMachineDeposit {
                 break;
 
             case LIFT_SAMPLE_BRANCH:
-                    liftState = LIFTSTATE.LIFT_HIGHBASKET;
-                    liftTimer.reset();
                 // Blue and Red for choose again -- x for high basket, y for dropping
                 if ((gamepad_1.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_BUMPER)) ||
                         (gamepad_2.getButton(GamepadKeys.Button.X) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_BUMPER)) &&
@@ -153,7 +151,7 @@ public class FiniteStateMachineDeposit {
 
             case LIFT_HIGHBASKET:
                 robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_highbasketpause);
-                    if (liftTimer.seconds() >= 0.25) {
+                    if (liftTimer.seconds() >= 0.05) {
                         slidesToHeightMM(RobotActionConfig.deposit_Slide_Highbasket_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
                         // Move deposit Arm & wrist servo to dump prep position
                         if (liftTimer.seconds() >= 0.5) {
@@ -162,7 +160,6 @@ public class FiniteStateMachineDeposit {
                             liftTimer.reset();
                             liftUpTimeout.reset();
                             liftState = LIFTSTATE.LIFT_SAMPLE_EXTEND;
-
                         }
                     }
                 break;
