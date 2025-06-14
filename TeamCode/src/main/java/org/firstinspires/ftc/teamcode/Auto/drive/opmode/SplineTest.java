@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
  * This is an example of a more complex path to really test the tuning.
  */
 @Autonomous(group = "drive")
-@Disabled
 public class SplineTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
@@ -24,7 +23,7 @@ public class SplineTest extends LinearOpMode {
         if (isStopRequested()) return;
 
         Trajectory traj = drive.trajectoryBuilder(new Pose2d())
-                .splineTo(new Vector2d(30, 30), 0)
+                .splineTo(new Vector2d(24, 24), 0)
                 .build();
 
         drive.followTrajectory(traj);
