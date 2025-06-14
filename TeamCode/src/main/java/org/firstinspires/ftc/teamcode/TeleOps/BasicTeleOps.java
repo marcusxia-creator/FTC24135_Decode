@@ -30,6 +30,7 @@ public class BasicTeleOps extends OpMode {
     private RobotDrive robotDrive;
     private FiniteStateMachineDeposit depositArmDrive;
     private FiniteStateMachineIntake intakeArmDrive;
+    private ServoTest servoTest;
     private ControlState controlState = ControlState.RUN;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private boolean lBstartPressed = false;
@@ -53,6 +54,9 @@ public class BasicTeleOps extends OpMode {
 
         depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry);
         depositArmDrive.Init();
+
+        servoTest = new ServoTest(robot, gamepadCo1, gamepadCo2);
+
 
         allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -107,7 +111,7 @@ public class BasicTeleOps extends OpMode {
             telemetry.addData("Intake State", intakeArmDrive.intakeState);
             telemetry.addData("Intake Claw State", intakeArmDrive.intakeClawState);
             /**telemetry.addData("Color Hue", RobotActionConfig.hsvValues[0]);
-            telemetry.addData("Color Value", RobotActionConfig.hsvValues[2]); **/
+             telemetry.addData("Color Value", RobotActionConfig.hsvValues[2]); **/
         }
 
         telemetry.addData("Run Mode", controlState);
@@ -123,7 +127,23 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Intake Slide L", robot.intakeLeftSlideServo.getPosition());
         telemetry.addData("Intake Slide R", robot.intakeRightSlideServo.getPosition());
         telemetry.addData("Heading", robot.imu.getRobotYawPitchRollAngles().getYaw());
-        //telemetry.addData("Limit Switch", robot.limitSwitch.getState());
+        telemetry.addLine("--------------Servo Test--------------");
+        // --- Telemetry ---
+        telemetry.addData("VS Left Position", robot.liftMotorLeft.getCurrentPosition());
+        telemetry.addData("VS Right Position", robot.liftMotorRight.getCurrentPosition());
+        telemetry.addLine("---------------------");
+        telemetry.addData("Deposit Arm Position", robot.depositLeftArmServo.getPosition());
+        telemetry.addData("Deposit Wrist Position", robot.depositWristServo.getPosition());
+        telemetry.addData("Deposit Claw Position", robot.depositClawServo.getPosition());
+        telemetry.addLine("---------------------");
+        telemetry.addData("Intake Arm Left Position", robot.intakeArmServo.getPosition());
+        telemetry.addData("Intake Wrist Position", robot.intakeWristServo.getPosition());
+        telemetry.addData("Intake Claw Position", robot.intakeClawServo.getPosition());
+        telemetry.addData("Intake Slide Left Position", robot.intakeLeftSlideServo.getPosition());
+        telemetry.addData("Intake Slide Right Position", robot.intakeRightSlideServo.getPosition());
+        telemetry.addData("Intake Turret Position", robot.intakeTurretServo.getPosition());
+        telemetry.addData("Intake Rotation Position", robot.intakeRotationServo.getPosition());
+
         telemetry.update();
     }
 

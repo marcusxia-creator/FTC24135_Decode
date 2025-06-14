@@ -81,12 +81,14 @@ public class FiniteStateMachineIntake {
     //Initialization
     public void Init() {
         intakeTimer.reset();
+        /*
         robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
         robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
         robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
         robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
         robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
+         */
     }
 
     //FSM Loop Control
@@ -124,7 +126,7 @@ public class FiniteStateMachineIntake {
                 }
                 if(intakeTimer.seconds()>(RobotActionConfig.intakeWristRotationTime+RobotActionConfig.intakeSlideExtendTime)) {
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
-                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Pick);
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
                     intakeTimer.reset();
                     intakeState = INTAKESTATE.INTAKE_PICK;
                 }

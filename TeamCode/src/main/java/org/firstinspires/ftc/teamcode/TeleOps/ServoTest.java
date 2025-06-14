@@ -6,13 +6,14 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 @Config
-@TeleOp(name = "Servo Test", group = "org.firstinspires.ftc.teamcode")
-public class ServoTest extends OpMode {
+public class ServoTest {
 
     private GamepadEx gamepad_1;
     private GamepadEx gamepad_2;
@@ -23,29 +24,29 @@ public class ServoTest extends OpMode {
     private static final int delta_Position = 50;
     private int current_Position;
 
-    private static final double speed = 0.8;
+    private static final double speed = 1.0;
 
     private final ElapsedTime debounceTimer = new ElapsedTime();
     private static final double DEBOUNCE_THRESHOLD = 0.25;
 
     private static boolean leftButtonPressed = false;
 
-    @Override
-    public void init() {
-        gamepad_1 = new GamepadEx(gamepad1);
-        gamepad_2 = new GamepadEx(gamepad2);
+    public ServoTest(RobotHardware robot, GamepadEx gamepad1, GamepadEx gamepad2) {
+        this.gamepad_1 = gamepad1;
+        this.gamepad_2 = gamepad2;
+        this.robot = robot;
+    }
 
-        robot = new RobotHardware(hardwareMap); // ✅ No longer shadowed
-        robot.init(hardwareMap);
+    public void init() {
 
         servoposition = 0.0;
         servoposition2 = 0.0;
 
         // Initialize servos
-        robot.depositLeftArmServo.setPosition(0.0);
-        robot.depositRightArmServo.setPosition(0.0);
-        robot.depositWristServo.setPosition(0.0);
-        robot.depositClawServo.setPosition(0.0);
+        robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+        robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+        robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
+        robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
 
         robot.intakeArmServo.setPosition(0.0);
         robot.intakeLeftSlideServo.setPosition(0.0);
@@ -68,7 +69,7 @@ public class ServoTest extends OpMode {
         robot.liftMotorRight.setPower(speed);
     }
 
-    @Override
+
     public void loop() {
         // --- Deposit System ---
         if (gamepad_1.getButton(A) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
@@ -112,8 +113,8 @@ public class ServoTest extends OpMode {
             debounceTimer.reset();
             current_Position = robot.liftMotorLeft.getCurrentPosition();
 
-            robot.liftMotorLeft.setTargetPosition(1550);
-            robot.liftMotorRight.setTargetPosition(1550);
+            robot.liftMotorLeft.setTargetPosition(1570);
+            robot.liftMotorRight.setTargetPosition(1570);
             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorLeft.setPower(speed);
@@ -129,12 +130,16 @@ public class ServoTest extends OpMode {
             debounceTimer.reset();
             current_Position = robot.liftMotorLeft.getCurrentPosition();
 
-            robot.liftMotorLeft.setTargetPosition(Range.clip(current_Position - delta_Position,20,1550));
-            robot.liftMotorRight.setTargetPosition(Range.clip(current_Position - delta_Position,20,1550));
+            robot.liftMotorLeft.setTargetPosition(10);
+            robot.liftMotorRight.setTargetPosition(10);
             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.liftMotorLeft.setPower(speed);
-            robot.liftMotorRight.setPower(speed);
+            robot.liftMotorLeft.setPower(0.8);
+            robot.liftMotorRight.setPower(0.8);
+
+            robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
+            robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+            robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
         }
 
         // --- Intake System ---
@@ -152,26 +157,24 @@ public class ServoTest extends OpMode {
 
         if (gamepad_2.getButton(A) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
-            servoposition = robot.intakeClawServo.getPosition() + 0.01;
-            robot.intakeClawServo.setPosition(Range.clip(servoposition, 0, 1));
+            robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
         }
 
         if (gamepad_2.getButton(B) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
-            servoposition = robot.intakeClawServo.getPosition() - 0.01;
-            robot.intakeClawServo.setPosition(Range.clip(servoposition, 0, 1));
+            robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
         }
 
         if (gamepad_2.getButton(DPAD_LEFT) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
-            servoposition = robot.intakeWristServo.getPosition() + 0.01;
-            robot.intakeWristServo.setPosition(Range.clip(servoposition, 0, 1));
+            robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
+            robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
         }
 
         if (gamepad_2.getButton(DPAD_RIGHT) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
-            servoposition = robot.intakeWristServo.getPosition() - 0.01;
-            robot.intakeWristServo.setPosition(Range.clip(servoposition, 0, 1));
+            robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Grab);
+            robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
         }
 
         if (gamepad_2.getButton(X) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
@@ -195,30 +198,5 @@ public class ServoTest extends OpMode {
             servoposition = robot.intakeTurretServo.getPosition() + 0.01;
             robot.intakeTurretServo.setPosition(Range.clip(servoposition, 0, 1));
         }
-
-        // --- Telemetry ---
-        telemetry.addData("VS Left Position", robot.liftMotorLeft.getCurrentPosition());
-        telemetry.addData("VS Right Position", robot.liftMotorRight.getCurrentPosition());
-        telemetry.addLine("---------------------");
-        telemetry.addData("Deposit Arm Position", robot.depositLeftArmServo.getPosition());
-        telemetry.addData("Deposit Wrist Position", robot.depositWristServo.getPosition());
-        telemetry.addData("Deposit Claw Position", robot.depositClawServo.getPosition());
-        telemetry.addLine("---------------------");
-        telemetry.addData("Intake Arm Left Position", robot.intakeArmServo.getPosition());
-        telemetry.addData("Intake Wrist Position", robot.intakeWristServo.getPosition());
-        telemetry.addData("Intake Claw Position", robot.intakeClawServo.getPosition());
-        telemetry.addData("Intake Slide Left Position", robot.intakeLeftSlideServo.getPosition());
-        telemetry.addData("Intake Slide Right Position", robot.intakeRightSlideServo.getPosition());
-        telemetry.addData("Intake Turret Position", robot.intakeTurretServo.getPosition());
-        telemetry.addData("Intake Rotation Position", robot.intakeRotationServo.getPosition());
-
-        if (gamepad_1.getButton(DPAD_LEFT)) {
-            telemetry.addLine("Button pressed");
-        }
-        if (leftButtonPressed) {
-            telemetry.addLine("Dpad left pressed");
-        }
-
-        telemetry.update();
     }
 }
