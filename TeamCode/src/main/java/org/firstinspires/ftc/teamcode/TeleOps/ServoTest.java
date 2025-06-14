@@ -48,13 +48,13 @@ public class ServoTest {
         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
 
-        robot.intakeArmServo.setPosition(0.0);
+        robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
         robot.intakeLeftSlideServo.setPosition(0.0);
         robot.intakeRightSlideServo.setPosition(0.0);
-        robot.intakeWristServo.setPosition(0.0);
-        robot.intakeRotationServo.setPosition(0.0);
-        robot.intakeClawServo.setPosition(0.0);
-        robot.intakeTurretServo.setPosition(0.0);
+        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
+        robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
+        robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
+        robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
 
         // Initialize lift motors
         robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

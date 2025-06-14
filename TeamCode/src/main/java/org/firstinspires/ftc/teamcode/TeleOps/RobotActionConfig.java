@@ -21,7 +21,7 @@ public class RobotActionConfig {
     public static double intake_slide_Retract_Set       = 2;
     public static double intake_Slide_Extension_Wait    = 2;                                         // FOR AUTO MODE ONLY
 
-    public static double intake_Rotation_Mid            = 2;                                         // range(0-1, 0.46 at the middle for installation
+    public static double intake_Rotation_Mid            = 0.525;                                         // range(0-1, 0.46 at the middle for installation
 
     /**Arm range(0-0.43, lowest :0.43, fully back for transfer:0.14 )*/
     /** Todo Intake Arm installation poisition ?? and value??*/
@@ -36,18 +36,18 @@ public class RobotActionConfig {
     /** Todo Intake Wrist installation position ?? and value??*/
     public static double intake_Wrist_highbasketpause   = 2;
     public static double intake_Wrist_Idle              = 2;
-    public static double intake_Wrist_Grab = 0;
+    public static double intake_Wrist_Grab              = 0;
     public static double intake_Wrist_Transfer          = 0.51;
     public static double intake_Wrist_Side_Drop         = 2;
 
     /**Intake Claw range(0-0.27 lowest :0, fully close 0.27 )*/
     /** Todo Intake Claw installation position ?? and value??*/
     public static double intake_Claw_Open               = 0.33;                                          //range(0.0 - 0.27)
-    public static double intake_Claw_Close              = 0;
+    public static double intake_Claw_Close              = 0.02;
 
     /**Intake Turret range ()*/
-    public static double intake_Turret_Mid          = 2;
-    public static double intake_Turret_Side_Drop    = 2;
+    public static double intake_Turret_Mid              = 0.31;
+    public static double intake_Turret_Side_Drop        = 2;
 
     //Deposit Config
     public static int deposit_Slide_Down_Pos            = 2;                                            //unit in mm, to prevent hard hit.
@@ -66,13 +66,13 @@ public class RobotActionConfig {
 
     /**Deposit_Arm  range(0 - 0.9)*/
     /** Todo Deposit Arm installation poisition ?? and value??*/
-    public static double deposit_Arm_Dump           = 0.41;
-    public static double deposit_Arm_Dump_Prep      = 0.3;
-    public static double deposit_Arm_Transfer       = 0.2;
-    public static double deposit_Arm_Pick_Front     = 0;
-    public static double deposit_Arm_Pick_Rear      = 2;
-    public static double deposit_Arm_Hook           = 2;
-    public static double deposit_Arm_hang_Pos       = 2;
+    public static double deposit_Arm_Dump               = 0.41;
+    public static double deposit_Arm_Dump_Prep          = 0.3;
+    public static double deposit_Arm_Transfer           = 0.2;
+    public static double deposit_Arm_Pick_Front         = 0;
+    public static double deposit_Arm_Pick_Rear          = 2;
+    public static double deposit_Arm_Hook               = 2;
+    public static double deposit_Arm_hang_Pos           = 2;
 
     /**Deposit_Claw  range(0-0.4, lowest :0., fully open: 0.36 )*/
     /** Todo Deposit Claw installation position ?? and value??*/
@@ -81,12 +81,12 @@ public class RobotActionConfig {
     public static double deposit_Claw_Close_Loose       = deposit_Claw_Close+0.02;
 
     //TIME CONFIGURATION - DEPOSIT
-    public static double dumpTime                       = 2;                                         // deposit time need to rotate deposit arm then open claw
-    public static double retractTime                    = 2;                                         // wait then retract slide
-    public static double postDumpTime                   = 2;
+    public static double dumpTime                       = 0.3;                                         // deposit time need to rotate deposit arm then open claw
+    public static double retractTime                    = 0.8;                                         // wait then retract slide
+    public static double postDumpTime                   = 0.8;
     public static double dropTime                       = 2;                                          // wait for deposit arm to drop position and open claw.
     public static double pickTime                       = 2;                                          // NOT IN USE NOW. when detect specimen and wait to close deposit claw.
-    public static double transferTime                   = 2;                                         // sample transfer time for close deposit claw including time of waiting the slide back, arm and wrist back to transfer
+    public static double transferTime                   = 1.5;                                         // sample transfer time for close deposit claw including time of waiting the slide back, arm and wrist back to transfer
 
     public static double VS_Retraction_Timer            = 2;
 
@@ -111,8 +111,8 @@ public class RobotActionConfig {
     public static double backwardDist                   = -25;                                           // distance in cm, retract distance after hook specimen on high bar
 
     //TeleOp Speed Control accel factor.
-    public static double accel_Slowness                 = 2;                                         // drive control speed accel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
-    public static double decel_Slowness                 = 2;                                          // drive control speed deaccel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
+    public static double accel_Slowness                 = 0.5;                                         // drive control speed accel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
+    public static double decel_Slowness                 = 0.5;                                          // drive control speed deaccel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
 
     public static int slideTickThreshold                = 2;                                           // vertical slide threshold value to determine if the slide is at position
 }

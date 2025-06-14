@@ -117,7 +117,6 @@ public class FiniteStateMachineIntake {
                 }
                 break;
             case INTAKE_EXTEND:
-                depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.OPEN);
                 robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 intakeClawState = INTAKECLAWSTATE.OPEN;
                 if(intakeTimer.seconds()>RobotActionConfig.intakeWristRotationTime) {

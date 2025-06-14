@@ -56,7 +56,7 @@ public class BasicTeleOps extends OpMode {
         depositArmDrive.Init();
 
         servoTest = new ServoTest(robot, gamepadCo1, gamepadCo2);
-
+        servoTest.init();
 
         allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -112,6 +112,10 @@ public class BasicTeleOps extends OpMode {
             telemetry.addData("Intake Claw State", intakeArmDrive.intakeClawState);
             /**telemetry.addData("Color Hue", RobotActionConfig.hsvValues[0]);
              telemetry.addData("Color Value", RobotActionConfig.hsvValues[2]); **/
+        }
+
+        if (controlState == ControlState.TEST) {
+            servoTest.loop();
         }
 
         telemetry.addData("Run Mode", controlState);
