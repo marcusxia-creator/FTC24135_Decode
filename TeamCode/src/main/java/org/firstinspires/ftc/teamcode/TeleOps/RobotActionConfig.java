@@ -51,7 +51,7 @@ public class RobotActionConfig {
     //Deposit Config
     public static int deposit_Slide_Down_Pos            = 10;
     public static int deposit_Slide_Highbar_Pos         = 240;
-    public static int deposit_Slide_Highbar_Score_Pos= 240;
+    public static int deposit_Slide_Highbar_Score_Pos   = 240+50;
     public static int deposit_Slide_Pick_Rear_Pos       = 400;
     public static int deposit_Slide_Highbasket_Pos      = 1545;                                          //unit in mm, highbasket point
 
