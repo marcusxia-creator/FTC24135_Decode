@@ -212,6 +212,7 @@ public class FiniteStateMachineDeposit {
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
                     if (depositClawState == DEPOSITCLAWSTATE.CLOSE){
                         liftState = LIFTSTATE.LIFT_HIGHBAR;
+                        liftTimer.reset();
                     }
                 }
                 break;
@@ -234,16 +235,21 @@ public class FiniteStateMachineDeposit {
                 // using manual control the claw. when specimen is hooked, manually open the claw; then deposit claw flat out.
                 // After deposit claw flat out, Robot will move backward automatically.
                 // Specimen hook action is achieved in two states:
-                // LIFT_SPECIMEN_HOOK ---->  manual HOOK;
-                if (depositClawState == DEPOSITCLAWSTATE.OPEN) { //when claw is open, means
-                    liftState = LIFTSTATE.LIFT_SPECIMEN_SCORE;
+                // LIFT_SPECIMEN_HOOK ---->  manual HOOK; using gamepad button dpad up
+                if (((gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_STICK_BUTTON))  ||
+                        (gamepad_2.getButton(GamepadKeys.Button.DPAD_UP) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_STICK_BUTTON)))
+                        && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+                    slidesToHeightMM(RobotActionConfig.deposit_Slide_Highbar_Score_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
                     liftTimer.reset();
                 }
                 break;
 
             case LIFT_SPECIMEN_SCORE:
                 // LIFT_SPECIMEN_SCORE ----> flat out and auto back out.
-                robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);                                      // set deposit wrist flat
+                if (IsLiftAtPosition(RobotActionConfig.deposit_Slide_Highbar_Score_Pos)) {
+                    depositClawState = DEPOSITCLAWSTATE.OPEN;
+                    liftTimer.reset();
+                }
                 if (liftTimer.seconds() > RobotActionConfig.waitTime) {                                                             // wait 0.2s
                     driveBackward(RobotActionConfig.backwardDist);                                                                  // Auto drive back
                     if(liftTimer.seconds() > RobotActionConfig.waitTime +0.75){
@@ -287,8 +293,6 @@ public class FiniteStateMachineDeposit {
             if (hangtime.seconds() > 0.5) {
             }
         }
-
-
 
         //Claw CONTROL  ---- GLOBAL CONTROL ----> BUTTON A
         ClawManualControl();
