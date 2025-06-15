@@ -27,6 +27,7 @@ import java.util.List;
  * A                           : TOGGLE DEPOSIT CLAW OPEN/CLOSE    - GLOBAL STATE
  * *DPAD UP && LEFT BUMPER      : Hung                              - GLOBAL STATE -ACTIVE AFTER 100S
  * *DPAD DOWN && LEFT BUMPER    : Hung DOWN - 300 TICK EVERY PRESS  - GLOBAL STATE -ACTIVE AFTER 100S
+ * *DPAD UP& Right Trigger      :Specimen Score, raise up the vertical slide to hook the specimen.
  */
 
 public class FiniteStateMachineDeposit {
@@ -235,8 +236,8 @@ public class FiniteStateMachineDeposit {
                 // After deposit claw flat out, Robot will move backward automatically.
                 // Specimen hook action is achieved in two states:
                 // LIFT_SPECIMEN_HOOK ---->  manual HOOK; using gamepad button dpad up
-                if (((gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_STICK_BUTTON))  ||
-                        (gamepad_2.getButton(GamepadKeys.Button.DPAD_UP) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_STICK_BUTTON)))
+                if (((gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.4 && !gamepad_1.getButton(LEFT_STICK_BUTTON))  ||
+                        (gamepad_2.getButton(GamepadKeys.Button.DPAD_UP) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.4 && !gamepad_2.getButton(LEFT_STICK_BUTTON)))
                         && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
                     slidesToHeightMM(RobotActionConfig.deposit_Slide_Highbar_Score_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
                     if (IsLiftAtPosition(RobotActionConfig.deposit_Slide_Highbar_Score_Pos)) {
