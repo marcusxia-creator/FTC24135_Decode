@@ -27,7 +27,7 @@ import java.util.List;
  * A                           : TOGGLE DEPOSIT CLAW OPEN/CLOSE    - GLOBAL STATE
  * *DPAD UP && LEFT BUMPER      : Hung                              - GLOBAL STATE -ACTIVE AFTER 100S
  * *DPAD DOWN && LEFT BUMPER    : Hung DOWN - 300 TICK EVERY PRESS  - GLOBAL STATE -ACTIVE AFTER 100S
- * *DPAD UP& Right Trigger      :Specimen Score, raise up the vertical slide to hook the specimen.
+ * *DPAD UP && Right Trigger      :Specimen Score, raise up the vertical slide to hook the specimen.
  */
 
 public class FiniteStateMachineDeposit {
