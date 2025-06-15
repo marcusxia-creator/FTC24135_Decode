@@ -50,9 +50,9 @@ public class RobotActionConfig {
 
     /** Deposit slide position Config */
     public static int deposit_Slide_Down_Pos            = 10;
-    public static int deposit_Slide_Highbar_Pos         = 240;
+    public static int deposit_Slide_Highbar_Pos         = 750;
     /** Todo Deposit slide High bar Score position ?? and value??*/
-    public static int deposit_Slide_Highbar_Score_Pos   = 240+50;
+    public static int deposit_Slide_Highbar_Score_Pos   = 1100;
     public static int deposit_Slide_Pick_Rear_Pos       = 400;
     public static int deposit_Slide_Highbasket_Pos      = 1545;                                          //unit in mm, highbasket point
 
@@ -71,7 +71,7 @@ public class RobotActionConfig {
     public static double deposit_Arm_Transfer           = 0.23;
     public static double deposit_Arm_Pick               = 1;
     public static double deposit_Arm_Hook               = 0;
-    public static double deposit_Arm_hang_Pos           = 2;
+    public static double deposit_Arm_hang_Pos           = 0.43;
 
     /**Deposit_Claw  range(0-0.4, lowest :0., fully open: 0.36 )*/
     /** Todo Deposit Claw installation position ?? and value??*/
@@ -81,7 +81,7 @@ public class RobotActionConfig {
 
     /**TIME CONFIGURATION - DEPOSIT*/
     public static double dumpTime                       = 0.15;                                         // deposit time need to rotate deposit arm then open claw
-    public static double retractTime                    = 0.6;                                         // wait then retract slide
+    public static double retractTime                    = 0.4;                                         // wait then retract slide
     public static double postDumpTime                   = 0.5;
     public static double dropTime                       = 2;                                          // wait for deposit arm to drop position and open claw.
     public static double pickTime                       = 2;                                          // NOT IN USE NOW. when detect specimen and wait to close deposit claw.
@@ -96,8 +96,8 @@ public class RobotActionConfig {
     public static double intakeTurretTurnTime           = 2;
 
     /**TIME CONFIGURATION - GENERAL*/
-    public static double DEBOUNCE_THRESHOLD             = 2;                                         // debounce_Threshold
-    public static double waitTime                       = 2;                                          // general wait time
+    public static double DEBOUNCE_THRESHOLD             = 0.2;                                         // debounce_Threshold
+    public static double waitTime                       = 1;                                          // general wait time
     public static long lastPressedTime                  = 2;                                            // limitSwitch timer
     public static final long debounceDelay              = 2;                                          // unit in ms, limitSwitch debouncer in ms
     public static double timeOut                        = 2;

@@ -84,10 +84,11 @@ public class FiniteStateMachineIntake {
         /*
         robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
         robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
-        robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
+        robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
         robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
-        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
+        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
+
          */
     }
 
