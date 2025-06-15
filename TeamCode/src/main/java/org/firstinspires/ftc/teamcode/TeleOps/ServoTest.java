@@ -182,12 +182,14 @@ public class ServoTest {
         }
         if (gamepad_2.getButton(LEFT_BUMPER) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
-            servoposition = robot.intakeTurretServo.getPosition() - 0.01;
+            servoposition = robot.intakeLeftSlideServo.getPosition() - 0.01;
+            servoposition = robot.intakeRightSlideServo.getPosition() - 0.01;
             robot.intakeTurretServo.setPosition(Range.clip(servoposition, 0, 1));
         }
         if (gamepad_2.getButton(RIGHT_BUMPER) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
-            servoposition = robot.intakeTurretServo.getPosition() + 0.01;
+            servoposition = robot.intakeLeftSlideServo.getPosition() + 0.01;
+            servoposition = robot.intakeRightSlideServo.getPosition() + 0.01;
             robot.intakeTurretServo.setPosition(Range.clip(servoposition, 0, 1));
         }
     }
