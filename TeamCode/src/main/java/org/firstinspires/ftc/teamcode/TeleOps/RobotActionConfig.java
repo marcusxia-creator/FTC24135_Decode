@@ -79,7 +79,7 @@ public class RobotActionConfig {
     public static double deposit_Claw_Close             = 0;
     public static double deposit_Claw_Close_Loose       = deposit_Claw_Close+0.02;
 
-    //TIME CONFIGURATION - DEPOSIT
+    /**TIME CONFIGURATION - DEPOSIT*/
     public static double dumpTime                       = 0.15;                                         // deposit time need to rotate deposit arm then open claw
     public static double retractTime                    = 0.6;                                         // wait then retract slide
     public static double postDumpTime                   = 0.5;
@@ -89,28 +89,28 @@ public class RobotActionConfig {
 
     public static double VS_Retraction_Timer            = 2;
 
-    //TIME CONFIGURATION - INTAKE
+    /**TIME CONFIGURATION - INTAKE*/
     public static double intakeSlideExtendTime          = 2;                                          // intake slide extension time
     public static double intakeSlideRetractSetPointTime = 2;                                          // intake slide retract back to 2/3 position time.
     public static double intakeWristRotationTime        = 2;                                          // intake wrist rotation from pick to transfter time
     public static double intakeTurretTurnTime           = 2;
 
-    //TIME CONFIGURATION - GENERAL
+    /**TIME CONFIGURATION - GENERAL*/
     public static double DEBOUNCE_THRESHOLD             = 2;                                         // debounce_Threshold
     public static double waitTime                       = 2;                                          // general wait time
     public static long lastPressedTime                  = 2;                                            // limitSwitch timer
     public static final long debounceDelay              = 2;                                          // unit in ms, limitSwitch debouncer in ms
     public static double timeOut                        = 2;
 
-    //DEPOSIT vertical slide power
+    /**DEPOSIT vertical slide power*/
     public static double deposit_Slide_UpLiftPower      = 1.0;                                          // slides up power
     public static double deposit_Slide_DownLiftPower    = 0.7;                                          // slides down power
 
     //distnace
     public static double backwardDist                   = -25;                                           // distance in cm, retract distance after hook specimen on high bar
 
-    //TeleOp Speed Control accel factor.
-    public static double accel_Slowness                 = 0.5;                                         // drive control speed accel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
+    /**TeleOp Speed Control accel factor.*/
+    public static double accel_Slowness                 = 0.25;                                         // drive control speed accel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
     public static double decel_Slowness                 = 0.5;                                          // drive control speed deaccel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
 
     public static int slideTickThreshold                = 20;                                           // vertical slide threshold value to determine if the slide is at position
