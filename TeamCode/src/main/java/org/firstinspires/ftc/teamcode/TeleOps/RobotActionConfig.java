@@ -52,13 +52,13 @@ public class RobotActionConfig {
     public static int deposit_Slide_Down_Pos            = 10;
     public static int deposit_Slide_Highbar_Pos         = 240;
     public static int getDeposit_Slide_Highbar_Score_Pos= 240;
-    public static int deposit_Slide_Pick_Rear_Pos       = 2;
+    public static int deposit_Slide_Pick_Rear_Pos       = 400;
     public static int deposit_Slide_Highbasket_Pos      = 1545;                                          //unit in mm, highbasket point
 
     /**Deposit Wrist  range(0-0.7, lowest :0)*/
     /** Todo Deposit Wrist installation poisition ?? and value??*/
     public static double deposit_Wrist_Dump             = 0.6;                                         //range(0.22-0.64), installation position at 90 deg0
-    public static double deposit_Wrist_Transfer         = 0.06;                                         // 176 deg ~ 0.003 is 1 deg
+    public static double deposit_Wrist_Transfer         = 0.05;                                         // 176 deg ~ 0.003 is 1 deg
     public static double deposit_Wrist_Hook             = 0.51;                                         // 0.003 is 1 deg
     public static double deposit_Wrist_Flat_Pos         = 0.43;                                         // FOR Deposit Hook Flat and AUTO MODE
     public static double deposit_Wrist_Pick             = 0.22;
@@ -66,8 +66,8 @@ public class RobotActionConfig {
     /**Deposit_Arm  range(0 - 0.9)*/
     /** Todo Deposit Arm installation poisition ?? and value??*/
     public static double deposit_Arm_Dump               = 0.41;
-    public static double deposit_Arm_Dump_Prep          = 0.3;
-    public static double deposit_Arm_Transfer           = 0.2;
+    public static double deposit_Arm_Dump_Prep          = 0.34;
+    public static double deposit_Arm_Transfer           = 0.23;
     public static double deposit_Arm_Pick               = 1;
     public static double deposit_Arm_Hook               = 0;
     public static double deposit_Arm_hang_Pos           = 2;
@@ -79,9 +79,9 @@ public class RobotActionConfig {
     public static double deposit_Claw_Close_Loose       = deposit_Claw_Close+0.02;
 
     //TIME CONFIGURATION - DEPOSIT
-    public static double dumpTime                       = 0.3;                                         // deposit time need to rotate deposit arm then open claw
-    public static double retractTime                    = 0.8;                                         // wait then retract slide
-    public static double postDumpTime                   = 0.8;
+    public static double dumpTime                       = 0.15;                                         // deposit time need to rotate deposit arm then open claw
+    public static double retractTime                    = 0.6;                                         // wait then retract slide
+    public static double postDumpTime                   = 0.5;
     public static double dropTime                       = 2;                                          // wait for deposit arm to drop position and open claw.
     public static double pickTime                       = 2;                                          // NOT IN USE NOW. when detect specimen and wait to close deposit claw.
     public static double transferTime                   = 1.5;                                         // sample transfer time for close deposit claw including time of waiting the slide back, arm and wrist back to transfer
@@ -112,5 +112,5 @@ public class RobotActionConfig {
     public static double accel_Slowness                 = 0.5;                                         // drive control speed accel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
     public static double decel_Slowness                 = 0.5;                                          // drive control speed deaccel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
 
-    public static int slideTickThreshold                = 2;                                           // vertical slide threshold value to determine if the slide is at position
+    public static int slideTickThreshold                = 20;                                           // vertical slide threshold value to determine if the slide is at position
 }

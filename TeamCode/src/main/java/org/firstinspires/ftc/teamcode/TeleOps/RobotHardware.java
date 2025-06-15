@@ -175,7 +175,7 @@ public class RobotHardware {
         myIMUparameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                        RevHubOrientationOnRobot.UsbFacingDirection.UP
+                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
                 ));
         imu.initialize(myIMUparameters);
         imu.resetYaw();
