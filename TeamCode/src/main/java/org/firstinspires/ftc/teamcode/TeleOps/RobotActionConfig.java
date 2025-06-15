@@ -48,10 +48,11 @@ public class RobotActionConfig {
     public static double intake_Turret_Mid              = 0.31;
     public static double intake_Turret_Side_Drop        = 0;
 
-    //Deposit Config
+    /** Deposit slide position Config */
     public static int deposit_Slide_Down_Pos            = 10;
     public static int deposit_Slide_Highbar_Pos         = 240;
-    public static int deposit_Slide_Highbar_Score_Pos= 240;
+    /** Todo Deposit slide High bar Score position ?? and value??*/
+    public static int deposit_Slide_Highbar_Score_Pos   = 240+50;
     public static int deposit_Slide_Pick_Rear_Pos       = 400;
     public static int deposit_Slide_Highbasket_Pos      = 1545;                                          //unit in mm, highbasket point
 
