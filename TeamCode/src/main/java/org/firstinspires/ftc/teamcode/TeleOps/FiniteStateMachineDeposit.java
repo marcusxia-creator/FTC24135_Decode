@@ -46,7 +46,7 @@ public class FiniteStateMachineDeposit {
         LIFT_SAMPLE_EXTEND,
         LIFT_SAMPLE_DUMP,
         LIFT_RETRACT,
-        LIFT_WALL_PICK_FRONT,
+        LIFT_WALL_PICK,
         LIFT_HIGHBAR,
         LIFT_SPECIMEN_HOOK,
         LIFT_SPECIMEN_SCORE,
@@ -132,7 +132,7 @@ public class FiniteStateMachineDeposit {
                         isButtonDebounced()) {
                     liftTimer.reset();
                     liftUpTimeout.reset();
-                    liftState = LIFTSTATE.LIFT_WALL_PICK_FRONT;
+                    liftState = LIFTSTATE.LIFT_WALL_PICK;
                 }
 
                 break;
@@ -203,13 +203,13 @@ public class FiniteStateMachineDeposit {
                     }
                 }
                 break;
-            case LIFT_WALL_PICK_FRONT:
+            case LIFT_WALL_PICK:
                 if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_STICK_BUTTON))  ||
                         (gamepad_2.getButton(GamepadKeys.Button.Y) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_STICK_BUTTON)))
                         && debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
                     depositClawState = DEPOSITCLAWSTATE.OPEN;
-                    robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick_Front);
-                    robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick_Front);
+                    robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
+                    robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
                     if (depositClawState == DEPOSITCLAWSTATE.CLOSE){
                         liftState = LIFTSTATE.LIFT_HIGHBAR;
                     }

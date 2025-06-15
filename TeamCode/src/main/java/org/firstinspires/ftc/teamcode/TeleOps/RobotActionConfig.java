@@ -25,33 +25,32 @@ public class RobotActionConfig {
 
     /**Arm range(0-0.43, lowest :0.43, fully back for transfer:0.14 )*/
     /** Todo Intake Arm installation poisition ?? and value??*/
-    public static double intake_Arm_Initial             = 2;                                         //Arm tilted outwards slightly 0.12.
     public static double intake_Arm_Pick                = 0.5;
-    public static double intake_Arm_Grab                = 0.6;
-    public static double intake_Arm_Idle                = 2;
+    public static double intake_Arm_Grab                = 0.58;
+    public static double intake_Arm_Idle                = 0.24;
     public static double intake_Arm_Transfer            = 0;
-    public static double intake_Arm_Side_Drop           = 2;
+    public static double intake_Arm_Side_Drop           = 0.38;
 
     /**Intake Wrist range(0-1, lowest :0, fully back for transfer:1 )*/
     /** Todo Intake Wrist installation position ?? and value??*/
-    public static double intake_Wrist_highbasketpause   = 2;
-    public static double intake_Wrist_Idle              = 2;
-    public static double intake_Wrist_Grab              = 0;
+    public static double intake_Wrist_highbasketpause   = 0.51;
+    public static double intake_Wrist_Idle              = 0.05;
+    public static double intake_Wrist_Grab              = 0.02;
     public static double intake_Wrist_Transfer          = 0.51;
-    public static double intake_Wrist_Side_Drop         = 2;
+    public static double intake_Wrist_Side_Drop         = 0.29;
 
     /**Intake Claw range(0-0.27 lowest :0, fully close 0.27 )*/
     /** Todo Intake Claw installation position ?? and value??*/
     public static double intake_Claw_Open               = 0.33;                                          //range(0.0 - 0.27)
-    public static double intake_Claw_Close              = 0.02;
+    public static double intake_Claw_Close              = 0;
 
     /**Intake Turret range ()*/
     public static double intake_Turret_Mid              = 0.31;
-    public static double intake_Turret_Side_Drop        = 2;
+    public static double intake_Turret_Side_Drop        = 0;
 
     //Deposit Config
-    public static int deposit_Slide_Down_Pos            = 2;                                            //unit in mm, to prevent hard hit.
-    public static int deposit_Slide_Highbar_Pos         = 240;                                          //unit in mm, slides Position Configure
+    public static int deposit_Slide_Down_Pos            = 10;
+    public static int deposit_Slide_Highbar_Pos         = 240;
     public static int deposit_Slide_Pick_Rear_Pos       = 2;
     public static int deposit_Slide_Highbasket_Pos      = 1545;                                          //unit in mm, highbasket point
 
@@ -59,9 +58,8 @@ public class RobotActionConfig {
     /** Todo Deposit Wrist installation poisition ?? and value??*/
     public static double deposit_Wrist_Dump             = 0.6;                                         //range(0.22-0.64), installation position at 90 deg0
     public static double deposit_Wrist_Transfer         = 0.06;                                         // 176 deg ~ 0.003 is 1 deg
-    public static double deposit_Wrist_Hook             = 2;                                         // 0.003 is 1 deg
+    public static double deposit_Wrist_Hook             = 0.43;                                         // 0.003 is 1 deg
     public static double deposit_Wrist_Flat_Pos         = 0.43;                                         // FOR Deposit Hook Flat and AUTO MODE
-    public static double deposit_Wrist_Pick_Front       = 2;
     public static double deposit_Wrist_Pick_Back        = 2;
 
     /**Deposit_Arm  range(0 - 0.9)*/
@@ -69,9 +67,8 @@ public class RobotActionConfig {
     public static double deposit_Arm_Dump               = 0.41;
     public static double deposit_Arm_Dump_Prep          = 0.3;
     public static double deposit_Arm_Transfer           = 0.2;
-    public static double deposit_Arm_Pick_Front         = 0;
-    public static double deposit_Arm_Pick_Rear          = 2;
-    public static double deposit_Arm_Hook               = 2;
+    public static double deposit_Arm_Pick               = 2;
+    public static double deposit_Arm_Hook               = 0;
     public static double deposit_Arm_hang_Pos           = 2;
 
     /**Deposit_Claw  range(0-0.4, lowest :0., fully open: 0.36 )*/

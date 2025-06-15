@@ -113,16 +113,12 @@ public class ServoTest {
             debounceTimer.reset();
             current_Position = robot.liftMotorLeft.getCurrentPosition();
 
-            robot.liftMotorLeft.setTargetPosition(1570);
-            robot.liftMotorRight.setTargetPosition(1570);
+
+            robot.liftMotorLeft.setTargetPosition(Range.clip(current_Position + delta_Position,20,1580));
+            robot.liftMotorRight.setTargetPosition(Range.clip(current_Position + delta_Position,20,1580));
             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorLeft.setPower(speed);
-            robot.liftMotorRight.setPower(speed);
-
-            robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Dump);
-            robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
-            robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
 
         }
 
@@ -130,16 +126,12 @@ public class ServoTest {
             debounceTimer.reset();
             current_Position = robot.liftMotorLeft.getCurrentPosition();
 
-            robot.liftMotorLeft.setTargetPosition(10);
-            robot.liftMotorRight.setTargetPosition(10);
+
+            robot.liftMotorLeft.setTargetPosition(Range.clip(current_Position - delta_Position,20,1580));
+            robot.liftMotorRight.setTargetPosition(Range.clip(current_Position - delta_Position,20,1580));
             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.liftMotorLeft.setPower(0.8);
-            robot.liftMotorRight.setPower(0.8);
-
-            robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
-            robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
-            robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+            robot.liftMotorLeft.setPower(speed);
         }
 
         // --- Intake System ---
