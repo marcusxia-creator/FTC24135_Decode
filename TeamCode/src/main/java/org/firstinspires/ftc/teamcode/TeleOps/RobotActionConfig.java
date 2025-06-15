@@ -58,16 +58,16 @@ public class RobotActionConfig {
     /** Todo Deposit Wrist installation poisition ?? and value??*/
     public static double deposit_Wrist_Dump             = 0.6;                                         //range(0.22-0.64), installation position at 90 deg0
     public static double deposit_Wrist_Transfer         = 0.06;                                         // 176 deg ~ 0.003 is 1 deg
-    public static double deposit_Wrist_Hook             = 0.43;                                         // 0.003 is 1 deg
+    public static double deposit_Wrist_Hook             = 0.51;                                         // 0.003 is 1 deg
     public static double deposit_Wrist_Flat_Pos         = 0.43;                                         // FOR Deposit Hook Flat and AUTO MODE
-    public static double deposit_Wrist_Pick_Back        = 2;
+    public static double deposit_Wrist_Pick             = 0.22;
 
     /**Deposit_Arm  range(0 - 0.9)*/
     /** Todo Deposit Arm installation poisition ?? and value??*/
     public static double deposit_Arm_Dump               = 0.41;
     public static double deposit_Arm_Dump_Prep          = 0.3;
     public static double deposit_Arm_Transfer           = 0.2;
-    public static double deposit_Arm_Pick               = 2;
+    public static double deposit_Arm_Pick               = 1;
     public static double deposit_Arm_Hook               = 0;
     public static double deposit_Arm_hang_Pos           = 2;
 
