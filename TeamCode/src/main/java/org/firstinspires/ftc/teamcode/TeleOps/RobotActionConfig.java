@@ -16,9 +16,9 @@ public class RobotActionConfig {
 
 
     //Intake Configure
-    public static double intake_Slide_Extension         = 2;                                         // range(0.04 - 0.29)
-    public static double intake_Slide_Retract           = 2;                                         // 0.01 = 3deg rotation of gobilda servo
-    public static double intake_slide_Retract_Set       = 2;
+    public static double intake_Slide_Extension         = 0.25;                                         // range(0.04 - 0.29)
+    public static double intake_Slide_Retract           = 0.03;                                         // 0.01 = 3deg rotation of gobilda servo
+    public static double intake_slide_Retract_Set       = 0.06;
     public static double intake_Slide_Extension_Wait    = 2;                                         // FOR AUTO MODE ONLY
 
     public static double intake_Rotation_Mid            = 0.525;                                         // range(0-1, 0.46 at the middle for installation
@@ -90,10 +90,10 @@ public class RobotActionConfig {
     public static double VS_Retraction_Timer            = 2;
 
     /**TIME CONFIGURATION - INTAKE*/
-    public static double intakeSlideExtendTime          = 2;                                          // intake slide extension time
-    public static double intakeSlideRetractSetPointTime = 2;                                          // intake slide retract back to 2/3 position time.
-    public static double intakeWristRotationTime        = 2;                                          // intake wrist rotation from pick to transfter time
-    public static double intakeTurretTurnTime           = 2;
+    public static double intakeSlideExtendTime          = 0.5;                                          // intake slide extension time
+    public static double intakeSlideRetractSetPointTime = 0.5;                                          // intake slide retract back to 2/3 position time.
+    public static double intakeWristRotationTime        = 0.5;                                          // intake wrist rotation from pick to transfter time
+    public static double intakeTurretTurnTime           = 0.5;
 
     /**TIME CONFIGURATION - GENERAL*/
     public static double DEBOUNCE_THRESHOLD             = 0.2;                                         // debounce_Threshold

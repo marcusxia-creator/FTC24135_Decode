@@ -107,9 +107,8 @@ public class FiniteStateMachineDeposit {
         liftTimer.reset();
         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
         robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+        robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
-        robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
-        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
         depositClawState = DEPOSITCLAWSTATE.OPEN;
     }
 
