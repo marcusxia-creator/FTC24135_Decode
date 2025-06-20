@@ -17,7 +17,7 @@ public class RobotActionConfig {
 
     //Intake Configure
     public static double intake_Slide_Extension         = 0.25;                                         // range(0.04 - 0.29)
-    public static double intake_Slide_Retract           = 0.03;                                         // 0.01 = 3deg rotation of gobilda servo
+    public static double intake_Slide_Retract           = 0;                                         // 0.01 = 3deg rotation of gobilda servo
     public static double intake_slide_Retract_Set       = 0.06;
     public static double intake_Slide_Extension_Wait    = 2;                                         // FOR AUTO MODE ONLY
 
@@ -36,7 +36,7 @@ public class RobotActionConfig {
     public static double intake_Wrist_highbasketpause   = 0.51;
     public static double intake_Wrist_Idle              = 0.05;
     public static double intake_Wrist_Grab              = 0.02;
-    public static double intake_Wrist_Transfer          = 0.51;
+    public static double intake_Wrist_Transfer          = 0.54;
     public static double intake_Wrist_Side_Drop         = 0.29;
 
     /**Intake Claw range(0-0.27 lowest :0, fully close 0.27 )*/
@@ -85,14 +85,14 @@ public class RobotActionConfig {
     public static double postDumpTime                   = 0.5;
     public static double dropTime                       = 2;                                          // wait for deposit arm to drop position and open claw.
     public static double pickTime                       = 2;                                          // NOT IN USE NOW. when detect specimen and wait to close deposit claw.
-    public static double transferTime                   = 1.5;                                         // sample transfer time for close deposit claw including time of waiting the slide back, arm and wrist back to transfer
+    public static double transferTime                   = 1.8;                                         // sample transfer time for close deposit claw including time of waiting the slide back, arm and wrist back to transfer
 
     public static double VS_Retraction_Timer            = 2;
 
     /**TIME CONFIGURATION - INTAKE*/
     public static double intakeSlideExtendTime          = 0.5;                                          // intake slide extension time
-    public static double intakeSlideRetractSetPointTime = 0.5;                                          // intake slide retract back to 2/3 position time.
-    public static double intakeWristRotationTime        = 0.5;                                          // intake wrist rotation from pick to transfter time
+    public static double intakeSlideRetractSetPointTime = 0.2;                                          // intake slide retract back to 2/3 position time.
+    public static double intakeWristRotationTime        = 0.2;                                          // intake wrist rotation from pick to transfter time
     public static double intakeTurretTurnTime           = 0.5;
 
     /**TIME CONFIGURATION - GENERAL*/

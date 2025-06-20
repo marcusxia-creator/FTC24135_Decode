@@ -49,11 +49,12 @@ public class BasicTeleOps extends OpMode {
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
-        intakeArmDrive = new FiniteStateMachineIntake(robot, gamepadCo1, gamepadCo2, null);
-        intakeArmDrive.Init();
-
         depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry);
         depositArmDrive.Init();
+
+
+        intakeArmDrive = new FiniteStateMachineIntake(robot, gamepadCo1, gamepadCo2, depositArmDrive);
+        intakeArmDrive.Init();
 
         servoTest = new ServoTest(robot, gamepadCo1, gamepadCo2);
         servoTest.init();

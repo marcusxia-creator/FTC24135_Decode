@@ -65,7 +65,7 @@ public class FiniteStateMachineIntake {
 
     private double intakeArmPosition;
     private double rotationPosition;
-    private FiniteStateMachineDeposit.LIFTSTATE depositArmState;
+    FiniteStateMachineDeposit.LIFTSTATE depositArmState;
 
     //Constructor
     public FiniteStateMachineIntake(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2, FiniteStateMachineDeposit depositArmDrive) {
@@ -73,7 +73,6 @@ public class FiniteStateMachineIntake {
         this.gamepad_2 = gamepad_2;
         this.robot = robot;
         this.depositArmDrive = depositArmDrive;
-
         this.intakeClawState = INTAKECLAWSTATE.OPEN;
         this.intakeState = INTAKESTATE.INTAKE_START;
     }
@@ -200,8 +199,6 @@ public class FiniteStateMachineIntake {
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                 }
                 if (intakeTimer.seconds() > RobotActionConfig.waitTime + RobotActionConfig.intakeWristRotationTime + RobotActionConfig.waitTime) {
-                    robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_slide_Retract_Set);// set slide retract 2/3
-                    robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_slide_Retract_Set);// set slide retract 2/3
                     intakeTimer.reset();
                     intakeState = INTAKESTATE.INTAKE_TRANS;
                 }
@@ -212,8 +209,7 @@ public class FiniteStateMachineIntake {
                 // set deposit claw state -- open
                 depositArmState = depositArmDrive.liftState;
                 depositArmDrive.SetDepositstate(FiniteStateMachineDeposit.LIFTSTATE.LIFT_START);
-                robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
-
+                depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.OPEN);
                 // Check if the intakeslide has reached the position
                 if (intakeTimer.seconds() > RobotActionConfig.intakeSlideRetractSetPointTime) {              // wait 0.5 second for slide retract 2/3
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);        // set intake arm  to transfer
@@ -224,7 +220,6 @@ public class FiniteStateMachineIntake {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 }
                 if (depositArmState == FiniteStateMachineDeposit.LIFTSTATE.LIFT_START && intakeTimer.seconds() > RobotActionConfig.transferTime) {
-                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                     depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.CLOSE);
                 }
                 if (intakeTimer.seconds() > RobotActionConfig.transferTime + 0.4) {
