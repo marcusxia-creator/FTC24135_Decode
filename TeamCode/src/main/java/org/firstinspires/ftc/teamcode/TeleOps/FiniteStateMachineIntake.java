@@ -223,7 +223,7 @@ public class FiniteStateMachineIntake {
                 if (depositArmState == FiniteStateMachineDeposit.LIFTSTATE.LIFT_START && intakeTimer.seconds() > RobotActionConfig.transferTime) {
                     depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.CLOSE);
                 }
-                if (intakeTimer.seconds() > RobotActionConfig.transferTime + 0.4) {
+                if (intakeTimer.seconds() > RobotActionConfig.transferTime + 0.3) {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                     intakeClawState = INTAKECLAWSTATE.OPEN;
                     intakeState = INTAKESTATE.INTAKE_START;
@@ -257,10 +257,8 @@ public class FiniteStateMachineIntake {
                     intakeState = INTAKESTATE.INTAKE_COLOR_SAMPLE_DROP;
                 }
                 if ((gamepad_1.getButton(DPAD_RIGHT) || gamepad_2.getButton(DPAD_RIGHT)) && isButtonDebounced()) {
-                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
-                    robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
                     intakeTimer.reset();
-                    intakeState = INTAKESTATE.INTAKE_SAMPLE_RETRACT;
+                    intakeState = INTAKESTATE.INTAKE_TRANS;
                 }
                 break;
             case INTAKE_COLOR_SAMPLE_DROP:

@@ -85,7 +85,7 @@ public class RobotActionConfig {
     public static double postDumpTime                   = 0.5;
     public static double dropTime                       = 2;                                          // wait for deposit arm to drop position and open claw.
     public static double pickTime                       = 2;                                          // NOT IN USE NOW. when detect specimen and wait to close deposit claw.
-    public static double transferTime                   = 1.8;                                         // sample transfer time for close deposit claw including time of waiting the slide back, arm and wrist back to transfer
+    public static double transferTime                   = 0.8;                                         // sample transfer time for close deposit claw including time of waiting the slide back, arm and wrist back to transfer
 
     public static double VS_Retraction_Timer            = 2;
 

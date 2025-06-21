@@ -183,13 +183,14 @@ public class FiniteStateMachineDeposit {
                         (gamepad_2.getButton(GamepadKeys.Button.X) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_BUMPER)) &&
                                 isButtonDebounced()) {
                     depositClawState = DEPOSITCLAWSTATE.OPEN;
+                    liftTimer.reset();
                     liftState = LIFTSTATE.LIFT_RETRACT;
                     }
                 break;
 
             case LIFT_RETRACT:
                 // Check if the lift has reached the low position
-                if (Servo_AtPosition(RobotActionConfig.deposit_Claw_Open)) {
+                if (Servo_AtPosition(RobotActionConfig.deposit_Claw_Open) && liftTimer.seconds() > 0.1) {
                     slidesToHeightMM(RobotActionConfig.deposit_Slide_Down_Pos, RobotActionConfig.deposit_Slide_DownLiftPower);
                     robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
@@ -236,7 +237,7 @@ public class FiniteStateMachineDeposit {
                 // After deposit claw flat out, Robot will move backward automatically.
                 // Specimen hook action is achieved in two states:
                 // LIFT_SPECIMEN_HOOK ---->  manual HOOK; using gamepad button dpad up
-                    slidesToHeightMM(RobotActionConfig.deposit_Slide_Highbar_Score_Pos, 0.3);
+                    slidesToHeightMM(RobotActionConfig.deposit_Slide_Highbar_Score_Pos, 0.5);
                     if (IsLiftAtPosition(RobotActionConfig.deposit_Slide_Highbar_Score_Pos)) {
                         depositClawState = DEPOSITCLAWSTATE.OPEN;
                         liftState = LIFTSTATE.LIFT_SPECIMEN_SCORE;
