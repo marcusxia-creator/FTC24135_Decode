@@ -122,6 +122,7 @@ public class FiniteStateMachineIntake {
                 if(intakeTimer.seconds()>RobotActionConfig.intakeWristRotationTime) {
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
+                    robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
                 }
                 if(intakeTimer.seconds()>(RobotActionConfig.intakeWristRotationTime+RobotActionConfig.intakeSlideExtendTime)) {
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
@@ -251,12 +252,13 @@ public class FiniteStateMachineIntake {
                 if ((gamepad_1.getButton(DPAD_LEFT) || gamepad_2.getButton(DPAD_LEFT)) && isButtonDebounced()) {
                     robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Side_Drop);
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Side_Drop);
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Side_Drop);
                     intakeTimer.reset();
                     intakeState = INTAKESTATE.INTAKE_COLOR_SAMPLE_DROP;
                 }
                 if ((gamepad_1.getButton(DPAD_RIGHT) || gamepad_2.getButton(DPAD_RIGHT)) && isButtonDebounced()) {
-                    robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Side_Drop);
-                    robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Side_Drop);
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
+                    robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
                     intakeTimer.reset();
                     intakeState = INTAKESTATE.INTAKE_SAMPLE_RETRACT;
                 }

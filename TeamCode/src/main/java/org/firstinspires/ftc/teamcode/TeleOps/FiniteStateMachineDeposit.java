@@ -179,22 +179,21 @@ public class FiniteStateMachineDeposit {
 
             case LIFT_SAMPLE_DUMP:
                 // Wait for the dump time to pass
-                if (liftTimer.seconds() >= RobotActionConfig.dumpTime) {
+                if ((gamepad_1.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_BUMPER)) ||
+                        (gamepad_2.getButton(GamepadKeys.Button.X) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_BUMPER)) &&
+                                isButtonDebounced()) {
                     depositClawState = DEPOSITCLAWSTATE.OPEN;
-                }
-                if (liftTimer.seconds() >= RobotActionConfig.postDumpTime) {
-                    robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
-                    robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
-                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
-                    liftTimer.reset();
                     liftState = LIFTSTATE.LIFT_RETRACT;
-                }
+                    }
                 break;
 
             case LIFT_RETRACT:
                 // Check if the lift has reached the low position
-                if (Servo_AtPosition(RobotActionConfig.deposit_Claw_Open) && liftTimer.seconds() >= RobotActionConfig.retractTime) {
+                if (Servo_AtPosition(RobotActionConfig.deposit_Claw_Open)) {
                     slidesToHeightMM(RobotActionConfig.deposit_Slide_Down_Pos, RobotActionConfig.deposit_Slide_DownLiftPower);
+                    robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
+                    robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                     if (IsLiftDownAtPosition(RobotActionConfig.deposit_Slide_Down_Pos)
                     ) {
                         robot.liftMotorLeft.setPower(0); // Stop the motor after reaching the low position

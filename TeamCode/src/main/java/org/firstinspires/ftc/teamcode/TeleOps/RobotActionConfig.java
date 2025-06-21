@@ -29,7 +29,7 @@ public class RobotActionConfig {
     public static double intake_Arm_Grab                = 0.58;
     public static double intake_Arm_Idle                = 0.24;
     public static double intake_Arm_Transfer            = 0;
-    public static double intake_Arm_Side_Drop           = 0.38;
+    public static double intake_Arm_Side_Drop           = 0.2;
 
     /**Intake Wrist range(0-1, lowest :0, fully back for transfer:1 )*/
     /** Todo Intake Wrist installation position ?? and value??*/
@@ -37,7 +37,7 @@ public class RobotActionConfig {
     public static double intake_Wrist_Idle              = 0.05;
     public static double intake_Wrist_Grab              = 0.02;
     public static double intake_Wrist_Transfer          = 0.54;
-    public static double intake_Wrist_Side_Drop         = 0.29;
+    public static double intake_Wrist_Side_Drop         = 0.24;
 
     /**Intake Claw range(0-0.27 lowest :0, fully close 0.27 )*/
     /** Todo Intake Claw installation position ?? and value??*/
@@ -93,18 +93,18 @@ public class RobotActionConfig {
     public static double intakeSlideExtendTime          = 0.5;                                          // intake slide extension time
     public static double intakeSlideRetractSetPointTime = 0.2;                                          // intake slide retract back to 2/3 position time.
     public static double intakeWristRotationTime        = 0.2;                                          // intake wrist rotation from pick to transfter time
-    public static double intakeTurretTurnTime           = 0.5;
+    public static double intakeTurretTurnTime           = 0.1;
 
     /**TIME CONFIGURATION - GENERAL*/
     public static double DEBOUNCE_THRESHOLD             = 0.2;                                         // debounce_Threshold
-    public static double waitTime                       = 1;                                          // general wait time
+    public static double waitTime                       = 0.3;                                          // general wait time
     public static long lastPressedTime                  = 2;                                            // limitSwitch timer
     public static final long debounceDelay              = 2;                                          // unit in ms, limitSwitch debouncer in ms
     public static double timeOut                        = 2;
 
     /**DEPOSIT vertical slide power*/
     public static double deposit_Slide_UpLiftPower      = 1.0;                                          // slides up power
-    public static double deposit_Slide_DownLiftPower    = 0.7;                                          // slides down power
+    public static double deposit_Slide_DownLiftPower    = 0.8;                                          // slides down power
 
     //distnace
     public static double backwardDist                   = -25;                                           // distance in cm, retract distance after hook specimen on high bar
