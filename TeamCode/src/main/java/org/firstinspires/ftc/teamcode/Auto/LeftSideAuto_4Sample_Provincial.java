@@ -32,11 +32,11 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
     public static double dumpTime = 0.5; // deposit time need to rotate deposit arm then open claw
 
     //movement positions
-    public static double basket_x_coordinate = -55.5;    //55.5 for Competition Basket, 58.5 for Home Basket
-    public static double basket_y_coordinate = -55.5;
-    public static double first_sample_x_coordinate = -50;
+    public static double basket_x_coordinate = -59;    //55.5 for Competition Basket, 58.5 for Home Basket
+    public static double basket_y_coordinate = -59;
+    public static double first_sample_x_coordinate = -51;
     public static double first_sample_y_coordinate = -53;
-    public static double second_sample_x_coordinate = -60;
+    public static double second_sample_x_coordinate = -61;
     public static double second_sample_y_coordinate = -53.5;
     public static double third_sample_x_coordinate = -47.5;
     public static double third_sample_y_coordinate = -39.5;
@@ -164,6 +164,46 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                 .addTemporalMarker(()->{
                     Slides_Stop();
                 })
+                ///pick 2nd sample
+                .addTemporalMarker(()->{
+                    robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Grab);
+                })
+                .waitSeconds(0.2)
+                .addTemporalMarker(()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);})
+                .waitSeconds(0.1)
+                .addTemporalMarker(() -> {
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
+                })
+                .waitSeconds(0.4)
+                .addTemporalMarker(() -> {
+                    robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
+                })
+                //0.15 sec later to retract slide
+                .UNSTABLE_addTemporalMarkerOffset(0.1,() -> {
+                    robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
+                    robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(1.0, () -> {
+                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(1.1, () -> {
+                    robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
+                })
+                .waitSeconds(1.5)
+                ///Score 1st Sample
+                .addTemporalMarker(()-> {
+                    Slides_Move(RobotActionConfig.deposit_Slide_Highbasket_Pos, 1);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(1.1,()->{
+                    robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
+                    robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Dump);
+                })
+                .lineToLinearHeading(new Pose2d(basket_x_coordinate,basket_y_coordinate,Math.toRadians(45)))                                //run to basket
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{drive.setDrivePower(new Pose2d(0,0,0));})                      // wait slide riseup
+                .waitSeconds(0.8)
+                .addTemporalMarker(()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);})                          // open claw
+                .waitSeconds(0.5)
                 .build();
 
         waitForStart();

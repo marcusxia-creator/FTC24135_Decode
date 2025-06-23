@@ -12,6 +12,8 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.R;
+
 /** Button Config for intake
  *Start state
  * *DPad Right          : retract/extend
@@ -111,6 +113,7 @@ public class FiniteStateMachineIntake {
                     // rotate intake arm to idle
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
+                    robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
                     // reset time for next step
                     intakeTimer.reset();
                     intakeState = INTAKESTATE.INTAKE_EXTEND;
@@ -215,6 +218,7 @@ public class FiniteStateMachineIntake {
                 if (intakeTimer.seconds() > RobotActionConfig.intakeSlideRetractSetPointTime) {              // wait 0.5 second for slide retract 2/3
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);        // set intake arm  to transfer
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
+                    robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
                 }
                 if (intakeTimer.seconds() > RobotActionConfig.intakeSlideRetractSetPointTime + RobotActionConfig.intakeWristRotationTime) {                  // wait another  0.5second to retract slide again.
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);     // set slide retract
@@ -239,6 +243,7 @@ public class FiniteStateMachineIntake {
                 if (intakeTimer.seconds() > RobotActionConfig.waitTime + RobotActionConfig.waitTime) {
                     robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
+                    robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
                 }
 
                 if (intakeTimer.seconds() > RobotActionConfig.waitTime + RobotActionConfig.intakeWristRotationTime + RobotActionConfig.waitTime) {
