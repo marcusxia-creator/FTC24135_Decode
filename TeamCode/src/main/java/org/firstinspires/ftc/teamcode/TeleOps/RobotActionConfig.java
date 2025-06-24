@@ -50,11 +50,11 @@ public class RobotActionConfig {
 
     /** Deposit slide position Config */
     public static int deposit_Slide_Down_Pos            = 10;
-    public static int deposit_Slide_Highbar_Pos         = 750;
+    public static int deposit_Slide_Highbar_Pos         = 1250;
     /** Todo Deposit slide High bar Score position ?? and value??*/
-    public static int deposit_Slide_Highbar_Score_Pos   = 1100;
-    public static int deposit_Slide_Pick_Rear_Pos       = 400;
-    public static int deposit_Slide_Highbasket_Pos      = 1545;                                          //unit in mm, highbasket point
+    public static int deposit_Slide_Highbar_Score_Pos   = 1945;
+    public static int deposit_Slide_Pick_Rear_Pos       = 600;
+    public static int deposit_Slide_Highbasket_Pos      = 2700;                                          //unit in mm, highbasket point
 
     /**Deposit Wrist  range(0-0.7, lowest :0)*/
     /** Todo Deposit Wrist installation poisition ?? and value??*/

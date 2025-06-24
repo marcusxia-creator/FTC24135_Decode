@@ -114,8 +114,8 @@ public class ServoTest {
             current_Position = robot.liftMotorLeft.getCurrentPosition();
 
 
-            robot.liftMotorLeft.setTargetPosition(Range.clip(current_Position + delta_Position,20,1580));
-            robot.liftMotorRight.setTargetPosition(Range.clip(current_Position + delta_Position,20,1580));
+            robot.liftMotorLeft.setTargetPosition(Range.clip(current_Position + delta_Position,20,10000));
+            robot.liftMotorRight.setTargetPosition(Range.clip(current_Position + delta_Position,20,10000));
             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorLeft.setPower(speed);
@@ -127,8 +127,8 @@ public class ServoTest {
             current_Position = robot.liftMotorLeft.getCurrentPosition();
 
 
-            robot.liftMotorLeft.setTargetPosition(Range.clip(current_Position - delta_Position,20,1580));
-            robot.liftMotorRight.setTargetPosition(Range.clip(current_Position - delta_Position,20,1580));
+            robot.liftMotorLeft.setTargetPosition(Range.clip(current_Position - delta_Position,20,10000));
+            robot.liftMotorRight.setTargetPosition(Range.clip(current_Position - delta_Position,20,10000));
             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorLeft.setPower(speed);
