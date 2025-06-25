@@ -13,6 +13,7 @@ public class RobotActionConfig {
     public static double WHEEL_DIAMETER_CM              = 9.6;                                          // unit in cm.
     public static double COUNTS_PER_MOTOR_GOBILDA_312   = 537.7;
     public static double GEAR_RATIO                     = 1.5;
+    public static double SPOOL_DIAMETER                 = 48;                                           // unit in mm, 48 for large, 38.2 for small
 
 
     //Intake Configure

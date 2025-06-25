@@ -413,7 +413,7 @@ public class FiniteStateMachineDeposit {
     }
 
     private void slidesToHeightMM(double targetTicks, double power) {
-        int targetSlideTicks = (int) (targetTicks);
+        int targetSlideTicks = (int) ((targetTicks/RobotActionConfig.SPOOL_DIAMETER * Math.PI));
         power = Range.clip(power, 0, 1);
         robot.liftMotorLeft.setTargetPosition(targetSlideTicks);
         robot.liftMotorRight.setTargetPosition(targetSlideTicks);
