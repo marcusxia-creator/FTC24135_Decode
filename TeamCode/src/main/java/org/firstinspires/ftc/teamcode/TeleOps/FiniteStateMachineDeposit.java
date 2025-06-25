@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_STICK_BUTTON;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.VS_Retraction_Timer;
 import static java.lang.Thread.sleep;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -412,8 +411,8 @@ public class FiniteStateMachineDeposit {
         robot.backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    private void slidesToHeightMM(double targetTicks, double power) {
-        int targetSlideTicks = (int) ((targetTicks/RobotActionConfig.SPOOL_DIAMETER * Math.PI));
+    private void slidesToHeightMM(double targetHeightMM, double power) {
+        int targetSlideTicks = (int) ((targetHeightMM * RobotActionConfig.TICKS_PER_MM_SLIDES));
         power = Range.clip(power, 0, 1);
         robot.liftMotorLeft.setTargetPosition(targetSlideTicks);
         robot.liftMotorRight.setTargetPosition(targetSlideTicks);

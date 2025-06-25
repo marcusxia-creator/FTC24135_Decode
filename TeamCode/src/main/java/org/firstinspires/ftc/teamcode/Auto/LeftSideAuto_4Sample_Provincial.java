@@ -204,6 +204,23 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                 .waitSeconds(0.8)
                 .addTemporalMarker(()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);})                          // open claw
                 .waitSeconds(0.5)
+                .addTemporalMarker(()->{
+                    robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);                                          // at global time 1.5 second mark to back to transfer position
+                    robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
+                    robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
+                    robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
+                    robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
+                    robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Pick-0.05);
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
+                })
+                .waitSeconds(0.5)
+                .lineToLinearHeading(new Pose2d(third_sample_x_coordinate,third_sample_y_coordinate,Math.toRadians(third_sample_heading)))
+                .UNSTABLE_addTemporalMarkerOffset(-0.7,()->{Slides_MoveDown(RobotActionConfig.deposit_Slide_Down_Pos,0.9);})    // Lower slides dist in mm
+                .waitSeconds(0.45)
+                .addTemporalMarker(()->{
+                    Slides_Stop();
+                })
                 .build();
 
         waitForStart();

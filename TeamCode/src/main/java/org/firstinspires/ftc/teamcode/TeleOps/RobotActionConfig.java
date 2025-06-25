@@ -12,9 +12,11 @@ public class RobotActionConfig {
     public static double powerFactor                    = 0.9;
     public static double WHEEL_DIAMETER_CM              = 9.6;                                          // unit in cm.
     public static double COUNTS_PER_MOTOR_GOBILDA_312   = 537.7;
+    public static double COUNTS_PER_MOTOR_GOBILDA_435   = 384.5;
     public static double GEAR_RATIO                     = 1.5;
     public static double SPOOL_DIAMETER                 = 48;                                           // unit in mm, 48 for large, 38.2 for small
-
+    public static double SPOOL_CIRCUMFERENCE            = SPOOL_DIAMETER*Math.PI;
+    public static int TICKS_PER_MM_SLIDES               = (int)((COUNTS_PER_MOTOR_GOBILDA_435/GEAR_RATIO)/SPOOL_CIRCUMFERENCE);
 
     //Intake Configure
     public static double intake_Slide_Extension         = 0.25;                                         // range(0.04 - 0.29)
@@ -50,12 +52,12 @@ public class RobotActionConfig {
     public static double intake_Turret_Side_Drop        = 0;
 
     /** Deposit slide position Config */
-    public static int deposit_Slide_Down_Pos            = 10;
-    public static int deposit_Slide_Highbar_Pos         = 1250;
+    public static int deposit_Slide_Down_Pos            = 0;
+    public static int deposit_Slide_Highbar_Pos         = 0;
     /** Todo Deposit slide High bar Score position ?? and value??*/
-    public static int deposit_Slide_Highbar_Score_Pos   = 1945;
-    public static int deposit_Slide_Pick_Rear_Pos       = 600;
-    public static int deposit_Slide_Highbasket_Pos      = 2700;                                          //unit in mm, highbasket point
+    public static int deposit_Slide_Highbar_Score_Pos   = 0;
+    public static int deposit_Slide_Pick_Rear_Pos       = 0;
+    public static int deposit_Slide_Highbasket_Pos      = 0;                                          //unit in mm, highbasket point
 
     /**Deposit Wrist  range(0-0.7, lowest :0)*/
     /** Todo Deposit Wrist installation poisition ?? and value??*/
