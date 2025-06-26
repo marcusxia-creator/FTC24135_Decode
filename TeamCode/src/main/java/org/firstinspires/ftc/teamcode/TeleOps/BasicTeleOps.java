@@ -121,8 +121,8 @@ public class BasicTeleOps extends OpMode {
 
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", robotDrive.getDriveMode().name());
-        telemetry.addData("VS Left", robot.liftMotorLeft.getCurrentPosition());
-        telemetry.addData("VS Right", robot.liftMotorRight.getCurrentPosition());
+        telemetry.addData("VS Left", robot.liftMotorLeft.getCurrentPosition()*RobotActionConfig.TICKS_PER_MM_SLIDES);
+        telemetry.addData("VS Right", robot.liftMotorRight.getCurrentPosition()*RobotActionConfig.TICKS_PER_MM_SLIDES);
         telemetry.addData("Deposit Arm", robot.depositLeftArmServo.getPosition());
         telemetry.addData("Deposit Wrist", robot.depositWristServo.getPosition());
         telemetry.addData("Deposit Claw", robot.depositClawServo.getPosition());
