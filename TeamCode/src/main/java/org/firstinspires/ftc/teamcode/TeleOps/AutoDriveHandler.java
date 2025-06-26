@@ -115,11 +115,15 @@ public class AutoDriveHandler {
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{vSlides.slidesMove(RobotActionConfig.deposit_Slide_Highbar_Pos,RobotActionConfig.deposit_Slide_UpLiftPower);})
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);})
+
                 .lineToLinearHeading(new Pose2d(target_X, PointToDrive.highbar_y_coordinate, Math.toRadians(-90)))
+
                 .UNSTABLE_addTemporalMarkerOffset(0.1,()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);})
                 .UNSTABLE_addTemporalMarkerOffset(0.15,()->{robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);})
                 .waitSeconds(0.4)
+
                 .lineToLinearHeading(new Pose2d(PointToDrive.specimen_pickup_x_coordinate, PointToDrive.specimen_pickup_y_coordinate, Math.toRadians(-33)))
+
                 .UNSTABLE_addTemporalMarkerOffset(-0.75,()->{
                     vSlides.slidesMoveDown(RobotActionConfig.deposit_Slide_Down_Pos, 0.8);
                     robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
@@ -173,7 +177,7 @@ public class AutoDriveHandler {
         }
 
         private void slidesMove(double targetPosition, double speed) {
-            int targetTick = (int) (targetPosition * RobotActionConfig.TICKS_PER_MM_Slides);
+            int targetTick = (int) (targetPosition * RobotActionConfig.TICKS_PER_MM_SLIDES);
             robot.liftMotorLeft.setTargetPosition(targetTick);
             robot.liftMotorRight.setTargetPosition(targetTick);
             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -183,7 +187,7 @@ public class AutoDriveHandler {
         }
 
         private void slidesMoveDown(double targetPosition, double speed) {
-            int targetTick = (int) (targetPosition * RobotActionConfig.TICKS_PER_MM_Slides);
+            int targetTick = (int) (targetPosition * RobotActionConfig.TICKS_PER_MM_SLIDES);
             robot.liftMotorLeft.setTargetPosition(targetTick);
             robot.liftMotorRight.setTargetPosition(targetTick);
             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
