@@ -81,7 +81,7 @@ public class PinpointLocalizerTest extends LinearOpMode {
         if (isStopRequested()) return;
 
         // ✅ Set an initial pose (if needed)
-        drive.setPoseEstimate(new Pose2d(0, 0, 0));
+        drive.setPoseEstimate(new Pose2d(7.5, -64, Math.toRadians(90)));
 
         while (opModeIsActive()) {
             // ✅ Update drive and odometry

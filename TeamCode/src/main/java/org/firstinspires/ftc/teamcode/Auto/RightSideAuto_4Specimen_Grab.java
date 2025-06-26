@@ -26,8 +26,8 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
     public static double bar_out_point_1_X = 24;
     public static double bar_out_point_1_Y = -55;
 
-    public static double first_sample_point_1_X = 28;
-    public static double first_sample_point_1_Y = -43.7; //heading = 45
+    public static double first_sample_point_1_X = 27.2;
+    public static double first_sample_point_1_Y = -44; //heading = 45
 
     public static double first_sample_point_2_X = 33;
     public static double first_sample_point_2_Y = -47; //heading = -45
@@ -47,9 +47,9 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
         SampleMecanumDriveCancelable drive = new SampleMecanumDriveCancelable(hardwareMap);
         robot.init(hardwareMap);
 
-        robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
-        robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
-        robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+        robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
+        robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
+        robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
         robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Side_Drop);
         robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Side_Drop);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
@@ -79,10 +79,10 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                     Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Score_Pos,0.3);
                 })
                 //open claw
-                .UNSTABLE_addTemporalMarkerOffset(0.8,() -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.9,() -> {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                 })
-                .waitSeconds(0.9)
+                .waitSeconds(1.0)
                 ///-----------------------------------------------------------------------
                 /** --> push ground sample for specimen*/
                 .lineToLinearHeading(new Pose2d(first_sample_point_1_X, first_sample_point_1_Y, Math.toRadians(45)))
@@ -94,6 +94,7 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
                     Depo_Pick();
+                    robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.25,() -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
@@ -183,14 +184,13 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
     }
     private void Intake_Grab(){
         robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
-        robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Grab);
+        robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
         robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
     }
     private void Intake_Pick(){
         robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
         robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Grab);
-        robot.intakeArmServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
         robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
     }

@@ -32,14 +32,14 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
     public static double dumpTime = 0.5; // deposit time need to rotate deposit arm then open claw
 
     //movement positions
-    public static double basket_x_coordinate = -59;    //55.5 for Competition Basket, 58.5 for Home Basket
-    public static double basket_y_coordinate = -59;
+    public static double basket_x_coordinate = -59.4;    //55.5 for Competition Basket, 58.5 for Home Basket
+    public static double basket_y_coordinate = -59.4;
     public static double first_sample_x_coordinate = -51;
     public static double first_sample_y_coordinate = -53;
-    public static double second_sample_x_coordinate = -60;
-    public static double second_sample_y_coordinate = -53.5;
+    public static double second_sample_x_coordinate = -61;
+    public static double second_sample_y_coordinate = -52.5;
     public static double third_sample_x_coordinate = -47.5;
-    public static double third_sample_y_coordinate = -39.5;
+    public static double third_sample_y_coordinate = -41.5;
     public static double third_sample_heading = 150;
 
     public static double rightPark_x_coordiante = -21.5;
@@ -57,17 +57,17 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
 
         robot.init(hardwareMap);
 
-        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
-        robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
+        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Side_Drop);
+        robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Side_Drop);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
         robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
         robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
         robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
         robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
         sleep(200);
-        robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
-        robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
-        robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+        robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
+        robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
+        robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
         sleep(1000);
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
 
@@ -238,6 +238,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                 .waitSeconds(0.4)
                 .addTemporalMarker(() -> {
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
+                    robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
                 })
                 //0.15 sec later to retract slide
                 .UNSTABLE_addTemporalMarkerOffset(0.1,() -> {
@@ -260,6 +261,18 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Dump);
                 })
+                .lineToLinearHeading(new Pose2d(basket_x_coordinate,basket_y_coordinate,Math.toRadians(45)))                                //run to basket
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{drive.setDrivePower(new Pose2d(0,0,0));})                      // wait slide riseup
+                .waitSeconds(0.8)
+                .addTemporalMarker(()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);})                          // open claw
+                .waitSeconds(0.5)
+                .lineToLinearHeading(new Pose2d(rightPark_x_coordiante,rightPark_y_coordiante,Math.toRadians(rightPark_heading)))
+                .UNSTABLE_addTemporalMarkerOffset(-2.0,()->{
+                    Slides_MoveDown(RobotActionConfig.deposit_Slide_Down_Pos,0.9);
+                    robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);                                          // at global time 1.5 second mark to back to transfer position
+                    robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
+                })    // Lower slides dist in mm
                 .build();
 
         waitForStart();
