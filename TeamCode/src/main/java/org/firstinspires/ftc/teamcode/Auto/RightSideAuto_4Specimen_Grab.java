@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Auto.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
@@ -49,12 +50,12 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
         robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
         robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
-        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_highbasketpause);
-        robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
+        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Side_Drop);
+        robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Side_Drop);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
         robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
-        robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
+        robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Side_Drop);
         robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
         robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
 
@@ -78,10 +79,10 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                     Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Score_Pos,0.3);
                 })
                 //open claw
-                .UNSTABLE_addTemporalMarkerOffset(0.5,() -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.8,() -> {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                 })
-                .waitSeconds(0.6)
+                .waitSeconds(0.9)
                 ///-----------------------------------------------------------------------
                 /** --> push ground sample for specimen*/
                 .lineToLinearHeading(new Pose2d(first_sample_point_1_X, first_sample_point_1_Y, Math.toRadians(45)))
@@ -134,14 +135,6 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0,() -> {
 
                 })
-                .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(-45)))
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    drive.setDrivePower(new Pose2d(0, 0, 0));
-                })
-                .UNSTABLE_addTemporalMarkerOffset(0,() -> {
-                    robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
-                })
-                .waitSeconds(0.2)
                 ///-----------------------------------------------------------------------
                 .build();
 
@@ -191,13 +184,14 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
     private void Intake_Grab(){
         robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
         robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Grab);
-        robot.intakeArmServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
+        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
     }
     private void Intake_Pick(){
         robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
         robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Grab);
         robot.intakeArmServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
+        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
     }
     private void Intake_Side_Drop(){
