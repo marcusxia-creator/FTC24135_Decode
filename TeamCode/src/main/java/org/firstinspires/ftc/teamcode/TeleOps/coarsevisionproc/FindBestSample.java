@@ -17,11 +17,20 @@ public class FindBestSample {
 
         ColorBlobLocatorProcessor.Util.filterByArea(100, 20000, blobs);
 
-        Sample ClosestSample=new Sample(blobs.get(0),relcam,CamProfile);
+        Sample ClosestSample;
 
-        for(ColorBlobLocatorProcessor.Blob b : blobs) {
-            if (new Sample(b,relcam,CamProfile).ODistance<ClosestSample.ODistance){ClosestSample=new Sample(b,relcam,CamProfile);}
+        if(blobs.isEmpty()) {
+            ClosestSample = null;
         }
+
+        else{
+            ClosestSample=new Sample(blobs.get(0),relcam,CamProfile);
+
+            for(ColorBlobLocatorProcessor.Blob b : blobs) {
+                if (new Sample(b,relcam,CamProfile).ODistance<ClosestSample.ODistance){ClosestSample=new Sample(b,relcam,CamProfile);}
+            }
+        }
+
 
         return ClosestSample;
     }

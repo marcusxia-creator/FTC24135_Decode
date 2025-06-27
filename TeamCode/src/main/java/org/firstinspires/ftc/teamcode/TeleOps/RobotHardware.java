@@ -130,7 +130,7 @@ public class RobotHardware {
         //colorSensor.enableLed(true); // this is for Non normalized colorSensor.
         //Limit Switch
         //limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
-       // limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+        // limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         //set motor mode and motor direction
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed

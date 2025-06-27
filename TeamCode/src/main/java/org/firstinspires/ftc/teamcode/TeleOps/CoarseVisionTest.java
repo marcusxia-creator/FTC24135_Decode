@@ -55,7 +55,7 @@ import java.util.List;
 /*
  * Demonstrates an empty iterative OpMode
  */
-@TeleOp(name = "SlideTest")
+@TeleOp(name = "CoarseVisionTest")
 public class CoarseVisionTest extends OpMode {
 
   private ElapsedTime runtime = new ElapsedTime();
@@ -118,8 +118,8 @@ public class CoarseVisionTest extends OpMode {
 
     slidePoint=new Point(0,0);
 
-    robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
-    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
+    robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Coarse);
+    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Coarse);
 
     advancedIntake.runToPoint(robot,slidePoint,DistanceUnit.INCH);
   }
@@ -135,11 +135,14 @@ public class CoarseVisionTest extends OpMode {
 
     bestSample= FindBestSample.findBestSample(useProcessors,RobotActionConfig.CamPos,RobotActionConfig.Arducam);
 
-    telemetry.addLine(" Area Density Aspect  Center");
+    if(bestSample!=null) {
 
-    telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)  (%3d,%3d)  (%3d,%3d)",
-            bestSample.blob.getContourArea(), bestSample.blob.getDensity(), bestSample.blob.getAspectRatio(), (int) bestSample.blob.getBoxFit().center.x, (int) bestSample.blob.getBoxFit().center.y, (int) bestSample.ViscenterPoint.x, (int) bestSample.ViscenterPoint.y, (int) bestSample.relPos.x, (int) bestSample.relPos.y));
+      telemetry.addLine(" Area Density Aspect  Center");
 
+      telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)  (%3d,%3d)  (%3d,%3d)",
+              bestSample.blob.getContourArea(), bestSample.blob.getDensity(), bestSample.blob.getAspectRatio(), (int) bestSample.blob.getBoxFit().center.x, (int) bestSample.blob.getBoxFit().center.y, (int) bestSample.ViscenterPoint.x, (int) bestSample.ViscenterPoint.y, (int) bestSample.relPos.x, (int) bestSample.relPos.y));
+
+    }
     FtcDashboard.getInstance().startCameraStream(portal, 0);
     telemetry.update();
   }
@@ -159,6 +162,9 @@ public class CoarseVisionTest extends OpMode {
   @Override
   public void loop() {
     telemetry.addData("Status", "Run Time: " + runtime.toString());
+
+    robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
+    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
 
     advancedIntake.runToPoint(robot,bestSample.relPos,DistanceUnit.CM);
   }
