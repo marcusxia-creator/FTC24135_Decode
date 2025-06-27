@@ -14,7 +14,6 @@ import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 import java.util.Locale;
 
 @TeleOp(name = "Test_Pinpoint_Odometry", group = "TeleOps")
-@Disabled
 public class PinpointLocalizerTest extends LinearOpMode {
 
     GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
