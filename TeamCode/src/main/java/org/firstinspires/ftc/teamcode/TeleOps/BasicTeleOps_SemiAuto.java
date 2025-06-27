@@ -1,4 +1,4 @@
-/***package org.firstinspires.ftc.teamcode.TeleOps;
+package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
@@ -27,6 +27,7 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.LynxModule.BulkData;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -76,8 +77,8 @@ import java.util.List;
  *  * Right Trigger + DPAD_RIGHT    ----> to lower the intake arm for near side pick up
  *  * A                             ----> TO TOGGLE INTAKE CLAW OPEN/CLOSE
  *  * Right bumper + A              ----> To TOGGLE DEPOSIT CLAW OPEN/CLOSE
-
-
+*/
+@Disabled
 @TeleOp(name = "TeleOps_Champion_Prep_SemiAuto", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOps_SemiAuto extends OpMode {
 
@@ -144,8 +145,6 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
         //Deposit Arm control
         depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry); // Pass parameters as needed);
-        depositArmDrive.colorRangeIni();
-
 
         //Intake Arm Control
         intakeArmDrive = new FiniteStateMachineIntake(robot, gamepadCo1,gamepadCo2, depositArmDrive);
@@ -168,6 +167,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         /** transfer the currentPose from end of Auto -- each Auto code need to
          * add PoseStorage.currentPose = drive.getPoseEstimate(); at the end of the AutoCode
          *
+         * */
         Pose2d startPose = new Pose2d(7.5, -64, Math.toRadians(-90));// this is for manual testing.
         drive.setPoseEstimate(startPose);
         //drive.setPoseEstimate(PoseStorage.currentPose);
@@ -216,11 +216,9 @@ public class BasicTeleOps_SemiAuto extends OpMode {
             robot.liftMotorLeft.setPower(0.3);                                          // Make sure lift motor is on
             robot.liftMotorRight.setPower(0.3);
             while (robot.liftMotorLeft.isBusy()&&robot.liftMotorRight.isBusy()){
-                if(LSisPressed()){
                     robot.liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
                     robot.liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
                     break;
-                }
             }
             // when position is back to 0, deposit is initialized.
             depositArmDrive.Init();
@@ -280,13 +278,12 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                 telemetry.addData("Intake State", intakeState);
                 telemetry.addData("Intake Claw State", intakeClawState);
                 telemetry.addLine("---------------------");
-                telemetry.addData("Color Sensor Hue", RobotActionConfig.hsvValues[0]);
                 telemetry.addData("Detected Color", detectedColor);
                 //telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
 
-                /** AutoMode Control
+                /** AutoMode Control*/
                 if ((gamepadCo1.getButton(LEFT_STICK_BUTTON) && !autoPressed && isButtonDebounced())){
-                    /**Global Control ----> Handle Auto Drive if 'LeftSTICK' button is pressed
+                    /**Global Control ----> Handle Auto Drive if 'LeftSTICK' button is pressed*/
                     autoPressed = true;
                     if(autoDriveHandler.handleButtonY()){
                         initialRun = false;
@@ -340,7 +337,6 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
         telemetry.addLine("---------------------");
         telemetry.addData("Heading ", robot.imu.getRobotYawPitchRollAngles().getYaw());
-        telemetry.addData("Limit Switch Pressed", robot.limitSwitch.getState());
         telemetry.addLine("---------------------");
         telemetry.addData("Auto Initial Run",initialRun);
         telemetry.addData("PoseEstimate",poseEstimate);
@@ -350,7 +346,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         telemetry.addData("Pinpoint Frequency", drive.pinPointFrequency()); //prints/gets the current refresh rate of the Pinpoint
         telemetry.addData("REV Hub Frequency: ", frequency); //prints the control system refresh rate
          /
-        telemetry.update();
+        telemetry.update();*/
     }
 
     //Stop the Robot
@@ -373,10 +369,6 @@ public class BasicTeleOps_SemiAuto extends OpMode {
             controlState = ControlState.TEST;
         }
     }
-    //limit switch control
-    private boolean LSisPressed() {
-            return robot.limitSwitch.getState();
-    }
 
     // Debouncer helper
     private boolean isButtonDebounced() {
@@ -386,5 +378,4 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         }
         return false;
     }
-
-} */
+}

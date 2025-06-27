@@ -19,7 +19,11 @@ public class RobotActionConfig {
     public static double powerFactor                    = 0.9;
     public static double WHEEL_DIAMETER_CM              = 9.6;                                          // unit in cm.
     public static double COUNTS_PER_MOTOR_GOBILDA_312   = 537.7;
+    public static double COUNTS_PER_MOTOR_GOBILDA_435   = 384.5;
     public static double GEAR_RATIO                     = 1.5;
+    public static double SPOOL_DIAMETER                 = 48;                                           // unit in mm, 48 for large, 38.2 for small
+    public static double SPOOL_CIRCUMFERENCE            = SPOOL_DIAMETER*Math.PI;
+    public static int TICKS_PER_MM_SLIDES               = (int)((COUNTS_PER_MOTOR_GOBILDA_435/GEAR_RATIO)/SPOOL_CIRCUMFERENCE);
 
     //slideLengths
     public static double slide_Arm_A_Length             = 11;
@@ -37,7 +41,7 @@ public class RobotActionConfig {
 
     /**Arm range(0-0.43, lowest :0.43, fully back for transfer:0.14 )*/
     /** Todo Intake Arm installation poisition ?? and value??*/
-    public static double intake_Arm_Pick                = 0.5;
+    public static double intake_Arm_Pick                = 0.48;
     public static double intake_Arm_Grab                = 0.58;
     public static double intake_Arm_Idle                = 0.24;
     public static double intake_Arm_Transfer            = 0;
@@ -63,12 +67,12 @@ public class RobotActionConfig {
     public static double intake_Turret_Side_Drop        = 0;
 
     /** Deposit slide position Config */
-    public static int deposit_Slide_Down_Pos            = 10;
-    public static int deposit_Slide_Highbar_Pos         = 1250;
+    public static int deposit_Slide_Down_Pos            = 2;
+    public static int deposit_Slide_Highbar_Pos         = 535;
     /** Todo Deposit slide High bar Score position ?? and value??*/
-    public static int deposit_Slide_Highbar_Score_Pos   = 1945;
-    public static int deposit_Slide_Pick_Rear_Pos       = 600;
-    public static int deposit_Slide_Highbasket_Pos      = 2700;                                          //unit in mm, highbasket point
+    public static int deposit_Slide_Highbar_Score_Pos   = 885;
+    public static int deposit_Slide_Pick_Rear_Pos       = 265;
+    public static int deposit_Slide_Highbasket_Pos      = 1225;                                          //unit in mm, highbasket point
 
     /**Deposit Wrist  range(0-0.7, lowest :0)*/
     /** Todo Deposit Wrist installation poisition ?? and value??*/
@@ -99,7 +103,7 @@ public class RobotActionConfig {
     public static double postDumpTime                   = 0.5;
     public static double dropTime                       = 2;                                          // wait for deposit arm to drop position and open claw.
     public static double pickTime                       = 2;                                          // NOT IN USE NOW. when detect specimen and wait to close deposit claw.
-    public static double transferTime                   = 1;                                         // sample transfer time for close deposit claw including time of waiting the slide back, arm and wrist back to transfer
+    public static double transferTime                   = 1.2;                                         // sample transfer time for close deposit claw including time of waiting the slide back, arm and wrist back to transfer
 
     public static double VS_Retraction_Timer            = 2;
 

@@ -150,6 +150,7 @@ public class RobotHardware {
 
         //set servo direction - intake and deposit
         intakeRightSlideServo.setDirection(Servo.Direction.REVERSE);
+        intakeWristServo.setDirection(Servo.Direction.REVERSE);
         depositLeftArmServo.setDirection(Servo.Direction.REVERSE);
 
         //set slide motors direction
