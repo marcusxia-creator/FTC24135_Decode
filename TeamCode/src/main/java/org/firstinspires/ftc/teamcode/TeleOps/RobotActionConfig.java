@@ -2,6 +2,13 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.TeleOps.coarsevisionproc.CamFieldProfile;
+
 @Config
 public class RobotActionConfig {
     /**
@@ -14,12 +21,17 @@ public class RobotActionConfig {
     public static double COUNTS_PER_MOTOR_GOBILDA_312   = 537.7;
     public static double GEAR_RATIO                     = 1.5;
 
+    //slideLengths
+    public static double slide_Arm_A_Length             = 11;
+    public static double slide_Arm_B_Length             = 11.5;
+    public static double Turret_Arm_Length              = 7;
+
 
     //Intake Configure
-    public static double intake_Slide_Extension         = 0.25;                                         // range(0.04 - 0.29)
-    public static double intake_Slide_Retract           = 0;                                         // 0.01 = 3deg rotation of gobilda servo
+    public static double intake_Slide_Extension         = 0.25;                                          // range(0.04 - 0.29)
+    public static double intake_Slide_Retract           = 0;                                             // 0.01 = 3deg rotation of gobilda servo
     public static double intake_slide_Retract_Set       = 0.06;
-    public static double intake_Slide_Extension_Wait    = 2;                                         // FOR AUTO MODE ONLY
+    public static double intake_Slide_Extension_Wait    = 2;                                             // FOR AUTO MODE ONLY
 
     public static double intake_Rotation_Mid            = 0.525;                                         // range(0-1, 0.46 at the middle for installation
 
@@ -114,4 +126,8 @@ public class RobotActionConfig {
     public static double decel_Slowness                 = 0.5;                                          // drive control speed deaccel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
 
     public static int slideTickThreshold                = 20;                                           // vertical slide threshold value to determine if the slide is at position
+
+    //Coarse Vision Parameters
+    public static CamFieldProfile Arducam               = new CamFieldProfile(65.36816529,36.76959297,320,240);
+    public static Pose3D CamPos                         = new Pose3D(new Position(DistanceUnit.CM,0.0,4.0,12.0,0), new YawPitchRollAngles(AngleUnit.DEGREES,0,30,0,0));
 }
