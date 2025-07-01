@@ -214,6 +214,7 @@ public class FiniteStateMachineIntake {
                 depositArmState = depositArmDrive.liftState;
                 depositArmDrive.SetDepositstate(FiniteStateMachineDeposit.LIFTSTATE.LIFT_START);
                 depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.OPEN);
+                robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
                 // Check if the intakeslide has reached the position
                 if (intakeTimer.seconds() > RobotActionConfig.intakeSlideRetractSetPointTime) {              // wait 0.5 second for slide retract 2/3
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);        // set intake arm  to transfer
