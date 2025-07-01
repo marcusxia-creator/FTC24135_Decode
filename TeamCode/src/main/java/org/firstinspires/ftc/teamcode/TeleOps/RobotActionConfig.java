@@ -15,8 +15,8 @@ public class RobotActionConfig {
     public static double COUNTS_PER_MOTOR_GOBILDA_435   = 384.5;
     public static double GEAR_RATIO                     = 1.5;
     public static double SPOOL_DIAMETER                 = 48;                                           // unit in mm, 48 for large, 38.2 for small
-    public static double SPOOL_CIRCUMFERENCE            = SPOOL_DIAMETER*Math.PI;
-    public static int TICKS_PER_MM_SLIDES               = (int)((COUNTS_PER_MOTOR_GOBILDA_435/GEAR_RATIO)/SPOOL_CIRCUMFERENCE);
+    public static double SPOOL_CIRCUMFERENCE            = SPOOL_DIAMETER*Math.PI;                       //151MM
+    public static int TICKS_PER_MM_SLIDES               = (int)((COUNTS_PER_MOTOR_GOBILDA_435/GEAR_RATIO)/SPOOL_CIRCUMFERENCE); //1.697 tick per MM
 
     //Intake Configure
     public static double intake_Slide_Extension         = 0.25;                                         // range(0.04 - 0.29)
