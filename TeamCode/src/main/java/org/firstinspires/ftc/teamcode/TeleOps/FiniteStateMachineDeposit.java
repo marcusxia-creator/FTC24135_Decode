@@ -298,12 +298,12 @@ public class FiniteStateMachineDeposit {
 
     // Helper method to check if the lift is within the desired position threshold
     private boolean IsLiftAtPosition(int targetPosition) {
-        int targetTicks = (int) (targetPosition);
+        int targetTicks = (int) (targetPosition*RobotActionConfig.TICKS_PER_MM_SLIDES);
         return Math.abs(robot.liftMotorLeft.getCurrentPosition() - targetTicks) < RobotActionConfig.slideTickThreshold && Math.abs(robot.liftMotorRight.getCurrentPosition() - targetTicks) < RobotActionConfig.slideTickThreshold;
     }
 
     private boolean IsLiftDownAtPosition(int targetPosition) {
-        int targetTicks = (int) (targetPosition);
+        int targetTicks = (int) (targetPosition*RobotActionConfig.TICKS_PER_MM_SLIDES);
         return Math.abs(robot.liftMotorLeft.getCurrentPosition() - targetTicks) < RobotActionConfig.slideTickThreshold/2 && Math.abs(robot.liftMotorRight.getCurrentPosition() - targetTicks) < RobotActionConfig.slideTickThreshold/2;
     }
 
@@ -426,6 +426,6 @@ public class FiniteStateMachineDeposit {
 
     private double getSlidesCurrentPositionMM() {
         int currentPositionTicks = (robot.liftMotorRight.getCurrentPosition() + robot.liftMotorLeft.getCurrentPosition()) / 2;
-        return (double) currentPositionTicks;
+        return (double) currentPositionTicks/RobotActionConfig.TICKS_PER_MM_SLIDES;
     }
 }
