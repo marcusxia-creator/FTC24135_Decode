@@ -59,6 +59,7 @@ public class FiniteStateMachineIntake {
 
     //Time member
     private ElapsedTime debounceTimer = new ElapsedTime(); // Timer for debouncing
+    private ElapsedTime intakeTransTimer = new ElapsedTime();
 
     //Intake states
     public INTAKESTATE intakeState; // Persisting state
@@ -162,7 +163,7 @@ public class FiniteStateMachineIntake {
                     if ((gamepad_1.getButton(DPAD_DOWN) || gamepad_2.getButton(DPAD_DOWN)) && isButtonDebounced()) {
                         //use to be 0.01
                         intakeArmPosition += 0.05;
-                        robot.intakeArmServo.setPosition(Range.clip(intakeArmPosition, 0.1, 0.42));
+                        robot.intakeArmServo.setPosition(Range.clip(intakeArmPosition, 0.1, 0.58));
                         }
 
                     /** intake retract for sample transfer
@@ -212,10 +213,12 @@ public class FiniteStateMachineIntake {
                 depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.OPEN);
                 robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
                 robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);// wait 0.5 second for slide retract 2/3
-                robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);        // set intake arm  to transfer;
-                robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
-                robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);     // set slide retract
-                robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
+                if(intakeTransTimer.seconds() > 0.5) {
+                    robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);        // set intake arm  to transfer;
+                    robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
+                    robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);     // set slide retract
+                    robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
+                }
                 // Check if the intakeslide has reached the position
                 /**
                 if (intakeTimer.seconds() > RobotActionConfig.intakeSlideRetractSetPointTime) {
