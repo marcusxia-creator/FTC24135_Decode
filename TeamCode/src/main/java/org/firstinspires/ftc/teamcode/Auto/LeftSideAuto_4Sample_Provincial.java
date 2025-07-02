@@ -273,6 +273,11 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                 })    // Lower slides dist in mm
+                .UNSTABLE_addTemporalMarkerOffset(0.2,()->{
+                    robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
+                    robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
+                })
                 .build();
 
         waitForStart();

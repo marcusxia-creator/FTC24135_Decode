@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Auto.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
@@ -21,8 +20,9 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
 
     public static double highbar_x_coordinate = -3;
     public static double highbar_y_coordinate = -31;
-    public static double highbar_x_coordinate2 = -2.5;
-    public static double highbar_x_coordinate3 = -3.75;
+    public static double highbar_x_coordinate2 = -1.5;
+    public static double highbar_x_coordinate3 = 0;
+    public static double highbar_x_coordinate4 = 1.5;
     public static double specimen_pickup_x_coordinate = PointToDrive.specimen_pickup_x_coordinate;
     public static double specimen_pickup_y_coordinate = PointToDrive.specimen_pickup_y_coordinate;
     public static double bar_out_point_1_X = 24;
@@ -80,30 +80,13 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0.1, () -> {
-                    Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Score_Pos,0.3);
+                    Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Score_Pos,0.5);
                 })
-                /*
-                .UNSTABLE_addTemporalMarkerOffset(0.1,()->{
-                  Intake_Grab();
-                })
-                .UNSTABLE_addTemporalMarkerOffset(0.3,()->{
-                    Intake_Slide_Extend();
-                })
-                 */
                 //open claw
-                .UNSTABLE_addTemporalMarkerOffset(0.9,() -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.7,() -> {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                 })
-                /*
-                .UNSTABLE_addTemporalMarkerOffset(1.2,()->{
-                    Intake_Grab();
-                })
-                .UNSTABLE_addTemporalMarkerOffset(1.3,()->{
-                    Intake_Slide_Retract();
-                })
-
-                 */
-                .waitSeconds(1.1)
+                .waitSeconds(0.8)
                 ///-----------------------------------------------------------------------
                 /** --> push ground sample for specimen*/
 
@@ -155,7 +138,7 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
                 })
                 .waitSeconds(0.20)
-                /** waiting for testing*
+                /**transition to scoring*/
                  .lineToLinearHeading(new Pose2d(first_sample_point_2_X, first_sample_point_2_Y, Math.toRadians(-45)))
                  .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                  drive.setDrivePower(new Pose2d(0, 0, 0));})
@@ -175,59 +158,59 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                  .waitSeconds(0.3)
                  ///-----------------------------------------------------------------------
                  ///score 2nd sample
-                 .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(90)))
-                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                 drive.setDrivePower(new Pose2d(0, 0, 0));})
-                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                 robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
-                 })
-                 .UNSTABLE_addTemporalMarkerOffset(0.2, () -> {
-                 Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Pos,1.0);
-                 Depo_Hook();
-                 })
-                 .waitSeconds(0.3)
-                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate,highbar_y_coordinate, Math.toRadians(90)))
-                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                 drive.setDrivePower(new Pose2d(0, 0, 0));})
-                 .UNSTABLE_addTemporalMarkerOffset(0.1, () -> {
-                 Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Score_Pos,0.5);
-                 })
-                 //open claw
-                 .UNSTABLE_addTemporalMarkerOffset(0.9,() -> {
-                 robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
-                 })
-                 .UNSTABLE_addTemporalMarkerOffset(1.1,()->{
-                 Slides_Move(RobotActionConfig.deposit_Slide_Pick_Rear_Pos,0.7);
-                 Depo_Pick();
-                 })
-                 .waitSeconds(1.3)
+                .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(90)))
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    drive.setDrivePower(new Pose2d(0, 0, 0));})
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(0.2, () -> {
+                    Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Pos,1.0);
+                    Depo_Hook();
+                })
+                .waitSeconds(0.3)
+                .lineToLinearHeading(new Pose2d(highbar_x_coordinate2,highbar_y_coordinate, Math.toRadians(90)))
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    drive.setDrivePower(new Pose2d(0, 0, 0));})
+                .UNSTABLE_addTemporalMarkerOffset(0.1, () -> {
+                    Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Score_Pos,0.5);
+                })
+                //open claw
+                .UNSTABLE_addTemporalMarkerOffset(0.8,() -> {
+                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(0.9,()->{
+                    Slides_Move(RobotActionConfig.deposit_Slide_Down_Pos,0.7);
+                    Depo_Transfer();
+                })
+                .waitSeconds(1.0)
                  ///score 3rd sample
-                 .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(90)))
-                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                 drive.setDrivePower(new Pose2d(0, 0, 0));})
-                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                 robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
-                 })
-                 .UNSTABLE_addTemporalMarkerOffset(0.2, () -> {
-                 Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Pos,1.0);
-                 Depo_Hook();
-                 })
-                 .waitSeconds(0.3)
-                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate,highbar_y_coordinate, Math.toRadians(90)))
-                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                 drive.setDrivePower(new Pose2d(0, 0, 0));})
-                 .UNSTABLE_addTemporalMarkerOffset(0.1, () -> {
-                 Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Score_Pos,0.5);
-                 })
-                 //open claw
-                 .UNSTABLE_addTemporalMarkerOffset(0.9,() -> {
-                 robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
-                 })
-                 .UNSTABLE_addTemporalMarkerOffset(1.1,()->{
-                 Slides_Move(RobotActionConfig.deposit_Slide_Pick_Rear_Pos,0.7);
-                 Depo_Pick();
-                 })
-                 .waitSeconds(1.3)
+                .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(90)))
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    drive.setDrivePower(new Pose2d(0, 0, 0));})
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(0.2, () -> {
+                    Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Pos,1.0);
+                    Depo_Hook();
+                })
+                .waitSeconds(0.3)
+                .lineToLinearHeading(new Pose2d(highbar_x_coordinate3,highbar_y_coordinate, Math.toRadians(90)))
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    drive.setDrivePower(new Pose2d(0, 0, 0));})
+                .UNSTABLE_addTemporalMarkerOffset(0.1, () -> {
+                    Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Score_Pos,0.5);
+                })
+                //open claw
+                .UNSTABLE_addTemporalMarkerOffset(0.8,() -> {
+                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(0.9,()->{
+                    Slides_Move(RobotActionConfig.deposit_Slide_Down_Pos,0.7);
+                    Depo_Transfer();
+                })
+                .waitSeconds(1.0)
                  ///score 4th sample
                  .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(90)))
                  .UNSTABLE_addTemporalMarkerOffset(0, () -> {
@@ -240,23 +223,22 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
                  Depo_Hook();
                  })
                  .waitSeconds(0.3)
-                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate,highbar_y_coordinate, Math.toRadians(90)))
+                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate4,highbar_y_coordinate, Math.toRadians(90)))
                  .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                  drive.setDrivePower(new Pose2d(0, 0, 0));})
                  .UNSTABLE_addTemporalMarkerOffset(0.1, () -> {
                  Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Score_Pos,0.5);
                  })
                  //open claw
-                 .UNSTABLE_addTemporalMarkerOffset(0.9,() -> {
+                 .UNSTABLE_addTemporalMarkerOffset(0.8,() -> {
                  robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                  })
-                 .UNSTABLE_addTemporalMarkerOffset(1.1,()->{
+                 .UNSTABLE_addTemporalMarkerOffset(0.9,()->{
                  Slides_Move(RobotActionConfig.deposit_Slide_Down_Pos,0.7);
                  Depo_Transfer();
                  })
-                 .waitSeconds(1.3)
-
-                 */
+                 .waitSeconds(1.0)
+                .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(90)))
                 .build();
 
         waitForStart();
