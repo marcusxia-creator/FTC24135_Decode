@@ -24,7 +24,7 @@ public class RobotActionConfig {
     public static double intake_slide_Retract_Set       = 0.06;
     public static double intake_Slide_Extension_Wait    = 2;                                         // FOR AUTO MODE ONLY
 
-    public static double intake_Rotation_Mid            = 0.525;                                         // range(0-1, 0.46 at the middle for installation
+    public static double intake_Rotation_Mid            = 0.4844;                                         // range(0-1, 0.46 at the middle for installation
 
     /**Arm range(0-0.43, lowest :0.43, fully back for transfer:0.14 )*/
     /** Todo Intake Arm installation poisition ?? and value??*/
@@ -39,7 +39,7 @@ public class RobotActionConfig {
     public static double intake_Wrist_highbasketpause   = 0.51;
     public static double intake_Wrist_Idle              = 0.05;
     public static double intake_Wrist_Grab              = 0.02;
-    public static double intake_Wrist_Transfer          = 0.54;
+    public static double intake_Wrist_Transfer          = 0.55; //0.54
     public static double intake_Wrist_Side_Drop         = 0.24;
 
     /**Intake Claw range(0-0.27 lowest :0, fully close 0.27 )*/

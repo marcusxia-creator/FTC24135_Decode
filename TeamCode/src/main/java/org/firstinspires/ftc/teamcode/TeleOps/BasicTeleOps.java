@@ -119,12 +119,13 @@ public class BasicTeleOps extends OpMode {
             servoTest.loop();
         }
 
+
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", robotDrive.getDriveMode().name());
-        telemetry.addData("VS Left mm", robot.liftMotorLeft.getCurrentPosition()*RobotActionConfig.TICKS_PER_MM_SLIDES);
-        telemetry.addData("VS Right mm", robot.liftMotorRight.getCurrentPosition()*RobotActionConfig.TICKS_PER_MM_SLIDES);
-        telemetry.addData("VS Left Position tick", robot.liftMotorLeft.getCurrentPosition());
-        telemetry.addData("VS Right Position tick", robot.liftMotorRight.getCurrentPosition());
+        telemetry.addData("VS Left mm", (double) robot.liftMotorLeft.getCurrentPosition() / RobotActionConfig.TICKS_PER_MM_SLIDES);
+        telemetry.addData("VS Right mm", (double) robot.liftMotorRight.getCurrentPosition() / RobotActionConfig.TICKS_PER_MM_SLIDES);
+        telemetry.addData("VS Left tick", robot.liftMotorLeft.getCurrentPosition());
+        telemetry.addData("VS Right tick", robot.liftMotorRight.getCurrentPosition());
         telemetry.addData("Deposit Arm", robot.depositLeftArmServo.getPosition());
         telemetry.addData("Deposit Wrist", robot.depositWristServo.getPosition());
         telemetry.addData("Deposit Claw", robot.depositClawServo.getPosition());
@@ -136,6 +137,7 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Heading", robot.imu.getRobotYawPitchRollAngles().getYaw());
         telemetry.addLine("--------------Servo Test--------------");
         // --- Telemetry ---
+
         telemetry.addLine("---------------------");
         telemetry.addData("Deposit Arm Position", robot.depositLeftArmServo.getPosition());
         telemetry.addData("Deposit Wrist Position", robot.depositWristServo.getPosition());

@@ -131,7 +131,6 @@ public class FiniteStateMachineDeposit {
                 if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_STICK_BUTTON))  ||
                         (gamepad_2.getButton(GamepadKeys.Button.Y) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_STICK_BUTTON))) &&
                         isButtonDebounced()) {
-                    depositClawState = DEPOSITCLAWSTATE.OPEN;
                     liftState = LIFTSTATE.LIFT_WALL_PICK;
                     liftTimer.reset();
                 }
@@ -210,6 +209,7 @@ public class FiniteStateMachineDeposit {
                         robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
                         robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
                         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Pick);
+                        depositClawState = DEPOSITCLAWSTATE.OPEN;
                         if (depositClawState == DEPOSITCLAWSTATE.CLOSE) {
                             liftState = LIFTSTATE.LIFT_HIGHBAR;
                             liftTimer.reset();
