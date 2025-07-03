@@ -9,6 +9,17 @@ public class RobotActionConfig {
      */
 
     //drive chassis
+    /*\
+    new auto deposit pos:
+    Slide pos = 485
+    Deposit arm = 0.84
+    Deposit wrist = 0.05
+    new auto drive pos:
+    spike mark 1: 33.3, -45.7, 55.5 deg, wrist 45 deg to left
+    obs drop: 40.5, -47.3, 329 deg, wrist 45 deg to left
+    spike mark 2: 43.3, -45.7, 55.5 deg
+    grabbing: 20.7, -47.3, 319 deg
+    */
     public static double powerFactor                    = 0.9;
     public static double WHEEL_DIAMETER_CM              = 9.6;                                          // unit in cm.
     public static double COUNTS_PER_MOTOR_GOBILDA_312   = 537.7;
@@ -55,7 +66,7 @@ public class RobotActionConfig {
     public static int deposit_Slide_Down_Pos            = 2;
     public static int deposit_Slide_Highbar_Pos         = 535;
     /** Todo Deposit slide High bar Score position ?? and value??*/
-    public static int deposit_Slide_Highbar_Score_Pos   = 885;
+    public static int deposit_Slide_Highbar_Score_Pos   = 870; //885 originally - too high when testing
     public static int deposit_Slide_Pick_Rear_Pos       = 265;
     public static int deposit_Slide_Highbasket_Pos      = 1225;                                          //unit in mm, highbasket point
 
@@ -100,7 +111,7 @@ public class RobotActionConfig {
 
     /**TIME CONFIGURATION - GENERAL*/
     public static double DEBOUNCE_THRESHOLD             = 0.2;                                         // debounce_Threshold
-    public static double waitTime                       = 0.3;                                          // general wait time
+    public static double waitTime                       = 0.2;                                          // general wait time
     public static long lastPressedTime                  = 2;                                            // limitSwitch timer
     public static final long debounceDelay              = 2;                                          // unit in ms, limitSwitch debouncer in ms
     public static double timeOut                        = 2;

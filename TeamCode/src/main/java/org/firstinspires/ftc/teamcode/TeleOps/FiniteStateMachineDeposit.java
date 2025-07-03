@@ -45,6 +45,7 @@ public class FiniteStateMachineDeposit {
         LIFT_HIGHBASKET,
         LIFT_SAMPLE_EXTEND,
         LIFT_SAMPLE_DUMP,
+        LIFT_RETRACT_PAUSE,
         LIFT_RETRACT,
         LIFT_WALL_PICK,
         LIFT_HIGHBAR,
@@ -174,7 +175,6 @@ public class FiniteStateMachineDeposit {
                     liftState = LIFTSTATE.LIFT_SAMPLE_DUMP;
                 }
                 break;
-
             case LIFT_SAMPLE_DUMP:
                 // Wait for the dump time to pass
                 if ((gamepad_1.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_BUMPER)) ||
@@ -185,6 +185,17 @@ public class FiniteStateMachineDeposit {
                     liftState = LIFTSTATE.LIFT_RETRACT;
                     }
                 break;
+
+            /*case LIFT_RETRACT_PAUSE:
+                if((gamepad_1.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_BUMPER)) ||
+                        (gamepad_2.getButton(GamepadKeys.Button.X) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_BUMPER)) &&
+                                isButtonDebounced()) {
+                    robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
+                    robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
+                    robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
+                }
+
+             */
 
             case LIFT_RETRACT:
                 // Check if the lift has reached the low position
@@ -288,6 +299,14 @@ public class FiniteStateMachineDeposit {
             robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_hang_Pos);
             robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_hang_Pos);
             if (hangtime.seconds() > 0.5) {
+            }
+        }
+        if (gamepad_1.getButton(GamepadKeys.Button.BACK)
+                && isButtonDebounced()) {
+            slidesToHeightMM(-10000, 0.2);
+            if (hangtime.seconds() > 2) {
+                robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
         }
 
