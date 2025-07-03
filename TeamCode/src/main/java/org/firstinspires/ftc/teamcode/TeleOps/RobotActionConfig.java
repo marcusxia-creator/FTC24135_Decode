@@ -44,6 +44,7 @@ public class RobotActionConfig {
     public static double intake_Arm_Idle                = 0.24;
     public static double intake_Arm_Transfer            = 0.04;
     public static double intake_Arm_Side_Drop           = 0.2;
+    public static double intake_Arm_Wait                = 0.45;
 
     /**Intake Wrist range(0-1, lowest :0, fully back for transfer:1 )*/
     /** Todo Intake Wrist installation position ?? and value??*/
@@ -64,6 +65,7 @@ public class RobotActionConfig {
 
     /** Deposit slide position Config */
     public static int deposit_Slide_Down_Pos            = 2;
+    public static int deposit_Slide_Rear_Highbar_Pos    = 485;
     public static int deposit_Slide_Highbar_Pos         = 535;
     /** Todo Deposit slide High bar Score position ?? and value??*/
     public static int deposit_Slide_Highbar_Score_Pos   = 870; //885 originally - too high when testing
@@ -77,6 +79,7 @@ public class RobotActionConfig {
     public static double deposit_Wrist_Hook             = 0.53;                                         // 0.003 is 1 deg
     public static double deposit_Wrist_Flat_Pos         = 0.43;                                         // FOR Deposit Hook Flat and AUTO MODE
     public static double deposit_Wrist_Pick             = 0.22;
+    public static double deposit_Wrist_Rear_Hook        = 0.05;
 
     /**Deposit_Arm  range(0 - 0.9)*/
     /** Todo Deposit Arm installation poisition ?? and value??*/
@@ -86,6 +89,7 @@ public class RobotActionConfig {
     public static double deposit_Arm_Pick               = 1;
     public static double deposit_Arm_Hook               = 0;
     public static double deposit_Arm_hang_Pos           = 0.43;
+    public static double deposit_Arm_Rear_Hook          = 0.84;
 
     /**Deposit_Claw  range(0-0.4, lowest :0., fully open: 0.36 )*/
     /** Todo Deposit Claw installation position ?? and value??*/

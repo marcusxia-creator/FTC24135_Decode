@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
-@Autonomous(name="RightSideAuto_4Specimen_Grab", group="org.firstinspires.ftc.teamcode.Auto")
+@Autonomous(name="RightSideAuto_4Specimen_Wall_Grab", group="org.firstinspires.ftc.teamcode.Auto")
 @Config
 public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
 
