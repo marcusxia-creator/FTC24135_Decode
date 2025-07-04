@@ -90,7 +90,6 @@ public class RightSideAuto_4Specimen_Original extends LinearOpMode {
                 .waitSeconds(0.05)
                 //back out of bar position -1st time
                 .lineToLinearHeading(new Pose2d(bar_out_point_1_X, bar_out_point_1_Y, Math.toRadians(-90)))
-
                 //drop slides and put arm back to transfer position
                 .UNSTABLE_addTemporalMarkerOffset(-0.85, () -> {
                     Slides_Move(RobotActionConfig.deposit_Slide_Down_Pos, 0.8); //Move Slides Down

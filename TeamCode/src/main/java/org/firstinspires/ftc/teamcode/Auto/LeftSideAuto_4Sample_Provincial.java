@@ -105,7 +105,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
                 })                    //wrist transfer
                 .lineToLinearHeading(new Pose2d(first_sample_x_coordinate,first_sample_y_coordinate,Math.toRadians(90)))
-                .UNSTABLE_addTemporalMarkerOffset(-0.7,()->{Slides_MoveDown(RobotActionConfig.deposit_Slide_Down_Pos,0.7);}) // Lower slides dist in mm
+                .UNSTABLE_addTemporalMarkerOffset(-0.7,()->{Slides_MoveDown(RobotActionConfig.deposit_Slide_Down_Pos,0.6);}) // Lower slides dist in mm
                 .waitSeconds(0.1)
                 .addTemporalMarker(()->{
                     Slides_Stop();
@@ -164,7 +164,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                 })
                 .waitSeconds(0.5)
                 .lineToLinearHeading(new Pose2d(second_sample_x_coordinate,second_sample_y_coordinate,Math.toRadians(90)))
-                .UNSTABLE_addTemporalMarkerOffset(-0.7,()->{Slides_MoveDown(RobotActionConfig.deposit_Slide_Down_Pos,0.7);})    // Lower slides dist in mm
+                .UNSTABLE_addTemporalMarkerOffset(-0.7,()->{Slides_MoveDown(RobotActionConfig.deposit_Slide_Down_Pos,0.6);})    // Lower slides dist in mm
                 .waitSeconds(0.1)
                 .addTemporalMarker(()->{
                     Slides_Stop();
@@ -223,7 +223,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                 })
                 .waitSeconds(0.5)
                 .lineToLinearHeading(new Pose2d(third_sample_x_coordinate,third_sample_y_coordinate,Math.toRadians(third_sample_heading)))
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{Slides_MoveDown(RobotActionConfig.deposit_Slide_Down_Pos,0.7);})    // Lower slides dist in mm
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{Slides_MoveDown(RobotActionConfig.deposit_Slide_Down_Pos,0.6);})    // Lower slides dist in mm
                 .waitSeconds(0.9)
                 .addTemporalMarker(()->{
                     Slides_Stop();

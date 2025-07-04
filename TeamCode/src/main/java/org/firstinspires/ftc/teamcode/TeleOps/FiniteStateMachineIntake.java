@@ -236,10 +236,11 @@ public class FiniteStateMachineIntake {
                 }
                  */
 
-                if (depositArmState == FiniteStateMachineDeposit.LIFTSTATE.LIFT_START && intakeTimer.seconds() > RobotActionConfig.transferTime) {
+                if (depositArmState == FiniteStateMachineDeposit.LIFTSTATE.LIFT_START &&
+                        intakeTimer.seconds() > RobotActionConfig.transferTime) {
                     depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.CLOSE);
                 }
-                if (intakeTimer.seconds() > RobotActionConfig.transferTime + 0.3) {
+                if (intakeTimer.seconds() > RobotActionConfig.transferTime + 0.2) {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                     intakeClawState = INTAKECLAWSTATE.OPEN;
                     intakeState = INTAKESTATE.INTAKE_START;
