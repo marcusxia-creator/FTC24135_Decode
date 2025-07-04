@@ -35,10 +35,10 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
     public static double basket_x_coordinate = -56;    //55.5 for Competition Basket, 58.5 for Home Basket
     public static double basket_y_coordinate = -56;
     public static double first_sample_x_coordinate = -51;
-    public static double first_sample_y_coordinate = -52;
+    public static double first_sample_y_coordinate = -53;
     public static double second_sample_x_coordinate = -61;
     public static double second_sample_y_coordinate = -52.5;
-    public static double third_sample_x_coordinate = -47;
+    public static double third_sample_x_coordinate = -48;
     public static double third_sample_y_coordinate = -41.5;
     public static double third_sample_heading = 150;
 

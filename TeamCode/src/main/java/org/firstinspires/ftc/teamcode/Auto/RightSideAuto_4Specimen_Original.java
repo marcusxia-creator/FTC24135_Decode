@@ -110,6 +110,9 @@ public class RightSideAuto_4Specimen_Original extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
+                .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
+                    robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
+                })
                 .UNSTABLE_addTemporalMarkerOffset(-0.25,() -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
@@ -141,6 +144,7 @@ public class RightSideAuto_4Specimen_Original extends LinearOpMode {
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0,() -> {
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Grab);
+                    robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
                 })
                 .waitSeconds(0.20)
                 .addTemporalMarker(()->{
@@ -167,6 +171,7 @@ public class RightSideAuto_4Specimen_Original extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0,() -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
+                    robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                     robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Wait);
@@ -244,6 +249,7 @@ public class RightSideAuto_4Specimen_Original extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0.1,() -> {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
+                    robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Wait);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);

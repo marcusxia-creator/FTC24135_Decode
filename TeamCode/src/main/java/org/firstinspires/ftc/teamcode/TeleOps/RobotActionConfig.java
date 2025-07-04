@@ -30,10 +30,10 @@ public class RobotActionConfig {
     public static int TICKS_PER_MM_SLIDES               = 1; //1.697 tick per MM
 
     //Intake Configure
-    public static double intake_Slide_Extension         = 0.25;                                         // range(0.04 - 0.29)
+    public static double intake_Slide_Extension         = 0.2;                                         // range(0.04 - 0.29)
     public static double intake_Slide_Retract           = 0;                                         // 0.01 = 3deg rotation of gobilda servo
     public static double intake_slide_Retract_Set       = 0.06;
-    public static double intake_Slide_Extension_Wait    = 2;                                         // FOR AUTO MODE ONLY
+    public static double intake_Slide_Extension_Wait    = 0.17;                                         // FOR AUTO MODE ONLY
 
     public static double intake_Rotation_Mid            = 0.53;                                         // range(0-1, 0.46 at the middle for installation
 
@@ -131,5 +131,5 @@ public class RobotActionConfig {
     public static double accel_Slowness                 = 0.25;                                         // drive control speed accel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
     public static double decel_Slowness                 = 0.5;                                          // drive control speed deaccel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
 
-    public static int slideTickThreshold                = 30;                                           // vertical slide threshold value to determine if the slide is at position
+    public static int slideTickThreshold                = 20;                                           // vertical slide threshold value to determine if the slide is at position
 }
