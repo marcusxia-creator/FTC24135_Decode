@@ -33,7 +33,7 @@ public class RobotActionConfig {
     public static double intake_Slide_Extension         = 0.2;                                         // range(0.04 - 0.29)
     public static double intake_Slide_Retract           = 0;                                         // 0.01 = 3deg rotation of gobilda servo
     public static double intake_slide_Retract_Set       = 0.06;
-    public static double intake_Slide_Extension_Wait    = 0.17;                                         // FOR AUTO MODE ONLY
+    public static double intake_Slide_Extension_Wait    = 0.1;                                         // FOR AUTO MODE ONLY
 
     public static double intake_Rotation_Mid            = 0.53;                                         // range(0-1, 0.46 at the middle for installation
 
@@ -65,7 +65,7 @@ public class RobotActionConfig {
 
     /** Deposit slide position Config */
     public static int deposit_Slide_Down_Pos            = 10;
-    public static int deposit_Slide_Rear_Highbar_Pos    = 485;
+    public static int deposit_Slide_Rear_Highbar_Pos    = 475;  //485
     public static int deposit_Slide_Highbar_Pos         = 535;
     /** Todo Deposit slide High bar Score position ?? and value??*/
     public static int deposit_Slide_Highbar_Score_Pos   = 870; //885 originally - too high when testing

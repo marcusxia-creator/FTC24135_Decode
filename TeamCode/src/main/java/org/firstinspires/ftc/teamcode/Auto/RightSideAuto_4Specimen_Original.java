@@ -18,20 +18,20 @@ public class RightSideAuto_4Specimen_Original extends LinearOpMode {
 
     public static double highbar_x_coordinate = -5;
     public static double highbar_y_coordinate = -32;
-    public static double highbar_x_coordinate2 = -2.5;
-    public static double highbar_x_coordinate3 = -3.75;
+    public static double highbar_x_coordinate2 = -6;
+    public static double highbar_x_coordinate3 = -6;
     public static double specimen_pickup_x_coordinate = 29.5;
     public static double specimen_pickup_y_coordinate = -46.5;
     public static double bar_out_point_1_X = 24;
     public static double bar_out_point_1_Y = -55;
 
-    public static double first_sample_point_1_X = 28;
-    public static double first_sample_point_1_Y = -43.7; //heading = 45
+    public static double first_sample_point_1_X = 30;
+    public static double first_sample_point_1_Y = -44.5; //heading = 45
 
     public static double first_sample_point_2_X = 33;
     public static double first_sample_point_2_Y = -47; //heading = -45
 
-    public static double second_sample_point_1_X = 39;
+    public static double second_sample_point_1_X = 41;
     public static double second_sample_point_1_Y = -45; //heading = 45
 
     public static double clawOpenTimer = 0.1;
@@ -55,8 +55,8 @@ public class RightSideAuto_4Specimen_Original extends LinearOpMode {
         robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
         sleep(200);
         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Hook);
-        robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
-        robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
+        robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook+0.1);
+        robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook+0.1);
         sleep(1000);
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
 
@@ -212,7 +212,7 @@ public class RightSideAuto_4Specimen_Original extends LinearOpMode {
                 .waitSeconds(1.0)
                 //extend slides to scoring position
                 .addTemporalMarker(() -> {
-                    Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Pos, 0.9);
+                    Slides_Move(RobotActionConfig.deposit_Slide_Rear_Highbar_Pos, 0.9);
                     robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Rear_Hook);
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Rear_Hook);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Rear_Hook);
@@ -289,7 +289,7 @@ public class RightSideAuto_4Specimen_Original extends LinearOpMode {
                 .waitSeconds(1.0)
                 //extend slides to scoring position
                 .addTemporalMarker(() -> {
-                    Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Pos, 0.9);
+                    Slides_Move(RobotActionConfig.deposit_Slide_Rear_Highbar_Pos, 0.9);
                     robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Rear_Hook);
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Rear_Hook);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Rear_Hook);
@@ -360,7 +360,7 @@ public class RightSideAuto_4Specimen_Original extends LinearOpMode {
                 .waitSeconds(1.0)
                 //extend slides to scoring position
                 .addTemporalMarker(() -> {
-                    Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Pos, 0.9);
+                    Slides_Move(RobotActionConfig.deposit_Slide_Rear_Highbar_Pos, 0.9);
                     robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Rear_Hook);
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Rear_Hook);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Rear_Hook);
