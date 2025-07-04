@@ -64,7 +64,7 @@ public class RobotActionConfig {
     public static double intake_Turret_Side_Drop        = 0;
 
     /** Deposit slide position Config */
-    public static int deposit_Slide_Down_Pos            = 10;
+    public static int deposit_Slide_Down_Pos            = 3;
     public static int deposit_Slide_Rear_Highbar_Pos    = 475;  //485
     public static int deposit_Slide_Highbar_Pos         = 535;
     /** Todo Deposit slide High bar Score position ?? and value??*/
