@@ -252,6 +252,7 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
         PoseStorage.currentPose = drive.getPoseEstimate();
         while (opModeIsActive()) {
             telemetry.addData("Slides Position", robot.liftMotorLeft.getCurrentPosition());
+            telemetry.addData("Battery Voltage", robot.voltageSensor);
         }
     }
 

@@ -27,7 +27,7 @@ public class RobotActionConfig {
     public static double GEAR_RATIO                     = 1.5;
     public static double SPOOL_DIAMETER                 = 48;                                           // unit in mm, 48 for large, 38.2 for small
     public static double SPOOL_CIRCUMFERENCE            = SPOOL_DIAMETER*Math.PI;                       //151MM
-    public static int TICKS_PER_MM_SLIDES               = (int)((COUNTS_PER_MOTOR_GOBILDA_435/GEAR_RATIO)/SPOOL_CIRCUMFERENCE); //1.697 tick per MM
+    public static int TICKS_PER_MM_SLIDES               = 1; //1.697 tick per MM
 
     //Intake Configure
     public static double intake_Slide_Extension         = 0.25;                                         // range(0.04 - 0.29)
@@ -64,13 +64,13 @@ public class RobotActionConfig {
     public static double intake_Turret_Side_Drop        = 0;
 
     /** Deposit slide position Config */
-    public static int deposit_Slide_Down_Pos            = 2;
+    public static int deposit_Slide_Down_Pos            = 10;
     public static int deposit_Slide_Rear_Highbar_Pos    = 485;
     public static int deposit_Slide_Highbar_Pos         = 535;
     /** Todo Deposit slide High bar Score position ?? and value??*/
     public static int deposit_Slide_Highbar_Score_Pos   = 870; //885 originally - too high when testing
     public static int deposit_Slide_Pick_Rear_Pos       = 265;
-    public static int deposit_Slide_Highbasket_Pos      = 1225;                                          //unit in mm, highbasket point
+    public static int deposit_Slide_Highbasket_Pos      = 1180;                                          //unit in mm, highbasket point
 
     /**Deposit Wrist  range(0-0.7, lowest :0)*/
     /** Todo Deposit Wrist installation poisition ?? and value??*/
@@ -131,5 +131,5 @@ public class RobotActionConfig {
     public static double accel_Slowness                 = 0.25;                                         // drive control speed accel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
     public static double decel_Slowness                 = 0.5;                                          // drive control speed deaccel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
 
-    public static int slideTickThreshold                = 20;                                           // vertical slide threshold value to determine if the slide is at position
+    public static int slideTickThreshold                = 30;                                           // vertical slide threshold value to determine if the slide is at position
 }

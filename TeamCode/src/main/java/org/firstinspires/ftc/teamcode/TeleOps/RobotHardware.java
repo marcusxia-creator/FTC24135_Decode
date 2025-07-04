@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.Auto.drive.GoBildaPinpointDriver;
 
@@ -89,6 +90,7 @@ public class RobotHardware {
 
     public IMU imu; //IMU
     public HardwareMap hardwareMap;
+    public VoltageSensor voltageSensor;
 
     public GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
 
@@ -131,6 +133,8 @@ public class RobotHardware {
         //Limit Switch
         //limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
        // limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+
+        VoltageSensor voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
         //set motor mode and motor direction
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed
