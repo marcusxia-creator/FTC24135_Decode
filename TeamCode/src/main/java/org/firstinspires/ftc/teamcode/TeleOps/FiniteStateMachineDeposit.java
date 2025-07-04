@@ -105,9 +105,6 @@ public class FiniteStateMachineDeposit {
     // Initialize Deposit Arm
     public void Init() {
         liftTimer.reset();
-        robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
-        robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
-        robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
         depositClawState = DEPOSITCLAWSTATE.OPEN;
     }
@@ -304,6 +301,9 @@ public class FiniteStateMachineDeposit {
         if (gamepad_1.getButton(GamepadKeys.Button.BACK)
                 && isButtonDebounced()) {
             slidesToHeightMM(-10000, 0.2);
+            robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
+            robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+            robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
             if (hangtime.seconds() > 2) {
                 robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

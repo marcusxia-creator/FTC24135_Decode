@@ -142,22 +142,18 @@ public class RightSideAuto_4Specimen_Original extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0,() -> {
+                .UNSTABLE_addTemporalMarkerOffset(0.3,() -> {
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Grab);
                     robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
                 })
-                .waitSeconds(0.20)
+                .waitSeconds(0.40)
                 .addTemporalMarker(()->{
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);
                 })
-                .waitSeconds(0.20)
-                /** waiting for testing
-                 .lineToLinearHeading(new Pose2d(first_sample_point_2_X, first_sample_point_2_Y, Math.toRadians(-45)))
-                 */
+                .waitSeconds(0.50)
                 .UNSTABLE_addTemporalMarkerOffset(0,() -> {
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
                 })
-
                 .lineToLinearHeading(new Pose2d(specimen_pickup_x_coordinate, specimen_pickup_y_coordinate, Math.toRadians(-45)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));

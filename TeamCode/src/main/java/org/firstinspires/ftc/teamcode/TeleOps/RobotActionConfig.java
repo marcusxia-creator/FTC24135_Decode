@@ -69,7 +69,7 @@ public class RobotActionConfig {
     public static int deposit_Slide_Highbar_Pos         = 535;
     /** Todo Deposit slide High bar Score position ?? and value??*/
     public static int deposit_Slide_Highbar_Score_Pos   = 870; //885 originally - too high when testing
-    public static int deposit_Slide_Pick_Rear_Pos       = 265;
+    public static int deposit_Slide_Pick_Rear_Pos       = 235;
     public static int deposit_Slide_Highbasket_Pos      = 1180;                                          //unit in mm, highbasket point
 
     /**Deposit Wrist  range(0-0.7, lowest :0)*/
