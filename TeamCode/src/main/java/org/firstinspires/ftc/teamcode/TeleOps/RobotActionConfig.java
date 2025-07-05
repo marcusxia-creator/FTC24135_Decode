@@ -51,7 +51,7 @@ public class RobotActionConfig {
     public static double intake_Wrist_highbasketpause   = 0.51;
     public static double intake_Wrist_Idle              = 0.05;
     public static double intake_Wrist_Grab              = 0;
-    public static double intake_Wrist_Transfer          = 0.5; //0.54
+    public static double intake_Wrist_Transfer          = 0.52; //0.54
     public static double intake_Wrist_Side_Drop         = 0.24;
 
     /**Intake Claw range(0-0.27 lowest :0, fully close 0.27 )*/
@@ -75,7 +75,7 @@ public class RobotActionConfig {
     /**Deposit Wrist  range(0-0.7, lowest :0)*/
     /** Todo Deposit Wrist installation poisition ?? and value??*/
     public static double deposit_Wrist_Dump             = 0.6;                                         //range(0.22-0.64), installation position at 90 deg0
-    public static double deposit_Wrist_Transfer         = 0.08;                                         //original 0.05  ; 7/5 change to 0.09
+    public static double deposit_Wrist_Transfer         = 0.09;                                         //original 0.05  ; 7/5 change to 0.09
     public static double deposit_Wrist_Hook             = 0.53;                                         // 0.003 is 1 deg
     public static double deposit_Wrist_Flat_Pos         = 0.43;                                         // FOR Deposit Hook Flat and AUTO MODE
     public static double deposit_Wrist_Pick             = 0.22;
@@ -103,7 +103,7 @@ public class RobotActionConfig {
     public static double postDumpTime                   = 0.5;
     public static double dropTime                       = 2;                                          // wait for deposit arm to drop position and open claw.
     public static double pickTime                       = 2;                                          // NOT IN USE NOW. when detect specimen and wait to close deposit claw.
-    public static double transferTime                   = 0.7;                                         // sample transfer time for close deposit claw including time of waiting the slide back, arm and wrist back to transfer
+    public static double transferTime                   = 0.8;                                         // sample transfer time for close deposit claw including time of waiting the slide back, arm and wrist back to transfer; 7/5 changed to 0.8 from 0.7
 
     public static double VS_Retraction_Timer            = 2;
 

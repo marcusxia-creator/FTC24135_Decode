@@ -104,13 +104,14 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Pick-0.03);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
                 })                    //wrist transfer
+                /** move to 1st sample*/
                 .lineToLinearHeading(new Pose2d(first_sample_x_coordinate,first_sample_y_coordinate,Math.toRadians(90)))
                 .UNSTABLE_addTemporalMarkerOffset(-0.7,()->{Slides_MoveDown(RobotActionConfig.deposit_Slide_Down_Pos,0.6);}) // Lower slides dist in mm
                 .waitSeconds(0.1)
                 .addTemporalMarker(()->{
                     Slides_Stop();
                 })
-                /** move to 1st sample*/
+
                 /** pick 1st sample*/
                 .addTemporalMarker(()->{
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Grab);
@@ -148,7 +149,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Dump);
                 })
-                .waitSeconds(1.4)
+                .waitSeconds(1.6)
                 .addTemporalMarker(()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);})                          // open claw
                 .waitSeconds(0.5)                                                                                                           // this is wait time for dropping sample - wait for open claw to drop
                 .addTemporalMarker(()->{
@@ -206,7 +207,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Dump);
                 })
-                .waitSeconds(1.4)
+                .waitSeconds(1.6)
                 .addTemporalMarker(()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);})                          // open claw
                 .waitSeconds(0.3)
                 .addTemporalMarker(()->{
