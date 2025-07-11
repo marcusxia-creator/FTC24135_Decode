@@ -41,7 +41,7 @@ public class RobotActionConfig {
     /** Todo Intake Arm installation poisition ?? and value??*/
     public static double intake_Arm_Pick                = 0.53;
     public static double intake_Arm_Grab                = 0.58;
-    public static double intake_Arm_Idle                = 0.24;
+    public static double intake_Arm_Idle                = 0.3;
     public static double intake_Arm_Transfer            = 0.04;
     public static double intake_Arm_Side_Drop           = 0.2;
     public static double intake_Arm_Wait                = 0.45;

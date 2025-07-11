@@ -81,6 +81,7 @@ public class FiniteStateMachineDeposit {
     private ElapsedTime liftUpTimeout = new ElapsedTime();
     private ElapsedTime VSRetractTimer = new ElapsedTime();
 
+
     // COLOR LIST
     List<ColorRange> colorRanges = new ArrayList<>();
     //public String detectedColor = "None";
