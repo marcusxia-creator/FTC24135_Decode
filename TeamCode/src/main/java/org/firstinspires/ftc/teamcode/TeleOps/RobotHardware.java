@@ -14,47 +14,37 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Auto.drive.GoBildaPinpointDriver;
 
 /*
-Hardware config:
-Motor:
-Control hub motor:
-                port 0: FL_Motor
-                port 1: BL_motor
-                port 2: FR_Motor
-                port 3: BR_Motor
-Expansion hub motor:
-                port 0: VS_Left_Motor
-                port 3: VS_Right_Motor
-                port 1: par (encoder for odometry pod in X direction - parallel direction)
-                port 2: perp (encoder for odometry pod in Y direction - perpendicular direction)
+Hardware configuration:
+Motors:
+Control hub motors:
+    0 FR_Motor
+    1 BR_Motor
+    2 FL_Motor
+    3 BL_Motor
+Expansion hub motors:
+    0 RS_Motor
+    1 -----
+    2 -----
+    3 LS_Motor
+Servos:
+Control hub servos:
+    0 Intake_Slide_Left_Servo
+    1 Intake_Slide_Right_Servo
+    2 -----
+    3 Intake_Rotation Servo
+    4 Intake_Claw_Servo
+    5 Intake_Wrist_Servo
+Expansion hub servos:
+    0 Deposit_Left_Arm_Servo
+    1 Deposit-Right_Arm_Servo
+    2 Deposit_Wrist_Horrible
+    3 Deposit_Claw_Servo
+    4 Intake_Arm_Servo
+    5 Intake_Turret_Servo
+Control hub I2C Bus 0: imu
+Control hub I2C Bus 1: Pinpoint
+*/
 
-Servo:
-EXP hub:
-                port 3: Intake_Wrist_Servo
-                port 5: Intake_Arm_Left_Servo
-                port 0: Deposit_Wrist_Servo
-                port 1: Deposit_Claw_Servo
-                port 2: Deposit_Arm_Servo
-                port 4: Empty
-
-Control hub:
-                port 0: Empty
-                port 1: Intake_Slide_Right_Servo
-                port 2: Intake_Slide_Left_Servo
-                port 3: Intake_Claw_Servo
-                port 4: Intake_Rotation_Servo
-                port 5: Intake_Arm_Right_Servo
-
-
-I2C port
-Control hub
-                port 0: control hub imu
-                port 1: Pinpoint (odometry computer)
-                port 2: Color_Sensor
-Digital Port
-Control hub
-                port 7: LimitSwitch
-
- */
 
 public class RobotHardware {
     //Drive chassis motor

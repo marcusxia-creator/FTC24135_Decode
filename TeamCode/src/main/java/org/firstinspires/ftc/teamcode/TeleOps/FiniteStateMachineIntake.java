@@ -80,7 +80,6 @@ public class FiniteStateMachineIntake {
         this.intakeState = INTAKESTATE.INTAKE_START;
     }
 
-
     //Initialization
     public void Init() {
         intakeTimer.reset();
