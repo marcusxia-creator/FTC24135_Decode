@@ -69,7 +69,7 @@ import java.util.List;
  *  INTAKE ARM
  *  * --- LOCAL STATE - INTAKE PICK
  *  * DPAD_RIGHT                    ----> intake extend and set pick position action series - local state - INTAKE_START
- *  * DPAD_LEFT                     ----> intake retract - local state - INTAKE_PICK
+ *  * DPAD_LEFT                     ----> intake retract - local state - INTAKE_AIM
  *  * LEFT_BUMPER / RIGHT_BUMPER    ---->  for INTAKE CLAW ROTATION
  *  * DPAD_UP / DPAD_DOWN           ---->  for INTAKE ARM UP AND DOWN
  *  -----------------------------------------------------------------------------------------------

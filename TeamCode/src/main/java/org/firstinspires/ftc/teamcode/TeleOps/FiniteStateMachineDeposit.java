@@ -181,21 +181,25 @@ public class FiniteStateMachineDeposit {
                         (gamepad_2.getButton(GamepadKeys.Button.X) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_BUMPER)) &&
                                 isButtonDebounced()) {
                     depositClawState = DEPOSITCLAWSTATE.OPEN;
-                    liftTimer.reset();
-                    liftState = LIFTSTATE.LIFT_RETRACT;
+                    if (liftTimer.seconds()>1) {
+                        liftState = LIFTSTATE.LIFT_RETRACT_PAUSE;
                     }
+                    liftTimer.reset();
+                }
                 break;
 
-            /*case LIFT_RETRACT_PAUSE:
-                if((gamepad_1.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_BUMPER)) ||
+            case LIFT_RETRACT_PAUSE:
+                /*if((gamepad_1.getButton(GamepadKeys.Button.X) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_BUMPER)) ||
                         (gamepad_2.getButton(GamepadKeys.Button.X) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_BUMPER)) &&
                                 isButtonDebounced()) {
+
+                 */
                     robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
-                }
-
-             */
+                    driveBackward(10);
+                    liftTimer.reset();
+                    liftState = LIFTSTATE.LIFT_RETRACT;
 
             case LIFT_RETRACT:
                 // Check if the lift has reached the low position

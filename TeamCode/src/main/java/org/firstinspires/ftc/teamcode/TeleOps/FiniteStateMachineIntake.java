@@ -12,8 +12,6 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.R;
-
 /** Button Config for intake
  *Start state
  * *DPad Right          : retract/extend
@@ -38,7 +36,7 @@ public class FiniteStateMachineIntake {
     public enum INTAKESTATE {
         INTAKE_START,
         INTAKE_EXTEND,
-        INTAKE_PICK,
+        INTAKE_AIM,
 
         /** For high basket */
         INTAKE_SAMPLE_RETRACT,
@@ -131,10 +129,10 @@ public class FiniteStateMachineIntake {
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
                     intakeTimer.reset();
-                    intakeState = INTAKESTATE.INTAKE_PICK;
+                    intakeState = INTAKESTATE.INTAKE_AIM;
                 }
                 break;
-            case INTAKE_PICK:
+            case INTAKE_AIM:
                 if (intakeTimer.seconds() > RobotActionConfig.intakeSlideExtendTime) {
                     rotationPosition = robot.intakeRotationServo.getPosition();
                     intakeArmPosition = robot.intakeArmServo.getPosition();
@@ -212,9 +210,9 @@ public class FiniteStateMachineIntake {
                 depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.OPEN);
                 robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
                 robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);// wait 0.5 second for slide retract 2/3
+                robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);        // set intake arm  to transfer;
+                robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
                 if(intakeTransTimer.seconds() > 0.5) {
-                    robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);        // set intake arm  to transfer;
-                    robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);     // set slide retract
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 }
