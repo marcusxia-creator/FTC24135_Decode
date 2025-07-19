@@ -181,9 +181,6 @@ public class FiniteStateMachineDeposit {
                         (gamepad_2.getButton(GamepadKeys.Button.X) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_BUMPER)) &&
                                 isButtonDebounced()) {
                     depositClawState = DEPOSITCLAWSTATE.OPEN;
-                    if (liftTimer.seconds()>1) {
-                        liftState = LIFTSTATE.LIFT_RETRACT_PAUSE;
-                    }
                     liftTimer.reset();
                 }
                 break;
@@ -199,7 +196,12 @@ public class FiniteStateMachineDeposit {
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                     driveBackward(10);
                     liftTimer.reset();
+                if (liftTimer.seconds()>1) {
                     liftState = LIFTSTATE.LIFT_RETRACT;
+                }
+                liftTimer.reset();
+                break;
+
 
             case LIFT_RETRACT:
                 // Check if the lift has reached the low position
