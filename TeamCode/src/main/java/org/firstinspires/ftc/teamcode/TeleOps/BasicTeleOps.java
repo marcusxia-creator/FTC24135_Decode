@@ -57,7 +57,7 @@ public class BasicTeleOps extends OpMode {
         intakeArmDrive.Init();
 
         servoTest = new ServoTest(robot, gamepadCo1, gamepadCo2);
-        servoTest.init();
+        //servoTest.init();
 
         allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
