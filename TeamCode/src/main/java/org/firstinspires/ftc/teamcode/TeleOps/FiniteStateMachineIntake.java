@@ -209,7 +209,7 @@ public class FiniteStateMachineIntake {
                 depositArmState = depositArmDrive.liftState;
                 depositArmDrive.SetDepositstate(FiniteStateMachineDeposit.LIFTSTATE.LIFT_START);
                 depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.OPEN);
-                if(intakeTransTimer.seconds() > RobotActionConfig.waitTime/2) {
+                if(intakeTransTimer.seconds() > RobotActionConfig.waitTime) {
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);        // set intake arm to transfer;
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);      // set intake Wrist to transfer;
                     robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
@@ -303,7 +303,9 @@ public class FiniteStateMachineIntake {
             debounceTimer.reset();
             intakeClawState = INTAKECLAWSTATE.OPEN;
             IntakeClawSwitch();
-            intakeState = INTAKESTATE.INTAKE_EXTEND;
+            robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Grab);
+            robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
+            intakeState = INTAKESTATE.INTAKE_TRANS_READY;
         }
 
         /** Claw control - Button A */
