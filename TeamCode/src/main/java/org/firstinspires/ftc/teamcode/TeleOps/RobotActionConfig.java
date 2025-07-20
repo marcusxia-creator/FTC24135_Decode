@@ -35,22 +35,22 @@ public class RobotActionConfig {
     public static double intake_slide_Retract_Set       = 0.06;
     public static double intake_Slide_Extension_Wait    = 2;                                         // FOR AUTO MODE ONLY
 
-    public static double intake_Rotation_Mid            = 0.53;                                         // range(0-1, 0.46 at the middle for installation
+    public static double intake_Rotation_Mid            = 0.5;                                         // range(0-1, 0.46 at the middle for installation
 
     /**Arm range(0-0.43, lowest :0.43, fully back for transfer:0.14 )*/
     /** Todo Intake Arm installation poisition ?? and value??*/
-    public static double intake_Arm_Pick                = 0.48;
-    public static double intake_Arm_Grab                = 0.58;
+    public static double intake_Arm_Pick                = 0.52;
+    public static double intake_Arm_Grab                = 0.54;
     public static double intake_Arm_Idle                = 0.24;
-    public static double intake_Arm_Transfer            = 0.04;
+    public static double intake_Arm_Transfer            = 0.13;
     public static double intake_Arm_Side_Drop           = 0.2;
 
     /**Intake Wrist range(0-1, lowest :0, fully back for transfer:1 )*/
     /** Todo Intake Wrist installation position ?? and value??*/
     public static double intake_Wrist_highbasketpause   = 0.51;
     public static double intake_Wrist_Idle              = 0.05;
-    public static double intake_Wrist_Grab              = 0.02;
-    public static double intake_Wrist_Transfer          = 0.5; //0.54
+    public static double intake_Wrist_Grab              = 0.7;
+    public static double intake_Wrist_Transfer          = 0.44; //0.54
     public static double intake_Wrist_Side_Drop         = 0.24;
 
     /**Intake Claw range(0-0.27 lowest :0, fully close 0.27 )*/
@@ -59,7 +59,7 @@ public class RobotActionConfig {
     public static double intake_Claw_Close              = 0;
 
     /**Intake Turret range ()*/
-    public static double intake_Turret_Mid              = 0.31;
+    public static double intake_Turret_Mid              = 0.46;
     public static double intake_Turret_Side_Drop        = 0;
 
     /** Deposit slide position Config */
@@ -73,16 +73,16 @@ public class RobotActionConfig {
     /**Deposit Wrist  range(0-0.7, lowest :0)*/
     /** Todo Deposit Wrist installation poisition ?? and value??*/
     public static double deposit_Wrist_Dump             = 0.6;                                         //range(0.22-0.64), installation position at 90 deg0
-    public static double deposit_Wrist_Transfer         = 0.05;                                         // 176 deg ~ 0.003 is 1 deg
+    public static double deposit_Wrist_Transfer         = 0.08;                                         // 176 deg ~ 0.003 is 1 deg
     public static double deposit_Wrist_Hook             = 0.53;                                         // 0.003 is 1 deg
     public static double deposit_Wrist_Flat_Pos         = 0.43;                                         // FOR Deposit Hook Flat and AUTO MODE
     public static double deposit_Wrist_Pick             = 0.22;
 
     /**Deposit_Arm  range(0 - 0.9)*/
     /** Todo Deposit Arm installation poisition ?? and value??*/
-    public static double deposit_Arm_Dump               = 0.41;
+    public static double deposit_Arm_Dump               = 0.48;
     public static double deposit_Arm_Dump_Prep          = 0.34;
-    public static double deposit_Arm_Transfer           = 0.23;
+    public static double deposit_Arm_Transfer           = 0.22;
     public static double deposit_Arm_Pick               = 1;
     public static double deposit_Arm_Hook               = 0;
     public static double deposit_Arm_hang_Pos           = 0.43;
