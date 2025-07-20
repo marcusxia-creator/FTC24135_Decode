@@ -50,7 +50,7 @@ public class RobotActionConfig {
     public static double intake_Wrist_highbasketpause   = 0.51;
     public static double intake_Wrist_Idle              = 0.05;
     public static double intake_Wrist_Grab              = 0.7;
-    public static double intake_Wrist_Transfer          = 0.44; //0.54
+    public static double intake_Wrist_Transfer          = 0.47; //0.54
     public static double intake_Wrist_Side_Drop         = 0.24;
 
     /**Intake Claw range(0-0.27 lowest :0, fully close 0.27 )*/
