@@ -1,29 +1,14 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.BACK;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_STICK_BUTTON;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_STICK_BUTTON;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.START;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
-import org.firstinspires.ftc.robotcontroller.external.samples.ConceptGamepadTouchpad;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Auto.PointToDrive;
-import org.firstinspires.ftc.teamcode.Auto.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.LynxModule.BulkData;
@@ -34,7 +19,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import java.security.AuthProvider;
 import java.util.List;
 
 /** config
@@ -119,7 +103,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
     public static boolean initialRun;
 
-    private AutoDriveHandler autoDriveHandler;
+    private AutoDriveHandlerOldSpecimen autoDriveHandler;
 
     //For time
     double oldTime = 0;
@@ -174,7 +158,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         initialRun = true; //For specimen semi-auto control
 
         //// Initialized an AutoHandler
-        autoDriveHandler = new AutoDriveHandler(drive,robot, 1,depositArmDrive);
+        autoDriveHandler = new AutoDriveHandlerOldSpecimen(drive,robot, 1,depositArmDrive);
 
         //Telemetry
         telemetry.addLine("-------------------");

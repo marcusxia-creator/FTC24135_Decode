@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence;
 
 @Disabled
-public class AutoDriveHandler {
+public class AutoDriveHandlerOldSpecimen {
 
     private SampleMecanumDriveCancelable drive;
     private Pose2d poseEstimate;
@@ -24,7 +24,7 @@ public class AutoDriveHandler {
 
     private VerticalSlide vSlides;
 
-    public AutoDriveHandler(SampleMecanumDriveCancelable drive, RobotHardware robot, int initialN, FiniteStateMachineDeposit depositArmDrive) {
+    public AutoDriveHandlerOldSpecimen(SampleMecanumDriveCancelable drive, RobotHardware robot, int initialN, FiniteStateMachineDeposit depositArmDrive) {
         this.drive = drive;
         this.robot = robot;
         this.depositArmDrive = depositArmDrive;
