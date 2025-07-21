@@ -112,8 +112,10 @@ public class FiniteStateMachineIntake {
                         isButtonDebounced()) {
                     // rotate intake arm to idle
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
-                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
                     robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
+                    if (robot.intakeWristServo.getPosition() != RobotActionConfig.intake_Wrist_Grab){
+                        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Idle);
+                    }
                     // reset time for next step
                     intakeTimer.reset();
                     intakeState = INTAKESTATE.INTAKE_EXTEND;
