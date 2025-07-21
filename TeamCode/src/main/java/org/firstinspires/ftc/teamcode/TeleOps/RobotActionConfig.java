@@ -25,7 +25,7 @@ public class RobotActionConfig {
     public static double COUNTS_PER_MOTOR_GOBILDA_312   = 537.7;
     public static double COUNTS_PER_MOTOR_GOBILDA_435   = 384.5;
     public static double GEAR_RATIO                     = 1.5;
-    public static double SPOOL_DIAMETER                 = 35.5;                                         // unit in mm, 48 for large, 35.5 for small
+    public static double SPOOL_DIAMETER                 = 36;                                         // unit in mm, 48 for large, 35.5 for small
     public static double SPOOL_CIRCUMFERENCE            = SPOOL_DIAMETER*Math.PI;                       //151MM for 35.5mm diameter
     public static double TICKS_PER_MM_SLIDES            = COUNTS_PER_MOTOR_GOBILDA_435/(0.66*SPOOL_CIRCUMFERENCE) ;     //3.45 tick per MM
 
@@ -73,11 +73,11 @@ public class RobotActionConfig {
     /** Deposit slide position Config */
     public static int deposit_Slide_Down_Pos            = 2;                                        //2mm from bottom u channel
     public static int deposit_Slide_Rear_Highbar_Pos    = 303;                                      //303 mm, 303 *3.45= 1046
-    public static int deposit_Slide_Highbar_Pos         = 348;                                      //348mm, 348*3.45 = 1203 ticks
+    public static int deposit_Slide_Highbar_Pos         = 323;                                      //323mm, 323*3.45 = 1114 ticks
     /** Todo Deposit slide High bar Score position ?? and value??*/
-    public static int deposit_Slide_Highbar_Score_Pos   = 567;                                      //567mm, 567*3.45 = 1957 ticks originally - too high when testing
-    public static int deposit_Slide_Pick_Rear_Pos       = 145;                                      //145 in mm - 506.25 tick
-    public static int deposit_Slide_Highbasket_Pos      = 675 ;                                     //700 in mm, highbasket point (for ticks  = 720*3.45 = 2483 ticks), 48inch - 21inch = 27inches vertical distance required.
+    public static int deposit_Slide_Highbar_Score_Pos   = 542;                                      //542mm, 542*3.45 = 1869 ticks originally - too high when testing
+    public static int deposit_Slide_Pick_Rear_Pos       = 120;                                      //120 in mm - 120*3.45 = 414 tick
+    public static int deposit_Slide_Highbasket_Pos      = 675 ;                                     //675 in mm, highbasket point (for ticks  = 675*3.45 = 2328 ticks), 48inch - 21inch = 27inches vertical distance required.
                                                                                                     // slide maximum  length  = 29 inchs ~ 736 mm and 10degree incline, so 28 inches maximum vertical distance.
 
     /**Deposit Wrist  clock wise direction for range(0-1, lowest :0)*/
