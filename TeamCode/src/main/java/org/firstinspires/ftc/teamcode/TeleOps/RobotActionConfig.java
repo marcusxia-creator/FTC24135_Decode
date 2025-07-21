@@ -30,8 +30,9 @@ public class RobotActionConfig {
     public static double TICKS_PER_MM_SLIDES            = COUNTS_PER_MOTOR_GOBILDA_435/(0.66*SPOOL_CIRCUMFERENCE) ;     //3.45 tick per MM
 
     //Intake Configure
-    public static double intake_Slide_Extension         = 0.2;                                          // range(0.04 - 0.29)
-    public static double intake_Slide_Retract           = 0;                                            // 0.01 = 3deg rotation of gobilda servo
+    public static double intake_Slide_Extension         = 0.20;                                          // range(0.04 - 0.29)
+    public static double intake_Slide_Retract           = 0.0;                                           // 0.01 = 3deg rotation of gobilda servo
+    public static double intake_Slide_Retract_Initial   = 0.05;
     public static double intake_slide_Retract_Set       = 0.06;
     public static double intake_Slide_Extension_Wait    = 0.1;                                          // FOR AUTO MODE ONLY
 

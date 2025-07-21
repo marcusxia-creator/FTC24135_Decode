@@ -83,7 +83,7 @@ public class FiniteStateMachineIntake {
     //Initialization
     public void Init() {
         intakeTimer.reset();
-        robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
+        robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract_Initial);
         robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
         robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Initial);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
