@@ -126,10 +126,11 @@ public class FiniteStateMachineIntake {
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
+                    if (robot.intakeWristServo.getPosition() != RobotActionConfig.intake_Wrist_Grab){
+                        robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);}
                 }
                 if(intakeTimer.seconds()>(RobotActionConfig.intakeWristRotationTime+RobotActionConfig.intakeSlideExtendTime)) {
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Pick);
-                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
                     intakeTimer.reset();
                     intakeState = INTAKESTATE.INTAKE_PICK;
                 }
@@ -220,22 +221,6 @@ public class FiniteStateMachineIntake {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 }
 
-                /**
-                if (intakeTimer.seconds() > RobotActionConfig.intakeSlideRetractSetPointTime) {
-                    robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
-                    robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
-                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);// wait 0.5 second for slide retract 2/3
-                    robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);        // set intake arm  to transfer;
-                    robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
-                }
-                 */
-
-                /**
-                if (intakeTimer.seconds() > RobotActionConfig.intakeSlideRetractSetPointTime + RobotActionConfig.intakeWristRotationTime) {                  // wait another  0.5second to retract slide again.
-
-                }
-                 */
-
                 if (depositArmState == FiniteStateMachineDeposit.LIFTSTATE.LIFT_START &&
                         intakeTimer.seconds() > RobotActionConfig.transferTime) {
                     depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.CLOSE);
@@ -289,6 +274,7 @@ public class FiniteStateMachineIntake {
                 if (intakeTimer.seconds() > RobotActionConfig.intakeTurretTurnTime + RobotActionConfig.waitTime*3) {
                     robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
                     robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
+                    robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
                     /** this is the optimum position for intake arm*/
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
                     intakeState = INTAKESTATE.INTAKE_START;
