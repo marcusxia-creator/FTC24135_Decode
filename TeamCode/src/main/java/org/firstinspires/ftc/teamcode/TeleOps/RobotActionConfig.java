@@ -144,4 +144,5 @@ public class RobotActionConfig {
     public static double decel_Slowness                 = 0.5;                                          // drive control speed deaccel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
 
     public static int slideTickThreshold                = 20;                                           // vertical slide threshold value to determine if the slide is at position
+    public static double Move_Distance                  = 20;                                            //20cm forward - move forward after dump sample
 }

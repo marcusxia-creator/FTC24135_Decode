@@ -197,7 +197,7 @@ public class FiniteStateMachineDeposit {
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);}
                 */
                 if (liftTimer.seconds()>0.25){
-                move(5);}
+                move(RobotActionConfig.Move_Distance);}
 
                 if (liftTimer.seconds()>1.2){
                     liftTimer.reset();
