@@ -70,26 +70,7 @@ public class RightSideAuto_4Specimen_Grab extends LinearOpMode {
         drive.pinpointSetPose(startPose);
         drive.setPoseEstimate(startPose);
         TrajectorySequence trajSeq = drive.trajectorySequenceBuilder(startPose)
-                //extend slides to specimen scoring position
-                .UNSTABLE_addTemporalMarkerOffset(0,() -> {
-                    Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Pos, 0.9);
-                })
-                .UNSTABLE_addTemporalMarkerOffset(0.3,()->{
-                    Depo_Hook();
-                })
-                //drive to bar
                 .lineToLinearHeading(new Pose2d(highbar_x_coordinate, highbar_y_coordinate, Math.toRadians(90)))
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    drive.setDrivePower(new Pose2d(0, 0, 0));
-                })
-                .UNSTABLE_addTemporalMarkerOffset(0.1, () -> {
-                    Slides_Move(RobotActionConfig.deposit_Slide_Highbar_Score_Pos,0.5);
-                })
-                //open claw
-                .UNSTABLE_addTemporalMarkerOffset(0.7,() -> {
-                    robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
-                })
-                .waitSeconds(0.8)
                 ///-----------------------------------------------------------------------
                 /** --> push ground sample for specimen*/
 
