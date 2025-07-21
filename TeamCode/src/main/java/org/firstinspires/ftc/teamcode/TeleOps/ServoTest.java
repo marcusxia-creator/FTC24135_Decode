@@ -119,7 +119,7 @@ public class ServoTest {
             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorLeft.setPower(speed);
-           // robot.liftMotorRight.setPower(speed);
+            robot.liftMotorRight.setPower(speed);
         }
 
         if (gamepad_1.getButton(X) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
@@ -132,7 +132,7 @@ public class ServoTest {
             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorLeft.setPower(speed);
-            // robot.liftMotorRight.setPower(speed);
+            robot.liftMotorRight.setPower(speed);
         }
 
         // --- Intake System ---
