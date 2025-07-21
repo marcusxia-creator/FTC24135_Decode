@@ -39,11 +39,13 @@ public class RobotActionConfig {
 
     public static double intake_Rotation_Side_Drop      = 0.3;
     public static double intake_Rotation_ini            = intake_Rotation_Mid;
-    /**Arm counter clock wise from 0 to 1 */
+    /**Arm counter clock wise from 0 to 1
+     * drive ratio ~ 40:48 = 1:1.2
+     * 0.12 = 30deg - 0.004 = 1 deg*/
     /** Todo Intake Arm installation poisition ?? and value??*/
     public static double intake_Arm_Pick                = 0.48;
     public static double intake_Arm_Grab                = 0.52;                                     // 0.54 is a guess value
-    public static double intake_Arm_Idle                = 0.38;                                     // 0.38 is 30 degree up from pick position - flat.
+    public static double intake_Arm_Idle                = 0.36;                                     // 0.38 is 30 degree up from pick position - flat.
     public static double intake_Arm_Transfer            = 0.13;                                      // facing up straight
     public static double intake_Arm_Side_Drop           = 0.36;                                     // 40 degree up from pick position - flat
     public static double intake_Arm_Wait                = intake_Arm_Idle;                          //

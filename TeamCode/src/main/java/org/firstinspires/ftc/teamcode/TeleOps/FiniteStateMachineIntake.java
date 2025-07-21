@@ -241,7 +241,7 @@ public class FiniteStateMachineIntake {
                     intakeClawState = INTAKECLAWSTATE.CLOSE;
                     IntakeClawSwitch();
                 }
-                if (intakeTimer.seconds() > RobotActionConfig.waitTime+0.1) {
+                if (intakeTimer.seconds() > RobotActionConfig.waitTime) {
                     robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
                     robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
