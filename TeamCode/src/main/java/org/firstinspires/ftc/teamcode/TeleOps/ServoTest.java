@@ -4,6 +4,7 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.*;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -195,6 +196,16 @@ public class ServoTest {
             robot.intakeLeftSlideServo.setPosition(Range.clip(servoposition, 0, 1));
             robot.intakeRightSlideServo.setPosition(Range.clip(servoposition, 0, 1));
 
+        }
+        if ((gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD){
+            debounceTimer.reset();
+            servoposition = robot.intakeTurretServo.getPosition() + 0.01;
+            robot.intakeTurretServo.setPosition(Range.clip(servoposition, 0, 1));
+        }
+        if ((gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD){
+            debounceTimer.reset();
+            servoposition = robot.intakeTurretServo.getPosition() - 0.01;
+            robot.intakeTurretServo.setPosition(Range.clip(servoposition, 0, 1));
         }
     }
 }
