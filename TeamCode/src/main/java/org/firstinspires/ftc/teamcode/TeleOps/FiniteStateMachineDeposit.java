@@ -194,7 +194,7 @@ public class FiniteStateMachineDeposit {
                     robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
-                    driveBackward(10);
+                    driveBackward(RobotActionConfig.Move_Distance);
                 if (liftTimer.seconds()>1) {
                     liftTimer.reset();
                     liftState = LIFTSTATE.LIFT_RETRACT;
