@@ -45,7 +45,7 @@ public class SlidePIDHelper {
      * Convenience to set target by linear units (e.g., mm or inches)
      */
     public void setTargetInches(double inches) {
-        setTargetTicks(inchesToTicks(inches));
+        setTargetTicks(mmToTicks(inches));
     }
 
     /**
@@ -78,9 +78,8 @@ public class SlidePIDHelper {
     }
 
     // Convert linear inches to ticks; adjust counts and diameter
-    private double inchesToTicks(double inches) {
-        final double COUNTS_PER_REV = 560;
-        final double SPOOL_DIAMETER_INCHES = 1.0;
-        return inches * (COUNTS_PER_REV / (Math.PI * SPOOL_DIAMETER_INCHES));
+    private double mmToTicks(double dist) {
+        ///dist in mm unit
+        return (dist * RobotActionConfig.TICKS_PER_MM_SLIDES);
     }
 }
