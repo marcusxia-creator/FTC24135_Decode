@@ -12,7 +12,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.TeleOps.SlidePIDHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,7 @@ public class FiniteStateMachineDepositPID {
     /**
      * add PID slider pid helper parameters
      */
-    private SlidePIDHelper slideHelper;
+    private SlidesPIDControl slidePIDControl;
     private static final double KP = 0.01, KI = 0.0001, KD = 0.001;
     private static final double FULL_RANGE_TICKS = RobotActionConfig.TICKS_PER_MM_SLIDES*RobotActionConfig.deposit_Slide_Highbasket_Pos; // or use RobotActionConfig
 
