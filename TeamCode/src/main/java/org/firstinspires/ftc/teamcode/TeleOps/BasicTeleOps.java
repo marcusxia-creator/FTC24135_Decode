@@ -35,7 +35,7 @@ public class BasicTeleOps extends OpMode {
     private ElapsedTime debounceTimer = new ElapsedTime();
     private boolean lBstartPressed = false;
     private List<LynxModule> allHubs;
-    private ElapsedTime hangtime = new ElapsedTime();
+
 
     @Override
     public void init() {
