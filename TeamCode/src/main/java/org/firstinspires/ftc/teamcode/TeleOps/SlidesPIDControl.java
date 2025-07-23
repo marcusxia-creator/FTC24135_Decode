@@ -81,8 +81,6 @@ public class SlidesPIDControl {
 
     // Convert linear inches to encoder ticks; adjust counts and diameter
     private double mmToTicks(double mm) {
-        final double COUNTS_PER_REV = 560;
-        final double SPOOL_DIAMETER_INCHES = 1.0;
         return mm * RobotActionConfig.TICKS_PER_MM_SLIDES;
     }
 }
