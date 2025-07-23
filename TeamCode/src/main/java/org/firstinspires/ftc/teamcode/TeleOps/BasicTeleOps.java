@@ -35,6 +35,7 @@ public class BasicTeleOps extends OpMode {
     private ElapsedTime debounceTimer = new ElapsedTime();
     private boolean lBstartPressed = false;
     private List<LynxModule> allHubs;
+    private ElapsedTime hangtime = new ElapsedTime();
 
     @Override
     public void init() {
@@ -68,6 +69,10 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("VS Left Encoder", robot.liftMotorLeft.getCurrentPosition());
         telemetry.addData("VS Right Encoder", robot.liftMotorRight.getCurrentPosition());
         telemetry.update();
+    }
+    @Override
+    public void start() {
+        depositArmDrive.resetHangTimer();    // ← reset your timer right when start() is called
     }
 
     @Override
@@ -111,8 +116,6 @@ public class BasicTeleOps extends OpMode {
             telemetry.addData("Deposit Claw State", depositArmDrive.depositClawState);
             telemetry.addData("Intake State", intakeArmDrive.intakeState);
             telemetry.addData("Intake Claw State", intakeArmDrive.intakeClawState);
-            /**telemetry.addData("Color Hue", RobotActionConfig.hsvValues[0]);
-             telemetry.addData("Color Value", RobotActionConfig.hsvValues[2]); **/
         }
 
         if (controlState == ControlState.TEST) {
