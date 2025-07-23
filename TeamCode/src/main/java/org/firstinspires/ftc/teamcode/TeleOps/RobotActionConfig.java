@@ -72,7 +72,7 @@ public class RobotActionConfig {
     public static double intake_Turret_Side_Drop        = 0.15;
 
     /** Deposit slide position Config */
-    public static int deposit_Slide_Down_Pos            = 2;                                        //2mm from bottom u channel
+    public static int deposit_Slide_Down_Pos            = 1;                                        //2mm from bottom u channel
     public static int deposit_Slide_Rear_Highbar_Pos    = 303;                                      //303 mm, 303 *3.45= 1046
     public static int deposit_Slide_Highbar_Pos         = 323;                                      //323mm, 323*3.45 = 1114 ticks
     /** Todo Deposit slide High bar Score position ?? and value??*/
@@ -144,5 +144,5 @@ public class RobotActionConfig {
     public static double decel_Slowness                 = 0.5;                                          // drive control speed deaccel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
 
     public static int slideTickThreshold                = 20;                                           // vertical slide threshold value to determine if the slide is at position
-    public static double Move_Distance                  = 20;                                            //20cm forward - move forward after dump sample
+    public static double Move_Distance                  = 15;                                            //20cm forward - move forward after dump sample
 }

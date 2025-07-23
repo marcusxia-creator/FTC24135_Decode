@@ -124,6 +124,7 @@ public class FiniteStateMachineIntake {
             case INTAKE_EXTEND:
                 robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 intakeClawState = INTAKECLAWSTATE.OPEN;
+                robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                 if(intakeTimer.seconds()>RobotActionConfig.intakeWristRotationTime) {
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension);

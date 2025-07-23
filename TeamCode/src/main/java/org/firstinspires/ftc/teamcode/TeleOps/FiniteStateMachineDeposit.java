@@ -182,6 +182,7 @@ public class FiniteStateMachineDeposit {
                                 isButtonDebounced()) {
                     depositClawState = DEPOSITCLAWSTATE.OPEN;
                     liftTimer.reset();
+                    liftState = LIFTSTATE.LIFT_RETRACT_PAUSE;
                 }
                 break;
 
@@ -191,11 +192,11 @@ public class FiniteStateMachineDeposit {
                                 isButtonDebounced()) {
 
                  */
+                if (liftTimer.seconds() > 0.1) {
                     robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
-                    driveBackward(RobotActionConfig.Move_Distance);
-                if (liftTimer.seconds()>1) {
+                    driveOut(RobotActionConfig.Move_Distance);
                     liftTimer.reset();
                     liftState = LIFTSTATE.LIFT_RETRACT;
                 }
@@ -204,7 +205,7 @@ public class FiniteStateMachineDeposit {
 
             case LIFT_RETRACT:
                 // Check if the lift has reached the low position
-                if (Servo_AtPosition(RobotActionConfig.deposit_Claw_Open) && liftTimer.seconds() > 0.1) {
+                if (Servo_AtPosition(RobotActionConfig.deposit_Claw_Open) && liftTimer.seconds() > 0.3) {
                     slidesToHeightMM(RobotActionConfig.deposit_Slide_Down_Pos, RobotActionConfig.deposit_Slide_DownLiftPower);
                     robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
@@ -264,7 +265,7 @@ public class FiniteStateMachineDeposit {
             case LIFT_SPECIMEN_SCORE:
                 // LIFT_SPECIMEN_SCORE ----> flat out and auto back out.
                 //if (liftTimer.seconds() > 0.25) {                                                                                   // wait 0.2s
-                    //driveBackward(RobotActionConfig.backwardDist);                                                                  // Auto drive back
+                    //driveOut(RobotActionConfig.backwardDist);                                                                  // Auto drive back
                     if(liftTimer.seconds() > 0.5){
                         robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                         robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
@@ -399,7 +400,7 @@ public class FiniteStateMachineDeposit {
     }
 
     //Auto drive method helper
-    private void driveBackward(double distanceCm) {
+    private void driveOut(double distanceCm) {
         // Calculate target ticks based on distance
         double circumference = RobotActionConfig.WHEEL_DIAMETER_CM * Math.PI;
         double rotationsNeeded = distanceCm / circumference;

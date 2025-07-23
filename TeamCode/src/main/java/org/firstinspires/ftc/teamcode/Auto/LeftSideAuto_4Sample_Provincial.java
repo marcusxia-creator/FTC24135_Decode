@@ -301,7 +301,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
 
     private void Slides_Move(int targetPosition, double speed) {
         // targetPosition in mm - raise slides
-        int targetTick = targetPosition*RobotActionConfig.TICKS_PER_MM_SLIDES;
+        int targetTick = (int) (targetPosition*RobotActionConfig.TICKS_PER_MM_SLIDES);
         robot.liftMotorLeft.setTargetPosition(targetTick);
         robot.liftMotorRight.setTargetPosition(targetTick);
         robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -311,7 +311,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
     }
     private void Slides_MoveDown(int targetPosition, double speed) {
         // targetPosition in cm - raise slides
-        int targetTick = targetPosition*RobotActionConfig.TICKS_PER_MM_SLIDES;
+        int targetTick = (int) (targetPosition*RobotActionConfig.TICKS_PER_MM_SLIDES);
         robot.liftMotorLeft.setTargetPosition(targetTick);
         robot.liftMotorRight.setTargetPosition(targetTick);
         robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
