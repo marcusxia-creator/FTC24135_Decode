@@ -29,7 +29,7 @@ public class SlidesPIDControl {
         }
 
         this.pid = new PIDController(kp, ki, kd);
-        this.pid.setTolerance(5);
+        this.pid.setTolerance(RobotActionConfig.slideTickThreshold);
         this.maxTicks = maxTravelTicks;
     }
 
