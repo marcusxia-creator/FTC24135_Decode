@@ -47,8 +47,8 @@ public class SlidesPIDControl {
     /**
      * Convenience to set target by linear units (e.g., mm or inches)
      */
-    public void setTargetInches(double inches) {
-        setTargetTicks(mmToTicks(inches));
+    public void setTargetMM(double mm) {
+        setTargetTicks(mmToTicks(mm));
     }
 
     /**
