@@ -452,4 +452,7 @@ public class FiniteStateMachineDepositPID {
         int currentPositionTicks = (robot.liftMotorRight.getCurrentPosition() + robot.liftMotorLeft.getCurrentPosition()) / 2;
         return (double) currentPositionTicks/RobotActionConfig.TICKS_PER_MM_SLIDES;
     }
+    public void resetHangTimer() {
+        hangtime.reset();
+    }
 }
