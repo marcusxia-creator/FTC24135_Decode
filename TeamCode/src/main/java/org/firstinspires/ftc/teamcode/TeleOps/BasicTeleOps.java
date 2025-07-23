@@ -122,30 +122,19 @@ public class BasicTeleOps extends OpMode {
             servoTest.loop();
         }
 
-
+        telemetry.addLine("--------------Op Mode--------------");
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", robotDrive.getDriveMode().name());
         telemetry.addData("VS Left mm", (double) robot.liftMotorLeft.getCurrentPosition() / RobotActionConfig.TICKS_PER_MM_SLIDES);
         telemetry.addData("VS Right mm", (double) robot.liftMotorRight.getCurrentPosition() / RobotActionConfig.TICKS_PER_MM_SLIDES);
         telemetry.addData("VS Left tick", robot.liftMotorLeft.getCurrentPosition());
         telemetry.addData("VS Right tick", robot.liftMotorRight.getCurrentPosition());
-        telemetry.addData("Deposit Arm", robot.depositLeftArmServo.getPosition());
-        telemetry.addData("Deposit Wrist", robot.depositWristServo.getPosition());
-        telemetry.addData("Deposit Claw", robot.depositClawServo.getPosition());
-        telemetry.addData("Intake Arm", robot.intakeArmServo.getPosition());
-        telemetry.addData("Intake Wrist", robot.intakeWristServo.getPosition());
-        telemetry.addData("Intake Claw", robot.intakeClawServo.getPosition());
-        telemetry.addData("Intake Slide L", robot.intakeLeftSlideServo.getPosition());
-        telemetry.addData("Intake Slide R", robot.intakeRightSlideServo.getPosition());
         telemetry.addData("Heading", robot.imu.getRobotYawPitchRollAngles().getYaw());
-        telemetry.addLine("--------------Servo Test--------------");
-        // --- Telemetry ---
-
-        telemetry.addLine("---------------------");
+        telemetry.addLine("--------Deposit-------------");
         telemetry.addData("Deposit Arm Position", robot.depositLeftArmServo.getPosition());
         telemetry.addData("Deposit Wrist Position", robot.depositWristServo.getPosition());
         telemetry.addData("Deposit Claw Position", robot.depositClawServo.getPosition());
-        telemetry.addLine("---------------------");
+        telemetry.addLine("--------Intake-------------");
         telemetry.addData("Intake Arm Left Position", robot.intakeArmServo.getPosition());
         telemetry.addData("Intake Wrist Position", robot.intakeWristServo.getPosition());
         telemetry.addData("Intake Claw Position", robot.intakeClawServo.getPosition());
