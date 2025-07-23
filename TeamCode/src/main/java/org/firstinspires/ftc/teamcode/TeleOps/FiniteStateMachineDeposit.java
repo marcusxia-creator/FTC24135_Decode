@@ -19,9 +19,10 @@ import java.util.List;
 
 /** Button Config for deposit
  * X                           : high basket extend State          - LOCAL STATE - LIFT_START
- * * ->X                         : red and blue high basket
- * * ->Y                         : red and blue sample drop
- * Y                           : Specimen score                   - LOCAL STATE - LIFT_START
+ * * ->X                         : drop the sample and retract
+ * Y                           : Wall Pick - Specimen score        - LOCAL STATE - LIFT_START
+ * * A                         : close the claw and go to specimen score position
+ * * * Y                       : raise the slide to hook and score and then come back to transfter position automatically
  * B                           : Cancel;back to transfer pos       - GLOBAL STATE
  * A                           : TOGGLE DEPOSIT CLAW OPEN/CLOSE    - GLOBAL STATE
  * *DPAD UP && LEFT BUMPER      : Hung                              - GLOBAL STATE -ACTIVE AFTER 100S
@@ -237,7 +238,7 @@ public class FiniteStateMachineDeposit {
                 break;
             /**  2nd branch for specimen*/
             case LIFT_HIGHBAR:
-                //driveStrafe(RobotActionConfig.strafeDist);
+                /// use claw close - Button A to initiate specimen score
                 if (depositClawState == DEPOSITCLAWSTATE.CLOSE){
                     robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Hook);     /// set the deposit arm and deposit wrist to hook position.
@@ -317,7 +318,7 @@ public class FiniteStateMachineDeposit {
             robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
             if (hangtime.seconds() > 2) {
                 robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
         }
 
@@ -343,7 +344,7 @@ public class FiniteStateMachineDeposit {
         return Math.abs(robot.depositClawServo.getPosition() - servoClawPosition) < 0.01;
     }
     /*
-    //Limit switch state
+    ///Limit switch state helper
     private boolean LSisPressed() {
         boolean switchState = robot.limitSwitch.getState(); // Read switch state
 
@@ -459,5 +460,9 @@ public class FiniteStateMachineDeposit {
     private double getSlidesCurrentPositionMM() {
         int currentPositionTicks = (robot.liftMotorRight.getCurrentPosition() + robot.liftMotorLeft.getCurrentPosition()) / 2;
         return (double) currentPositionTicks/RobotActionConfig.TICKS_PER_MM_SLIDES;
+    }
+
+    public void resetHangTimer() {
+        hangtime.reset();
     }
 }
