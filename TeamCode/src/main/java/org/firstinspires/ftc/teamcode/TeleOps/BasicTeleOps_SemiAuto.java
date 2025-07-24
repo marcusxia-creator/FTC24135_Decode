@@ -48,19 +48,24 @@ import java.util.List;
  *  * LEFT BUMPER + START           ----> control state -  Run vs ServoTest -- GAMEPAD #1 ONLY
  *  * LEFT STICK BUTTON             ----> control state -  SEMI-AUTO TRIGGER -- THEN INTO AUTO DRIVE FOR SPECIMEN SCORING -- GAMEPAD #1 ONLY
  *  * RIGHT STICK BUTTON            ----> control state -  SEMI-AUTO CANCEL  -- CANCEL THE AUTO DRIVE FOR SPECIMEN SCORING -- GAMEPAD #1 ONLY
- *  * BACK BUTTON ALONE             ----> reset the vertical slide AND DEPOSIT ARM BACK TO TRANSFER at the start of the TeleOps
+ *  * GAMEPAD 1 + BACK BUTTON ALONE             ----> reset the vertical slide AND DEPOSIT ARM BACK TO TRANSFER at the start of the TeleOps
+ *  * GAMEPAD 2 + BACK BUTTON ALONE             ----> reset the pose2D based on pinpoint pose2D
  * -----------------------------------------------------------------------------------------------
  * DRIVETRAIN Control - Global Control Button
  *  * Right STICK                   ---->  Y and X movement and diagonal
  *  * Left STICK                    ---->  Turn
  *  * START                         ---->  Field and Robot centric selection
- *  * BACK                          ---->  reset IMU Yaw Angle
+ *  * BACK---------Depreciated----  ---->  reset IMU Yaw Angle- !!
  *  * LEFT Trigger + DRVING JOYSTICKs VALUE ---->  fine movement - depending on the pressed level (0.2 - 0.8)
  * -----------------------------------------------------------------------------------------------
  * DEPOSIT ARM
  * --- LOCAL STATE
- *  * X                             ---->high basket drop series - local state - LIFT_START
- *  * Y                             ---->deposit arm flip to the back side - local state - LIFT_START
+ *  * X                             ---->SAMPLE HIGH BASKET drop series - local state - LIFT_START
+ *  * --> X                         ----> one more time for drop
+ *  * Y                             ---->SPECIMEN series - deposit arm flip to the back side - local state - LIFT_START
+ *  * Right trigger +A              ----> close the deposit claw then raise to high bar hook position
+ *                                  ----> when release deposit claw, the deposit arm will go back to transfter position.
+ *  ------------------------------------------------------
  * --- GLOBAL STATE
  *  * B                             ----> TO CANCEL DEPOSIT SYSTEM
  *  *                               ----> SLIDE AND DEPOSIT WRIST AND DEPOSIT ARM BACK TO "TRANSFER POSITION"
@@ -69,17 +74,19 @@ import java.util.List;
  *  INTAKE ARM
  *  * --- LOCAL STATE - INTAKE PICK
  *  * DPAD_RIGHT                    ----> intake extend and set pick position action series - local state - INTAKE_START
- *  * DPAD_LEFT                     ----> intake retract - local state - INTAKE_AIM
+ *  * DPAD_LEFT  ---->  X 2         ----> intake retract for turret side drop and 2nd time press to side drop.
  *  * LEFT_BUMPER / RIGHT_BUMPER    ---->  for INTAKE CLAW ROTATION
  *  * DPAD_UP / DPAD_DOWN           ---->  for INTAKE ARM UP AND DOWN
- *  -----------------------------------------------------------------------------------------------
+ *  ------------------------------------------------------
  *  * --- GLOBAL STATE
  *  * Right Trigger + DPAD_RIGHT    ----> to lower the intake arm for near side pick up
  *  * A                             ----> TO TOGGLE INTAKE CLAW OPEN/CLOSE
  *  * Right bumper + A              ----> To TOGGLE DEPOSIT CLAW OPEN/CLOSE
+ *  * press down LEFT STICK         ----> To run semi AUTO
+ *
 */
 @Disabled
-@TeleOp(name = "TeleOps_Champion_Prep_SemiAuto", group = "org.firstinspires.ftc.teamcode")
+@TeleOp(name = "TeleOps_Premier_Event_SemiAuto", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOps_SemiAuto extends OpMode {
 
     //Control State Variable
@@ -168,9 +175,9 @@ public class BasicTeleOps_SemiAuto extends OpMode {
          * add PoseStorage.currentPose = drive.getPoseEstimate(); at the end of the AutoCode
          *
          * */
-        Pose2d startPose = new Pose2d(7.5, -64, Math.toRadians(-90));// this is for manual testing.
-        drive.setPoseEstimate(startPose);
-        //drive.setPoseEstimate(PoseStorage.currentPose);
+        //Pose2d startPose = new Pose2d(7.5, -64, Math.toRadians(-90));// this is for manual testing.
+        //drive.setPoseEstimate(startPose);
+        drive.setPoseEstimate(PoseStorage.currentPose);
         initialRun = true; //For specimen semi-auto control
 
         //// Initialized an AutoHandler
@@ -197,7 +204,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         // Update pose dynamically in AutoDriveHandler
         autoDriveHandler.updatePoseEstimate(poseEstimate);
 
-        //reset pose
+        //reset pose GamepadCo2
         if (gamepadCo2.getButton(BACK) && debounceTimer.seconds() > 0.2) {
             debounceTimer.reset();
             Pose2d startPose = new Pose2d(0, -32, Math.toRadians(-90));// this is for manual testing.
@@ -207,7 +214,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
 
         // Button B to reset vertical slide position to bottom.
-        if (gamepadCo1.getButton(BACK) && debounceTimer.seconds()>0.2){
+        if (gamepadCo1.getButton(BACK) && !gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()){
             debounceTimer.reset();
             robot.liftMotorLeft.setTargetPosition(0);
             robot.liftMotorRight.setTargetPosition(0);
@@ -324,7 +331,8 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         telemetry.addData("Drive Mode", currentDriveMode.name());
 
         telemetry.addLine("---------------------");
-        telemetry.addData("Deposit Arm Position", robot.depositLeftArmServo.getPosition());
+        telemetry.addData("Deposit LArm Position", robot.depositLeftArmServo.getPosition());
+        telemetry.addData("Deposit RArm Position", robot.depositRightArmServo.getPosition());
         telemetry.addData("Deposit Wrist Position", robot.depositWristServo.getPosition());
         telemetry.addData("Deposit Claw Position", robot.depositClawServo.getPosition());
 
@@ -332,6 +340,8 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         telemetry.addData("Intake Arm Left Position", robot.intakeArmServo.getPosition());
         telemetry.addData("Intake Wrist Position", robot.intakeWristServo.getPosition());
         telemetry.addData("Intake Claw Position", robot.intakeClawServo.getPosition());
+        telemetry.addData("Intake Turret Position", robot.intakeTurretServo.getPosition());
+        telemetry.addData("Intake Rotation Position", robot.intakeRotationServo.getPosition());
         telemetry.addData("Intake Slide LEFT Position", robot.intakeLeftSlideServo.getPosition());
         telemetry.addData("Intake Slide RIGHT Position", robot.intakeRightSlideServo.getPosition());
 
@@ -341,12 +351,11 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         telemetry.addData("Auto Initial Run",initialRun);
         telemetry.addData("PoseEstimate",poseEstimate);
         telemetry.addData("Pinpoint Pose",pinpointPose);
-        /**
+
         telemetry.addLine("---------Frequency--------");
         telemetry.addData("Pinpoint Frequency", drive.pinPointFrequency()); //prints/gets the current refresh rate of the Pinpoint
         telemetry.addData("REV Hub Frequency: ", frequency); //prints the control system refresh rate
-         /
-        telemetry.update();*/
+        telemetry.update();
     }
 
     //Stop the Robot
