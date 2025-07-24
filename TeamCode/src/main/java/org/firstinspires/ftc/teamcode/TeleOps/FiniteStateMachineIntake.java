@@ -237,7 +237,7 @@ public class FiniteStateMachineIntake {
             /** For specimen picking
              * from INTAKE_PICK state - After DPAD_RIGHT Button*/
             case INTAKE_SPECIMEN_RETRACT:
-                if (intakeTimer.seconds() > RobotActionConfig.waitTime/2) {
+                if (intakeTimer.seconds() > RobotActionConfig.waitTime-1) {
                     intakeClawState = INTAKECLAWSTATE.CLOSE;
                     IntakeClawSwitch();
                 }
