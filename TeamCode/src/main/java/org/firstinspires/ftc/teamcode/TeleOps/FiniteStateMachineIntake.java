@@ -200,7 +200,7 @@ public class FiniteStateMachineIntake {
                     intakeClawState = INTAKECLAWSTATE.CLOSE;    /// Intake claw is controlled by state, state drive the open/close by IntakeClawSwitch() helper
                     IntakeClawSwitch();
                 }
-                if (intakeTimer.seconds() > RobotActionConfig.waitTime * 2) {
+                if (intakeTimer.seconds() > RobotActionConfig.waitTime * 2.5) {
                     robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);// wait 0.5 second for slide retract 2/3
                     intakeTimer.reset();
@@ -225,10 +225,10 @@ public class FiniteStateMachineIntake {
                 }
 
                 if (depositArmState == FiniteStateMachineDeposit.LIFTSTATE.LIFT_START &&
-                        intakeTimer.seconds() > RobotActionConfig.waitTime*3) {
+                        intakeTimer.seconds() > RobotActionConfig.transferTime) {
                     depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.CLOSE);
                 }
-                if (intakeTimer.seconds() >  RobotActionConfig.waitTime*3+0.1) {
+                if (intakeTimer.seconds() > RobotActionConfig.transferTime + 0.2) {
                     intakeClawState = INTAKECLAWSTATE.OPEN;
                     IntakeClawSwitch();
                     intakeState = INTAKESTATE.INTAKE_START;
@@ -236,7 +236,7 @@ public class FiniteStateMachineIntake {
                 break;
 
             /** For specimen picking
-             * from INTAKE_PICK state - After DPAD_LEFT Button*/
+             * from INTAKE_PICK state - After DPAD_RIGHT Button*/
             case INTAKE_SPECIMEN_RETRACT:
                 if (intakeTimer.seconds() > RobotActionConfig.waitTime) {
                     intakeClawState = INTAKECLAWSTATE.CLOSE;
@@ -248,7 +248,7 @@ public class FiniteStateMachineIntake {
                     robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
                 }
 
-                if (intakeTimer.seconds() > RobotActionConfig.waitTime*2 + 0.1) {
+                if (intakeTimer.seconds() > RobotActionConfig.waitTime*3) {
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     intakeState = INTAKESTATE.INTAKE_DROP_OFF;

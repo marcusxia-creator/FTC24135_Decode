@@ -31,7 +31,7 @@ public class RobotActionConfig {
 
     //Intake Configure
     public static double intake_Slide_Extension         = 0.25;                                          // range(0.04 - 0.29)
-    public static double intake_Slide_Retract           = 0.05;                                           // 0.01 = 3deg rotation of gobilda servo
+    public static double intake_Slide_Retract           = 0.03;                                           // 0.01 = 3deg rotation of gobilda servo
     public static double intake_Slide_Retract_Initial   = 0.05;
     public static double intake_slide_Retract_Set       = 0.06;
     public static double intake_Slide_Extension_Wait    = 0.1;                                          // FOR AUTO MODE ONLY
@@ -40,6 +40,7 @@ public class RobotActionConfig {
 
     public static double intake_Rotation_Side_Drop      = 0.3;
     public static double intake_Rotation_ini            = intake_Rotation_Mid;
+    public static double intake_Rotation_Floor_Push     = 0.15;
     /**Arm counter clock wise from 0 to 1
      * drive ratio ~ 40:48 = 1:1.2
      * 0.12 = 30deg - 0.004 = 1 deg*/
@@ -47,10 +48,10 @@ public class RobotActionConfig {
     public static double intake_Arm_Pick                = 0.48;
     public static double intake_Arm_Grab                = 0.52;                                     // 0.54 is a guess value
     public static double intake_Arm_Idle                = 0.36;                                     // 0.38 is 30 degree up from pick position - flat.
-    public static double intake_Arm_Transfer            = 0.13;                                      // facing up straight
+    public static double intake_Arm_Transfer            = 0.15;                                      // facing up straight
     public static double intake_Arm_Side_Drop           = 0.36;                                     // 40 degree up from pick position - flat
     public static double intake_Arm_Wait                = intake_Arm_Idle;                          //
-
+    public static double intake_Arm_Floor_Push          = 0.73;
     public static double intake_Arm_Initial             = intake_Arm_Transfer;
 
     /**Intake Wrist counter clock wise from 0 to 1 */
@@ -61,6 +62,7 @@ public class RobotActionConfig {
     public static double intake_Wrist_Transfer          = 0.42;
     public static double intake_Wrist_Side_Drop         = 0.54;
     public static double intake_Wrist_Initial           = intake_Wrist_Idle;
+    public static double intake_Wrist_Floor_Push        =0.44;
 
     /**Intake Claw range(0-0.27 lowest :0, fully close 0.27 )*/
     /** Todo Intake Claw installation position ?? and value??*/
@@ -72,31 +74,32 @@ public class RobotActionConfig {
     public static double intake_Turret_Side_Drop        = 0.15;
 
     /** Deposit slide position Config */
-    public static int deposit_Slide_Down_Pos            = 1;                                        //2mm from bottom u channel
-    public static int deposit_Slide_Rear_Highbar_Pos    = 303;                                      //303 mm, 303 *3.45= 1046
+    public static int deposit_Slide_Down_Pos            = 2;                                        //2mm from bottom u channel
+    public static int deposit_Slide_Rear_Highbar_Pos    = 278;                                      //303 mm, 303 *3.45= 1046
     public static int deposit_Slide_Highbar_Pos         = 323;                                      //323mm, 323*3.45 = 1114 ticks
     /** Todo Deposit slide High bar Score position ?? and value??*/
-    public static int deposit_Slide_Highbar_Score_Pos   = 542;                                      //542mm, 542*3.45 = 1869 ticks originally - too high when testing
-    public static int deposit_Slide_Pick_Rear_Pos       = 120;                                      //120 in mm - 120*3.45 = 414 tick
-    public static int deposit_Slide_Highbasket_Pos      = 675 ;                                     //675 in mm, highbasket point (for ticks  = 675*3.45 = 2328 ticks), 48inch - 21inch = 27inches vertical distance required.
+    public static int deposit_Slide_Highbar_Score_Pos   = 520;                                      //542mm, 542*3.45 = 1869 ticks originally - too high when testing
+    public static int deposit_Slide_Pick_Rear_Pos       = 240;                                      //120 in mm - 120*3.45 = 414 tick 250 for home wall, 120 for comp wall
+    public static int deposit_Slide_Highbasket_Pos      = 690 ;//675 in mm, highbasket point (for ticks  = 675*3.45 = 2328 ticks), 48inch - 21inch = 27inches vertical distance required.
+    public static int deposit_Slide_Hang_Pos = 500;
     // slide maximum  length  = 29 inchs ~ 736 mm and 10degree incline, so 28 inches maximum vertical distance.
 
     /**Deposit Wrist  clock wise direction for range(0-1, lowest :0)*/
     /** Todo Deposit Wrist installation poisition ?? and value??*/
 
     public static double deposit_Wrist_Dump             = 0.6;                                      //
-    public static double deposit_Wrist_Transfer         = 0.09;                                      //original 0.05  ; 7/5 change to 0.09
+    public static double deposit_Wrist_Transfer         = 0.06;                                      //original 0.05  ; 7/5 change to 0.09
     public static double deposit_Wrist_Hook             = 0.53;                                     //0.003 is 1 deg
     public static double deposit_Wrist_Flat_Pos         = 0.43;                                     //FOR Deposit Hook Flat and AUTO MODE
-    public static double deposit_Wrist_Pick             = 0.22;
-    public static double deposit_Wrist_Rear_Hook        = 0.05;
+    public static double deposit_Wrist_Pick             = 0.28;
+    public static double deposit_Wrist_Rear_Hook        = 0.13;
     public static double deposit_Wrist_Initial          = deposit_Wrist_Transfer;                                      //
 
     /**Deposit_Arm  range(0 - 0.9)*/
     /** Todo Deposit Arm installation poisition ?? and value??*/
     public static double deposit_Arm_Dump               = 0.48;
     public static double deposit_Arm_Dump_Prep          = 0.34;                                     //facing up
-    public static double deposit_Arm_Transfer           = 0.24;
+    public static double deposit_Arm_Transfer           = 0.26;
     public static double deposit_Arm_Pick               = 1;
     public static double deposit_Arm_Hook               = 0;                                        //completely flat facing forward.
     public static double deposit_Arm_hang_Pos           = 0.3;
@@ -144,5 +147,5 @@ public class RobotActionConfig {
     public static double decel_Slowness                 = 0.5;                                          // drive control speed deaccel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
 
     public static int slideTickThreshold                = 20;                                           // vertical slide threshold value to determine if the slide is at position
-    public static double Move_Distance                  = 15;                                            //20cm forward - move forward after dump sample
+    public static double Move_Distance                  = 20;                                            //20cm forward - move forward after dump sample
 }
