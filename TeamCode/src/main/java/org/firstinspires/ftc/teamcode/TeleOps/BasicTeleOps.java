@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Auto.drive.StandardTrackingWheelLocalizer;
@@ -61,9 +62,11 @@ public class BasicTeleOps extends OpMode {
 
         allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        double batteryVolts_ini = getBatteryVoltage();
 
         telemetry.addLine("-------------------");
         telemetry.addData("Status", "initialized");
+        telemetry.addData("Battery Volt", batteryVolts_ini);
         telemetry.addData("Control Mode", robotDrive.getDriveMode().name());
         telemetry.addData("VS Left Encoder", robot.liftMotorLeft.getCurrentPosition());
         telemetry.addData("VS Right Encoder", robot.liftMotorRight.getCurrentPosition());
@@ -72,7 +75,7 @@ public class BasicTeleOps extends OpMode {
 
     @Override
     public void loop() {
-        if (gamepadCo1.getButton(BACK) && debounceTimer.seconds() > 0.2) {
+        if (gamepadCo1.getButton(BACK) && isButtonDebounced()) {
             debounceTimer.reset();
             resetLiftEncoders();
             depositArmDrive.Init();
@@ -119,6 +122,9 @@ public class BasicTeleOps extends OpMode {
             servoTest.loop();
         }
 
+
+        double batteryVolts = getBatteryVoltage();
+        telemetry.addData("Battery (V)", "%.2f", batteryVolts);
         telemetry.addLine("-----Drive-----");
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", robotDrive.getDriveMode().name());
@@ -176,14 +182,36 @@ public class BasicTeleOps extends OpMode {
         robot.liftMotorLeft.setPower(0.3);
         robot.liftMotorRight.setPower(0.3);
 
-        /**
-        while (robot.liftMotorLeft.isBusy() && robot.liftMotorRight.isBusy()) {
-            if (LSisPressed()) {
-                robot.liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-                robot.liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-                break;
+        while (robot.liftMotorLeft.isBusy() || robot.liftMotorRight.isBusy()) {
+                    }
+        // 3) Now that we're at zero, actually reset the encoder count
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // 4) Return to a normal run mode if you still want to drive by power/velocity
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    // Debouncer helper
+    private boolean isButtonDebounced() {
+        if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+            debounceTimer.reset();
+            return true;
+        }
+        return false;
+    }
+
+    ///add a voltage sensor
+    public double getBatteryVoltage() {
+        double result = Double.POSITIVE_INFINITY;
+        for (VoltageSensor sensor : hardwareMap.voltageSensor) {
+            double voltage = sensor.getVoltage();
+            if (voltage > 0 && voltage < result) {
+                result = voltage;
             }
         }
-         */
+        // If we never found a positive reading, default to 0
+        return (result == Double.POSITIVE_INFINITY) ? 0.0 : result;
     }
+
 }

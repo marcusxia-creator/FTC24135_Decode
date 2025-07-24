@@ -222,11 +222,12 @@ public class BasicTeleOps_SemiAuto extends OpMode {
             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.liftMotorLeft.setPower(0.3);                                          // Make sure lift motor is on
             robot.liftMotorRight.setPower(0.3);
-            while (robot.liftMotorLeft.isBusy()&&robot.liftMotorRight.isBusy()){
-                    robot.liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-                    robot.liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-                    break;
+            while (robot.liftMotorLeft.isBusy()||robot.liftMotorRight.isBusy()){
             }
+            robot.liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            robot.liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             // when position is back to 0, deposit is initialized.
             depositArmDrive.Init();
         }
@@ -285,7 +286,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                 telemetry.addData("Intake State", intakeState);
                 telemetry.addData("Intake Claw State", intakeClawState);
                 telemetry.addLine("---------------------");
-                telemetry.addData("Detected Color", detectedColor);
+                //telemetry.addData("Detected Color", detectedColor);
                 //telemetry.addData("Color Sensor value", RobotActionConfig.hsvValues[2]);
 
                 /** AutoMode Control*/
