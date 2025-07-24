@@ -110,6 +110,8 @@ public class FiniteStateMachineDeposit {
         robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
         depositClawState = DEPOSITCLAWSTATE.OPEN;
+        ///NEW ADDED 2025-07-24 - SET THE INITIAL DEPOSIT SLIDE HIGHT THE SAME AS SLIDE DOWN POSITION.
+        slidesToHeightMM(RobotActionConfig.deposit_Slide_Down_Pos, 0.2);
     }
 
     /** create a list color threshold ranges*/
@@ -299,35 +301,37 @@ public class FiniteStateMachineDeposit {
             liftState = LIFTSTATE.LIFT_START;
         }
         // Hung ----> Action active after 100 secs.
-        //if (runtime.seconds() > 100){
-        if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
-                && isButtonDebounced()) {
-            slidesToHeightMM(RobotActionConfig.deposit_Slide_Hang_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
-        }
+        if (runtime.seconds() > 100) {
+            if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
+                    && isButtonDebounced()) {
+                slidesToHeightMM(RobotActionConfig.deposit_Slide_Hang_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
+            }
 
-        if (gamepad_1.getButton(GamepadKeys.Button.DPAD_DOWN) && gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
-                && isButtonDebounced()) {
-            slidesToHeightMM(Math.max(0, getSlidesCurrentPositionMM() -100), RobotActionConfig.deposit_Slide_UpLiftPower);
+            if (gamepad_1.getButton(GamepadKeys.Button.DPAD_DOWN) && gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
+                    && isButtonDebounced()) {
+                slidesToHeightMM(Math.max(0, getSlidesCurrentPositionMM() - 100), RobotActionConfig.deposit_Slide_UpLiftPower);
 
-            /** ///For stationary hook:
-             *  while (robot.liftMotorLeft.isBusy() & robot.liftMotorRight.isBusy()){
-             *             }
-             *             if (IsLiftAtPosition(RobotActionConfig.deposit_Slide_Hang_Pos)){
-             *                 slidesToHeightMM(RobotActionConfig.deposit_Slide_Hang_Pos + 100, RobotActionConfig.deposit_Slide_UpLiftPower);
-             *             }
-             */
-            if (gamepad_1.wasJustReleased(GamepadKeys.Button.DPAD_DOWN) && gamepad_1.wasJustReleased(GamepadKeys.Button.LEFT_BUMPER)) {
-                robot.liftMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                robot.liftMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                /** ///For stationary hook:
+                 *  while (robot.liftMotorLeft.isBusy() & robot.liftMotorRight.isBusy()){
+                 *             }
+                 *             if (IsLiftAtPosition(RobotActionConfig.deposit_Slide_Hang_Pos)){
+                 *                 slidesToHeightMM(RobotActionConfig.deposit_Slide_Hang_Pos + 100, RobotActionConfig.deposit_Slide_UpLiftPower);
+                 *             }
+                 */
+                if (gamepad_1.wasJustReleased(GamepadKeys.Button.DPAD_DOWN) && gamepad_1.wasJustReleased(GamepadKeys.Button.LEFT_BUMPER)) {
+                    robot.liftMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                    robot.liftMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                }
             }
         }
 
+        /// FORCE SLIDE GO ALL THE WAY DONW.
         if (gamepad_1.getButton(GamepadKeys.Button.BACK)
                 && isButtonDebounced()) {
             slidesToHeightMM(-10000, 0.2);
             if (hangtime.seconds() > 2) {
                 robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
         }
 
