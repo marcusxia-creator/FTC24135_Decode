@@ -22,7 +22,7 @@ public class AutoDriveHandler {
 
     private ElapsedTime holdTimer = new ElapsedTime();
 
-    private VerticalSlide vSlides;
+    private VerticalSlide vslides;
 
     public AutoDriveHandler(SampleMecanumDriveCancelable drive, RobotHardware robot, int initialN, FiniteStateMachineDeposit depositArmDrive) {
         this.drive = drive;
@@ -54,7 +54,7 @@ public class AutoDriveHandler {
         TrajectorySequence traj_Initial = drive.trajectorySequenceBuilder(poseEstimate)
                 .UNSTABLE_addTemporalMarkerOffset(0, this::depositHook)
                 .UNSTABLE_addTemporalMarkerOffset(0.2, () -> {
-                    vSlides.slidesMove(RobotActionConfig.deposit_Slide_Rear_Highbar_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
+                    vslides.slidesMove(RobotActionConfig.deposit_Slide_Rear_Highbar_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
                 })
                 .lineToLinearHeading(new Pose2d(target_X, PointToDrive.highbar_y_coordinate, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0.1, () -> {
@@ -66,7 +66,7 @@ public class AutoDriveHandler {
                 .waitSeconds(0.4)
                 .lineToLinearHeading(new Pose2d(PointToDrive.specimen_pickup_x_coordinate, PointToDrive.specimen_pickup_y_coordinate, Math.toRadians(-35)))
                 .UNSTABLE_addTemporalMarkerOffset(-0.75, () -> {
-                    vSlides.slidesMoveDown(RobotActionConfig.deposit_Slide_Down_Pos, 0.8);
+                    vslides.slidesMoveDown(RobotActionConfig.deposit_Slide_Down_Pos, 0.8);
                     robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
@@ -79,7 +79,7 @@ public class AutoDriveHandler {
 
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    vSlides.Slides_Stop();
+                    vslides.Slides_Stop();
                 })
                 .waitSeconds(1)
                 .build();
@@ -116,7 +116,7 @@ public class AutoDriveHandler {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 })
                 .waitSeconds(0.4)
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{vSlides.slidesMove(RobotActionConfig.deposit_Slide_Rear_Highbar_Pos,RobotActionConfig.deposit_Slide_UpLiftPower);})
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{vslides.slidesMove(RobotActionConfig.deposit_Slide_Rear_Highbar_Pos,RobotActionConfig.deposit_Slide_UpLiftPower);})
                 .UNSTABLE_addTemporalMarkerOffset(0, this::depositHook)
 
                 .lineToLinearHeading(new Pose2d(target_X, PointToDrive.highbar_y_coordinate, Math.toRadians(-90)))
@@ -128,7 +128,7 @@ public class AutoDriveHandler {
                 .lineToLinearHeading(new Pose2d(PointToDrive.specimen_pickup_x_coordinate, PointToDrive.specimen_pickup_y_coordinate, Math.toRadians(-33)))
 
                 .UNSTABLE_addTemporalMarkerOffset(-0.75,()->{
-                    vSlides.slidesMoveDown(RobotActionConfig.deposit_Slide_Down_Pos, 0.8);
+                    vslides.slidesMoveDown(RobotActionConfig.deposit_Slide_Down_Pos, 0.8);
                     robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
@@ -139,7 +139,7 @@ public class AutoDriveHandler {
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{vSlides.Slides_Stop();})
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{vslides.Slides_Stop();})
                 .waitSeconds(1)
                 .build();
         // Validate position ranges before following trajectory.
@@ -173,7 +173,7 @@ public class AutoDriveHandler {
     }
 
     /** Slides subclass for vertical slides moving helper method.*/
-    class VerticalSlide {
+    static class VerticalSlide {
         RobotHardware robot;
         private VerticalSlide(RobotHardware robot){
             this.robot = robot;
