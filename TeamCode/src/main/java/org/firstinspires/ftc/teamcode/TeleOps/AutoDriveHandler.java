@@ -30,6 +30,7 @@ public class AutoDriveHandler {
         this.depositArmDrive = depositArmDrive;
         this.n = initialN;
         this.poseEstimate = new Pose2d(0, 0, 0); // Default placeholder pose
+        vslides = new VerticalSlide(this.robot);
     }
 
     /**
@@ -173,11 +174,12 @@ public class AutoDriveHandler {
     }
 
     /** Slides subclass for vertical slides moving helper method.*/
-    static class VerticalSlide {
+    class VerticalSlide {
         RobotHardware robot;
         private VerticalSlide(RobotHardware robot){
             this.robot = robot;
         }
+
         private void Slides_Stop() {
             robot.liftMotorLeft.setPower(0);
             robot.liftMotorRight.setPower(0);
