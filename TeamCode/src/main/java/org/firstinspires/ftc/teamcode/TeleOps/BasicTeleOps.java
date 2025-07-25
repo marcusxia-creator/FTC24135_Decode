@@ -186,8 +186,6 @@ public class BasicTeleOps extends OpMode {
         while (robot.liftMotorLeft.isBusy() || robot.liftMotorRight.isBusy()) {
                     }
         // 3) Now that we're at zero, actually reset the encoder count
-        robot.liftMotorLeft.setPower(0.0);
-        robot.liftMotorRight.setPower(0.0);
         robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
