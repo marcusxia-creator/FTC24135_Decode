@@ -210,6 +210,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
             debounceTimer.reset();
             Pose2d startPose = new Pose2d(0, -32, Math.toRadians(-90));// this is for manual testing.
             drive.setPoseEstimate(startPose);
+            drive.pinpointSetPose(startPose);
             initialRun = true;
         }
 
