@@ -206,7 +206,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         autoDriveHandler.updatePoseEstimate(poseEstimate);
 
         //reset pose GamepadCo2
-        if (gamepadCo1.getButton(BACK) && debounceTimer.seconds() > 0.2) {
+        if (gamepadCo2.getButton(BACK) && debounceTimer.seconds() > 0.2) {
             debounceTimer.reset();
             Pose2d startPose = new Pose2d(0, -32, Math.toRadians(-90));// this is for manual testing.
             drive.setPoseEstimate(startPose);
@@ -215,7 +215,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
 
         // Button BACK to reset vertical slide position to bottom.
-        if (gamepadCo2.getButton(BACK) && !gamepadCo2.getButton(LEFT_BUMPER) && isButtonDebounced()){
+        if (gamepadCo1.getButton(BACK) && !gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()){
             debounceTimer.reset();
             robot.liftMotorLeft.setTargetPosition(0);
             robot.liftMotorRight.setTargetPosition(0);
