@@ -152,6 +152,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
         //Deposit Arm control
         depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry); // Pass parameters as needed);
+        depositArmDrive.Init();
 
         //Intake Arm Control
         intakeArmDrive = new FiniteStateMachineIntake(robot, gamepadCo1,gamepadCo2, depositArmDrive);
@@ -213,7 +214,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         }
 
 
-        // Button B to reset vertical slide position to bottom.
+        // Button BACK to reset vertical slide position to bottom.
         if (gamepadCo1.getButton(BACK) && !gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()){
             debounceTimer.reset();
             robot.liftMotorLeft.setTargetPosition(0);
@@ -224,12 +225,14 @@ public class BasicTeleOps_SemiAuto extends OpMode {
             robot.liftMotorRight.setPower(0.3);
             while (robot.liftMotorLeft.isBusy()||robot.liftMotorRight.isBusy()){
             }
+            robot.liftMotorLeft.setPower(0);                                          // Make sure lift motor is on
+            robot.liftMotorRight.setPower(0);
             robot.liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             robot.liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             // when position is back to 0, deposit is initialized.
-            depositArmDrive.Init();
+            depositArmDrive.liftMotorInit();
         }
 
         //Bulk Reading for Motors

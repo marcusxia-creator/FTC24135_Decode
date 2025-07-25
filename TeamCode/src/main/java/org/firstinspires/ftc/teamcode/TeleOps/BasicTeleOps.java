@@ -78,7 +78,8 @@ public class BasicTeleOps extends OpMode {
         if (gamepadCo1.getButton(BACK) && isButtonDebounced()) {
             debounceTimer.reset();
             resetLiftEncoders();
-            depositArmDrive.Init();
+            //depositArmDrive.Init();
+            depositArmDrive.liftMotorInit();
         }
 
         for (LynxModule hub : allHubs) {
@@ -185,6 +186,8 @@ public class BasicTeleOps extends OpMode {
         while (robot.liftMotorLeft.isBusy() || robot.liftMotorRight.isBusy()) {
                     }
         // 3) Now that we're at zero, actually reset the encoder count
+        robot.liftMotorLeft.setPower(0.0);
+        robot.liftMotorRight.setPower(0.0);
         robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 

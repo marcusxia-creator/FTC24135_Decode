@@ -110,10 +110,12 @@ public class FiniteStateMachineDeposit {
         robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
         depositClawState = DEPOSITCLAWSTATE.OPEN;
+
+    }
+    public void liftMotorInit() {
         ///NEW ADDED 2025-07-24 - SET THE INITIAL DEPOSIT SLIDE HIGHT THE SAME AS SLIDE DOWN POSITION.
         slidesToHeightMM(RobotActionConfig.deposit_Slide_Down_Pos, 0.2);
-    }
-
+        }
     /** create a list color threshold ranges*/
 
     // Deposit Arm Control
@@ -326,8 +328,7 @@ public class FiniteStateMachineDeposit {
         }
 
         /// FORCE SLIDE GO ALL THE WAY DONW.
-        if (gamepad_1.getButton(GamepadKeys.Button.BACK)
-                && isButtonDebounced()) {
+        if (gamepad_1.getButton(GamepadKeys.Button.BACK) && isButtonDebounced()) {
             slidesToHeightMM(-10000, 0.2);
             if (hangtime.seconds() > 2) {
                 robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
