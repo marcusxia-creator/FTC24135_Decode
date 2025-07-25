@@ -245,7 +245,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 })
                 .waitSeconds(1.5)
-                /**
+
                 ///Score 3rd Sample
                 .addTemporalMarker(()-> {
                     Slides_Move(RobotActionConfig.deposit_Slide_Highbasket_Pos, 1);
@@ -273,7 +273,6 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                     robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Flat_Pos);
                 })
-                 */
                 .build();
 
         waitForStart();
