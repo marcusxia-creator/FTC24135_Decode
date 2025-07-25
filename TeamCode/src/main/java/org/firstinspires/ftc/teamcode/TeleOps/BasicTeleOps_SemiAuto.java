@@ -225,8 +225,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
             robot.liftMotorRight.setPower(0.3);
             while (robot.liftMotorLeft.isBusy()||robot.liftMotorRight.isBusy()){
             }
-            robot.liftMotorLeft.setPower(0);                                          // Make sure lift motor is on
-            robot.liftMotorRight.setPower(0);
+
             robot.liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             robot.liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
