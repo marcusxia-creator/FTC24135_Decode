@@ -157,9 +157,9 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
 
         /// Setup pinpoint
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"Pinpoint");
-        //pinpoint.setOffsets(-149.225,-131.2468);
-        //pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
-        //pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        pinpoint.setOffsets(95.25,-152.4);
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
         //pinpoint.resetPosAndIMU();
 
 
