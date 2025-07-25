@@ -327,7 +327,8 @@ public class FiniteStateMachineDeposit {
             }
         }
 
-        /// FORCE SLIDE GO ALL THE WAY DONW.
+        /// FORCE SLIDE GO ALL THE WAY DOwn.
+        /**
         if (gamepad_1.getButton(GamepadKeys.Button.BACK) && isButtonDebounced()) {
             slidesToHeightMM(-10000, 0.2);
             if (hangtime.seconds() > 2) {
@@ -335,7 +336,7 @@ public class FiniteStateMachineDeposit {
                 robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
         }
-
+        */
         //Claw CONTROL  ---- GLOBAL CONTROL ----> BUTTON A
         ClawManualControl();
         DepositClawSwitch();
