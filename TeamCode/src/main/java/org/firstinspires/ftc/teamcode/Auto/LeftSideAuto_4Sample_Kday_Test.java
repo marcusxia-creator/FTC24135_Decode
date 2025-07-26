@@ -183,7 +183,7 @@ public class LeftSideAuto_4Sample_Kday_Test extends LinearOpMode {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 })
                 .waitSeconds(1.4)
-                ///Score 3rd Sample
+                ///Score 2nd Sample on ground
                 .addTemporalMarker(()-> {
                     Slides_Move(RobotActionConfig.deposit_Slide_Highbasket_Pos, 1);
                 })
@@ -235,6 +235,7 @@ public class LeftSideAuto_4Sample_Kday_Test extends LinearOpMode {
                 })
                 .waitSeconds(1.4)
                 ///Score 3rd Sample on ground
+                .lineToLinearHeading(new Pose2d(basket_x_coordinate,basket_y_coordinate,Math.toRadians(45)))
                 .addTemporalMarker(()-> {
                     Slides_Move(RobotActionConfig.deposit_Slide_Highbasket_Pos, 1);
                 })
@@ -243,9 +244,8 @@ public class LeftSideAuto_4Sample_Kday_Test extends LinearOpMode {
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Dump);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Dump);
                 })
-                .lineToLinearHeading(new Pose2d(basket_x_coordinate,basket_y_coordinate,Math.toRadians(45)))
                 //.UNSTABLE_addTemporalMarkerOffset(0,()->{drive.setDrivePower(new Pose2d(0,0,0));})                      // wait slide riseup
-                .waitSeconds(1.5)
+                .waitSeconds(2.0)
                 .addTemporalMarker(()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);})                          // open claw
                 .waitSeconds(0.6)
                 .addTemporalMarker(()->{
