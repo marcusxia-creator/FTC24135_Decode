@@ -223,8 +223,6 @@ public class FiniteStateMachineDeposit {
                 }
                 break;
             case LIFT_WALL_PICK:
-                slidesToHeightMM(RobotActionConfig.deposit_Slide_Pick_Rear_Pos,RobotActionConfig.deposit_Slide_UpLiftPower);
-                if (liftTimer.seconds() > RobotActionConfig.waitTime) {
                         robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
                         robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
                         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Pick);
@@ -232,7 +230,6 @@ public class FiniteStateMachineDeposit {
                         depositClawState = DEPOSITCLAWSTATE.OPEN;
                         liftState = LIFTSTATE.LIFT_HIGHBAR;
                         liftTimer.reset();
-                    }
                 }
                 break;
             /**  2nd branch for specimen*/

@@ -91,7 +91,7 @@ public class RobotActionConfig {
     public static double deposit_Wrist_Transfer         = 0.06;                                      //original 0.05  ; 7/5 change to 0.09
     public static double deposit_Wrist_Hook             = 0.53;                                     //0.003 is 1 deg
     public static double deposit_Wrist_Flat_Pos         = 0.43;                                     //FOR Deposit Hook Flat and AUTO MODE
-    public static double deposit_Wrist_Pick             = 0.28;
+    public static double deposit_Wrist_Pick             = 0.44;
     public static double deposit_Wrist_Rear_Hook        = 0.13;
     public static double deposit_Wrist_Initial          = deposit_Wrist_Transfer;                                      //
 
@@ -100,7 +100,7 @@ public class RobotActionConfig {
     public static double deposit_Arm_Dump               = 0.48;
     public static double deposit_Arm_Dump_Prep          = 0.34;                                     //facing up
     public static double deposit_Arm_Transfer           = 0.26;
-    public static double deposit_Arm_Pick               = 1;
+    public static double deposit_Arm_Pick               = 0.89;
     public static double deposit_Arm_Hook               = 0;                                        //completely flat facing forward.
     public static double deposit_Arm_hang_Pos           = 0.3;
     public static double deposit_Arm_Rear_Hook          = 0.84;
@@ -146,6 +146,6 @@ public class RobotActionConfig {
     public static double accel_Slowness                 = 0.25;                                         // drive control speed accel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
     public static double decel_Slowness                 = 0.5;                                          // drive control speed deaccel factor (0.2 -1.0); 0.2 is the slowest, 1.0 is the fastest
 
-    public static int slideTickThreshold                = 20;                                           // vertical slide threshold value to determine if the slide is at position
+    public static int slideTickThreshold                = 30;                                           // vertical slide threshold value to determine if the slide is at position
     public static double Move_Distance                  = 20;                                            //20cm forward - move forward after dump sample
 }
