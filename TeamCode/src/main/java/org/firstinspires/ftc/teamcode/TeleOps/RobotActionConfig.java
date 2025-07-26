@@ -27,7 +27,7 @@ public class RobotActionConfig {
     public static double GEAR_RATIO                     = 1.5;
     public static double SPOOL_DIAMETER                 = 36;                                         // unit in mm, 48 for large, 35.5 for small
     public static double SPOOL_CIRCUMFERENCE            = SPOOL_DIAMETER*Math.PI;                       //151MM for 35.5mm diameter
-    public static double TICKS_PER_MM_SLIDES            = COUNTS_PER_MOTOR_GOBILDA_435/(0.66*SPOOL_CIRCUMFERENCE) ;     //3.45 tick per MM
+    public static double TICKS_PER_MM_SLIDES            = COUNTS_PER_MOTOR_GOBILDA_435/(0.66*SPOOL_CIRCUMFERENCE) ;     //5.154 tick per MM
 
     //Intake Configure
     public static double intake_Slide_Extension         = 0.25;                                          // range(0.04 - 0.29)
@@ -80,7 +80,7 @@ public class RobotActionConfig {
     /** Todo Deposit slide High bar Score position ?? and value??*/
     public static int deposit_Slide_Highbar_Score_Pos   = 520;                                      //542mm, 542*3.45 = 1869 ticks originally - too high when testing
     public static int deposit_Slide_Pick_Rear_Pos       = 137;                                      //120 in mm - 120*3.45 = 414 tick 250 for home wall, 120 for comp wall
-    public static int deposit_Slide_Highbasket_Pos      = 690 ;//675 in mm, highbasket point (for ticks  = 675*3.45 = 2328 ticks), 48inch - 21inch = 27inches vertical distance required.
+    public static int deposit_Slide_Highbasket_Pos      = 675 ;//675 in mm, highbasket point (for ticks  = 675*5.154 = 3478.9 ticks), 48inch - 21inch = 27inches vertical distance required.
     public static int deposit_Slide_Hang_Pos = 500;
     // slide maximum  length  = 29 inchs ~ 736 mm and 10degree incline, so 28 inches maximum vertical distance.
 
