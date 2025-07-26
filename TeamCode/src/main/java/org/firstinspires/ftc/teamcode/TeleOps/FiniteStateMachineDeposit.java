@@ -114,7 +114,7 @@ public class FiniteStateMachineDeposit {
     }
     public void liftMotorInit() {
         ///NEW ADDED 2025-07-24 - SET THE INITIAL DEPOSIT SLIDE HIGHT THE SAME AS SLIDE DOWN POSITION.
-        slidesToHeightMM(RobotActionConfig.deposit_Slide_Down_Pos, 0.2);
+        slidesToHeightMM(RobotActionConfig.deposit_Slide_Reset_Pos, 0.3);
         }
     /** create a list color threshold ranges*/
 
