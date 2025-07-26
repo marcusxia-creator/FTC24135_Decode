@@ -80,8 +80,9 @@ public class RobotActionConfig {
     /** Todo Deposit slide High bar Score position ?? and value??*/
     public static int deposit_Slide_Highbar_Score_Pos   = 520;                                      //542mm, 542*3.45 = 1869 ticks originally - too high when testing
     public static int deposit_Slide_Pick_Rear_Pos       = 137;                                      //120 in mm - 120*3.45 = 414 tick 250 for home wall, 120 for comp wall
-    public static int deposit_Slide_Highbasket_Pos      = 675 ;//675 in mm, highbasket point (for ticks  = 675*5.154 = 3478.9 ticks), 48inch - 21inch = 27inches vertical distance required.
+    public static int deposit_Slide_Highbasket_Pos      = 675;//675 in mm, highbasket point (for ticks  = 675*5.154 = 3478.9 ticks), 48inch - 21inch = 27inches vertical distance required.
     public static int deposit_Slide_Hang_Pos = 500;
+    public static int deposit_Slide_Reset_Pos           = -700;
     // slide maximum  length  = 29 inchs ~ 736 mm and 10degree incline, so 28 inches maximum vertical distance.
 
     /**Deposit Wrist  clock wise direction for range(0-1, lowest :0)*/

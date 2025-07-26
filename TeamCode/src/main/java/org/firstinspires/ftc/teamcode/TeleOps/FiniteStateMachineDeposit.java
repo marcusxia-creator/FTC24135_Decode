@@ -114,12 +114,7 @@ public class FiniteStateMachineDeposit {
     }
     public void liftMotorInit() {
         ///NEW ADDED 2025-07-24 - SET THE INITIAL DEPOSIT SLIDE HIGHT THE SAME AS SLIDE DOWN POSITION.
-        slidesToHeightMM(RobotActionConfig.deposit_Slide_Down_Pos, 0.2);
-        while(robot.liftMotorRight.isBusy()||robot.liftMotorLeft.isBusy()){}
-        if(IsLiftDownAtPosition(RobotActionConfig.deposit_Slide_Down_Pos)) {
-            robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
+        slidesToHeightMM(RobotActionConfig.deposit_Slide_Reset_Pos, 0.3);
         }
     /** create a list color threshold ranges*/
 
