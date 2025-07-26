@@ -75,21 +75,62 @@ public class BasicTeleOps extends OpMode {
 
     @Override
     public void loop() {
-        if (gamepadCo1.getButton(BACK) && isButtonDebounced()) {
+        if (gamepadCo1.getButton(BACK) && !gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()) {
             debounceTimer.reset();
-            resetLiftEncoders();
+            robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.liftMotorLeft.setPower(-0.3);
+            robot.liftMotorRight.setPower(-0.3);
+            //resetLiftEncoders();
             //depositArmDrive.Init();
-            depositArmDrive.liftMotorInit();
+            //depositArmDrive.liftMotorInit();
         }
 
         /// FORCE SLIDE GO ALL THE WAY DOwn.
-         if (gamepadCo2.getButton(BACK) && isButtonDebounced()) {
-             robot.liftMotorLeft.setTargetPosition(-10000);
-             robot.liftMotorRight.setTargetPosition(-10000);
-             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-             robot.liftMotorLeft.setPower(0.3);
-             robot.liftMotorRight.setPower(0.3);
+         if (gamepadCo1.getButton(BACK) && gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced())
+         { /**
+             int resetPositionL = Math.abs(robot.liftMotorLeft.getCurrentPosition());
+             int resetPositionR = Math.abs(robot.liftMotorRight.getCurrentPosition());
+             int resetPosition = (resetPositionL+resetPositionR)/2;
+             if (resetPosition!=0) {
+                 robot.liftMotorLeft.setTargetPosition(-resetPosition);
+                 robot.liftMotorRight.setTargetPosition(-resetPosition);
+                 robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                 robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                 robot.liftMotorLeft.setPower(0.3);
+                 robot.liftMotorRight.setPower(0.3);
+             } else {
+                 robot.liftMotorLeft.setTargetPosition(-4000);
+                 robot.liftMotorRight.setTargetPosition(-4000);
+                 robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                 robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                 robot.liftMotorLeft.setPower(0.3);
+                 robot.liftMotorRight.setPower(0.3);
+                 while (robot.liftMotorLeft.isBusy()||robot.liftMotorRight.isBusy()){
+                     if(gamepadCo2.getButton(BACK)&&gamepadCo2.getButton(LEFT_BUMPER)&& isButtonDebounced()){
+                         //Stop motor
+                         robot.liftMotorLeft.setPower(0.0);
+                         robot.liftMotorRight.setPower(0.0);
+                         // 3) Now that we're at zero, actually reset the encoder count
+                         robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                         robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                         // 4) Return to a normal run mode if you still want to drive by power/velocity
+                         robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                         robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                         break;
+                     }
+                 }
+             }
+          */
+             robot.liftMotorLeft.setPower(0.0);
+             robot.liftMotorRight.setPower(0.0);
+             // 3) Now that we're at zero, actually reset the encoder count
+             robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+             robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+             // 4) Return to a normal run mode if you still want to drive by power/velocity
+             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
          }
 
         for (LynxModule hub : allHubs) {
@@ -185,23 +226,27 @@ public class BasicTeleOps extends OpMode {
     }
      */
 
-    private void resetLiftEncoders() {
-        robot.liftMotorLeft.setTargetPosition(0);
-        robot.liftMotorRight.setTargetPosition(0);
-        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.liftMotorLeft.setPower(0.3);
-        robot.liftMotorRight.setPower(0.3);
+    private void resetLiftEncoders()
+    {
+        /**
+         *         robot.liftMotorLeft.setTargetPosition(-4000);
+         *         robot.liftMotorRight.setTargetPosition(-4000);
+         *         robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+         *         robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+         */
 
-        while (robot.liftMotorLeft.isBusy() || robot.liftMotorRight.isBusy()) {
-                    }
-        // 3) Now that we're at zero, actually reset the encoder count
-        robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.liftMotorLeft.setPower(-0.3);
+        robot.liftMotorRight.setPower(-0.3);
+        /**
+        while (
+                (robot.liftMotorLeft.isBusy()||robot.liftMotorRight.isBusy())) {
+            if (gamepadCo1.getButton(BACK) && gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()) {
+                break;
+            }
+        }
+         */
+        //Stop motor
 
-        // 4) Return to a normal run mode if you still want to drive by power/velocity
-        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     // Debouncer helper
     private boolean isButtonDebounced() {
