@@ -166,7 +166,7 @@ public class LeftSideAuto_4Sample_Kday_Test extends LinearOpMode {
                 .addTemporalMarker(()->{
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Grab);
                 })
-                /**
+
                 .waitSeconds(0.25)
                 .addTemporalMarker(()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);})
                 .waitSeconds(0.25)
@@ -179,6 +179,7 @@ public class LeftSideAuto_4Sample_Kday_Test extends LinearOpMode {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 })
+                /**
                 .UNSTABLE_addTemporalMarkerOffset(1.0, () -> {
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Close);
                 })
