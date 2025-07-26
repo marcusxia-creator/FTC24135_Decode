@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Auto.trajectorysequence.TrajectorySequence
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
-@Autonomous(name="RightSideAuto_4Specimen_Floor_Pick", group="org.firstinspires.ftc.teamcode.Auto")
+@Autonomous(name="RightSideAuto_3Specimen_Floor_Pick_KDAY", group="org.firstinspires.ftc.teamcode.Auto")
 @Config
 public class RightSideAuto_3Specimen_KDay extends LinearOpMode {
 
@@ -31,7 +31,7 @@ public class RightSideAuto_3Specimen_KDay extends LinearOpMode {
     public static double first_sample_point_2_X = 33;
     public static double first_sample_point_2_Y = -47; //heading = -45
 
-    public static double second_sample_point_1_X = 41;
+    public static double second_sample_point_1_X = 39.5;
     public static double second_sample_point_1_Y = -45; //heading = 45
 
     public static double clawOpenTimer = 0.1;
@@ -82,7 +82,7 @@ public class RightSideAuto_3Specimen_KDay extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0.1,()->{
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                 })
-                .waitSeconds(0.2)
+                .waitSeconds(4.0)
                 //back out of bar position -1st time
                 .lineToLinearHeading(new Pose2d(bar_out_point_1_X, bar_out_point_1_Y, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{
@@ -99,7 +99,7 @@ public class RightSideAuto_3Specimen_KDay extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
                 })
-                .waitSeconds(4)
+                .waitSeconds(0.3)
                 .lineToLinearHeading(new Pose2d(first_sample_point_1_X, first_sample_point_1_Y, Math.toRadians(45)))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     drive.setDrivePower(new Pose2d(0, 0, 0));
