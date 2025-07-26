@@ -101,11 +101,11 @@ public class FiniteStateMachineDepositFloorPick {
     public void liftMotorInit() {
         ///NEW ADDED 2025-07-24 - SET THE INITIAL DEPOSIT SLIDE HIGHT THE SAME AS SLIDE DOWN POSITION.
         slidesToHeightMM(RobotActionConfig.deposit_Slide_Down_Pos, 0.2);
-        while(robot.liftMotorRight.isBusy()||robot.liftMotorLeft.isBusy()){}
-        if(IsLiftDownAtPosition(RobotActionConfig.deposit_Slide_Down_Pos)) {
-            robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        while (robot.liftMotorLeft.isBusy() || robot.liftMotorRight.isBusy()) {
         }
+        // 3) Now that we're at zero, actually reset the encoder count
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
     /** create a list color threshold ranges*/
 
