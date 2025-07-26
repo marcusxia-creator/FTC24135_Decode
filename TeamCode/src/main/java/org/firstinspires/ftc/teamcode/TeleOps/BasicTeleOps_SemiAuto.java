@@ -106,8 +106,8 @@ public class BasicTeleOps_SemiAuto extends OpMode {
     public SampleMecanumDriveCancelable drive;                        //For robot semiAuto drive
 
     //Robot Intake & Deposit
-    public FiniteStateMachineDeposit depositArmDrive;       //For Robot Deposit Arm
-    public FiniteStateMachineIntake intakeArmDrive;         //For Robot Intake
+    public FiniteStateMachineDepositFloorPick depositArmDrive;       //For Robot Deposit Arm
+    public FiniteStateMachineIntakeFloorPick intakeArmDrive;         //For Robot Intake
 
     public ServoTest servoTest;                             //For Servo Testing
 
@@ -151,11 +151,11 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         robotDrive.Init();                                                              // Initialize RobotDrive
 
         //Deposit Arm control
-        depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry); // Pass parameters as needed);
+        depositArmDrive = new FiniteStateMachineDepositFloorPick(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry); // Pass parameters as needed);
         depositArmDrive.Init();
 
         //Intake Arm Control
-        intakeArmDrive = new FiniteStateMachineIntake(robot, gamepadCo1,gamepadCo2, depositArmDrive);
+        intakeArmDrive = new FiniteStateMachineIntakeFloorPick(robot, gamepadCo1,gamepadCo2, depositArmDrive);
         intakeArmDrive.Init();
 
         //Servo Testing
@@ -276,12 +276,12 @@ public class BasicTeleOps_SemiAuto extends OpMode {
                 robotDrive.DriveLoop(); // Use RobotDrive methods to drive the robot
                 //Deposit Arm Control
                 depositArmDrive.DepositArmLoop();
-                FiniteStateMachineDeposit.LIFTSTATE liftState = depositArmDrive.liftState;
-                FiniteStateMachineDeposit.DEPOSITCLAWSTATE depositClawState = depositArmDrive.depositClawState;
+                FiniteStateMachineDepositFloorPick.LIFTSTATE liftState = depositArmDrive.liftState;
+                FiniteStateMachineDepositFloorPick.DEPOSITCLAWSTATE depositClawState = depositArmDrive.depositClawState;
                 //Intake Arm Control
                 intakeArmDrive.IntakeArmLoop();
-                FiniteStateMachineIntake.INTAKESTATE intakeState = intakeArmDrive.intakeState;
-                FiniteStateMachineIntake.INTAKECLAWSTATE intakeClawState = intakeArmDrive.intakeClawState;
+                FiniteStateMachineIntakeFloorPick.INTAKESTATE intakeState = intakeArmDrive.intakeState;
+                FiniteStateMachineIntakeFloorPick.INTAKECLAWSTATE intakeClawState = intakeArmDrive.intakeClawState;
                 telemetry.addLine("---------------------");
                 telemetry.addData("Deposit State", liftState);
                 telemetry.addData("Deposit Claw State", depositClawState);

@@ -18,13 +18,13 @@ public class AutoDriveHandler {
 
     private RobotHardware robot;
 
-    private final FiniteStateMachineDeposit depositArmDrive;
+    private final FiniteStateMachineDepositFloorPick depositArmDrive;
 
     private ElapsedTime holdTimer = new ElapsedTime();
 
     private VerticalSlide vslides;
 
-    public AutoDriveHandler(SampleMecanumDriveCancelable drive, RobotHardware robot, int initialN, FiniteStateMachineDeposit depositArmDrive) {
+    public AutoDriveHandler(SampleMecanumDriveCancelable drive, RobotHardware robot, int initialN, FiniteStateMachineDepositFloorPick depositArmDrive) {
         this.drive = drive;
         this.robot = robot;
         this.depositArmDrive = depositArmDrive;
@@ -72,7 +72,7 @@ public class AutoDriveHandler {
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
-                    depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.OPEN);
+                    depositArmDrive.SetDepositClawState(FiniteStateMachineDepositFloorPick.DEPOSITCLAWSTATE.OPEN);
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Wait);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
@@ -136,7 +136,7 @@ public class AutoDriveHandler {
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Extension_Wait);
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
-                    depositArmDrive.SetDepositClawState(FiniteStateMachineDeposit.DEPOSITCLAWSTATE.OPEN);
+                    depositArmDrive.SetDepositClawState(FiniteStateMachineDepositFloorPick.DEPOSITCLAWSTATE.OPEN);
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Grab);
                 })
