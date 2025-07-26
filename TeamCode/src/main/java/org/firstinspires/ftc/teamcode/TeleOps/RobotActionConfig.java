@@ -75,7 +75,7 @@ public class RobotActionConfig {
 
     /** Deposit slide position Config */
     public static int deposit_Slide_Down_Pos            = 1;                                        //2mm from bottom u channel
-    public static int deposit_Slide_Rear_Highbar_Pos    = 278;                                      //303 mm, 303 *3.45= 1046
+    public static int deposit_Slide_Rear_Highbar_Pos    = 255;                                      //303 mm, 303 *3.45= 1046
     public static int deposit_Slide_Highbar_Pos         = 323;                                      //323mm, 323*3.45 = 1114 ticks
     /** Todo Deposit slide High bar Score position ?? and value??*/
     public static int deposit_Slide_Highbar_Score_Pos   = 520;                                      //542mm, 542*3.45 = 1869 ticks originally - too high when testing
@@ -91,20 +91,20 @@ public class RobotActionConfig {
     public static double deposit_Wrist_Dump             = 0.6;                                      //
     public static double deposit_Wrist_Transfer         = 0.06;                                      //original 0.05  ; 7/5 change to 0.09
     public static double deposit_Wrist_Hook             = 0.53;                                     //0.003 is 1 deg
-    public static double deposit_Wrist_Flat_Pos         = 0.43;                                     //FOR Deposit Hook Flat and AUTO MODE
-    public static double deposit_Wrist_Pick             = 0.44;
+    public static double deposit_Wrist_Flat_Pos         = 0.42;                                     //FOR Deposit Hook Flat and AUTO MODE
+    public static double deposit_Wrist_Pick             = 0.38;
     public static double deposit_Wrist_Rear_Hook        = 0.13;
     public static double deposit_Wrist_Initial          = deposit_Wrist_Transfer;                                      //
 
     /**Deposit_Arm  range(0 - 0.9)*/
     /** Todo Deposit Arm installation poisition ?? and value??*/
-    public static double deposit_Arm_Dump               = 0.48;
-    public static double deposit_Arm_Dump_Prep          = 0.34;                                     //facing up
-    public static double deposit_Arm_Transfer           = 0.26;
-    public static double deposit_Arm_Pick               = 0.89;
-    public static double deposit_Arm_Hook               = 0;                                        //completely flat facing forward.
-    public static double deposit_Arm_hang_Pos           = 0.3;
-    public static double deposit_Arm_Rear_Hook          = 0.84;
+    public static double deposit_Arm_Dump               = 0.52;
+    public static double deposit_Arm_Dump_Prep          = 0.38;                                     //facing up
+    public static double deposit_Arm_Transfer           = 0.28;
+    public static double deposit_Arm_Pick               = 0.92;
+    public static double deposit_Arm_Hook               = 0.04;                                        //completely flat facing forward.
+    public static double deposit_Arm_hang_Pos           = 0.34;
+    public static double deposit_Arm_Rear_Hook          = 0.88;
     public static double deposit_Arm_Initial          = deposit_Arm_Transfer;                                      //
 
     /**Deposit_Claw  range(0-0.4, lowest :0., fully open: 0.36 )*/

@@ -56,7 +56,7 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
         SampleMecanumDriveCancelable drive = new SampleMecanumDriveCancelable(hardwareMap);
 
         robot.init(hardwareMap);
-
+        robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
         robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Side_Drop);
         robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Side_Drop);
         robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
@@ -87,12 +87,12 @@ public class LeftSideAuto_4Sample_Provincial extends LinearOpMode {
                 })
                 .lineToLinearHeading(new Pose2d(basket_x_coordinate,basket_y_coordinate,Math.toRadians(45)))                                //run to basket
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{drive.setDrivePower(new Pose2d(0,0,0));})                                                                                                    // wait slide riseup
-                .waitSeconds(0.4)
+                .waitSeconds(0.6)
                 .addTemporalMarker(()->{
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                     robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
                 })                          // open claw
-                .waitSeconds(0.5)                                                                                                           // this is wait time for dropping sample - wait for open claw to drop
+                .waitSeconds(0.7)                                                                                                           // this is wait time for dropping sample - wait for open claw to drop
                 .addTemporalMarker(()->{
                     robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);                                          // at global time 1.5 second mark to back to transfer position
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);

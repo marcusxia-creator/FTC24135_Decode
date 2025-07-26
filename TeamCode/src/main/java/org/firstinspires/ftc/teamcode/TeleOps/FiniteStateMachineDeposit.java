@@ -300,6 +300,8 @@ public class FiniteStateMachineDeposit {
         // Hung ----> Action active after 100 secs.
             if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
                     && isButtonDebounced()) {
+                robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
+                robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                 slidesToHeightMM(RobotActionConfig.deposit_Slide_Hang_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
             }
 
