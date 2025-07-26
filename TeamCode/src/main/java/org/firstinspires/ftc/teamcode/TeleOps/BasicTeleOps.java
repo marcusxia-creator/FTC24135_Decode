@@ -77,6 +77,8 @@ public class BasicTeleOps extends OpMode {
     public void loop() {
         if (gamepadCo1.getButton(BACK) && !gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()) {
             debounceTimer.reset();
+            robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.liftMotorLeft.setPower(-0.3);
             robot.liftMotorRight.setPower(-0.3);
             //resetLiftEncoders();
