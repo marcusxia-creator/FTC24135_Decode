@@ -248,7 +248,7 @@ public class FiniteStateMachineIntake {
                     robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);
                 }
 
-                if (intakeTimer.seconds() > RobotActionConfig.waitTime*3) {
+                if (intakeTimer.seconds() > RobotActionConfig.waitTime*4) {
                     robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
                     intakeState = INTAKESTATE.INTAKE_DROP_OFF;
