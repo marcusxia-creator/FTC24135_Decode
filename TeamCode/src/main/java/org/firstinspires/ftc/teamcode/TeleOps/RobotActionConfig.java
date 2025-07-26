@@ -59,7 +59,7 @@ public class RobotActionConfig {
     public static double intake_Wrist_highbasketpause   = 0.44;                                    // 5 degree away from transfer
     public static double intake_Wrist_Idle              = 0.47;
     public static double intake_Wrist_Grab              = 0.7;
-    public static double intake_Wrist_Transfer          = 0.42;
+    public static double intake_Wrist_Transfer          = 0.43;
     public static double intake_Wrist_Side_Drop         = 0.54;
     public static double intake_Wrist_Initial           = intake_Wrist_Idle;
     public static double intake_Wrist_Floor_Push        =0.44;
@@ -89,7 +89,7 @@ public class RobotActionConfig {
     /** Todo Deposit Wrist installation poisition ?? and value??*/
 
     public static double deposit_Wrist_Dump             = 0.6;                                      //
-    public static double deposit_Wrist_Transfer         = 0.06;                                      //original 0.05  ; 7/5 change to 0.09
+    public static double deposit_Wrist_Transfer         = 0.04;                                      //original 0.05  ; 7/5 change to 0.09
     public static double deposit_Wrist_Hook             = 0.53;                                     //0.003 is 1 deg
     public static double deposit_Wrist_Flat_Pos         = 0.42;                                     //FOR Deposit Hook Flat and AUTO MODE
     public static double deposit_Wrist_Pick             = 0.38;

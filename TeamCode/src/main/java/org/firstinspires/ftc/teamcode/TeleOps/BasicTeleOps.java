@@ -131,6 +131,9 @@ public class BasicTeleOps extends OpMode {
              // 4) Return to a normal run mode if you still want to drive by power/velocity
              robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
              robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+             robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
+             robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+             robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
          }
 
         for (LynxModule hub : allHubs) {
