@@ -218,8 +218,6 @@ public class FiniteStateMachineDeposit {
                     ) {
                         robot.liftMotorLeft.setPower(0); // Stop the motor after reaching the low position
                         robot.liftMotorRight.setPower(0);
-                        robot.liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-                        robot.liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
                         liftState = LIFTSTATE.LIFT_START;
                     }
                 }
@@ -327,16 +325,6 @@ public class FiniteStateMachineDeposit {
             }
         }
 
-        /// FORCE SLIDE GO ALL THE WAY DOwn.
-        /**
-        if (gamepad_1.getButton(GamepadKeys.Button.BACK) && isButtonDebounced()) {
-            slidesToHeightMM(-10000, 0.2);
-            if (hangtime.seconds() > 2) {
-                robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            }
-        }
-        */
         //Claw CONTROL  ---- GLOBAL CONTROL ----> BUTTON A
         ClawManualControl();
         DepositClawSwitch();

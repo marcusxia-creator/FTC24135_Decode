@@ -200,7 +200,7 @@ public class FiniteStateMachineIntake {
                     intakeClawState = INTAKECLAWSTATE.CLOSE;    /// Intake claw is controlled by state, state drive the open/close by IntakeClawSwitch() helper
                     IntakeClawSwitch();
                 }
-                if (intakeTimer.seconds() > RobotActionConfig.waitTime * 2.5) {
+                if (intakeTimer.seconds() > RobotActionConfig.waitTime * 3.5) {
                     robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);// wait 0.5 second for slide retract 2/3
                     intakeTimer.reset();
@@ -242,7 +242,7 @@ public class FiniteStateMachineIntake {
                     intakeClawState = INTAKECLAWSTATE.CLOSE;
                     IntakeClawSwitch();
                 }
-                if (intakeTimer.seconds() > RobotActionConfig.waitTime*2) {
+                if (intakeTimer.seconds() > RobotActionConfig.waitTime*3.5) {
                     robot.intakeRotationServo.setPosition(RobotActionConfig.intake_Rotation_Mid);
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Idle);
                     robot.intakeTurretServo.setPosition(RobotActionConfig.intake_Turret_Mid);

@@ -82,6 +82,16 @@ public class BasicTeleOps extends OpMode {
             depositArmDrive.liftMotorInit();
         }
 
+        /// FORCE SLIDE GO ALL THE WAY DOwn.
+         if (gamepadCo2.getButton(BACK) && isButtonDebounced()) {
+             robot.liftMotorLeft.setTargetPosition(-10000);
+             robot.liftMotorRight.setTargetPosition(-10000);
+             robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+             robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+             robot.liftMotorLeft.setPower(0.3);
+             robot.liftMotorRight.setPower(0.3);
+         }
+
         for (LynxModule hub : allHubs) {
             BulkData bulkData = hub.getBulkData();
             if (bulkData != null) {

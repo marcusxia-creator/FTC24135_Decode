@@ -74,12 +74,12 @@ public class RobotActionConfig {
     public static double intake_Turret_Side_Drop        = 0.15;
 
     /** Deposit slide position Config */
-    public static int deposit_Slide_Down_Pos            = 2;                                        //2mm from bottom u channel
+    public static int deposit_Slide_Down_Pos            = 1;                                        //2mm from bottom u channel
     public static int deposit_Slide_Rear_Highbar_Pos    = 278;                                      //303 mm, 303 *3.45= 1046
     public static int deposit_Slide_Highbar_Pos         = 323;                                      //323mm, 323*3.45 = 1114 ticks
     /** Todo Deposit slide High bar Score position ?? and value??*/
     public static int deposit_Slide_Highbar_Score_Pos   = 520;                                      //542mm, 542*3.45 = 1869 ticks originally - too high when testing
-    public static int deposit_Slide_Pick_Rear_Pos       = 240;                                      //120 in mm - 120*3.45 = 414 tick 250 for home wall, 120 for comp wall
+    public static int deposit_Slide_Pick_Rear_Pos       = 137;                                      //120 in mm - 120*3.45 = 414 tick 250 for home wall, 120 for comp wall
     public static int deposit_Slide_Highbasket_Pos      = 690 ;//675 in mm, highbasket point (for ticks  = 675*3.45 = 2328 ticks), 48inch - 21inch = 27inches vertical distance required.
     public static int deposit_Slide_Hang_Pos = 500;
     // slide maximum  length  = 29 inchs ~ 736 mm and 10degree incline, so 28 inches maximum vertical distance.
