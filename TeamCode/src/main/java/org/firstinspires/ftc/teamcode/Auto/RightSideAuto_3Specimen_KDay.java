@@ -82,7 +82,7 @@ public class RightSideAuto_3Specimen_KDay extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0.1,()->{
                     robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
                 })
-                .waitSeconds(4.0)
+                .waitSeconds(0.5)
                 //back out of bar position -1st time
                 .lineToLinearHeading(new Pose2d(bar_out_point_1_X, bar_out_point_1_Y, Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{

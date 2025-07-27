@@ -53,6 +53,7 @@ public class RobotActionConfig {
     public static double intake_Arm_Wait                = intake_Arm_Idle;                          //
     public static double intake_Arm_Floor_Push          = 0.73;
     public static double intake_Arm_Initial             = intake_Arm_Transfer;
+    public static double intake_Arm_Grab_Auto           = intake_Arm_Grab-0.01;
 
     /**Intake Wrist counter clock wise from 0 to 1 */
     /** Todo Intake Wrist installation position ?? and value??*/

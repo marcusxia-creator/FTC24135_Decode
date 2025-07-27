@@ -51,14 +51,12 @@ public class BasicTeleOps extends OpMode {
         robotDrive.Init();
 
         depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry);
-        depositArmDrive.Init();
 
 
         intakeArmDrive = new FiniteStateMachineIntake(robot, gamepadCo1, gamepadCo2, depositArmDrive);
         intakeArmDrive.Init();
 
         servoTest = new ServoTest(robot, gamepadCo1, gamepadCo2);
-        servoTest.init();
 
         allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -131,9 +129,7 @@ public class BasicTeleOps extends OpMode {
              // 4) Return to a normal run mode if you still want to drive by power/velocity
              robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
              robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-             robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
-             robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
-             robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+             depositArmDrive.Init();
          }
 
         for (LynxModule hub : allHubs) {
