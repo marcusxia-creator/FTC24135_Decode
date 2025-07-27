@@ -46,7 +46,7 @@ public class RobotActionConfig {
      * 0.12 = 30deg - 0.004 = 1 deg*/
     /** Todo Intake Arm installation poisition ?? and value??*/
     public static double intake_Arm_Pick                = 0.48;
-    public static double intake_Arm_Grab                = 0.52;                                     // 0.54 is a guess value
+    public static double intake_Arm_Grab                = 0.53;                                     // 0.54 is a guess value
     public static double intake_Arm_Idle                = 0.36;                                     // 0.38 is 30 degree up from pick position - flat.
     public static double intake_Arm_Transfer            = 0.15;                                      // facing up straight
     public static double intake_Arm_Side_Drop           = 0.36;                                     // 40 degree up from pick position - flat

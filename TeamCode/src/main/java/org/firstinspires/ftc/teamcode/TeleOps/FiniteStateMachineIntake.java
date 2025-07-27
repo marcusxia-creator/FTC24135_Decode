@@ -146,13 +146,13 @@ public class FiniteStateMachineIntake {
                     if ((gamepad_1.getButton(LEFT_BUMPER) || gamepad_2.getButton(LEFT_BUMPER)) && isButtonDebounced()) {
                         //use to be 0.01
                         rotationPosition += 0.15;
-                        robot.intakeRotationServo.setPosition(Range.clip(rotationPosition, 0, 1));
+                        robot.intakeRotationServo.setPosition(Range.clip(rotationPosition, 0.18, 0.78));
                     }
                     /** claw rotation RIGHT BUMPER */
                     if ((gamepad_1.getButton(RIGHT_BUMPER) || gamepad_2.getButton(RIGHT_BUMPER)) && (isButtonDebounced())) {
                         //use to be 0.01
                         rotationPosition -= 0.15;
-                        robot.intakeRotationServo.setPosition(Range.clip(rotationPosition, 0, 1));
+                        robot.intakeRotationServo.setPosition(Range.clip(rotationPosition, 0.18, 0.78));
                     }
 
                     /** intake arm up DPAD UP */
@@ -270,7 +270,7 @@ public class FiniteStateMachineIntake {
                 }
                 break;
             case INTAKE_COLOR_SAMPLE_DROP:
-                if (intakeTimer.seconds() > RobotActionConfig.intakeTurretTurnTime+RobotActionConfig.waitTime) {
+                if (intakeTimer.seconds() > RobotActionConfig.intakeTurretTurnTime+0.1) {
                     intakeClawState = INTAKECLAWSTATE.OPEN;
                     IntakeClawSwitch();
                 }
