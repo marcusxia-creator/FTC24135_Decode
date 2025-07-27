@@ -17,7 +17,8 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 @Autonomous(name="LeftSideAuto_4_Sample_KdayTest", group="org.firstinspires.ftc.teamcode.Auto")
 @Config
-public class LeftSideAuto_4Sample_Kday_Test extends LinearOpMode {
+public class
+LeftSideAuto_4Sample_Kday_Test extends LinearOpMode {
 
     RobotHardware robot = new RobotHardware(hardwareMap);                          //RobotHardware is from TeleOps.
     static final double COUNTS_PER_MOTOR_GOBILDA_435 = 384.5;
@@ -105,16 +106,16 @@ public class LeftSideAuto_4Sample_Kday_Test extends LinearOpMode {
                 })                    //wrist transfer
                 .lineToLinearHeading(new Pose2d(first_sample_x_coordinate,first_sample_y_coordinate,Math.toRadians(90)))
                 .UNSTABLE_addTemporalMarkerOffset(-0.5,()->{Slides_MoveDown(RobotActionConfig.deposit_Slide_Down_Pos,0.9);}) // Lower slides dist in mm
-                .waitSeconds(1.4)
+                .waitSeconds(1.3)
                 .addTemporalMarker(this::Slides_Stop)
                 /** move to 1st sample on ground*/
                 /** pick 1st sample on ground*/
                 .addTemporalMarker(()->{
-                    robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Grab);
+                    robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Grab-0.1);
                 })
-                .waitSeconds(0.25)
+                .waitSeconds(0.35)
                 .addTemporalMarker(()->{robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Close);})
-                .waitSeconds(0.2)
+                .waitSeconds(0.25)
                 .addTemporalMarker(() -> {
                     robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_Transfer);
                     robot.intakeArmServo.setPosition(RobotActionConfig.intake_Arm_Transfer);
@@ -130,7 +131,7 @@ public class LeftSideAuto_4Sample_Kday_Test extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(1.1, () -> {
                     robot.intakeClawServo.setPosition(RobotActionConfig.intake_Claw_Open);
                 })
-                .waitSeconds(1.4)
+                .waitSeconds(1.2)
                 ///Score 1st Sample
                 .addTemporalMarker(()-> {
                     Slides_Move(RobotActionConfig.deposit_Slide_Highbasket_Pos, 1);
@@ -141,10 +142,10 @@ public class LeftSideAuto_4Sample_Kday_Test extends LinearOpMode {
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Dump);
                 })
                 .lineToLinearHeading(new Pose2d(basket_x_coordinate,basket_y_coordinate,Math.toRadians(45)))                                //run to basket
-                //.UNSTABLE_addTemporalMarkerOffset(0,()->{drive.setDrivePower(new Pose2d(0,0,0));})                      // wait slide riseup
+                //.UNSTABLE_addTemporalMarkerOffset(0,()->{drive.setDrivePower(new Pose2d(0,0,0));})                                        // wait slide riseup
                 .waitSeconds(1.0)
                 .addTemporalMarker(()->{robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);})                          // open claw
-                .waitSeconds(0.6)                                                                                                           // this is wait time for dropping sample - wait for open claw to drop
+                .waitSeconds(0.3)                                                                                                           // this is wait time for dropping sample - wait for open claw to drop
                 ///go to 2nd sample on the ground
                 .lineToLinearHeading(new Pose2d(second_sample_x_coordinate,second_sample_y_coordinate,Math.toRadians(90)))
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{Slides_MoveDown(RobotActionConfig.deposit_Slide_Down_Pos,0.9);}) // Lower slides dist in mm
