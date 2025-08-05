@@ -139,7 +139,7 @@ public class RobotActionConfig {
 
     /**DEPOSIT vertical slide power*/
     public static double deposit_Slide_UpLiftPower      = 1.0;                                          // slides up power
-    public static double deposit_Slide_DownLiftPower    = 0.8;                                          // slides down power
+    public static double deposit_Slide_DownLiftPower    = 0.9;                                          // slides down power
 
     //distnace
     public static double backwardDist                   = -25;                                           // distance in cm, retract distance after hook specimen on high bar
