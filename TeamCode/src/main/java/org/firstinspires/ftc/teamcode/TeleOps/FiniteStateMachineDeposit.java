@@ -114,6 +114,11 @@ public class FiniteStateMachineDeposit {
         depositClawState = DEPOSITCLAWSTATE.OPEN;
     }
 
+    public void liftMotorInit() {
+        ///NEW ADDED 2025-07-24 - SET THE INITIAL DEPOSIT SLIDE HIGHT THE SAME AS SLIDE DOWN POSITION.
+        slidesToHeightMM(RobotActionConfig.deposit_Slide_Reset_Pos, 0.3);
+    }
+
     /** create a list color threshold ranges*/
 
     // Deposit Arm Control
@@ -198,7 +203,7 @@ public class FiniteStateMachineDeposit {
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);}
                 */
                 if (liftTimer.seconds()>0.25){
-                move(RobotActionConfig.Move_Distance);}
+                driveOut(RobotActionConfig.Move_Distance);}
 
                 if (liftTimer.seconds()>1.2){
                     liftTimer.reset();
@@ -224,16 +229,13 @@ public class FiniteStateMachineDeposit {
                 }
                 break;
             case LIFT_WALL_PICK:
-                slidesToHeightMM(RobotActionConfig.deposit_Slide_Pick_Rear_Pos,RobotActionConfig.deposit_Slide_UpLiftPower);
-                if (liftTimer.seconds() > RobotActionConfig.waitTime) {
-                        robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
-                        robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
-                        robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Pick);
-                    if (liftTimer.seconds() > RobotActionConfig.waitTime+0.6) {
-                        depositClawState = DEPOSITCLAWSTATE.OPEN;
-                        liftState = LIFTSTATE.LIFT_HIGHBAR;
-                        liftTimer.reset();
-                    }
+                robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
+                robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
+                robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Pick);
+                if (liftTimer.seconds() > RobotActionConfig.waitTime+0.6) {
+                    depositClawState = DEPOSITCLAWSTATE.OPEN;
+                    liftState = LIFTSTATE.LIFT_HIGHBAR;
+                    liftTimer.reset();
                 }
                 break;
             /**  2nd branch for specimen*/
@@ -302,25 +304,30 @@ public class FiniteStateMachineDeposit {
             liftState = LIFTSTATE.LIFT_START;
         }
         // Hung ----> Action active after 100 secs.
-        //if (runtime.seconds() > 100){
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
                 && isButtonDebounced()) {
-            robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_hang_Pos);
-            robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_hang_Pos);
-            if (hangtime.seconds() > 0.5) {
-            }
+            robot.intakeLeftSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
+            robot.intakeRightSlideServo.setPosition(RobotActionConfig.intake_Slide_Retract);
+            slidesToHeightMM(RobotActionConfig.deposit_Slide_Hang_Pos, RobotActionConfig.deposit_Slide_UpLiftPower);
         }
-        if (gamepad_1.getButton(GamepadKeys.Button.BACK)
+
+        if (gamepad_1.getButton(GamepadKeys.Button.DPAD_DOWN) && gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
                 && isButtonDebounced()) {
-            slidesToHeightMM(-10000, 0.2);
-            robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
-            robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
-            robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
-            if (hangtime.seconds() > 2) {
-                robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            slidesToHeightMM(Math.max(0, getSlidesCurrentPositionMM() - 100), RobotActionConfig.deposit_Slide_UpLiftPower);
+
+            /** ///For stationary hook:
+             *  while (robot.liftMotorLeft.isBusy() & robot.liftMotorRight.isBusy()){
+             *             }
+             *             if (IsLiftAtPosition(RobotActionConfig.deposit_Slide_Hang_Pos)){
+             *                 slidesToHeightMM(RobotActionConfig.deposit_Slide_Hang_Pos + 100, RobotActionConfig.deposit_Slide_UpLiftPower);
+             *             }
+             */
+            if (gamepad_1.wasJustReleased(GamepadKeys.Button.DPAD_DOWN) && gamepad_1.wasJustReleased(GamepadKeys.Button.LEFT_BUMPER)) {
+                robot.liftMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                robot.liftMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }
         }
+
 
         //Claw CONTROL  ---- GLOBAL CONTROL ----> BUTTON A
         ClawManualControl();
@@ -406,7 +413,7 @@ public class FiniteStateMachineDeposit {
     }
 
     //Auto drive method helper
-    private void move(double distanceCm) {
+    private void driveOut(double distanceCm) {
         // Calculate target ticks based on distance
         double circumference = RobotActionConfig.WHEEL_DIAMETER_CM * Math.PI;
         double rotationsNeeded = distanceCm / circumference;

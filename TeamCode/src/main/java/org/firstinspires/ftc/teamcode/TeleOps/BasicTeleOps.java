@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Auto.drive.StandardTrackingWheelLocalizer;
@@ -77,12 +78,7 @@ public class BasicTeleOps extends OpMode {
 
     @Override
     public void loop() {
-        if (gamepadCo1.getButton(BACK) && debounceTimer.seconds() > 0.2) {
-            debounceTimer.reset();
-            resetLiftEncoders();
-            depositArmDrive.Init();
-        }
-
+        /// Lynx for Motor encoder reading
         for (LynxModule hub : allHubs) {
             BulkData bulkData = hub.getBulkData();
             if (bulkData != null) {
@@ -97,9 +93,22 @@ public class BasicTeleOps extends OpMode {
                 }
             }
         }
-
+        /// Drive train control
         robotDrive.DriveLoop();
 
+        /// LEFT BUMPER + BACK Button for lower deposit
+        if (gamepadCo1.getButton(BACK) && gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()) {
+            debounceTimer.reset();
+            resetLiftEncoders();
+            depositArmDrive.Init();
+        }
+        /// BACK Button to lower the slides
+        if (gamepadCo1.getButton(BACK) && !gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()) {
+            debounceTimer.reset();
+            lowerDepositSlide();
+        }
+
+        /// START BUTTON + LEFT BUMPER to toggle control state
         if (gamepadCo1.getButton(START) && gamepadCo1.getButton(LEFT_BUMPER) && !lBstartPressed) {
             toggleControlState();
             debounceTimer.reset();
@@ -108,6 +117,7 @@ public class BasicTeleOps extends OpMode {
             lBstartPressed = false;
         }
 
+        /// Control condition -  Check Run Status
         if (controlState == ControlState.RUN) {
             depositArmDrive.DepositArmLoop();
             intakeArmDrive.IntakeArmLoop();
@@ -117,7 +127,7 @@ public class BasicTeleOps extends OpMode {
             telemetry.addData("Intake State", intakeArmDrive.intakeState);
             telemetry.addData("Intake Claw State", intakeArmDrive.intakeClawState);
         }
-
+        /// Control condition -  Check TEST Status for Servo Test
         if (controlState == ControlState.TEST) {
             servoTest.loop();
         }
@@ -157,7 +167,7 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Status", "Robot Stopped");
         telemetry.update();
     }
-
+    /// Helper -- toggle control state - RUN vs TEST
     private void toggleControlState() {
         controlState = (controlState == ControlState.RUN) ? ControlState.TEST : ControlState.RUN;
     }
@@ -167,14 +177,12 @@ public class BasicTeleOps extends OpMode {
         return robot.limitSwitch.getState();
     }
      */
-
-    private void resetLiftEncoders() {
-        robot.liftMotorLeft.setTargetPosition(0);
-        robot.liftMotorRight.setTargetPosition(0);
-        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.liftMotorLeft.setPower(0.3);
-        robot.liftMotorRight.setPower(0.3);
+    /// Helper -- lower deposit slide to bottom
+    private void lowerDepositSlide() {
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.liftMotorLeft.setPower(-0.3);
+        robot.liftMotorRight.setPower(-0.3);
 
         /**
         while (robot.liftMotorLeft.isBusy() && robot.liftMotorRight.isBusy()) {
@@ -186,4 +194,38 @@ public class BasicTeleOps extends OpMode {
         }
          */
     }
+    /// Helper -- to reset deposit slide motor encoder
+    private void resetLiftEncoders() {
+        robot.liftMotorLeft.setPower(0.0);
+        robot.liftMotorRight.setPower(0.0);
+        // 3) Now that we're at zero, actually reset the encoder count
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        // 4) Return to a normal run mode if you still want to drive by power/velocity
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    /// Helper -- to Button Debouncer
+    private boolean isButtonDebounced() {
+        if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+            debounceTimer.reset();
+            return true;
+        }
+        return false;
+    }
+
+    /// Add a voltage sensor
+    ///add a voltage sensor
+    public double getBatteryVoltage() {
+        double result = Double.POSITIVE_INFINITY;
+        for (VoltageSensor sensor : hardwareMap.voltageSensor) {
+            double voltage = sensor.getVoltage();
+            if (voltage > 0 && voltage < result) {
+                result = voltage;
+            }
+        }
+        // If we never found a positive reading, default to 0
+        return (result == Double.POSITIVE_INFINITY) ? 0.0 : result;
+    }
+
 }
