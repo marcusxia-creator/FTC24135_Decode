@@ -177,6 +177,7 @@ public class BasicTeleOps extends OpMode {
         return robot.limitSwitch.getState();
     }
      */
+
     /// Helper -- lower deposit slide to bottom
     private void lowerDepositSlide() {
         robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -194,6 +195,7 @@ public class BasicTeleOps extends OpMode {
         }
          */
     }
+
     /// Helper -- to reset deposit slide motor encoder
     private void resetLiftEncoders() {
         robot.liftMotorLeft.setPower(0.0);
@@ -205,6 +207,7 @@ public class BasicTeleOps extends OpMode {
         robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+
     /// Helper -- to Button Debouncer
     private boolean isButtonDebounced() {
         if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
@@ -215,7 +218,6 @@ public class BasicTeleOps extends OpMode {
     }
 
     /// Add a voltage sensor
-    ///add a voltage sensor
     public double getBatteryVoltage() {
         double result = Double.POSITIVE_INFINITY;
         for (VoltageSensor sensor : hardwareMap.voltageSensor) {
