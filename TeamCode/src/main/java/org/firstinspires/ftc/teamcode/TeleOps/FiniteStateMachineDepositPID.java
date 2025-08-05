@@ -111,7 +111,7 @@ public class FiniteStateMachineDepositPID {
         slidePIDControl = new SlidesPIDControl(robot,KP,KI,KD,FULL_RANGE_TICKS);
     }
 
-    // Initialize Deposit Arm
+    /// Initialize Deposit Arm
     public void Init() {
         liftTimer.reset();
         robot.depositClawServo.setPosition(RobotActionConfig.deposit_Claw_Open);
@@ -119,6 +119,12 @@ public class FiniteStateMachineDepositPID {
         robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);// Reset servo to idle
         robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
         depositClawState = DEPOSITCLAWSTATE.OPEN;
+    }
+
+    /// Initialize Deposit Slide Back to 0 Tick
+    public void depositSlideInit(){
+        slidePIDControl.setTargetTicks(0);
+        slidePIDControl.update();
     }
 
     /** create a list color threshold ranges*/
