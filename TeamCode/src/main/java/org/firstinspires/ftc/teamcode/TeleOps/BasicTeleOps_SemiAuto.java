@@ -6,6 +6,7 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_STICK_BUTTO
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_STICK_BUTTON;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.START;
 
+import org.firstinspires.ftc.teamcode.Auto.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -63,7 +64,7 @@ import java.util.List;
  *  * Right bumper + A              ----> To TOGGLE DEPOSIT CLAW OPEN/CLOSE
 */
 @Disabled
-@TeleOp(name = "TeleOps_Champion_Prep_SemiAuto", group = "org.firstinspires.ftc.teamcode")
+@TeleOp(name = "TeleOps_Premier_gw_SemiAuto", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOps_SemiAuto extends OpMode {
 
     //Control State Variable
@@ -111,7 +112,6 @@ public class BasicTeleOps_SemiAuto extends OpMode {
     @Override
     public void init() {
 
-        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         //Initialize RR drive
         drive = new SampleMecanumDriveCancelable(hardwareMap);
 
@@ -143,7 +143,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
-        //Robot Drive State
+        ///Robot Drive State
         RobotDrive.DriveMode currentDriveMode = robotDrive.getDriveMode();
 
         //Reset the motor encoder
@@ -154,7 +154,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
          * */
         Pose2d startPose = new Pose2d(7.5, -64, Math.toRadians(-90));// this is for manual testing.
         drive.setPoseEstimate(startPose);
-        //drive.setPoseEstimate(PoseStorage.currentPose);
+        drive.setPoseEstimate(PoseStorage.currentPose);
         initialRun = true; //For specimen semi-auto control
 
         //// Initialized an AutoHandler
@@ -174,41 +174,8 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
     @Override
     public void loop () {
-        //update the pose through the drive -roadrunner.
-        drive.update();
-        Pose2d poseEstimate = drive.getPoseEstimate();
-        Pose2d pinpointPose = drive.updatePinpointPosition();
-        // Update pose dynamically in AutoDriveHandler
-        autoDriveHandler.updatePoseEstimate(poseEstimate);
 
-        //reset pose
-        if (gamepadCo2.getButton(BACK) && debounceTimer.seconds() > 0.2) {
-            debounceTimer.reset();
-            Pose2d startPose = new Pose2d(0, -32, Math.toRadians(-90));// this is for manual testing.
-            drive.setPoseEstimate(startPose);
-            initialRun = true;
-        }
-
-
-        // Button B to reset vertical slide position to bottom.
-        if (gamepadCo1.getButton(BACK) && debounceTimer.seconds()>0.2){
-            debounceTimer.reset();
-            robot.liftMotorLeft.setTargetPosition(0);
-            robot.liftMotorRight.setTargetPosition(0);
-            robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.liftMotorLeft.setPower(0.3);                                          // Make sure lift motor is on
-            robot.liftMotorRight.setPower(0.3);
-            while (robot.liftMotorLeft.isBusy()&&robot.liftMotorRight.isBusy()){
-                    robot.liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-                    robot.liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-                    break;
-            }
-            // when position is back to 0, deposit is initialized.
-            depositArmDrive.Init();
-        }
-
-        //Bulk Reading for Motors
+        ///Bulk Reading for Motors
         for (LynxModule hub : allHubs) {
             BulkData bulkData = hub.getBulkData();
             if (bulkData != null) {
@@ -231,10 +198,36 @@ public class BasicTeleOps_SemiAuto extends OpMode {
             }
         }
 
-        // Robot Drivetrain
+        ///update the pose through the drive -roadrunner.
+        drive.update();
+        Pose2d poseEstimate = drive.getPoseEstimate();
+        Pose2d pinpointPose = drive.updatePinpointPosition();
+        /// Update pose dynamically in AutoDriveHandler
+        autoDriveHandler.updatePoseEstimate(poseEstimate);
+
+        ///reset pose
+        if (gamepadCo2.getButton(BACK) && !gamepadCo2.getButton(LEFT_BUMPER) && isButtonDebounced()) {
+            Pose2d startPose = new Pose2d(0, -32, Math.toRadians(-90));// this is for manual testing.
+            drive.setPoseEstimate(startPose);
+            initialRun = true;
+        }
+
+        /// LEFT BUMPER + BACK Button for lower deposit
+        if (gamepadCo1.getButton(BACK) && gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()) {
+            debounceTimer.reset();
+            resetLiftEncoders();
+            depositArmDrive.Init();
+        }
+        /// BACK Button to lower the slides
+        if (gamepadCo1.getButton(BACK) && !gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()) {
+            debounceTimer.reset();
+            lowerDepositSlide();
+        }
+
+        /// Robot Drivetrain
         RobotDrive.DriveMode currentDriveMode = robotDrive.getDriveMode();
 
-        //Control Mode Selection
+        ///Control Mode Selection
         if ((gamepadCo1.getButton(START) && gamepadCo1.getButton(LEFT_BUMPER)) && !lBstartPressed) {
             toggleControlState();
             debounceTimer.reset();
@@ -355,6 +348,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
     }
 
     // Debouncer helper
+        /// Helper -- to Button Debouncer
     private boolean isButtonDebounced() {
         if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
@@ -362,4 +356,39 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         }
         return false;
     }
+    /// Helper -- lower deposit slide to bottom
+    private void lowerDepositSlide() {
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.liftMotorLeft.setPower(-0.3);
+        robot.liftMotorRight.setPower(-0.3);
+
+        /**
+         while (robot.liftMotorLeft.isBusy() && robot.liftMotorRight.isBusy()) {
+         if (LSisPressed()) {
+         robot.liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+         robot.liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+         break;
+         }
+         }
+         */
+    }
+
+    /// Helper -- to reset deposit slide motor encoder
+    private void resetLiftEncoders() {
+        robot.liftMotorLeft.setPower(0.0);
+        robot.liftMotorRight.setPower(0.0);
+        // 3) Now that we're at zero, actually reset the encoder count
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        // 4) Return to a normal run mode if you still want to drive by power/velocity
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    /**
+     private boolean LSisPressed() {
+     return robot.limitSwitch.getState();
+     }
+     */
 }
