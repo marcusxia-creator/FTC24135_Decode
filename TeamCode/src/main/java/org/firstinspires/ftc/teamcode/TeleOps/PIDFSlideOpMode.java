@@ -90,8 +90,8 @@ public class PIDFSlideOpMode extends OpMode{
         telemetry.addLine("------------------------");
         telemetry.addData("Normalized target in %", normalizedTarget);
         telemetry.addData("position in %", normalizedSlidePos);
-        telemetry.addData("Power", power);
-        telemetry.addData("ff", ff);
+        telemetry.addData("Motor Power", power);
+        telemetry.addData("Feedfoward F", ff);
 
         telemetry.update();
     }
