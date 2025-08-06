@@ -11,19 +11,19 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@Disabled
 
 @Config
-@TeleOp (name = "PIDF Arm", group = "org.firstinspires.ftc.teamcode")
+@TeleOp (name = "PIDF Slide Ops", group = "org.firstinspires.ftc.teamcode")
 public class PIDFSlideOpMode extends OpMode{
     private GamepadEx gamepadCo1, gamepadCo2;
     private PIDController controller;
 
-    public static double p = 0, i = 0, d = 0;
-    public static double f = 0;
+    public static double p = 5.0, i = 0, d = 0.05;
+    public static double f = 0.12;
 
     public static double target = 0;    /// travel distance
 
@@ -31,7 +31,7 @@ public class PIDFSlideOpMode extends OpMode{
 
     public final double maxTicks = RobotActionConfig.deposit_Slide_Highbasket_Pos*RobotActionConfig.TICKS_PER_MM_SLIDES;
 
-    RobotHardware robot;
+    private RobotHardware robot;
 
     private ElapsedTime debounceTimer = new ElapsedTime(); // Timer for debouncing
 
@@ -42,22 +42,30 @@ public class PIDFSlideOpMode extends OpMode{
         robot = new RobotHardware(hardwareMap);
         robot.init(hardwareMap);
 
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         gamepadCo1 = new GamepadEx(gamepad1);
         gamepadCo2 = new GamepadEx(gamepad2);
+
+        telemetry.addData("VS Left Encoder", robot.liftMotorLeft.getCurrentPosition());
+        telemetry.addData("VS Right Encoder", robot.liftMotorRight.getCurrentPosition());
+        telemetry.update();
     }
 
     @Override
     public void loop (){
         controller.setPID(p,i,d);
-        int slidePos = (robot.liftMotorLeft.getCurrentPosition()+robot.liftMotorRight.getCurrentPosition())/2;
+        int slidePos = robot.liftMotorRight.getCurrentPosition();
 
         if (gamepadCo1.getButton(X) && isButtonDebounced()){
-            target =50;
+            target =5; // mm
         }
 
         if (gamepadCo1.getButton(Y) && isButtonDebounced()){
-            target =500;
+            target =650;
         }
         // Normalize if requested
         double normalizedTarget = target * ticksPerMM/maxTicks;
@@ -73,14 +81,18 @@ public class PIDFSlideOpMode extends OpMode{
         power = Range.clip(power,-1.0,1.0);
 
 
-        robot.liftMotorLeft.setPower(power);
+        //robot.liftMotorLeft.setPower(power);
         robot.liftMotorRight.setPower(power);
 
+        telemetry.addData("target mm", target);
         telemetry.addData("target in tick", target * ticksPerMM);
         telemetry.addData("position in tick", slidePos);
         telemetry.addLine("------------------------");
         telemetry.addData("Normalized target in %", normalizedTarget);
         telemetry.addData("position in %", normalizedSlidePos);
+        telemetry.addData("Power", power);
+        telemetry.addData("ff", ff);
+
         telemetry.update();
     }
 
