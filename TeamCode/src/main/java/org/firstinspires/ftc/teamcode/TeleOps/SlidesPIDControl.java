@@ -79,7 +79,7 @@ public class SlidesPIDControl {
         return pid.atSetPoint();
     }
 
-    // Convert linear inches to encoder ticks; adjust counts and diameter
+    /// Convert linear inches to encoder ticks; adjust counts and diameter
     private double mmToTicks(double mm) {
         return mm * RobotActionConfig.TICKS_PER_MM_SLIDES;
     }
