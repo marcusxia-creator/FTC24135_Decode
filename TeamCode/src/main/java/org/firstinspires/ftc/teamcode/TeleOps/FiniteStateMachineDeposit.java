@@ -140,15 +140,15 @@ public class FiniteStateMachineDeposit {
                         isButtonDebounced()) {
                     liftTimer.reset();
                     liftUpTimeout.reset();
-                    liftState = LIFTSTATE.LIFT_SAMPLE_BRANCH;
+                    liftState = LIFTSTATE.LIFT_HIGHBASKET;
                 }
 
                 // "Y" button to set deposit arm to hook specimen position
                 if (((gamepad_1.getButton(GamepadKeys.Button.Y) && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_1.getButton(LEFT_STICK_BUTTON))  ||
                         (gamepad_2.getButton(GamepadKeys.Button.Y) && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.1 && !gamepad_2.getButton(LEFT_STICK_BUTTON))) &&
                         isButtonDebounced()) {
-                    liftState = LIFTSTATE.LIFT_WALL_PICK;
                     liftTimer.reset();
+                    liftState = LIFTSTATE.LIFT_WALL_PICK;
                 }
 
                 break;
@@ -167,6 +167,7 @@ public class FiniteStateMachineDeposit {
                 robot.intakeWristServo.setPosition(RobotActionConfig.intake_Wrist_highbasketpause);
                     if (liftTimer.seconds() >= 0.05) {
                         /// rise up the slide to highbasket position
+                        slidePIDControl.setEnabled(true);
                         slidePIDControl.setTargetMM(RobotActionConfig.deposit_Slide_Highbasket_Pos);
                         // Move deposit Arm & wrist servo to dump prep position
                         if (liftTimer.seconds() >= 0.5) {
@@ -212,7 +213,8 @@ public class FiniteStateMachineDeposit {
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);}
                 */
                 if (liftTimer.seconds()>0.25){
-                driveOut(RobotActionConfig.Move_Distance);}
+                    driveOut(RobotActionConfig.Move_Distance);
+                }
 
                 if (liftTimer.seconds()>1.2){
                     liftTimer.reset();
@@ -246,6 +248,8 @@ public class FiniteStateMachineDeposit {
                 robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
                 robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Pick);
                 robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Pick);
+                slidePIDControl.setEnabled(true);
+                slidePIDControl.setTargetMM(RobotActionConfig.deposit_Slide_Down_Pos);
                 if (liftTimer.seconds() > RobotActionConfig.waitTime+0.6) {
                     depositClawState = DEPOSITCLAWSTATE.OPEN;
                     liftState = LIFTSTATE.LIFT_HIGHBAR;
@@ -276,12 +280,13 @@ public class FiniteStateMachineDeposit {
                 // After deposit claw flat out, Robot will move backward automatically.
                 // Specimen hook action is achieved in two states:
                 // LIFT_SPECIMEN_HOOK ---->  manual HOOK; using gamepad button dpad up
-                    ///rise up the lift for score
-                    slidePIDControl.setTargetMM(RobotActionConfig.deposit_Slide_Highbar_Score_Pos);
-                    if (slidePIDControl.atTarget()) {
-                        depositClawState = DEPOSITCLAWSTATE.OPEN;
-                        liftState = LIFTSTATE.LIFT_SPECIMEN_SCORE;
-                        liftTimer.reset();}
+                ///rise up the lift for score
+                slidePIDControl.setTargetMM(RobotActionConfig.deposit_Slide_Highbar_Score_Pos);
+                if (slidePIDControl.atTarget()) {
+                    depositClawState = DEPOSITCLAWSTATE.OPEN;
+                    liftState = LIFTSTATE.LIFT_SPECIMEN_SCORE;
+                    liftTimer.reset();
+                }
                 break;
 
             case LIFT_SPECIMEN_SCORE:
@@ -311,6 +316,7 @@ public class FiniteStateMachineDeposit {
             robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
             robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
             robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);
+            slidePIDControl.setEnabled(false);
             robot.liftMotorLeft.setPower(0); // Stop the motor after reaching the low position
             robot.liftMotorRight.setPower(0);
             try {

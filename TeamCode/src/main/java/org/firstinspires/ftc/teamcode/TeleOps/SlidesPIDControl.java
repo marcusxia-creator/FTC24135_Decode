@@ -74,7 +74,6 @@ public class SlidesPIDControl {
         this.enabled = enabled;
     }
 
-
     /**
      * Call once per loop to update motor powers
      */

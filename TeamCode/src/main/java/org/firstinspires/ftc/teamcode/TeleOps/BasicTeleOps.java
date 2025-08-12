@@ -32,7 +32,7 @@ public class BasicTeleOps extends OpMode {
     private FiniteStateMachineDeposit depositArmDrive;
     private FiniteStateMachineIntake intakeArmDrive;
     private ServoTest servoTest;
-    private SlidesPIDControl controller;
+    private SlidesPIDControl slidePIDControl;
     private ControlState controlState = ControlState.RUN;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private boolean lBstartPressed = false;
@@ -46,7 +46,7 @@ public class BasicTeleOps extends OpMode {
         robot = new RobotHardware(hardwareMap);
         robot.init(hardwareMap);
 
-        controller = new SlidesPIDControl(robot,5.0,0,0.05,0.12,RobotActionConfig.TICKS_PER_MM_SLIDES*RobotActionConfig.deposit_Slide_Highbasket_Pos,RobotActionConfig.TICKS_PER_MM_SLIDES);
+        slidePIDControl = new SlidesPIDControl(robot,5.0,0,0.05,0.12,RobotActionConfig.TICKS_PER_MM_SLIDES*RobotActionConfig.deposit_Slide_Highbasket_Pos,RobotActionConfig.TICKS_PER_MM_SLIDES);
 
         gamepadCo1 = new GamepadEx(gamepad1);
         gamepadCo2 = new GamepadEx(gamepad2);
@@ -104,14 +104,15 @@ public class BasicTeleOps extends OpMode {
         if (gamepadCo1.getButton(BACK) && gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()) {
             resetLiftEncoders();
             /// LEFT BUMPER + BACK Button for lower deposit
-            controller.setTargetMM(0);
-            depositArmDrive.ArmInit();}
+            slidePIDControl.setEnabled(false);
+            depositArmDrive.ArmInit();
+        }
 
         /// BACK Button to lower the slides
         if (gamepadCo1.getButton(BACK) && !gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()) {
             debounceTimer.reset();
+            slidePIDControl.setEnabled(false);
             lowerDepositSlide();
-            //controller.setTargetMM(0);
         }
 
         /// START BUTTON + LEFT BUMPER to toggle control state
