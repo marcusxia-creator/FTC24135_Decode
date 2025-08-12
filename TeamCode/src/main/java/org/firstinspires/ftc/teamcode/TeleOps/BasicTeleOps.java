@@ -146,8 +146,8 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("VS Right mm", (double) robot.liftMotorRight.getCurrentPosition() / RobotActionConfig.TICKS_PER_MM_SLIDES);
         telemetry.addData("VS Left tick", robot.liftMotorLeft.getCurrentPosition());
         telemetry.addData("VS Right tick", robot.liftMotorRight.getCurrentPosition());
-        telemetry.addData("targetTicks",controller.getTargetTicks());
-        telemetry.addData("At targetTicks",controller.atTarget());
+        telemetry.addData("targetTicks",slidePIDControl.getTargetTicks());
+        telemetry.addData("At targetTicks",slidePIDControl.atTarget());
 
         telemetry.addData("Heading", robot.imu.getRobotYawPitchRollAngles().getYaw());
         telemetry.addLine("--------Deposit-------------");
