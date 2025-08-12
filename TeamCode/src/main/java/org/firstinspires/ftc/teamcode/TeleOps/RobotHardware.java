@@ -161,8 +161,8 @@ public class RobotHardware {
         liftMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //Set the run mode of the motors
-        liftMotorLeft.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        liftMotorRight.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        liftMotorLeft.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        liftMotorRight.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         // set robot motor power 0
         frontLeftMotor.setPower(0);
@@ -189,7 +189,7 @@ public class RobotHardware {
     public void initPinPoint() {
         odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
         odo.setOffsets(-149.225, -165.1); //these are tuned for 3110-0002-0001 Product Insight #1
-        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
+        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
     }
 }
