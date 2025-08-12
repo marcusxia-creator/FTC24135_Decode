@@ -9,7 +9,16 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 public class SlidesPIDControl {
     private final RobotHardware robot;
     private final PIDController pid;
-    private final double maxTicks;
+
+    // Travel.units
+    private final double maxTicks;          //full stroke in ticks
+    private final double ticksPerMM;        // conversion factor
+
+    //Feedforward terms
+    private final double f;         // your original "f" — directional bias
+
+    // Targets
+    private double targetTicksRaw = 0.0;   // target in raw ticks
 
     /**
      * @param robot            Your RobotHardware instance (contains liftMotorLeft & liftMotorRight)
@@ -19,9 +28,11 @@ public class SlidesPIDControl {
      * @param maxTravelTicks   Full-range encoder ticks for normalization (<=0 to disable)
      */
     public SlidesPIDControl(RobotHardware robot,
-                          double kp, double ki, double kd,
-                          double maxTravelTicks) {
+                            double kp, double ki, double kd, double f,
+                            double maxTravelTicks, double ticksPerMM) {
         this.robot = robot;
+        this.ticksPerMM = ticksPerMM;
+        this.maxTicks = maxTravelTicks;
         // Reset and configure both lift motors
         for (DcMotor m : new DcMotor[]{ robot.liftMotorLeft, robot.liftMotorRight }) {
             m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -29,14 +40,15 @@ public class SlidesPIDControl {
         }
 
         this.pid = new PIDController(kp, ki, kd);
+        this.f = f;
         this.pid.setTolerance(RobotActionConfig.slideTickThreshold);
-        this.maxTicks = maxTravelTicks;
     }
 
     /**
      * Set target position in encoder ticks (normalized if maxTicks>0)
      */
     public void setTargetTicks(double targetTicks) {
+        this.targetTicksRaw = targetTicks;
         if (maxTicks > 0) {
             pid.setSetPoint(targetTicks / maxTicks);
         } else {
@@ -56,15 +68,22 @@ public class SlidesPIDControl {
      */
     public void update() {
         // Average encoder positions
-        double leftPos  = robot.liftMotorLeft.getCurrentPosition();
-        double rightPos = robot.liftMotorRight.getCurrentPosition();
-        double avgPos   = (leftPos + rightPos) / 2.0;
-
+        //double leftPos  = robot.liftMotorLeft.getCurrentPosition();
+        //double rightPos = robot.liftMotorRight.getCurrentPosition();
+        //double avgPos   = (leftPos + rightPos) / 2.0;
+        double avgPos = robot.liftMotorRight.getCurrentPosition();
         // Normalize if requested
         double measurement = (maxTicks > 0) ? avgPos / maxTicks : avgPos;
 
         // Compute PID output
-        double power = pid.calculate(measurement);
+        double pidOut= pid.calculate(measurement);
+
+        boolean movingUp   = targetTicksRaw > avgPos;   // target above current -> lift up
+        double ff = movingUp ? f: 0;
+
+        // Compute motor power
+        double power =pidOut+ff;
+
         power = Range.clip(power, -1.0, 1.0);
 
         // Apply to both motors
@@ -82,5 +101,10 @@ public class SlidesPIDControl {
     /// Convert linear inches to encoder ticks; adjust counts and diameter
     private double mmToTicks(double mm) {
         return mm * RobotActionConfig.TICKS_PER_MM_SLIDES;
+    }
+
+    /** Optional helper to read current target in ticks. */
+    public double getTargetTicks() {
+        return targetTicksRaw;
     }
 }

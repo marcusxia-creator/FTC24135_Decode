@@ -19,7 +19,8 @@ import com.qualcomm.robotcore.util.Range;
 @TeleOp (name = "PIDF Slide Ops", group = "org.firstinspires.ftc.teamcode")
 public class PIDFSlideOpMode extends OpMode{
     private GamepadEx gamepadCo1, gamepadCo2;
-    private PIDController controller;
+    //private PIDController controller;         // FTClib PIDcontroller
+    private SlidesPIDControl controller;
 
     public static double p = 5.0, i = 0, d = 0.05;
     public static double f = 0.12;
@@ -40,16 +41,20 @@ public class PIDFSlideOpMode extends OpMode{
 
     @Override
     public void init (){
-        controller = new PIDController(p, i, d);
+        //controller = new PIDController(p, i, d);
+        controller = new SlidesPIDControl(robot,p,i,d,ff,maxTicks,ticksPerMM);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot = new RobotHardware(hardwareMap);
         robot.init(hardwareMap);
-        ///set motor Run Mode
+        /**
+         *set motor Run Mode
         for (DcMotor m: new DcMotor[]{robot.liftMotorLeft,robot.liftMotorRight })
         {
             m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
+        }*/
+
+
 
         gamepadCo1 = new GamepadEx(gamepad1);
         gamepadCo2 = new GamepadEx(gamepad2);
@@ -61,8 +66,8 @@ public class PIDFSlideOpMode extends OpMode{
 
     @Override
     public void loop (){
-        controller.setPID(p,i,d);
-        int leftPos = robot.liftMotorRight.getCurrentPosition();
+        //controller.setPID(p,i,d);
+        int slidePos = robot.liftMotorRight.getCurrentPosition();
 
         if (gamepadCo1.getButton(X) && isButtonDebounced()){
             target =5; // mm
@@ -74,29 +79,29 @@ public class PIDFSlideOpMode extends OpMode{
 
         double normalizedTarget = target * ticksPerMM/maxTicks;
 
-        double normalizedSlidePos = leftPos/maxTicks;
+        double normalizedSlidePos = slidePos/maxTicks;
 
-        /** simple linear line
-        double pid = controller.calculate(normalizedSlidePos, normalizedTarget);
+        ///simple linear line
+        ///double pid = controller.calculate(normalizedSlidePos, normalizedTarget);
 
-        double ff = target * ticksPerMM > slidePos ? f : 0;
+        ///double ff = target * ticksPerMM > slidePos ? f : 0;
 
-        double power = pid + ff;
+        ///double power = pid + ff;
 
-        power = Range.clip(power,-1.0,1.0);
+        ///power = Range.clip(power,-1.0,1.0);
 
-        //robot.liftMotorLeft.setPower(power);
-        robot.liftMotorRight.setPower(power);
-         */
+        /////robot.liftMotorLeft.setPower(power);
+        ///robot.liftMotorRight.setPower(power);
+
 
         /// set PID target point
-        setTargetMM(target);
-        PIDUpdate();
-        motorDrive(power);
+        controller.setTargetMM(target);
+        controller.update();
+        //motorDrive(power);
 
         telemetry.addData("target mm", target);
         telemetry.addData("target in tick", target * ticksPerMM);
-        telemetry.addData("position in tick", leftPos);
+        telemetry.addData("position in tick", slidePos);
         telemetry.addLine("------------------------");
         telemetry.addData("Normalized target in %", normalizedTarget);
         telemetry.addData("position in %", normalizedSlidePos);
@@ -116,7 +121,8 @@ public class PIDFSlideOpMode extends OpMode{
         }
         return false;
     }
-
+    /**
+     *
     ///Handler - Set PID targetTick directly
     private void setTargetTick(double targetTicks){
         if (maxTicks>0)
@@ -139,9 +145,8 @@ public class PIDFSlideOpMode extends OpMode{
 
     /// Handler - Update PID calculation for power
     private void PIDUpdate( ){
-        double leftPos  = robot.liftMotorLeft.getCurrentPosition();
-        double rightPos = leftPos;                                                                  // robot.liftMotorRight.getCurrentPosition();
-        double avgPos   = (leftPos + rightPos) / 2.0;
+        double avgPos  = robot.liftMotorRight.getCurrentPosition();
+        ///double avgPos = rightPos;
 
         // Normalize if requested
         measurement = (maxTicks > 0) ? avgPos / maxTicks : avgPos;
@@ -159,7 +164,8 @@ public class PIDFSlideOpMode extends OpMode{
     ///Handler - drive motor
     private void motorDrive(double power){
         // Apply to both motors
-        robot.liftMotorLeft.setPower(power);
+        //robot.liftMotorLeft.setPower(power);
         robot.liftMotorRight.setPower(power);
     }
+     */
 }

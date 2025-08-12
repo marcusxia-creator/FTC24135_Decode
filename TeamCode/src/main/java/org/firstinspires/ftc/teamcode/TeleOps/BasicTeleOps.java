@@ -52,7 +52,7 @@ public class BasicTeleOps extends OpMode {
         robotDrive.Init();
 
         depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry);
-        depositArmDrive.Init();
+        ///depositArmDrive.ArmInit(); did not initiate depositArm at the beginning of TeleOps
 
 
         intakeArmDrive = new FiniteStateMachineIntake(robot, gamepadCo1, gamepadCo2, depositArmDrive);
@@ -100,7 +100,7 @@ public class BasicTeleOps extends OpMode {
         if (gamepadCo1.getButton(BACK) && gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()) {
             debounceTimer.reset();
             resetLiftEncoders();
-            depositArmDrive.Init();
+            depositArmDrive.ArmInit();
         }
         /// BACK Button to lower the slides
         if (gamepadCo1.getButton(BACK) && !gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()) {
@@ -204,8 +204,8 @@ public class BasicTeleOps extends OpMode {
         robot.liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         // 4) Return to a normal run mode if you still want to drive by power/velocity
-        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.liftMotorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     /// Helper -- to Button Debouncer
