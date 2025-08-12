@@ -125,10 +125,12 @@ public class BasicTeleOps_SemiAuto extends OpMode {
 
         //robotDrive
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);   // Pass robot instance to RobotDrive
-        robotDrive.Init();                                                              // Initialize RobotDrive
+        robotDrive.Init();
+
+        SlidesPIDControl controller = new SlidesPIDControl(robot, 5.0, 0, 0.05, 0.12, RobotActionConfig.TICKS_PER_MM_SLIDES * RobotActionConfig.deposit_Slide_Highbasket_Pos, RobotActionConfig.TICKS_PER_MM_SLIDES);
 
         //Deposit Arm control
-        depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry); // Pass parameters as needed);
+        depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry, controller); // Pass parameters as needed);
 
         //Intake Arm Control
         intakeArmDrive = new FiniteStateMachineIntake(robot, gamepadCo1,gamepadCo2, depositArmDrive);
@@ -216,7 +218,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         if (gamepadCo1.getButton(BACK) && gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()) {
             debounceTimer.reset();
             resetLiftEncoders();
-            depositArmDrive.Init();
+            depositArmDrive.ArmInit();
         }
         /// BACK Button to lower the slides
         if (gamepadCo1.getButton(BACK) && !gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()) {

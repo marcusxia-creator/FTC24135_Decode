@@ -32,6 +32,7 @@ public class BasicTeleOps extends OpMode {
     private FiniteStateMachineDeposit depositArmDrive;
     private FiniteStateMachineIntake intakeArmDrive;
     private ServoTest servoTest;
+    private SlidesPIDControl controller;
     private ControlState controlState = ControlState.RUN;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private boolean lBstartPressed = false;
@@ -45,13 +46,15 @@ public class BasicTeleOps extends OpMode {
         robot = new RobotHardware(hardwareMap);
         robot.init(hardwareMap);
 
+        controller = new SlidesPIDControl(robot,5.0,0,0.05,0.12,RobotActionConfig.TICKS_PER_MM_SLIDES*RobotActionConfig.deposit_Slide_Highbasket_Pos,RobotActionConfig.TICKS_PER_MM_SLIDES);
+
         gamepadCo1 = new GamepadEx(gamepad1);
         gamepadCo2 = new GamepadEx(gamepad2);
 
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
-        depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry);
+        depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry, controller);
         ///depositArmDrive.ArmInit(); did not initiate depositArm at the beginning of TeleOps
 
 
@@ -60,6 +63,8 @@ public class BasicTeleOps extends OpMode {
 
         servoTest = new ServoTest(robot, gamepadCo1, gamepadCo2);
         //servoTest.init();
+
+
 
         allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -96,16 +101,17 @@ public class BasicTeleOps extends OpMode {
         /// Drive train control
         robotDrive.DriveLoop();
 
-        /// LEFT BUMPER + BACK Button for lower deposit
         if (gamepadCo1.getButton(BACK) && gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()) {
-            debounceTimer.reset();
             resetLiftEncoders();
-            depositArmDrive.ArmInit();
-        }
+            /// LEFT BUMPER + BACK Button for lower deposit
+            controller.setTargetMM(0);
+            depositArmDrive.ArmInit();}
+
         /// BACK Button to lower the slides
         if (gamepadCo1.getButton(BACK) && !gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()) {
             debounceTimer.reset();
             lowerDepositSlide();
+            //controller.setTargetMM(0);
         }
 
         /// START BUTTON + LEFT BUMPER to toggle control state
@@ -139,6 +145,9 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("VS Right mm", (double) robot.liftMotorRight.getCurrentPosition() / RobotActionConfig.TICKS_PER_MM_SLIDES);
         telemetry.addData("VS Left tick", robot.liftMotorLeft.getCurrentPosition());
         telemetry.addData("VS Right tick", robot.liftMotorRight.getCurrentPosition());
+        telemetry.addData("targetTicks",controller.getTargetTicks());
+        telemetry.addData("At targetTicks",controller.atTarget());
+
         telemetry.addData("Heading", robot.imu.getRobotYawPitchRollAngles().getYaw());
         telemetry.addLine("--------Deposit-------------");
         telemetry.addData("Deposit Arm Position", robot.depositLeftArmServo.getPosition());
@@ -184,16 +193,6 @@ public class BasicTeleOps extends OpMode {
         robot.liftMotorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.liftMotorLeft.setPower(-0.3);
         robot.liftMotorRight.setPower(-0.3);
-
-        /**
-        while (robot.liftMotorLeft.isBusy() && robot.liftMotorRight.isBusy()) {
-            if (LSisPressed()) {
-                robot.liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-                robot.liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-                break;
-            }
-        }
-         */
     }
 
     /// Helper -- to reset deposit slide motor encoder

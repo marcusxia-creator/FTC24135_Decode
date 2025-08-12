@@ -20,6 +20,10 @@ public class SlidesPIDControl {
     // Targets
     private double targetTicksRaw = 0.0;   // target in raw ticks
 
+    //motor power variable
+    private double power = 0.0;
+
+
     /**
      * @param robot            Your RobotHardware instance (contains liftMotorLeft & liftMotorRight)
      * @param kp               Proportional gain
@@ -82,7 +86,7 @@ public class SlidesPIDControl {
         double ff = movingUp ? f: 0;
 
         // Compute motor power
-        double power =pidOut+ff;
+        power =pidOut+ff;
 
         power = Range.clip(power, -1.0, 1.0);
 
@@ -107,4 +111,8 @@ public class SlidesPIDControl {
     public double getTargetTicks() {
         return targetTicksRaw;
     }
+
+    public double getpower(){return power;}
+    public double getf(){return f;}
+
 }

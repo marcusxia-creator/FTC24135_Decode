@@ -99,12 +99,14 @@ public class FiniteStateMachineDeposit {
     /**
      * constructor
      */
-    public FiniteStateMachineDeposit(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2, FiniteStateMachineIntake intake, Telemetry telemetry) {
+    public FiniteStateMachineDeposit(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2,
+                                     FiniteStateMachineIntake intake, Telemetry telemetry,
+                                     SlidesPIDControl slidePIDControl) {
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
         this.robot = robot;
         this.intake = intake;
-        slidePIDControl = new SlidesPIDControl(robot,KP,KI,KD,f,FULL_RANGE_TICKS,RobotActionConfig.TICKS_PER_MM_SLIDES);
+        this.slidePIDControl = slidePIDControl;
         runtime.reset(); // Reset timer when the arm control object is created
     }
 
@@ -226,14 +228,18 @@ public class FiniteStateMachineDeposit {
                     robot.depositLeftArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer);  /// Reset servo to idle
                     robot.depositRightArmServo.setPosition(RobotActionConfig.deposit_Arm_Transfer); /// Reset servo to idle
                     robot.depositWristServo.setPosition(RobotActionConfig.deposit_Wrist_Transfer);
+                    liftState = LIFTSTATE.LIFT_START;
+                    /**
+                     *
                     if (slidePIDControl.atTarget())
                     {
                         robot.liftMotorLeft.setPower(0); // Stop the motor after reaching the low position
                         robot.liftMotorRight.setPower(0);
                         robot.liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
                         robot.liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-                        liftState = LIFTSTATE.LIFT_START;
+
                     }
+                     */
                 }
                 break;
             case LIFT_WALL_PICK:

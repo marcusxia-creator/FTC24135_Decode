@@ -41,9 +41,9 @@ public class PIDFSlideOpMode extends OpMode{
 
     @Override
     public void init (){
-        //controller = new PIDController(p, i, d);
-        controller = new SlidesPIDControl(robot,p,i,d,ff,maxTicks,ticksPerMM);
+        /// init telemetry
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        /// init robot
         robot = new RobotHardware(hardwareMap);
         robot.init(hardwareMap);
         /**
@@ -53,12 +53,12 @@ public class PIDFSlideOpMode extends OpMode{
             m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }*/
-
-
-
+        /// * set PID controller
+        controller = new SlidesPIDControl(robot,p,i,d,f,maxTicks,ticksPerMM);
+        /// * set gamepad
         gamepadCo1 = new GamepadEx(gamepad1);
         gamepadCo2 = new GamepadEx(gamepad2);
-
+        /// Telemetry
         telemetry.addData("VS Left Encoder", robot.liftMotorLeft.getCurrentPosition());
         telemetry.addData("VS Right Encoder", robot.liftMotorRight.getCurrentPosition());
         telemetry.update();
@@ -89,14 +89,15 @@ public class PIDFSlideOpMode extends OpMode{
         ///double power = pid + ff;
 
         ///power = Range.clip(power,-1.0,1.0);
-
-        /////robot.liftMotorLeft.setPower(power);
+        
         ///robot.liftMotorRight.setPower(power);
 
 
         /// set PID target point
         controller.setTargetMM(target);
         controller.update();
+        power = controller.getpower();
+        ff = controller.getf();
         //motorDrive(power);
 
         telemetry.addData("target mm", target);
