@@ -9,18 +9,17 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 public class SlidesPIDControl {
     private final RobotHardware robot;
     private final PIDController pid;
+    private boolean enabled = true; // default ON
 
-    // Travel.units
+    /// Travel.units
     private final double maxTicks;          //full stroke in ticks
     private final double ticksPerMM;        // conversion factor
 
-    //Feedforward terms
-    private final double f;         // your original "f" — directional bias
-
-    // Targets
+    /// Targets
     private double targetTicksRaw = 0.0;   // target in raw ticks
-
-    //motor power variable
+    /// Feedforward terms
+    private final double f;         // your original "f" — directional bias
+    /// motor power variable
     private double power = 0.0;
 
 
@@ -30,6 +29,7 @@ public class SlidesPIDControl {
      * @param ki               Integral gain
      * @param kd               Derivative gain
      * @param maxTravelTicks   Full-range encoder ticks for normalization (<=0 to disable)
+     * @param ticksPerMM       Ticks for per mm rotation
      */
     public SlidesPIDControl(RobotHardware robot,
                             double kp, double ki, double kd, double f,
@@ -42,10 +42,9 @@ public class SlidesPIDControl {
             m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
-
         this.pid = new PIDController(kp, ki, kd);
         this.f = f;
-        this.pid.setTolerance(RobotActionConfig.slideTickThreshold);
+        pid.setTolerance(RobotActionConfig.slideTickThreshold/maxTicks);
     }
 
     /**
@@ -57,6 +56,7 @@ public class SlidesPIDControl {
             pid.setSetPoint(targetTicks / maxTicks);
         } else {
             pid.setSetPoint(targetTicks);
+            pid.setTolerance(RobotActionConfig.slideTickThreshold);
         }
     }
 
@@ -68,9 +68,20 @@ public class SlidesPIDControl {
     }
 
     /**
+     * Call from FSM to enable/disable PID updates
+     */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+
+    /**
      * Call once per loop to update motor powers
      */
     public void update() {
+        if(!enabled){
+            return;
+        }
         // Average encoder positions
         //double leftPos  = robot.liftMotorLeft.getCurrentPosition();
         //double rightPos = robot.liftMotorRight.getCurrentPosition();
