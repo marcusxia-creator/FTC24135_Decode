@@ -23,7 +23,7 @@ public class PIDFSlideOpMode extends OpMode{
     private SlidesPIDControl controller;
 
     public static double p = 5.0, i = 0, d = 0.05;
-    public static double f = 0.12;
+    public static double fu = 0.12, fd= -0.1;
 
     public static double target = 0;    /// travel distance
 
@@ -54,7 +54,7 @@ public class PIDFSlideOpMode extends OpMode{
             m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }*/
         /// * set PID controller
-        controller = new SlidesPIDControl(robot,p,i,d,f,maxTicks,ticksPerMM);
+        controller = new SlidesPIDControl(robot,p,i,d,fu,fd,maxTicks,ticksPerMM);
         /// * set gamepad
         gamepadCo1 = new GamepadEx(gamepad1);
         gamepadCo2 = new GamepadEx(gamepad2);

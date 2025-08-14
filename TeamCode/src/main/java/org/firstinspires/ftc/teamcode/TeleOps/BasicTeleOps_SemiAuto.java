@@ -99,6 +99,13 @@ public class BasicTeleOps_SemiAuto extends OpMode {
     //Bulk Reading
     private List<LynxModule> allHubs;                       // Bulk Reading
 
+    //PID parameters
+    public static double kp = 3.0;
+    public static double ki = 0.0;
+    public static double kd = 0.05;
+    public static double fu =0.22;
+    public static double fd =-0.1;
+
     //for color
     private String detectedColor;
 
@@ -127,7 +134,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);   // Pass robot instance to RobotDrive
         robotDrive.Init();
 
-        SlidesPIDControl controller = new SlidesPIDControl(robot, 5.0, 0, 0.05, 0.12, RobotActionConfig.TICKS_PER_MM_SLIDES * RobotActionConfig.deposit_Slide_Highbasket_Pos, RobotActionConfig.TICKS_PER_MM_SLIDES);
+        SlidesPIDControl controller = new SlidesPIDControl(robot, kp,ki,kd,fu,fd, RobotActionConfig.TICKS_PER_MM_SLIDES * RobotActionConfig.deposit_Slide_Highbasket_Pos, RobotActionConfig.TICKS_PER_MM_SLIDES);
 
         //Deposit Arm control
         depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry, controller); // Pass parameters as needed);

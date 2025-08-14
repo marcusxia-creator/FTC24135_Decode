@@ -38,6 +38,12 @@ public class BasicTeleOps extends OpMode {
     private boolean lBstartPressed = false;
     private List<LynxModule> allHubs;
 
+    public static double kp = 3.0;
+    public static double ki = 0.0;
+    public static double kd = 0.05;
+    public static double fu =0.22;
+    public static double fd =-0.1;
+
 
     @Override
     public void init() {
@@ -46,7 +52,7 @@ public class BasicTeleOps extends OpMode {
         robot = new RobotHardware(hardwareMap);
         robot.init(hardwareMap);
 
-        slidePIDControl = new SlidesPIDControl(robot,5.0,0,0.05,0.12,RobotActionConfig.TICKS_PER_MM_SLIDES*RobotActionConfig.deposit_Slide_Highbasket_Pos,RobotActionConfig.TICKS_PER_MM_SLIDES);
+        slidePIDControl = new SlidesPIDControl(robot,kp,ki,kd,fu,fd,RobotActionConfig.TICKS_PER_MM_SLIDES*RobotActionConfig.deposit_Slide_Highbasket_Pos,RobotActionConfig.TICKS_PER_MM_SLIDES);
 
         gamepadCo1 = new GamepadEx(gamepad1);
         gamepadCo2 = new GamepadEx(gamepad2);
@@ -57,23 +63,31 @@ public class BasicTeleOps extends OpMode {
         depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry, slidePIDControl);
         ///depositArmDrive.ArmInit(); did not initiate depositArm at the beginning of TeleOps
 
-
         intakeArmDrive = new FiniteStateMachineIntake(robot, gamepadCo1, gamepadCo2, depositArmDrive);
         intakeArmDrive.Init();
 
         servoTest = new ServoTest(robot, gamepadCo1, gamepadCo2);
-        //servoTest.init();
 
-
-
+        /// Get all hubs from the hardwareMap
         allHubs = hardwareMap.getAll(LynxModule.class);
-        for (LynxModule hub : allHubs) hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        ///Set bulk caching mode to Auto
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
+        ///
+        int lfPos = robot.frontLeftMotor.getCurrentPosition();
+        int rfPos = robot.frontRightMotor.getCurrentPosition();
+        int lbPos = robot.backLeftMotor.getCurrentPosition();
+        int rbPos = robot.backRightMotor.getCurrentPosition();
 
+        /// Lift motor encouder reading
+        int liftmotor_left_pos = robot.liftMotorLeft.getCurrentPosition();
+        int liftmotor_right_pos = robot.liftMotorRight.getCurrentPosition();
         telemetry.addLine("-------------------");
         telemetry.addData("Status", "initialized");
         telemetry.addData("Control Mode", robotDrive.getDriveMode().name());
-        telemetry.addData("VS Left Encoder", robot.liftMotorLeft.getCurrentPosition());
-        telemetry.addData("VS Right Encoder", robot.liftMotorRight.getCurrentPosition());
+        telemetry.addData("VS Left Encoder", liftmotor_left_pos);
+        telemetry.addData("VS Right Encoder", liftmotor_right_pos);
         telemetry.update();
     }
     @Override
@@ -83,6 +97,7 @@ public class BasicTeleOps extends OpMode {
 
     @Override
     public void loop() {
+        /**
         /// Lynx for Motor encoder reading
         for (LynxModule hub : allHubs) {
             BulkData bulkData = hub.getBulkData();
@@ -98,6 +113,19 @@ public class BasicTeleOps extends OpMode {
                 }
             }
         }
+        */
+
+        int lfPos = robot.frontLeftMotor.getCurrentPosition();
+        int rfPos = robot.frontRightMotor.getCurrentPosition();
+        int lbPos = robot.backLeftMotor.getCurrentPosition();
+        int rbPos = robot.backRightMotor.getCurrentPosition();
+
+        /// Lift motor encouder reading
+        int liftmotor_left_pos = robot.liftMotorLeft.getCurrentPosition();
+        int liftmotor_right_pos = robot.liftMotorRight.getCurrentPosition();
+        double vs_L_mm = liftmotor_left_pos/RobotActionConfig.TICKS_PER_MM_SLIDES;
+        double vs_R_mm = liftmotor_right_pos/RobotActionConfig.TICKS_PER_MM_SLIDES;
+
         /// Drive train control
         robotDrive.DriveLoop();
 
@@ -142,12 +170,14 @@ public class BasicTeleOps extends OpMode {
         telemetry.addLine("--------------Op Mode--------------");
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", robotDrive.getDriveMode().name());
-        telemetry.addData("VS Left mm", (double) robot.liftMotorLeft.getCurrentPosition() / RobotActionConfig.TICKS_PER_MM_SLIDES);
-        telemetry.addData("VS Right mm", (double) robot.liftMotorRight.getCurrentPosition() / RobotActionConfig.TICKS_PER_MM_SLIDES);
-        telemetry.addData("VS Left tick", robot.liftMotorLeft.getCurrentPosition());
-        telemetry.addData("VS Right tick", robot.liftMotorRight.getCurrentPosition());
+        telemetry.addData("VS Left mm", vs_L_mm);
+        telemetry.addData("VS Right mm", vs_R_mm);
+        telemetry.addData("VS Left tick", liftmotor_left_pos);
+        telemetry.addData("VS Right tick", liftmotor_right_pos);
         telemetry.addData("targetTicks",slidePIDControl.getTargetTicks());
         telemetry.addData("At targetTicks",slidePIDControl.atTarget());
+        telemetry.addData("slides power",slidePIDControl.getpower());
+        telemetry.addData("slides ff value",slidePIDControl.getf());
 
         telemetry.addData("Heading", robot.imu.getRobotYawPitchRollAngles().getYaw());
         telemetry.addLine("--------Deposit-------------");
