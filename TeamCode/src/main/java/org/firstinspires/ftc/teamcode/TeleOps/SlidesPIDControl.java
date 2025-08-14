@@ -25,12 +25,24 @@ public class SlidesPIDControl {
 
     //Optional baseline gravity term (set to 0 if you don't want it)
     private double kG = 0.0;
+    private double kV = 0.0;
 
     /// motor power output
     private double power = 0.0;
 
     // Velocity deadband so direction doesn't chatter around 0
     private double V_DEADBAND_TPS = 12.0;                                                           // ticks/sec
+
+    // ---- Motion profile (trapezoid/triangle, start&end vel ~ 0) ----
+    public double vMaxTps = 1000.0;      // max velocity (ticks/s)  <-- tune
+    public double aMaxTps2 = 3000.0;     // max accel   (ticks/s^2) <-- tune
+
+    private final ElapsedTime profileTimer = new ElapsedTime();
+    private double profStartPos = 0.0;   // ticks
+    private double profDelta = 0.0;      // target - start (ticks)
+    private double profSign = 1.0;       // +1 up, -1 down
+    private double t1 = 0, t2 = 0, t3 = 0, tTotal = 0; // phase times (s)
+    private boolean profileActive = false;
 
     // ---- For velocity calculation ---
     private final ElapsedTime runtime = new ElapsedTime();
@@ -72,10 +84,18 @@ public class SlidesPIDControl {
         runtime.reset();
         lastAvgPos = getAvgPos();
         lastTimeSec = runtime.seconds();
+
+        // initialize profile to current pos (no motion)
+        buildProfile(getAvgPos(), getAvgPos());
     }
 
     /** Optional: baseline gravity hold term */
     public void setGravityFF(double kG) { this.kG = kG; }
+
+    public void setVelocityFF(double kV) { this.kV = kV; }
+
+    public void setVmaxTps(double v) { this.vMaxTps = Math.max(1, v); }
+    public void setAmaxTps2(double a) { this.aMaxTps2 = Math.max(1, a); }
 
     /** Optional: velocity deadband tuning */
     public void setVelocityDeadbandTps(double deadband) { this.V_DEADBAND_TPS = Math.max(0, deadband); }
@@ -99,6 +119,43 @@ public class SlidesPIDControl {
         setTargetTicks(mmToTicks(mm));
     }
 
+    /** Build a fresh trapezoid/triangle from currentPos -> newTarget (start/end vel ~0). */
+    private void buildProfile(double currentPosTicks, double targetTicks) {
+        profStartPos = currentPosTicks;
+        profDelta = targetTicks - currentPosTicks;
+        profSign = (profDelta >= 0) ? 1.0 : -1.0;
+        double d = Math.abs(profDelta);
+
+        if (d < 1e-4) {
+            // no motion
+            t1 = t2 = t3 = tTotal = 0;
+            profileActive = false;
+            profileTimer.reset();
+            return;
+        }
+
+        // Check if we can hit vMax; else use triangular with peak v = sqrt(d * aMax)
+        double tAccelToVmax = vMaxTps / aMaxTps2;
+        double dAccel = 0.5 * aMaxTps2 * tAccelToVmax * tAccelToVmax;
+        double dNeededForAccelDecel = 2.0 * dAccel;
+
+        if (d <= dNeededForAccelDecel) {
+            // Triangular profile
+            double vPeak = Math.sqrt(d * aMaxTps2);
+            t1 = vPeak / aMaxTps2;   // accel
+            t2 = 0.0;                // cruise
+            t3 = t1;                 // decel
+        } else {
+            // Trapezoid profile
+            t1 = tAccelToVmax;                       // accel to vMax
+            t3 = t1;                                 // decel from vMax
+            double dCruise = d - dNeededForAccelDecel;
+            t2 = dCruise / vMaxTps;                  // cruise duration
+        }
+        tTotal = t1 + t2 + t3;
+        profileActive = true;
+        profileTimer.reset();
+    }
     /**
      * Call from FSM to enable/disable PID updates
      */
@@ -118,26 +175,55 @@ public class SlidesPIDControl {
         //double rightPos = robot.liftMotorRight.getCurrentPosition();
         //double avgPos   = (leftPos + rightPos) / 2.0;
         int avgPos = robot.liftMotorRight.getCurrentPosition();
-        // Normalize if requested
-        double measurement = (maxTicks > 0) ? avgPos / maxTicks : avgPos;
+
+        double t = profileTimer.seconds();
+        double xSet, vSet;  // ticks, ticks/s (signed)
+
+        if (!profileActive || t >= tTotal) {
+            // End of profile (or no motion): hold final
+            xSet = profStartPos + profDelta;
+            vSet = 0.0;
+            profileActive = false;
+        } else {
+            // piecewise
+            if (t <= t1) {
+                // accelerate: v = a * t, x = 0.5 * a * t^2
+                vSet = aMaxTps2 * t;
+                xSet = 0.5 * aMaxTps2 * t * t;
+            } else if (t <= t1 + t2) {
+                // cruise
+                double tc = t - t1;
+                vSet = vMaxTps;
+                xSet = 0.5 * aMaxTps2 * t1 * t1 + vMaxTps * tc;
+            } else {
+                // decel: mirror of accel
+                double td = t - t1 - t2;
+                double v = vMaxTps - aMaxTps2 * td;
+                vSet = Math.max(0, v);
+                double dAccel = 0.5 * aMaxTps2 * t1 * t1;
+                double dCruise = vMaxTps * t2;
+                double dDecel = vMaxTps * td - 0.5 * aMaxTps2 * td * td;
+                xSet = dAccel + dCruise + dDecel;
+            }
+            // apply direction and start offset
+            vSet *= profSign;
+            xSet = profStartPos + profSign * xSet;
+        }
+
+        // PID measurement & setpoint (normalized if requested)
+        double measurement = (maxTicks > 0) ? (avgPos / maxTicks) : avgPos;
+        double setpoint    = (maxTicks > 0) ? (xSet   / maxTicks) : xSet;
 
         // Compute PID output
-        double pidOut = pid.calculate(measurement);
+        double pidOut = pid.calculate(measurement, setpoint);
 
-        // ---- Velocity-based FF direction with deadband ----
-        double now = runtime.seconds();
-        double dt = now - lastTimeSec;
-        if (dt < 1e-4) dt = 1e-3; // avoid div-by-zero at start
-
-        double avgVelTicksPerSec = (avgPos - lastAvgPos) / dt;
-
+        // ---- Feedforward: kG + static (fu/fd from desired velocity) + kV*vSet ----
         double sign;
-        if (avgVelTicksPerSec >  V_DEADBAND_TPS)      sign = +1.0;   // moving up
-        else if (avgVelTicksPerSec < -V_DEADBAND_TPS) sign = -1.0;   // moving down
-        else                                          sign =  0.0;   // basically stopped
+        if (vSet >  V_DEADBAND_TPS)      sign = +1.0;
+        else if (vSet < -V_DEADBAND_TPS) sign = -1.0;
+        else                              sign =  0.0;
 
-        // Baseline gravity + directional static FF (no flip-flop near zero due to deadband)
-        ff = kG + (sign > 0 ? fu : (sign < 0 ? fd : 0.0));
+        ff = kG + (sign > 0 ? fu : (sign < 0 ? fd : 0.0)) + (kV * vSet);
 
         // Compute motor power
         power =pidOut+ff;
@@ -150,7 +236,8 @@ public class SlidesPIDControl {
 
         // Save for next loop
         lastAvgPos = avgPos;
-        lastTimeSec = now;
+
+        lastTimeSec = runtime.seconds();
     }
 
     /**
