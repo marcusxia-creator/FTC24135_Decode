@@ -110,6 +110,8 @@ public class SlidesPIDControl {
             pid.setTolerance(RobotActionConfig.slideTickThreshold);
         }
         pid.reset(); // avoid surge on new targets
+        // Build a new trapezoidal/triangular profile from current position to target
+        buildProfile(getAvgPos(), targetTicks);
     }
 
     /**
@@ -171,10 +173,7 @@ public class SlidesPIDControl {
             return;
         }
         // Average encoder positions
-        //double leftPos  = robot.liftMotorLeft.getCurrentPosition();
-        //double rightPos = robot.liftMotorRight.getCurrentPosition();
-        //double avgPos   = (leftPos + rightPos) / 2.0;
-        int avgPos = robot.liftMotorRight.getCurrentPosition();
+        int avgPos = getAvgPos();
 
         double t = profileTimer.seconds();
         double xSet, vSet;  // ticks, ticks/s (signed)
@@ -248,7 +247,9 @@ public class SlidesPIDControl {
     }
 
     private int getAvgPos() {
-        return (robot.liftMotorRight.getCurrentPosition()) / 2;
+        int left = robot.liftMotorLeft.getCurrentPosition();
+        int right = robot.liftMotorRight.getCurrentPosition();
+        return (left + right) / 2;
     }
 
     /// Convert linear inches to encoder ticks; adjust counts and diameter

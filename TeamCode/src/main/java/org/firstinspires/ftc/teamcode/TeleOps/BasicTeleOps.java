@@ -8,7 +8,6 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.LynxModule.BulkData;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -33,6 +32,7 @@ public class BasicTeleOps extends OpMode {
     private FiniteStateMachineIntake intakeArmDrive;
     private ServoTest servoTest;
     private SlidesPIDControl slidePIDControl;
+    private VisionIntakeYellowLocator visionLocator;
     private ControlState controlState = ControlState.RUN;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private boolean lBstartPressed = false;
@@ -60,10 +60,13 @@ public class BasicTeleOps extends OpMode {
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
+        visionLocator = new VisionIntakeYellowLocator();
+        visionLocator.init(hardwareMap);
+
         depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry, slidePIDControl);
         ///depositArmDrive.ArmInit(); did not initiate depositArm at the beginning of TeleOps
 
-        intakeArmDrive = new FiniteStateMachineIntake(robot, gamepadCo1, gamepadCo2, depositArmDrive);
+        intakeArmDrive = new FiniteStateMachineIntake(robot, gamepadCo1, gamepadCo2, depositArmDrive, visionLocator);
         intakeArmDrive.Init();
 
         servoTest = new ServoTest(robot, gamepadCo1, gamepadCo2);
@@ -204,6 +207,9 @@ public class BasicTeleOps extends OpMode {
         robot.backRightMotor.setPower(0);
         robot.liftMotorLeft.setPower(0);
         robot.liftMotorRight.setPower(0);
+        if (visionLocator != null) {
+            visionLocator.close();
+        }
         telemetry.addData("Status", "Robot Stopped");
         telemetry.update();
     }

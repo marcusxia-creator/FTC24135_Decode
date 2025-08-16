@@ -140,7 +140,9 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry, controller); // Pass parameters as needed);
 
         //Intake Arm Control
-        intakeArmDrive = new FiniteStateMachineIntake(robot, gamepadCo1,gamepadCo2, depositArmDrive);
+        VisionIntakeYellowLocator visionLocator = new VisionIntakeYellowLocator();
+        visionLocator.init(hardwareMap);
+        intakeArmDrive = new FiniteStateMachineIntake(robot, gamepadCo1,gamepadCo2, depositArmDrive, visionLocator);
         intakeArmDrive.Init();
 
         //Servo Testing
