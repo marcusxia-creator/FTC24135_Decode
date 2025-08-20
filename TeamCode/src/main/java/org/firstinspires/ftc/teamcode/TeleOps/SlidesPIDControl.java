@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+@Config
 public class SlidesPIDControl {
     private final RobotHardware robot;
     private final PIDController pid;
@@ -19,13 +20,17 @@ public class SlidesPIDControl {
     private double targetTicksRaw = 0.0;                                                            // target in raw ticks
 
     /// Feedforward terms
-    private final double fu;
-    private final double fd; // your original "f" — directional bias
     private double ff = 0;                                                                          // ff is the dynamic feedforward based on the slide up or down
 
-    //Optional baseline gravity term (set to 0 if you don't want it)
-    private double kG = 0.0;
-    private double kV = 0.0;
+    // ---- Feedforward Parameters ----
+    public double kG = 0.08;       // gravity hold
+    public double kSup = 0.040;    // static up
+    public double kSdown = 0.030;  // static down
+    public double kV = 0.00020;    // ticks/s -> power
+    public double kA = 0.00002;    // ticks/s^2 -> power
+    public double velDeadband = 12; // ticks/s (avoid flip near 0)
+    public double smoothVel = 30;   // ticks/s (tanh smoothing)
+    public double thetaRad = 10.0;   // 0 for vertical slides
 
     /// motor power output
     private double power = 0.0;
@@ -34,8 +39,8 @@ public class SlidesPIDControl {
     private double V_DEADBAND_TPS = 12.0;                                                           // ticks/sec
 
     // ---- Motion profile (trapezoid/triangle, start&end vel ~ 0) ----
-    public double vMaxTps = 1000.0;      // max velocity (ticks/s)  <-- tune
-    public double aMaxTps2 = 3000.0;     // max accel   (ticks/s^2) <-- tune
+    public double vMaxTps = 2200;        // max velocity (ticks/s)  <-- tune
+    public double aMaxTps2 = 2200;     // max accel   (ticks/s^2) <-- tune
 
     private final ElapsedTime profileTimer = new ElapsedTime();
     private double profStartPos = 0.0;   // ticks
@@ -49,6 +54,13 @@ public class SlidesPIDControl {
     private int lastAvgPos = 0;
     private double lastTimeSec = 0.0;
 
+    // Tunables (put @Config if you use Dashboard)
+    public int minMoveTicks = 8;          // don't build a profile for shorter moves
+    public double velStopTps = 10.0;      // "stopped" if |velocity| below this
+    public double settleHoldSec = 0.15;   // time to remain stopped to count as settled
+
+    private final ElapsedTime settleTimer = new ElapsedTime();
+
     /**
      * @param robot            Your RobotHardware instance (contains liftMotorLeft & liftMotorRight)
      * @param kp               Proportional gain
@@ -56,10 +68,11 @@ public class SlidesPIDControl {
      * @param kd               Derivative gain
      * @param maxTravelTicks   Full-range encoder ticks for normalization (<=0 to disable)
      * @param ticksPerMM       Ticks for per mm rotation
+     *
      */
 
     public SlidesPIDControl(RobotHardware robot,
-                            double kp, double ki, double kd, double fu,double fd,
+                            double kp, double ki, double kd,
                             double maxTravelTicks, double ticksPerMM) {
         this.robot = robot;
         this.ticksPerMM = ticksPerMM;
@@ -71,8 +84,7 @@ public class SlidesPIDControl {
             m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
         this.pid = new PIDController(kp, ki, kd);
-        this.fu = fu;
-        this.fd = fd;
+
 
         // Tolerance: normalized if maxTicks provided, else raw ticks
         if (maxTicks > 0) {
@@ -89,11 +101,6 @@ public class SlidesPIDControl {
         buildProfile(getAvgPos(), getAvgPos());
     }
 
-    /** Optional: baseline gravity hold term */
-    public void setGravityFF(double kG) { this.kG = kG; }
-
-    public void setVelocityFF(double kV) { this.kV = kV; }
-
     public void setVmaxTps(double v) { this.vMaxTps = Math.max(1, v); }
     public void setAmaxTps2(double a) { this.aMaxTps2 = Math.max(1, a); }
 
@@ -103,6 +110,7 @@ public class SlidesPIDControl {
     /** Set target position in encoder ticks (normalized if maxTicks>0) */
     public void setTargetTicks(double targetTicks) {
         this.targetTicksRaw = targetTicks;
+        buildProfile(getAvgPos(),targetTicks);
         if (maxTicks > 0) {
             pid.setSetPoint(targetTicks / maxTicks);
         } else {
@@ -126,7 +134,7 @@ public class SlidesPIDControl {
         profSign = (profDelta >= 0) ? 1.0 : -1.0;
         double d = Math.abs(profDelta);
 
-        if (d < 1e-4) {
+        if (d <=minMoveTicks) {
             // no motion
             t1 = t2 = t3 = tTotal = 0;
             profileActive = false;
@@ -164,50 +172,94 @@ public class SlidesPIDControl {
     }
 
     /**
+     * Feedforward Helper
+     * Signed velocity/acceleration in ticks/s and ticks/s^2 */
+    private double feedforward(double vTps, double aTps2) {
+        double ff = kG * Math.cos(thetaRad);            // gravity
+        double softSign = Math.tanh(vTps / Math.max(1e-6, smoothVel)); // [-1,1]
+        double stat = 0.0;
+        if (Math.abs(vTps) > velDeadband) {
+            stat = (softSign > 0) ? kSup : -kSdown;     // asymmetric static
+        }
+        double velTerm = kV * vTps;
+        double accTerm = kA * aTps2;
+        return ff + stat + velTerm + accTerm;
+    }
+    /**
      * Call once per loop to update motor powers
      */
     public void update() {
         if(!enabled){
             return;
         }
-        // Average encoder positions
-        //double leftPos  = robot.liftMotorLeft.getCurrentPosition();
-        //double rightPos = robot.liftMotorRight.getCurrentPosition();
-        //double avgPos   = (leftPos + rightPos) / 2.0;
+        // only use one motor encoder to control both motors
         int avgPos = robot.liftMotorRight.getCurrentPosition();
 
+        // --- Measured velocity (ticks/s) for "stopped" detection ---
+        double nowSec = runtime.seconds();
+        double dt = Math.max(1e-3, nowSec - lastTimeSec);
+        double vMeasTps = (avgPos - lastAvgPos) / dt;
+
+        // Maintain settle timer: count how long we've been "stopped"
+        boolean stoppedNow = Math.abs(vMeasTps) < velStopTps;
+        if (stoppedNow) {
+            // let timer run while we’re stopped
+        } else {
+            settleTimer.reset(); // moving again -> reset the "stopped" duration
+        }
+        // profiler
         double t = profileTimer.seconds();
-        double xSet, vSet;  // ticks, ticks/s (signed)
+        double xSet, vSet, aSet;  // ticks, ticks/s (signed)
 
         if (!profileActive || t >= tTotal) {
             // End of profile (or no motion): hold final
             xSet = profStartPos + profDelta;
             vSet = 0.0;
+            aSet = 0.0;
             profileActive = false;
         } else {
             // piecewise
             if (t <= t1) {
-                // accelerate: v = a * t, x = 0.5 * a * t^2
-                vSet = aMaxTps2 * t;
-                xSet = 0.5 * aMaxTps2 * t * t;
+                double ta = t;
+                double v = aMaxTps2 * ta;          // unsigned speed
+                double x = 0.5 * aMaxTps2 * ta * ta;
+
+                vSet = v * profSign;
+                xSet = profStartPos + x * profSign;
+                aSet = aMaxTps2 * profSign;        // signed accel
             } else if (t <= t1 + t2) {
                 // cruise
                 double tc = t - t1;
-                vSet = vMaxTps;
-                xSet = 0.5 * aMaxTps2 * t1 * t1 + vMaxTps * tc;
+                double dAccel = 0.5 * aMaxTps2 * t1 * t1;
+
+                vSet = vMaxTps * profSign;
+                xSet = profStartPos + (dAccel + vMaxTps * tc) * profSign;
+                aSet = 0.0;
             } else {
                 // decel: mirror of accel
                 double td = t - t1 - t2;
-                double v = vMaxTps - aMaxTps2 * td;
-                vSet = Math.max(0, v);
+                double v = Math.max(0, vMaxTps - aMaxTps2 * td);   // unsigned speed, non-negative
                 double dAccel = 0.5 * aMaxTps2 * t1 * t1;
                 double dCruise = vMaxTps * t2;
-                double dDecel = vMaxTps * td - 0.5 * aMaxTps2 * td * td;
-                xSet = dAccel + dCruise + dDecel;
+                double dDecel  = vMaxTps * td - 0.5 * aMaxTps2 * td * td;
+
+                vSet = v * profSign;
+                xSet = profStartPos + (dAccel + dCruise + dDecel) * profSign;
+                aSet = -aMaxTps2 * profSign;                        // signed decel
             }
-            // apply direction and start offset
-            vSet *= profSign;
-            xSet = profStartPos + profSign * xSet;
+        }
+
+        // --- Optional "snap" when very close and basically stopped ---
+        int finalTarget = (int)Math.round(profStartPos + profDelta);
+        int errToFinal = finalTarget - avgPos;
+
+        if (!profileActive) {
+            // If profile says we're done but there's a tiny residual, zero setpoints
+            if (Math.abs(errToFinal) <= minMoveTicks && Math.abs(vMeasTps) < velStopTps) {
+                xSet = finalTarget;
+                vSet = 0.0;
+                aSet = 0.0;
+            }
         }
 
         // PID measurement & setpoint (normalized if requested)
@@ -217,17 +269,11 @@ public class SlidesPIDControl {
         // Compute PID output
         double pidOut = pid.calculate(measurement, setpoint);
 
-        // ---- Feedforward: kG + static (fu/fd from desired velocity) + kV*vSet ----
-        double sign;
-        if (vSet >  V_DEADBAND_TPS)      sign = +1.0;
-        else if (vSet < -V_DEADBAND_TPS) sign = -1.0;
-        else                              sign =  0.0;
-
-        ff = kG + (sign > 0 ? fu : (sign < 0 ? fd : 0.0)) + (kV * vSet);
+        // Calculate feedforward
+        ff = feedforward(vSet,aSet);           // uses kG, kSup/kSdown, kv*vSet, kA*aSet
 
         // Compute motor power
         power =pidOut+ff;
-
         power = Range.clip(power, -1.0, 1.0);
 
         // Apply to both motors
@@ -236,7 +282,6 @@ public class SlidesPIDControl {
 
         // Save for next loop
         lastAvgPos = avgPos;
-
         lastTimeSec = runtime.seconds();
     }
 
@@ -244,11 +289,13 @@ public class SlidesPIDControl {
      * @return true if within tolerance of target
      */
     public boolean atTarget() {
-        return pid.atSetPoint();
+        // profile inactive AND PID within tolerance AND settled
+        boolean pidOk = pid.atSetPoint(); // make sure you set tolerance appropriately
+        return !profileActive && pidOk && (settleTimer.seconds() >= settleHoldSec);
     }
 
     private int getAvgPos() {
-        return (robot.liftMotorRight.getCurrentPosition()) / 2;
+        return (robot.liftMotorRight.getCurrentPosition());
     }
 
     /// Convert linear inches to encoder ticks; adjust counts and diameter
@@ -263,5 +310,11 @@ public class SlidesPIDControl {
 
     public double getpower(){return power;}
     public double getf(){return ff;}
+
+    // call this each loop or cache periodically
+    private double getVoltageComp() {
+        double v = robot.getBatteryVoltageRobust(); // implement in your RobotHardware
+        return (v > 6.0) ? (12.0 / v) : 1.0; // scale relative to 12V nominal
+    }
 
 }

@@ -41,8 +41,9 @@ public class BasicTeleOps extends OpMode {
     public static double kp = 3.0;
     public static double ki = 0.0;
     public static double kd = 0.05;
-    public static double fu =0.22;
-    public static double fd =-0.1;
+    public static double kG =0.22;
+    public static double kV = 2;
+    public static double kS = 0.1;
 
 
     @Override
@@ -52,7 +53,7 @@ public class BasicTeleOps extends OpMode {
         robot = new RobotHardware(hardwareMap);
         robot.init(hardwareMap);
 
-        slidePIDControl = new SlidesPIDControl(robot,kp,ki,kd,fu,fd,RobotActionConfig.TICKS_PER_MM_SLIDES*RobotActionConfig.deposit_Slide_Highbasket_Pos,RobotActionConfig.TICKS_PER_MM_SLIDES);
+        slidePIDControl = new SlidesPIDControl(robot,kp,ki,kd,RobotActionConfig.TICKS_PER_MM_SLIDES*RobotActionConfig.deposit_Slide_Highbasket_Pos,RobotActionConfig.TICKS_PER_MM_SLIDES);
 
         gamepadCo1 = new GamepadEx(gamepad1);
         gamepadCo2 = new GamepadEx(gamepad2);

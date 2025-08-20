@@ -11,8 +11,13 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.firstinspires.ftc.teamcode.Auto.drive.GoBildaPinpointDriver;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 /*
 Hardware config:
@@ -90,9 +95,14 @@ public class RobotHardware {
 
     public IMU imu; //IMU
     public HardwareMap hardwareMap;
-    public VoltageSensor voltageSensor;
+    public ArrayList <VoltageSensor> voltageSensors;
 
     public GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
+
+    private double vEma = 12.0;                 // EMA state
+    public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
+    public  double vMinAccept = 10.5;            // discard anything below this as junk
+    public  double vDefault   = 12.0;           // fallback
 
     public RobotHardware(HardwareMap hardwareMap) {
     }
@@ -134,7 +144,7 @@ public class RobotHardware {
         //limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
        // limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
-        VoltageSensor voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
+        voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
 
         //set motor mode and motor direction
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed
@@ -191,5 +201,23 @@ public class RobotHardware {
         odo.setOffsets(-149.225, -165.1); //these are tuned for 3110-0002-0001 Product Insight #1
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+    }
+
+    private static double median(List<Double> xs) {
+        Collections.sort(xs);
+        int n = xs.size();
+        return n == 0 ? Double.NaN : (n % 2 == 1 ? xs.get(n/2) : 0.5*(xs.get(n/2-1)+xs.get(n/2)));
+    }
+
+    public double getBatteryVoltageRobust() {
+        List<Double> vals = new ArrayList<>();
+        for (VoltageSensor vs : voltageSensors) {
+            double v = vs.getVoltage();
+            if (v > vMinAccept) vals.add(v);        // keep plausible readings only
+        }
+        double vMed = vals.isEmpty() ? vDefault : median(vals);
+        // EMA smoothing
+        vEma = vAlpha * vMed + (1.0 - vAlpha) * vEma;
+        return vEma;
     }
 }
