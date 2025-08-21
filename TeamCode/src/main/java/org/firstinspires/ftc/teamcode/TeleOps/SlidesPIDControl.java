@@ -28,24 +28,25 @@ public class SlidesPIDControl {
     public double kSdown = 0.030;  // static down
     public double kV = 0.00020;    // ticks/s -> power
     public double kA = 0.00002;    // ticks/s^2 -> power
+    // Velocity deadband so direction doesn't chatter around 0
     public double velDeadband = 12; // ticks/s (avoid flip near 0)
     public double smoothVel = 30;   // ticks/s (tanh smoothing)
     public double thetaRad = 10.0;   // 0 for vertical slides
+    // Optional hysteresis latch for static term
+    private int lastDir = 0;        // -1, 0, +1
+    public boolean useHysteresis = false;  // flip on if you still see micro-flips
 
     /// motor power output
     private double power = 0.0;
 
-    // Velocity deadband so direction doesn't chatter around 0
-    private double V_DEADBAND_TPS = 12.0;                                                           // ticks/sec
-
     // ---- Motion profile (trapezoid/triangle, start&end vel ~ 0) ----
-    public double vMaxTps = 2200;        // max velocity (ticks/s)  <-- tune
-    public double aMaxTps2 = 2200;     // max accel   (ticks/s^2) <-- tune
+    public double vMaxTps = 2200;               // max velocity (ticks/s)  <-- tune
+    public double aMaxTps2 = 2200;              // max accel   (ticks/s^2) <-- tune
 
     private final ElapsedTime profileTimer = new ElapsedTime();
-    private double profStartPos = 0.0;   // ticks
-    private double profDelta = 0.0;      // target - start (ticks)
-    private double profSign = 1.0;       // +1 up, -1 down
+    private double profStartPos = 0.0;          // ticks
+    private double profDelta = 0.0;             // target - start (ticks)
+    private double profSign = 1.0;              // +1 up, -1 down
     private double t1 = 0, t2 = 0, t3 = 0, tTotal = 0; // phase times (s)
     private boolean profileActive = false;
 
@@ -55,9 +56,9 @@ public class SlidesPIDControl {
     private double lastTimeSec = 0.0;
 
     // Tunables (put @Config if you use Dashboard)
-    public int minMoveTicks = 8;          // don't build a profile for shorter moves
-    public double velStopTps = 10.0;      // "stopped" if |velocity| below this
-    public double settleHoldSec = 0.15;   // time to remain stopped to count as settled
+    public int minMoveTicks = 5;                    // don't build a profile for shorter moves
+    public double velStopTps = 15.0;                // "stopped" if |velocity| below this
+    public double settleHoldSec = 0.15;             // time to remain stopped to count as settled
 
     private final ElapsedTime settleTimer = new ElapsedTime();
 
@@ -77,7 +78,6 @@ public class SlidesPIDControl {
         this.robot = robot;
         this.ticksPerMM = ticksPerMM;
         this.maxTicks = maxTravelTicks;
-
         // Reset and configure both lift motors
         for (DcMotor m : new DcMotor[]{ robot.liftMotorLeft, robot.liftMotorRight }) {
             m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -101,11 +101,10 @@ public class SlidesPIDControl {
         buildProfile(getAvgPos(), getAvgPos());
     }
 
-    public void setVmaxTps(double v) { this.vMaxTps = Math.max(1, v); }
-    public void setAmaxTps2(double a) { this.aMaxTps2 = Math.max(1, a); }
-
-    /** Optional: velocity deadband tuning */
-    public void setVelocityDeadbandTps(double deadband) { this.V_DEADBAND_TPS = Math.max(0, deadband); }
+    /*** Call from FSM to enable/disable PID updates*/
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
     /** Set target position in encoder ticks (normalized if maxTicks>0) */
     public void setTargetTicks(double targetTicks) {
@@ -120,9 +119,7 @@ public class SlidesPIDControl {
         pid.reset(); // avoid surge on new targets
     }
 
-    /**
-     * Convenience to set target by linear units (e.g., mm or inches)
-     */
+    /** * Convenience to set target by linear units (e.g., mm or inches) */
     public void setTargetMM(double mm) {
         setTargetTicks(mmToTicks(mm));
     }
@@ -164,30 +161,40 @@ public class SlidesPIDControl {
         profileActive = true;
         profileTimer.reset();
     }
-    /**
-     * Call from FSM to enable/disable PID updates
-     */
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    /** using dir of slide moving */
+    /** * Feedforward Helper  * Signed velocity/acceleration in ticks/s and ticks/s^2 */
+    private double feedforward(double vTps, double aTps2) {
+        // 1) Gravity hold (include cos(theta) in case slide is tilted)
+        double ff = kG * Math.cos(thetaRad);
+
+        // 2) Static term: smooth sign + smooth magnitude (no hard step at deadband)
+        // Direction source: either soft sign from tanh, or latched hysteresis if enabled.
+        double softSign = Math.tanh(vTps / Math.max(1e-6, smoothVel));   // [-1,1]
+        int dir = useHysteresis ? latchedDir(vTps, velDeadband) : 0;
+
+        // Blend-in factor: 0 at deadband, ~1 by ~2× deadband
+        double blend = smoothStep(Math.abs(vTps), velDeadband, 2.0 * velDeadband);
+
+        double stat;
+        if (useHysteresis) {
+            // Use latched direction when near zero
+            stat = (dir > 0 ? kSup : (dir < 0 ? -kSdown : 0.0)) * blend;
+        } else {
+            // Use soft sign (continuous)
+            stat = (softSign > 0 ? kSup : (softSign < 0 ? -kSdown : 0.0)) * blend;
+        }
+
+        // 3) Velocity + acceleration terms (proportional FF)
+        double velTerm = kV * vTps;     // ticks/s -> power
+        double accTerm = kA * aTps2;    // ticks/s^2 -> power
+
+        double baseFF = ff + stat + velTerm + accTerm;
+
+        // 4) Battery voltage compensation (optional but recommended)
+        return baseFF * getVoltageComp();
     }
 
-    /**
-     * Feedforward Helper
-     * Signed velocity/acceleration in ticks/s and ticks/s^2 */
-    private double feedforward(double vTps, double aTps2) {
-        double ff = kG * Math.cos(thetaRad);            // gravity
-        double softSign = Math.tanh(vTps / Math.max(1e-6, smoothVel)); // [-1,1]
-        double stat = 0.0;
-        if (Math.abs(vTps) > velDeadband) {
-            stat = (softSign > 0) ? kSup : -kSdown;     // asymmetric static
-        }
-        double velTerm = kV * vTps;
-        double accTerm = kA * aTps2;
-        return ff + stat + velTerm + accTerm;
-    }
-    /**
-     * Call once per loop to update motor powers
-     */
+    /*** Call once per loop to update motor powers  */
     public void update() {
         if(!enabled){
             return;
@@ -207,6 +214,7 @@ public class SlidesPIDControl {
         } else {
             settleTimer.reset(); // moving again -> reset the "stopped" duration
         }
+
         // profiler
         double t = profileTimer.seconds();
         double xSet, vSet, aSet;  // ticks, ticks/s (signed)
@@ -249,8 +257,9 @@ public class SlidesPIDControl {
             }
         }
 
-        // --- Optional "snap" when very close and basically stopped ---
+        /// --- Optional "snap" when very close and basically stopped ---
         int finalTarget = (int)Math.round(profStartPos + profDelta);
+        //int finalTarget =getAvgPos();
         int errToFinal = finalTarget - avgPos;
 
         if (!profileActive) {
@@ -317,4 +326,16 @@ public class SlidesPIDControl {
         return (v > 6.0) ? (12.0 / v) : 1.0; // scale relative to 12V nominal
     }
 
+    /** Smoothstep 0->1 between [a,b] to fade in static FF with no step jump. */
+    private static double smoothStep(double x, double a, double b) {
+        double t = Math.max(0, Math.min(1, (x - a) / Math.max(1e-9, b - a)));
+        return t * t * (3 - 2 * t);
+    }
+
+    /** Optional direction latch to prevent tiny sign flips around zero velocity. */
+    private int latchedDir(double vTps, double band) {
+        if (vTps >  band) lastDir = +1;
+        else if (vTps < -band) lastDir = -1;
+        return lastDir;
+    }
 }
