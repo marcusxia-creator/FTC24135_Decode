@@ -54,7 +54,7 @@ public class PIDFSlideOpMode extends OpMode{
             m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }*/
         /// * set PID controller
-        controller = new SlidesPIDControl(robot,p,i,d,fu,fd,maxTicks,ticksPerMM);
+        controller = new SlidesPIDControl(robot,p,i,d,maxTicks,ticksPerMM);
         /// * set gamepad
         gamepadCo1 = new GamepadEx(gamepad1);
         gamepadCo2 = new GamepadEx(gamepad2);
