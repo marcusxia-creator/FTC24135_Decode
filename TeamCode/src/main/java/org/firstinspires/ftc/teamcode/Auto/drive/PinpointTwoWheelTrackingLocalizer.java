@@ -5,8 +5,11 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.localization.TwoTrackingWheelLocalizer;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.Auto.drive.SampleMecanumDriveCancelable;
+import org.firstinspires.ftc.teamcode.Auto.util.Encoder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,8 +50,6 @@ public class PinpointTwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer
     public static double x_offset = -149.225; // unit in mm    or change to -5.875=149.225
     public static double y_offset = -131.2468; // unit in mm     or change to -5.1672=131.2468
 
-    Pose2D pinpointPos;
-    Pose2D pinpointVel;
 
     // Parallel/Perpendicular to the forward axis
     // Parallel wheel is parallel to the forward axis
