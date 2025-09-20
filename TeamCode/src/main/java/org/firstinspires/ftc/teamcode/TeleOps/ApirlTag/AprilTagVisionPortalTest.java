@@ -6,22 +6,25 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-@Autonomous(name= "April_Tag_3d_Post_Estimation_TEST", group = "org/firstinspires/ftc/teamcode/OpMode")
+@TeleOp(name= "April_Tag_3d_Post_Estimation_TEST", group = "org/firstinspires/ftc/teamcode/OpMode")
 public class AprilTagVisionPortalTest extends OpMode {
 
-    private static AprilTagProcessor tagProcessor;
-    private static VisionPortal visionPortal;
+    private AprilTagProcessor tagProcessor;
+    private VisionPortal visionPortal;
+    private FtcDashboard ftcDashboard;
 
     @Override
     public void init (){
 
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        ftcDashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, ftcDashboard.getTelemetry());
 
         tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
@@ -32,14 +35,12 @@ public class AprilTagVisionPortalTest extends OpMode {
 
         visionPortal = new VisionPortal.Builder()
                 .addProcessor(tagProcessor)
-                .setCamera(hardwareMap.get(WebcamName.class, "Web_Cam"))
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .setCameraResolution(new Size(640, 480))
                 .build();
 
-
+        visionPortal.resumeStreaming();
         visionPortal.resumeLiveView();
-        visionPortal.resumeLiveView();
-
     }
 
     @Override
@@ -48,7 +49,6 @@ public class AprilTagVisionPortalTest extends OpMode {
         if (!tagProcessor.getDetections().isEmpty()) {
             AprilTagDetection tag = tagProcessor.getDetections().get(0);
 
-            visionPortal.resumeLiveView();
             visionPortal.resumeLiveView();
 
             telemetry.addData("Bearing", tag.ftcPose.bearing);
@@ -63,6 +63,7 @@ public class AprilTagVisionPortalTest extends OpMode {
 
         telemetry.addData("April tag is detected", !tagProcessor.getDetections().isEmpty());
 
+        ftcDashboard.startCameraStream(visionPortal, 30);
         telemetry.update();
     }
 }
