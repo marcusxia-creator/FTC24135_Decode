@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -11,10 +12,11 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 import java.util.List;
 import java.util.ArrayList;
-
-import org.firstinspires.ftc.teamcode.Auto.drive.GoBildaPinpointDriver;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -198,7 +200,7 @@ public class RobotHardware {
 
     public void initPinPoint() {
         odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
-        odo.setOffsets(-149.225, -165.1); //these are tuned for 3110-0002-0001 Product Insight #1
+        odo.setOffsets(-149.225, -165.1, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
     }
