@@ -134,7 +134,7 @@ public class BasicTeleOps_SemiAuto extends OpMode {
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);   // Pass robot instance to RobotDrive
         robotDrive.Init();
 
-        SlidesPIDControl controller = new SlidesPIDControl(robot, kp,ki,kd,fu,fd, RobotActionConfig.TICKS_PER_MM_SLIDES * RobotActionConfig.deposit_Slide_Highbasket_Pos, RobotActionConfig.TICKS_PER_MM_SLIDES);
+        SlidesPIDControl controller = new SlidesPIDControl(robot, kp,ki,kd, RobotActionConfig.TICKS_PER_MM_SLIDES * RobotActionConfig.deposit_Slide_Highbasket_Pos, RobotActionConfig.TICKS_PER_MM_SLIDES);
 
         //Deposit Arm control
         depositArmDrive = new FiniteStateMachineDeposit(robot, gamepadCo1, gamepadCo2, intakeArmDrive, telemetry, controller); // Pass parameters as needed);
