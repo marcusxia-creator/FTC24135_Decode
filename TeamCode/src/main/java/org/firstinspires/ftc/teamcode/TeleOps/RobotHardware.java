@@ -68,23 +68,8 @@ public class RobotHardware {
     public DcMotorEx frontRightMotor;
     public DcMotorEx backRightMotor;
 
-    public DcMotorEx liftMotorLeft;// Vertical Slide Motor
-    public DcMotorEx liftMotorRight;// Vertical Slide Motor
 
     //Intake servos
-    public Servo intakeLeftSlideServo;
-    public Servo intakeRightSlideServo;
-    public Servo intakeArmServo;
-    public Servo intakeTurretServo;
-    public Servo intakeRotationServo;
-    public Servo intakeClawServo;
-    public Servo intakeWristServo;
-
-    //Deposit servos
-    public Servo depositLeftArmServo;
-    public Servo depositRightArmServo;
-    public Servo depositWristServo;
-    public Servo depositClawServo;
 
     //public ColorSensor colorSensor;// Color Sensor
     ///for debug colorSensor
@@ -115,38 +100,10 @@ public class RobotHardware {
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
         //Lift motors
-        liftMotorLeft = hardwareMap.get(DcMotorEx.class,"LS_Motor");
-        liftMotorRight = hardwareMap.get(DcMotorEx.class, "RS_Motor");
 
-
-        /**set servos**/
-        //Intake servo
-        intakeArmServo = hardwareMap.get(Servo.class, "Intake_Arm_Servo");
-        intakeLeftSlideServo = hardwareMap.get(Servo.class, "Intake_Slide_Left_Servo");
-        intakeRightSlideServo = hardwareMap.get(Servo.class, "Intake_Slide_Right_Servo");
-        intakeWristServo = hardwareMap.get(Servo.class, "Intake_Wrist_Servo");
-        intakeRotationServo = hardwareMap.get(Servo.class, "Intake_Rotation_Servo");
-        intakeClawServo = hardwareMap.get(Servo.class, "Intake_Claw_Servo");
-        intakeTurretServo = hardwareMap.get(Servo.class, "Intake_Turret_Servo");
-        //Deposit servo
-        depositLeftArmServo = hardwareMap.get(Servo.class, "Deposit_Left_Arm_Servo");
-        depositRightArmServo = hardwareMap.get(Servo.class, "Deposit_Right_Arm_Servo");
-        depositWristServo = hardwareMap.get(Servo.class, "Deposit_Wrist_Servo");
-        depositClawServo = hardwareMap.get(Servo.class, "Deposit_Claw_Servo");
-        //Color sensor
-        //colorSensor = hardwareMap.get(NormalizedColorSensor.class, "Color_Sensor");
-        //colorSensor.setGain(2);
-        //colorSensor.enableLed(true); // this is for Non normalized colorSensor.
-        //Limit Switch
-        //limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
        // limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
-
-        //set motor mode and motor direction
-        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed
-        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed
-
         //Reset the drive train motor encoders
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -158,19 +115,6 @@ public class RobotHardware {
         backLeftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); //set motor mode
         frontRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
         backRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
-
-        //set servo direction - intake and deposit
-        intakeRightSlideServo.setDirection(Servo.Direction.REVERSE);
-        intakeWristServo.setDirection(Servo.Direction.REVERSE);
-        depositLeftArmServo.setDirection(Servo.Direction.REVERSE);
-
-        //set slide motors direction
-        liftMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        //Set the run mode of the motors
-        liftMotorLeft.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        liftMotorRight.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-
         // set robot motor power 0
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
