@@ -6,11 +6,16 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.hardware.configuration.WebcamConfiguration;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -68,6 +73,8 @@ public class RobotHardware {
     public DcMotorEx frontRightMotor;
     public DcMotorEx backRightMotor;
 
+    public WebcamName webcam1;
+
 
     //Intake servos
 
@@ -86,6 +93,7 @@ public class RobotHardware {
     public  double vMinAccept = 10.5;            // discard anything below this as junk
     public  double vDefault   = 12.0;           // fallback
 
+
     public RobotHardware(HardwareMap hardwareMap) {
     }
 
@@ -99,9 +107,10 @@ public class RobotHardware {
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "BL_Motor");
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
-        //Lift motors
+        //Webcam
+        webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
 
-       // limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+                // limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
         //Reset the drive train motor encoders
@@ -120,6 +129,7 @@ public class RobotHardware {
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
+
 
     }// End of init
 

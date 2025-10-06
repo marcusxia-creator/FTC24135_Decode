@@ -16,13 +16,21 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler;
+
 @TeleOp (name = "Basic TeleOp", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOp extends OpMode {
     private RobotHardware robot;
     private GamepadEx gamepadCo1, gamepadCo2;
     private RobotDrive robotDrive;
+
     private FSMIntake intakeControl;
     private FSMShooterManual shooterControl;
+    private FSMAprilTagProc aprilTagProc;
+    private IceWaddler iceWaddler;
 
     @Override
     public void init() {
@@ -33,12 +41,15 @@ public class BasicTeleOp extends OpMode {
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
+        aprilTagProc = new FSMAprilTagProc(robot);
+        aprilTagProc.init();
+
 
     }
 
     @Override
     public void loop() {
-
+        aprilTagProc.loop();
     }
 
     @Override
