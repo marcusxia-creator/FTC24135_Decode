@@ -11,5 +11,5 @@ public class RobotActionConfig {
 
     //public static PIDController = new PIDController(0,0,0);
 
-    public static double autoHeadingCoeff               = 1.0;
+    public static double autoHeadingCoeff               = 0.0001;
 }

@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.WebcamConfiguration;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Auto.drive.GoBildaPinpointDriver;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -87,6 +88,7 @@ public class RobotHardware {
     public IMU imu; //IMU
     public HardwareMap hardwareMap;
     public ArrayList <VoltageSensor> voltageSensors;
+    public GoBildaPinpointDriver odo;
 
     private double vEma = 12.0;                 // EMA state
     public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
