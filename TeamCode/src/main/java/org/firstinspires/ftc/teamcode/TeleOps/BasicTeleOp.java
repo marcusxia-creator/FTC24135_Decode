@@ -38,18 +38,19 @@ public class BasicTeleOp extends OpMode {
 
         robot = new RobotHardware(hardwareMap);
         robot.init(hardwareMap);
-        robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
-        robotDrive.Init();
 
         aprilTagProc = new FSMAprilTagProc(robot);
         aprilTagProc.init();
 
-
+        robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
+        robotDrive.Init(aprilTagProc);
     }
 
     @Override
     public void loop() {
         aprilTagProc.loop();
+
+        aprilTagProc
     }
 
     @Override

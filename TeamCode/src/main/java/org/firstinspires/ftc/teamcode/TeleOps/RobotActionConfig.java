@@ -10,4 +10,6 @@ public class RobotActionConfig {
     public static double decel_Slowness                 = 0.5;
 
     //public static PIDController = new PIDController(0,0,0);
+
+    public static double autoHeadingCoeff               = 1.0;
 }

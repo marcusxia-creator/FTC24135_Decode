@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.BACK;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.START;
@@ -31,7 +32,6 @@ public class RobotDrive {
     private final GamepadEx gamepad_1;
     private final GamepadEx gamepad_2;
     private final RobotHardware robot;
-    private DriveMode driveMode = DriveMode.ROBOT_CENTRIC;
 
     private ElapsedTime debounceTimer = new ElapsedTime(); // Timer for debouncing
 
@@ -45,32 +45,30 @@ public class RobotDrive {
 
     public IceWaddler iceWaddler;
 
+    public FSMAprilTagProc AprilTag;
+
+    public boolean autoHeading = false;
+
     public RobotDrive(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2) {
         this.robot = robot;
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
     }
 
-    public void Init() {
+    public void Init(FSMAprilTagProc AprilTag) {
         // Initialize IMU from RobotHardware
         iceWaddler = new IceWaddler(robot);
 
         iceWaddler.Init(IceWaddler.CONTROLMODE.POWER,
                 new Pose2D(DistanceUnit.METER,0,0, AngleUnit.DEGREES,0),
                 false);
+
+        this.AprilTag = AprilTag;
     }
 
 
     @SuppressLint("DefaultLocale")
     public void DriveLoop() {
-        // Toggle control mode
-        if ((gamepad_1.getButton(START) || gamepad_2.getButton(START)) && !startPressed && (!gamepad_1.getButton(LEFT_BUMPER) || !gamepad_2.getButton(LEFT_BUMPER))) {
-            toggleControlMode();
-            debounceTimer.reset();
-            startPressed = true;
-        } else if (!gamepad_1.getButton(START) || !gamepad_2.getButton(START)) {
-            startPressed = false;
-        }
 
         /** Reset IMU heading using button back and reset odometry
          * * need to remove this feature, as back button reseting imu may interfer with Roadrunner pose estimation.
@@ -99,20 +97,36 @@ public class RobotDrive {
 
         // gamepad 1 take priority override gamepad 2
         if (Math.abs(gamepad_1.getRightY()) > 0.1 || Math.abs(gamepad_1.getRightX()) > 0.1 || Math.abs(gamepad_1.getLeftX()) > 0.1) {
-            drive = deadband(-gamepad_1.getRightY(),0.1);
-            strafe = deadband(gamepad_1.getRightX(),0.1);
+            drive = deadband(-gamepad_1.getRightY(),0.1) * RobotActionConfig.powerFactor;
+            strafe = deadband(gamepad_1.getRightX(),0.1) * RobotActionConfig.powerFactor;
             rotate = deadband(gamepad_1.getLeftX(),0.1) * rotate_Slowness;
         } else if (Math.abs(gamepad_2.getRightY()) > 0.1 || Math.abs(gamepad_2.getRightX()) > 0.1 || Math.abs(gamepad_2.getLeftX()) > 0.1) {
-            drive = deadband(-gamepad_2.getRightY(),0.1);
-            strafe = deadband(gamepad_2.getRightX(),0.1);
+            drive = deadband(-gamepad_2.getRightY(),0.1) * RobotActionConfig.powerFactor;
+            strafe = deadband(gamepad_2.getRightX(),0.1) * RobotActionConfig.powerFactor;
             rotate = deadband(gamepad_2.getLeftX(),0.1) * rotate_Slowness;
         }
 
-        // Get robot's current heading
-        double currentHeading = getRobotHeading();
+        if(autoHeading){
+            AprilTag.procState = FSMAprilTagProc.ProcState.RUNNING;
+            if(AprilTag.tag != null) {
+                rotate = RobotActionConfig.autoHeadingCoeff*AprilTag.tag.center.x;
+            }
+        }
+        else{
+            AprilTag.procState = FSMAprilTagProc.ProcState.STOPPED;
+        }
+
+        // Toggle Auto Heading
+        if ((gamepad_1.getButton(START) || gamepad_2.getButton(START)) && !startPressed && (!gamepad_1.getButton(LEFT_BUMPER) || !gamepad_2.getButton(LEFT_BUMPER))) {
+            autoHeading = !autoHeading;
+            debounceTimer.reset();
+            startPressed = true;
+        } else if (!gamepad_1.getButton(START) || !gamepad_2.getButton(START)) {
+            startPressed = false;
+        }
 
         // Mecanum drive calculations
-        setMecanumDrivePower(drive, strafe, rotate, currentHeading, powerFactor);
+        iceWaddler.runByPower(new Pose2D(DistanceUnit.METER, drive, strafe, AngleUnit.DEGREES, 0), rotate);
         // Update telemetry with the latest data
         // empty
     }// end of driveloop
@@ -130,14 +144,6 @@ public class RobotDrive {
         }
         return -heading;
     }
-
-    private void toggleControlMode() {
-        if (driveMode == DriveMode.FIELD_CENTRIC) {
-            driveMode = DriveMode.ROBOT_CENTRIC;
-        } else {
-            driveMode = DriveMode.FIELD_CENTRIC;
-        }
-    }
     double deadband(double input, double threshold) {
         if (Math.abs(input) < threshold) { // Ignore small values
             return 0.0;
@@ -148,49 +154,6 @@ public class RobotDrive {
     double lerp(double current, double target, double accel_Slowness, double decel_Slowness) {
         double alpha = (Math.abs(target) > Math.abs(current)) ? accel_Slowness : decel_Slowness;
         return current + alpha * (target - current);
-    }
-
-    private void setMecanumDrivePower(double drive, double strafe, double rotate, double currentHeading, double powerFactor) {
-        // Determine the drive mode
-        if (driveMode == DriveMode.FIELD_CENTRIC) {
-            // Adjust for field-centric control using the gyro angle
-            double headingRad = Math.toRadians(currentHeading);
-            double temp = drive * Math.cos(headingRad) + strafe * Math.sin(headingRad);
-            strafe = -drive * Math.sin(headingRad) + strafe * Math.cos(headingRad);
-            drive = temp;
-        }
-
-        // Mecanum wheel drive formula
-        double desiredFrontLeftPower = drive + strafe + rotate;
-        double desiredFrontRightPower = drive - strafe - rotate;
-        double desiredBackLeftPower = drive - strafe + rotate;
-        double desiredBackRightPower = drive + strafe - rotate;
-
-        // Constrain the power within +-1.0
-        double maxPower = Math.max(
-                Math.max(Math.abs(desiredFrontLeftPower), Math.abs(desiredFrontRightPower)),
-                Math.max(Math.abs(desiredBackRightPower), Math.abs(desiredBackLeftPower))
-        );
-
-        if (maxPower > 1.0) {
-            desiredFrontLeftPower /= maxPower;
-            desiredFrontRightPower /= maxPower;
-            desiredBackLeftPower /= maxPower;
-            desiredBackRightPower /= maxPower;
-        }
-
-        double frontLeftPower = lerp(robot.frontLeftMotor.getPower(), desiredFrontLeftPower, RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
-        double frontRightPower = lerp(robot.frontRightMotor.getPower(), desiredFrontRightPower,  RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
-        double backLeftPower = lerp(robot.backLeftMotor.getPower(), desiredBackLeftPower,  RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
-        double backRightPower = lerp(robot.backRightMotor.getPower(), desiredBackRightPower,  RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
-
-
-        // Set motor powers
-        robot.frontLeftMotor.setPower(Range.clip(frontLeftPower * powerFactor, -1.0, 1.0));
-        robot.frontRightMotor.setPower(Range.clip(frontRightPower * powerFactor, -1.0, 1.0));
-        robot.backLeftMotor.setPower(Range.clip(backLeftPower * powerFactor, -1.0, 1.0));
-        robot.backRightMotor.setPower(Range.clip(backRightPower * powerFactor, -1.0, 1.0));
-
     }
 
     // Method to get left encoder count
@@ -210,13 +173,5 @@ public class RobotDrive {
         velocities[2] = robot.backLeftMotor.getVelocity();
         velocities[3] = robot.backRightMotor.getVelocity();
         return velocities;
-    }
-
-    public enum DriveMode {
-        FIELD_CENTRIC,
-        ROBOT_CENTRIC
-    }
-    public DriveMode getDriveMode() {
-        return driveMode;
     }
 }
