@@ -22,6 +22,7 @@ public class FSMAprilTagProc {
 
     public AprilTagDetection tag;
 
+    public boolean Detected;
     public double Heading;
     public double Distance;
 
@@ -63,12 +64,19 @@ public class FSMAprilTagProc {
     public void loop (){
         switch(procState) {
             case STOPPED:
+                Detected = false;
                 break;
 
             case RUNNING:
                 tag = tagProcessor.getDetections().get(0);
-                Heading = tag.center.x;
-                Distance = Math.sqrt(Math.pow(tag.ftcPose.x, 2) + Math.pow(tag.ftcPose.y, 2));
+                if(tag != null) {
+                    Detected = true;
+                    Heading = tag.center.x;
+                    Distance = Math.sqrt(Math.pow(tag.ftcPose.x, 2) + Math.pow(tag.ftcPose.y, 2));
+                }
+                else{
+                    Detected = false;
+                }
                 break;
         }
     }

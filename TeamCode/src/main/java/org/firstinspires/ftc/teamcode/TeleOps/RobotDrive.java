@@ -108,8 +108,8 @@ public class RobotDrive {
 
         if(autoHeading){
             AprilTag.procState = FSMAprilTagProc.ProcState.RUNNING;
-            if(AprilTag.tag != null) {
-                rotate = RobotActionConfig.autoHeadingCoeff*AprilTag.tag.center.x;
+            if(AprilTag.Detected) {
+                rotate = RobotActionConfig.autoHeadingCoeff * AprilTag.Heading;
             }
         }
         else{

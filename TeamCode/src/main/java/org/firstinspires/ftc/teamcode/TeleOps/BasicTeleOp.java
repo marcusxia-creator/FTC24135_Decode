@@ -32,6 +32,8 @@ public class BasicTeleOp extends OpMode {
     private FSMAprilTagProc aprilTagProc;
     private IceWaddler iceWaddler;
 
+    private FtcDashboard dashboard;
+
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -44,13 +46,35 @@ public class BasicTeleOp extends OpMode {
 
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init(aprilTagProc);
+
+        dashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
     }
 
     @Override
     public void loop() {
         aprilTagProc.loop();
+        robotDrive.DriveLoop();
 
-        aprilTagProc
+        //Telemetry
+        telemetry.addData("State","Running");
+        if(robotDrive.autoHeading) {
+            telemetry.addData("Heading Control", "Auto");
+        }
+        else{
+            telemetry.addData("Heading Control", "Manual");
+        }
+
+        if(aprilTagProc.Detected){
+            telemetry.addData("AprilTag", "Detected");
+            telemetry.addData("AprilTag ID", aprilTagProc.tag.id);
+            telemetry.addData("AprilTag Heading", aprilTagProc.Heading);
+            telemetry.addData("AprilTag Distance", aprilTagProc.Distance);
+            telemetry.addData("AprilTag Heading Correction", aprilTagProc.Heading*RobotActionConfig.autoHeadingCoeff);
+        }
+        else{
+            telemetry.addData("AprilTag", "No Detection");
+        }
     }
 
     @Override
