@@ -22,12 +22,14 @@ public class BasicTeleOp extends OpMode {
     private GamepadEx gamepadCo1, gamepadCo2;
     private RobotDrive robotDrive;
     private FSMIntake intakeControl;
-    private FSMShooterManual shooterControl;
+    private FSMShooterManual shooterManualControl;
     private ElapsedTime debounceTimer = new ElapsedTime();
 
 
     @Override
     public void init() {
+        gamepadCo1 = new GamepadEx(gamepad1);
+        gamepadCo2 = new GamepadEx(gamepad2);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         robot = new RobotHardware(hardwareMap);
@@ -37,6 +39,9 @@ public class BasicTeleOp extends OpMode {
 
         intakeControl = new FSMIntake(robot, gamepadCo1, gamepadCo2);
         intakeControl.Init();
+
+        shooterManualControl = new FSMShooterManual(gamepadCo1, gamepadCo2, robot);
+        shooterManualControl.Init();
 
 
     }

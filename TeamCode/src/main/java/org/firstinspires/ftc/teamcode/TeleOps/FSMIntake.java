@@ -42,7 +42,7 @@ public class FSMIntake {
                 }
                 break;
             case INTAKE_FORWARD:
-                robot.intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+                robot.intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
                 robot.intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 robot.intakeMotor.setPower(RobotActionConfig.intakeSpeed);
                 if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()){
@@ -50,7 +50,7 @@ public class FSMIntake {
                 }
                 break;
             case INTAKE_REVERSE:
-                robot.intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+                robot.intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
                 robot.intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 robot.intakeMotor.setPower(RobotActionConfig.intakeSpeed);
                 if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()){
@@ -64,9 +64,6 @@ public class FSMIntake {
             default:
                 intakeState = INTAKESTATE.INTAKE_START;
         }
-
-
-
     }
 
     private boolean isButtonDebounced() {
