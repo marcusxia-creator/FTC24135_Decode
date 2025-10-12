@@ -23,6 +23,8 @@ public class BasicTeleOp extends OpMode {
     private RobotDrive robotDrive;
     private FSMIntake intakeControl;
     private FSMShooterManual shooterControl;
+    private ElapsedTime debounceTimer = new ElapsedTime();
+
 
     @Override
     public void init() {
@@ -32,6 +34,9 @@ public class BasicTeleOp extends OpMode {
         robot.init(hardwareMap);
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
+
+        intakeControl = new FSMIntake(robot, gamepadCo1, gamepadCo2);
+        intakeControl.Init();
 
 
     }
@@ -47,5 +52,12 @@ public class BasicTeleOp extends OpMode {
         robot.frontRightMotor.setPower(0);
         robot.backLeftMotor.setPower(0);
         robot.backRightMotor.setPower(0);
+    }
+    public boolean isButtonDebounced() {
+        if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+            debounceTimer.reset();
+            return true;
+        }
+        return false;
     }
 }
