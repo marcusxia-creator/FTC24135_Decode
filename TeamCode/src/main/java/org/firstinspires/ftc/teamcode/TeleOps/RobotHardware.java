@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -67,9 +68,11 @@ public class RobotHardware {
     public DcMotorEx shooterMotor;
     public DcMotorEx intakeMotor;
     //servos
-    public Servo angleServo;
+    //public Servo angleServo;
     public Servo pushRampServo;
     public Servo spindexerServo;
+    public Servo leftGateServo;
+    public Servo rightGateServo;
     //limit switch
     public DigitalChannel limitSwitch;
 
@@ -105,15 +108,17 @@ public class RobotHardware {
         shooterMotor = hardwareMap.get(DcMotorEx.class, "Shooter_Motor");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
         //Servos
-        angleServo = hardwareMap.get(Servo.class, "Angle_Servo");
-        pushRampServo = hardwareMap.get(Servo.class, "PushRamp_Servo");
+        //angleServo = hardwareMap.get(Servo.class, "Angle_Servo");
+        pushRampServo = hardwareMap.get(Servo.class, "Ramp_Servo");
         spindexerServo = hardwareMap.get(Servo.class, "Spindexer_Servo");
+        leftGateServo = hardwareMap.get(Servo.class, "Left_Gate_Servo");
+        rightGateServo = hardwareMap.get(Servo.class, "Right_Gate_Servo");
         //color sensor
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "Color_Sensor");
         colorSensor.setGain(2);
         //limit switch
-        limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
-        limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+        //limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
+        //limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
         //Reset the drive train motor encoders
@@ -128,8 +133,8 @@ public class RobotHardware {
         frontRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
         backRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
         //Set run mode of intake and shooter motors
-        intakeMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        shooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         // set robot motor power 0
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);

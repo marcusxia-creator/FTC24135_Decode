@@ -2,12 +2,15 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 public class FSMShooterManual {
     private final GamepadEx gamepad_1;
     private final GamepadEx gamepad_2;
     private final RobotHardware robot;
     private ElapsedTime debounceTimer = new ElapsedTime();
+    private SHOOTERSTATE shooterState;
+
     public enum SHOOTERSTATE{
         SHOOTER_START,
         SHOOTER_STOP
@@ -21,18 +24,30 @@ public class FSMShooterManual {
     public void Init(){
         robot.shooterMotor.setPower(0);
     }
+
     public void ShooterLoop(){
-        if (gamepad_1.getButton(GamepadKeys.Button.Y)&&isButtonDebounced()){
-            robot.shooterMotor.setPower(RobotActionConfig.shooterSpeed);
+        if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()){
+            ToggleShooter();
         }
-        if (gamepad_1.getButton(GamepadKeys.Button.X)&&isButtonDebounced()){
-            robot.pushRampServo.setPosition(RobotActionConfig.rampPos);
+        if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced()){
+            robot.pushRampServo.setPosition(RobotActionConfig.rampUpPos);
         }
-        if (gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced()){
-            robot.shooterMotor.setPower(0);
-            robot.pushRampServo.setPosition(RobotActionConfig.rampResetPos);
+    }
+    private void shooterSwitch(){
+        if (shooterState == SHOOTERSTATE.SHOOTER_START){
+            robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.shooterMotor.setPower(1.0);
+        }else {
+            robot.shooterMotor.setPower(0.0);
         }
 
+    }
+    private void ToggleShooter() {
+        if (shooterState == SHOOTERSTATE.SHOOTER_START){
+            shooterState = SHOOTERSTATE.SHOOTER_STOP;
+        }else  {
+            shooterState = SHOOTERSTATE.SHOOTER_START;
+        }
     }
 
     private boolean isButtonDebounced() {
@@ -44,3 +59,4 @@ public class FSMShooterManual {
     }
 
 }
+
