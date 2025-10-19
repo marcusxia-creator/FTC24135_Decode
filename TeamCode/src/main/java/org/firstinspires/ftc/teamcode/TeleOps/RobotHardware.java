@@ -1,53 +1,68 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import androidx.annotation.NonNull;
-
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+import java.util.List;
+import java.util.ArrayList;
 
-/**
+import org.firstinspires.ftc.teamcode.Auto.drive.GoBildaPinpointDriver;
+
+import java.util.ArrayList;
+import java.util.Collections;
+
+/*
 Hardware config:
 Motor:
 Control hub motor:
- Port 0: FL_Motor,
- Port 1: BL_motor,
- Port 2: FR_Motor,
- Port 3: BR_Motor
-
-Control hub servo:
- Port 0: Intake_Wrist_Servo
- Port 1: Intake_Arm_Left_Servo
- Port 2: Intake_Slide_Left_Servo
- Port 3: Deposit_Claw_Servo
- Port 4: Deposit_Arm_Servo
- Port 5: Nothing
-
+                port 0: FL_Motor
+                port 1: BL_motor
+                port 2: FR_Motor
+                port 3: BR_Motor
 Expansion hub motor:
- Port 0: VS_Motor_Left
- Port 1: VS_Motor_Right
+                port 0: VS_Left_Motor
+                port 3: VS_Right_Motor
+                port 1: par (encoder for odometry pod in X direction - parallel direction)
+                port 2: perp (encoder for odometry pod in Y direction - perpendicular direction)
 
-Expansion hub servo:
- Port 0: Nothing
- Port 1: Intake_Slide_Right_Servo
- Port 2: Deposit_Wrist_Servo
- Port 3: Intake_Claw_Servo
- Port 4: Intake_Rotation_Servo
- Port 5: Intake_Arm_Right_Servo
+Servo:
+EXP hub:
+                port 3: Intake_Wrist_Servo
+                port 5: Intake_Arm_Left_Servo
+                port 0: Deposit_Wrist_Servo
+                port 1: Deposit_Claw_Servo
+                port 2: Deposit_Arm_Servo
+                port 4: Empty
 
-Control hub I2C:
- Port 1: PinPoint Odometry
- Port 2: Color_Sensor
+Control hub:
+                port 0: Empty
+                port 1: Intake_Slide_Right_Servo
+                port 2: Intake_Slide_Left_Servo
+                port 3: Intake_Claw_Servo
+                port 4: Intake_Rotation_Servo
+                port 5: Intake_Arm_Right_Servo
 
- **/
+
+I2C port
+Control hub
+                port 0: control hub imu
+                port 1: Pinpoint (odometry computer)
+                port 2: Color_Sensor
+Digital Port
+Control hub
+                port 7: LimitSwitch
+
+ */
 
 public class RobotHardware {
-
     //Drive chassis motor
     public DcMotorEx frontLeftMotor;
     public DcMotorEx backLeftMotor;
@@ -60,28 +75,42 @@ public class RobotHardware {
     //Intake servos
     public Servo intakeLeftSlideServo;
     public Servo intakeRightSlideServo;
-    public Servo intakeLeftArmServo;
-    public Servo intakeRightArmServo;
-    public Servo intakeWristServo;
+    public Servo intakeArmServo;
+    public Servo intakeTurretServo;
     public Servo intakeRotationServo;
     public Servo intakeClawServo;
+    public Servo intakeWristServo;
 
     //Deposit servos
-    public Servo depositArmServo;
+    public Servo depositLeftArmServo;
+    public Servo depositRightArmServo;
     public Servo depositWristServo;
     public Servo depositClawServo;
 
-    //Color sensor
-    public ColorSensor colorSensor;
+    //public ColorSensor colorSensor;// Color Sensor
+    ///for debug colorSensor
+    public NormalizedColorSensor colorSensor;
+
+    ///public DigitalChannel limitSwitch;// Limit Switch
 
     public IMU imu; //IMU
-
     public HardwareMap hardwareMap;
+    public ArrayList <VoltageSensor> voltageSensors;
 
-    public void init(@NonNull HardwareMap hardwareMap) {
+    public GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
 
-        this.hardwareMap = hardwareMap;
+    private double vEma = 12.0;                 // EMA state
+    public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
+    public  double vMinAccept = 10.5;            // discard anything below this as junk
+    public  double vDefault   = 12.0;           // fallback
 
+    public RobotHardware(HardwareMap hardwareMap) {
+    }
+
+
+    public void init(HardwareMap hardwareMap) {
+
+        this.hardwareMap = hardwareMap; // store the hardwareMap reference
         /**Set up motors**/
         //Drive train motors
         frontLeftMotor = hardwareMap.get(DcMotorEx.class, "FL_Motor");
@@ -89,25 +118,33 @@ public class RobotHardware {
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
         //Lift motors
-        liftMotorLeft = hardwareMap.get(DcMotorEx.class,"VS_Left_Motor");
-        liftMotorRight = hardwareMap.get(DcMotorEx.class, "VS_Right_Motor");
+        liftMotorLeft = hardwareMap.get(DcMotorEx.class,"LS_Motor");
+        liftMotorRight = hardwareMap.get(DcMotorEx.class, "RS_Motor");
 
 
         /**set servos**/
         //Intake servo
+        intakeArmServo = hardwareMap.get(Servo.class, "Intake_Arm_Servo");
         intakeLeftSlideServo = hardwareMap.get(Servo.class, "Intake_Slide_Left_Servo");
         intakeRightSlideServo = hardwareMap.get(Servo.class, "Intake_Slide_Right_Servo");
-        intakeLeftArmServo = hardwareMap.get(Servo.class, "Intake_Arm_Left_Servo");
-        intakeRightArmServo = hardwareMap.get(Servo.class, "Intake_Arm_Right_Servo");
         intakeWristServo = hardwareMap.get(Servo.class, "Intake_Wrist_Servo");
         intakeRotationServo = hardwareMap.get(Servo.class, "Intake_Rotation_Servo");
         intakeClawServo = hardwareMap.get(Servo.class, "Intake_Claw_Servo");
+        intakeTurretServo = hardwareMap.get(Servo.class, "Intake_Turret_Servo");
         //Deposit servo
-        depositArmServo = hardwareMap.get(Servo.class, "Deposit_Arm_Servo");
+        depositLeftArmServo = hardwareMap.get(Servo.class, "Deposit_Left_Arm_Servo");
+        depositRightArmServo = hardwareMap.get(Servo.class, "Deposit_Right_Arm_Servo");
         depositWristServo = hardwareMap.get(Servo.class, "Deposit_Wrist_Servo");
         depositClawServo = hardwareMap.get(Servo.class, "Deposit_Claw_Servo");
         //Color sensor
-        colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
+        //colorSensor = hardwareMap.get(NormalizedColorSensor.class, "Color_Sensor");
+        //colorSensor.setGain(2);
+        //colorSensor.enableLed(true); // this is for Non normalized colorSensor.
+        //Limit Switch
+        //limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
+       // limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+
+        voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
 
         //set motor mode and motor direction
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed
@@ -125,23 +162,17 @@ public class RobotHardware {
         frontRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
         backRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
 
-        //Set intake slide servo direction
-        intakeLeftSlideServo.setDirection(Servo.Direction.REVERSE);
-
         //set servo direction - intake and deposit
-        intakeRightArmServo.setDirection(Servo.Direction.REVERSE);
         intakeRightSlideServo.setDirection(Servo.Direction.REVERSE);
+        intakeWristServo.setDirection(Servo.Direction.REVERSE);
+        depositLeftArmServo.setDirection(Servo.Direction.REVERSE);
 
-        //set slide motors to RUN_TO_POSITION for vertical slide motor
+        //set slide motors direction
         liftMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        //Reset the motor encoder
-        liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-
         //Set the run mode of the motors
-        liftMotorLeft.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        liftMotorRight.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        liftMotorLeft.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        liftMotorRight.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         // set robot motor power 0
         frontLeftMotor.setPower(0);
@@ -158,9 +189,35 @@ public class RobotHardware {
         IMU.Parameters myIMUparameters;
         myIMUparameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                        RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
+                        RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
                 ));
         imu.initialize(myIMUparameters);
+        imu.resetYaw();
+    }
+
+    public void initPinPoint() {
+        odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+        odo.setOffsets(-149.225, -165.1); //these are tuned for 3110-0002-0001 Product Insight #1
+        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+    }
+
+    private static double median(List<Double> xs) {
+        Collections.sort(xs);
+        int n = xs.size();
+        return n == 0 ? Double.NaN : (n % 2 == 1 ? xs.get(n/2) : 0.5*(xs.get(n/2-1)+xs.get(n/2)));
+    }
+
+    public double getBatteryVoltageRobust() {
+        List<Double> vals = new ArrayList<>();
+        for (VoltageSensor vs : voltageSensors) {
+            double v = vs.getVoltage();
+            if (v > vMinAccept) vals.add(v);        // keep plausible readings only
+        }
+        double vMed = vals.isEmpty() ? vDefault : median(vals);
+        // EMA smoothing
+        vEma = vAlpha * vMed + (1.0 - vAlpha) * vEma;
+        return vEma;
     }
 }
