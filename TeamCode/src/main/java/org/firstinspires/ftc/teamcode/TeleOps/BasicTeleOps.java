@@ -19,7 +19,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import java.util.List;
 
 @Config
-@TeleOp(name = "TeleOps_Premier_gw", group = "org.firstinspires.ftc.teamcode")
+@TeleOp(name = "TeleOps_Decod_gw", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOps extends OpMode {
 
     public enum ControlState { RUN, TEST }
