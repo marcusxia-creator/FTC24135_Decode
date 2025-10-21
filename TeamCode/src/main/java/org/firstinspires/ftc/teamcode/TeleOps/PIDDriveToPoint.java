@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
+import com.acmerobotics.roadrunner.ftc.MidpointTimer;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -13,12 +14,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 public class PIDDriveToPoint {
-    private final RobotHardware robot;
+    private RobotHardware robot = null;
     private final double ticksPerMM;
     private final double maxTicks;
     private final PIDController pidX;
     private final PIDController pidY;
     private final PIDController pidH;
+    private MidpointTimer settleTimer;
 
     public enum DriveMotor{
         LEFT_FRONT,
@@ -71,7 +73,9 @@ public class PIDDriveToPoint {
     Pose2D currentPos2D;
 
 
-    public PIDDriveToPoint(Pose2D targetPos2D, Pose2D currentPos2D) {
+    public PIDDriveToPoint(double ticksPerMM, double maxTicks, Pose2D targetPos2D, Pose2D currentPos2D) {
+        this.ticksPerMM = ticksPerMM;
+        this.maxTicks = maxTicks;
 
         this.targetPos2D = targetPos2D;
         this.currentPos2D = currentPos2D;
@@ -116,8 +120,8 @@ public class PIDDriveToPoint {
         double setPointY = targetPos2D.getY(DistanceUnit.CM);
         double setPointH = targetPos2D.getHeading(AngleUnit.DEGREES);
         double vx = pidX.calculate(measurementX,setPointX);
-        double vy = pidX.calculate(measurementX,setPointY);
-        double vy = pidX.calculate(measurementX,setPointY);
+        double vy = pidX.calculate(measurementY,setPointY);
+        double vh = pidX.calculate(measurementH,setPointH);
             }
 
     //Mecanum drive
@@ -141,12 +145,10 @@ public class PIDDriveToPoint {
     public boolean atTarget() {
         // profile inactive AND PID within tolerance AND settled
         boolean pidOk = pidX.atSetPoint(); // make sure you set tolerance appropriately
+        double settleHoldSec = 1;
         return !profileActive && pidOk && (settleTimer.seconds() >= settleHoldSec);
     }
 
-    private int getAvgPos() {
-        return (robot.liftMotorRight.getCurrentPosition());
-    }
 
     /// Convert linear inches to encoder ticks; adjust counts and diameter
     private double mmToTicks(double mm) {
