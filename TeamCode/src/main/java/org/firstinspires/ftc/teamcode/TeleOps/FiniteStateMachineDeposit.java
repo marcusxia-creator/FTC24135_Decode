@@ -6,6 +6,7 @@ import static java.lang.Thread.sleep;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -30,6 +31,7 @@ import java.util.List;
  * *DPAD UP && Right Trigger      :Specimen Score, raise up the vertical slide to hook the specimen.
  */
 
+@Disabled
 public class FiniteStateMachineDeposit {
     private final GamepadEx gamepad_1;
     private final GamepadEx gamepad_2;
