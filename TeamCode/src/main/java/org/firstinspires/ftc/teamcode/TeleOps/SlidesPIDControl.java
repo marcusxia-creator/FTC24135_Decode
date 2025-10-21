@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Config
+@Disabled
 public class SlidesPIDControl {
     private final RobotHardware robot;
     private final PIDController pid;
@@ -79,7 +80,7 @@ public class SlidesPIDControl {
         this.ticksPerMM = ticksPerMM;
         this.maxTicks = maxTravelTicks;
         // Reset and configure both lift motors
-        for (DcMotor m : new DcMotor[]{ robot.liftMotorLeft, robot.liftMotorRight }) {
+        for (DcMotor m : new DcMotor[]{ robot.shooterMotor, robot.intakeMotor }) {
             m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
@@ -200,7 +201,7 @@ public class SlidesPIDControl {
             return;
         }
         // only use one motor encoder to control both motors
-        int avgPos = robot.liftMotorRight.getCurrentPosition();
+        int avgPos = robot.shooterMotor.getCurrentPosition();
 
         // --- Measured velocity (ticks/s) for "stopped" detection ---
         double nowSec = runtime.seconds();
@@ -286,8 +287,8 @@ public class SlidesPIDControl {
         power = Range.clip(power, -1.0, 1.0);
 
         // Apply to both motors
-        robot.liftMotorLeft.setPower(power);
-        robot.liftMotorRight.setPower(power);
+        robot.shooterMotor.setPower(power);
+        robot.intakeMotor.setPower(power);
 
         // Save for next loop
         lastAvgPos = avgPos;
@@ -304,7 +305,7 @@ public class SlidesPIDControl {
     }
 
     private int getAvgPos() {
-        return (robot.liftMotorRight.getCurrentPosition());
+        return (robot.shooterMotor.getCurrentPosition());
     }
 
     /// Convert linear inches to encoder ticks; adjust counts and diameter
