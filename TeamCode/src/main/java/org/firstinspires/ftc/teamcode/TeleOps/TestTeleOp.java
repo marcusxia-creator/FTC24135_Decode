@@ -1,20 +1,13 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.hardware.lynx.LynxModule.BulkData;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -40,28 +33,30 @@ public class TestTeleOp extends OpMode {
         speed = 0.0;
 
         robot.pushRampServo.setPosition(RobotActionConfig.rampResetPos);
+
         robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
         robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
-        robot.spindexerServo.setPosition(RobotActionConfig.spindexerReset);
+        robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
     }
 
     @Override
     public void loop() {
         if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
-            servoposition = robot.pushRampServo.getPosition() + 0.01;
-            robot.pushRampServo.setPosition(Range.clip(servoposition, 0.0, 1.0
-            ));
+            //servoposition = robot.pushRampServo.getPosition() + 0.01;
+            //robot.pushRampServo.setPosition(Range.clip(servoposition, 0.0, 1.0));
+            robot.pushRampServo.setPosition(RobotActionConfig.rampUpPos);
         }
         if (gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
-            servoposition = robot.pushRampServo.getPosition() - 0.01;
-            robot.pushRampServo.setPosition(Range.clip(servoposition, 0, 1));
+            //servoposition = robot.pushRampServo.getPosition() - 0.01;
+            //robot.pushRampServo.setPosition(Range.clip(servoposition, 0, 1));
+            robot.pushRampServo.setPosition(RobotActionConfig.rampResetPos);
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
-            servoposition = robot.spindexerServo.getPosition() + 0.01;
+            servoposition = robot.spindexerServo.getPosition() + 0.5;
             robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
-            servoposition = robot.spindexerServo.getPosition() - 0.01;
+            servoposition = robot.spindexerServo.getPosition() - 0.5;
             robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && isButtonDebounced()) {
