@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+//import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
@@ -71,17 +71,15 @@ public class RobotHardware {
     public DcMotorEx frontRightMotor;
     public DcMotorEx backRightMotor;
 
-    public DcMotorEx liftMotorLeft;// Vertical Slide Motor
-    public DcMotorEx liftMotorRight;// Vertical Slide Motor
+    public DcMotorEx intakeMotor;// Vertical Slide Motor
+    public DcMotorEx shooterMotor;// Vertical Slide Motor
 
     //Intake servos
-    public Servo intakeLeftSlideServo;
-    public Servo intakeRightSlideServo;
-    public Servo intakeArmServo;
-    public Servo intakeTurretServo;
-    public Servo intakeRotationServo;
-    public Servo intakeClawServo;
-    public Servo intakeWristServo;
+    public Servo intakeLeftGate;
+    public Servo intakeRightGate;
+    public Servo intakeIndexServo;
+    public Servo intakeSecondRotationServo;
+
 
     //Deposit servos
     public Servo depositLeftArmServo;
@@ -91,7 +89,7 @@ public class RobotHardware {
 
     //public ColorSensor colorSensor;// Color Sensor
     ///for debug colorSensor
-    public NormalizedColorSensor colorSensor;
+    public  ColorSensor colorSensor;
 
     ///public DigitalChannel limitSwitch;// Limit Switch
 
@@ -120,28 +118,23 @@ public class RobotHardware {
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
         //Lift motors
-        liftMotorLeft = hardwareMap.get(DcMotorEx.class,"LS_Motor");
-        liftMotorRight = hardwareMap.get(DcMotorEx.class, "RS_Motor");
+        intakeMotor = hardwareMap.get(DcMotorEx.class,"Intake_Motor");
+        shooterMotor = hardwareMap.get(DcMotorEx.class, "Shooter_Motor");
 
 
         /**set servos**/
         //Intake servo
-        intakeArmServo = hardwareMap.get(Servo.class, "Intake_Arm_Servo");
-        intakeLeftSlideServo = hardwareMap.get(Servo.class, "Intake_Slide_Left_Servo");
-        intakeRightSlideServo = hardwareMap.get(Servo.class, "Intake_Slide_Right_Servo");
-        intakeWristServo = hardwareMap.get(Servo.class, "Intake_Wrist_Servo");
-        intakeRotationServo = hardwareMap.get(Servo.class, "Intake_Rotation_Servo");
-        intakeClawServo = hardwareMap.get(Servo.class, "Intake_Claw_Servo");
-        intakeTurretServo = hardwareMap.get(Servo.class, "Intake_Turret_Servo");
+
+        intakeIndexServo = hardwareMap.get(Servo.class, "Intake_Index_Servo");
         //Deposit servo
         depositLeftArmServo = hardwareMap.get(Servo.class, "Deposit_Left_Arm_Servo");
         depositRightArmServo = hardwareMap.get(Servo.class, "Deposit_Right_Arm_Servo");
         depositWristServo = hardwareMap.get(Servo.class, "Deposit_Wrist_Servo");
         depositClawServo = hardwareMap.get(Servo.class, "Deposit_Claw_Servo");
         //Color sensor
-        //colorSensor = hardwareMap.get(NormalizedColorSensor.class, "Color_Sensor");
+        colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
         //colorSensor.setGain(2);
-        //colorSensor.enableLed(true); // this is for Non normalized colorSensor.
+        //colorSensor.finalize(true); // this is for Non normalized colorSensor.
         //Limit Switch
         //limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
        // limitSwitch.setMode(DigitalChannel.Mode.INPUT);
@@ -165,16 +158,12 @@ public class RobotHardware {
         backRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
 
         //set servo direction - intake and deposit
-        intakeRightSlideServo.setDirection(Servo.Direction.REVERSE);
-        intakeWristServo.setDirection(Servo.Direction.REVERSE);
         depositLeftArmServo.setDirection(Servo.Direction.REVERSE);
 
-        //set slide motors direction
-        liftMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //Set the run mode of the motors
-        liftMotorLeft.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        liftMotorRight.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        shooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         // set robot motor power 0
         frontLeftMotor.setPower(0);
