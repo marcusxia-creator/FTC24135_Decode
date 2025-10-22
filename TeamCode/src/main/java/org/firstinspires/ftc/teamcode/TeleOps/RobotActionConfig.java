@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 import com.acmerobotics.dashboard.config.Config;
 
 @Config
-public class RobotActionConfig {
+public class RobotActionConfigOld {
     /**
      * updated the parameters on 2025-02-24;
      */
