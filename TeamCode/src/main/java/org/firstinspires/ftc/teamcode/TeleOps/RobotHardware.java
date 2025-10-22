@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 //import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
@@ -74,30 +75,24 @@ public class RobotHardware {
     public DcMotorEx intakeMotor;// Vertical Slide Motor
     public DcMotorEx shooterMotor;// Vertical Slide Motor
 
-    //Intake servos
-    public Servo intakeLeftGate;
-    public Servo intakeRightGate;
-    public Servo intakeIndexServo;
-    public Servo intakeSecondRotationServo;
+    public Servo pushRampServo;
+    public Servo spindexerServo;
+    public Servo leftGateServo;
+    public Servo rightGateServo;
+    //limit switch
+    public DigitalChannel limitSwitch;
 
-
-    //Deposit servos
-    public Servo depositLeftArmServo;
-    public Servo depositRightArmServo;
-    public Servo depositWristServo;
-    public Servo depositClawServo;
-
-    //public ColorSensor colorSensor;// Color Sensor
-    ///for debug colorSensor
-    public  ColorSensor colorSensor;
+    ///ColorSensor
+    public ColorSensor colorSensor;
 
     ///public DigitalChannel limitSwitch;// Limit Switch
+
+    /// goBilda LED light
+    public Servo rgbLED;
 
     public IMU imu; //IMU
     public HardwareMap hardwareMap;
     public ArrayList <VoltageSensor> voltageSensors;
-
-    public GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
 
     private double vEma = 12.0;                 // EMA state
     public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
@@ -117,34 +112,25 @@ public class RobotHardware {
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "BL_Motor");
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
-        //Lift motors
-        intakeMotor = hardwareMap.get(DcMotorEx.class,"Intake_Motor");
+        //Intake and shooter servos
         shooterMotor = hardwareMap.get(DcMotorEx.class, "Shooter_Motor");
-
-
-        /**set servos**/
-        //Intake servo
-
-        intakeIndexServo = hardwareMap.get(Servo.class, "Intake_Index_Servo");
-        //Deposit servo
-        depositLeftArmServo = hardwareMap.get(Servo.class, "Deposit_Left_Arm_Servo");
-        depositRightArmServo = hardwareMap.get(Servo.class, "Deposit_Right_Arm_Servo");
-        depositWristServo = hardwareMap.get(Servo.class, "Deposit_Wrist_Servo");
-        depositClawServo = hardwareMap.get(Servo.class, "Deposit_Claw_Servo");
-        //Color sensor
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
+        //Servos
+        //angleServo = hardwareMap.get(Servo.class, "Angle_Servo");
+        pushRampServo = hardwareMap.get(Servo.class, "Ramp_Servo");
+        spindexerServo = hardwareMap.get(Servo.class, "Spindexer_Servo");
+        leftGateServo = hardwareMap.get(Servo.class, "Left_Gate_Servo");
+        rightGateServo = hardwareMap.get(Servo.class, "Right_Gate_Servo");
+        //color sensor
         colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
-        //colorSensor.setGain(2);
-        //colorSensor.finalize(true); // this is for Non normalized colorSensor.
-        //Limit Switch
+        //limit switch
         //limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
-       // limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+        //limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+
+        //goBilda LED light
+        rgbLED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
 
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
-
-        //set motor mode and motor direction
-        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed
-        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed
-
         //Reset the drive train motor encoders
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -156,15 +142,9 @@ public class RobotHardware {
         backLeftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); //set motor mode
         frontRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
         backRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
-
-        //set servo direction - intake and deposit
-        depositLeftArmServo.setDirection(Servo.Direction.REVERSE);
-
-
-        //Set the run mode of the motors
+        //Set run mode of intake and shooter motors
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-
         // set robot motor power 0
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
@@ -185,13 +165,6 @@ public class RobotHardware {
                 ));
         imu.initialize(myIMUparameters);
         imu.resetYaw();
-    }
-
-    public void initPinPoint() {
-        odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
-        odo.setOffsets(-149.225, -165.1, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
-        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
     }
 
     private static double median(List<Double> xs) {
