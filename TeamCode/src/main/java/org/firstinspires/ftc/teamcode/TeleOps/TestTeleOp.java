@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import static java.lang.Thread.sleep;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -31,6 +33,12 @@ public class TestTeleOp extends OpMode {
     private double shooter_rpm;
     private double intake_rpm;
 
+    //
+    private ElapsedTime jamTimer = new ElapsedTime();
+
+    // Determine if Intake is jammed
+
+
     @Override
     public void init() {
         gamepad_1 = new GamepadEx(gamepad1);
@@ -51,67 +59,73 @@ public class TestTeleOp extends OpMode {
         robot.intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        // Determine if Intake is jammed
-        boolean isJamed = false;
     }
 
     @Override
     public void loop() {
-        // === Read velocity in ticks/sec and convert to RPM ===
-        double shooter_ticksPerSec = robot.shooterMotor.getVelocity();
 
-        shooter_rpm = shooter_ticksPerSec * SHOOTER_RPM_CONVERSION;
 
-        double intake_ticksPerSec = robot.intakeMotor.getVelocity();
-        double intake_rpm = intake_ticksPerSec * INTAKE_RPM_CONVERSION;
-       
+        /// === Read velocity in ticks/sec and convert to RPM ===
+
+
+        ///set a jammed boolean for determination
+
+
+        ///
         if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
-            //servoposition = robot.pushRampServo.getPosition() + 0.01;
-            //robot.pushRampServo.setPosition(Range.clip(servoposition, 0.0, 1.0));
             robot.pushRampServo.setPosition(RobotActionConfig.rampUpPos);
         }
         if (gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
-            //servoposition = robot.pushRampServo.getPosition() - 0.01;
-            //robot.pushRampServo.setPosition(Range.clip(servoposition, 0, 1));
             robot.pushRampServo.setPosition(RobotActionConfig.rampResetPos);
         }
+
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
             servoposition = robot.spindexerServo.getPosition() + 0.5;
             robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
         }
+
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
             servoposition = robot.spindexerServo.getPosition() - 0.5;
             robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
         }
+
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && isButtonDebounced()) {
             servoposition = robot.leftGateServo.getPosition() + 0.01;
             robot.leftGateServo.setPosition(Range.clip(servoposition, 0, 1));
             robot.rightGateServo.setPosition(Range.clip(servoposition,0,1));
         }
+
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_DOWN) && isButtonDebounced()) {
             servoposition = robot.leftGateServo.getPosition() - 0.01;
             robot.leftGateServo.setPosition(Range.clip(servoposition, 0, 1));
             robot.rightGateServo.setPosition(Range.clip(servoposition,0,1));
         }
+
         if (gamepad_2.getButton(GamepadKeys.Button.X) && isButtonDebounced()){
             speed = robot.shooterMotor.getPower() + 0.05;
             robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.shooterMotor.setPower(Range.clip(speed,0.5,1.0));
         }
+
         if (gamepad_2.getButton(GamepadKeys.Button.Y) && isButtonDebounced()){
             robot.shooterMotor.setPower(0);
         }
+
         if (gamepad_2.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()){
             speed = robot.intakeMotor.getPower() + 0.05;
             robot.intakeMotor.setPower(Range.clip(speed,0.5,1.0));
         }
+
         if (gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()){
             robot.intakeMotor.setPower(0);
         }
 
-        if (isJammed()) {
-            robot.intakeMotor.setPower(0);
+        /**
+        if (jammed) {
+
+
         }
+         */
 
         // Telemetry (DS + Dashboard)       
         telemetry.addData("Ramp Position", robot.pushRampServo.getPosition());
@@ -123,7 +137,7 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("Shooter Ticks/sec", "%.1f", shooter_ticksPerSec);
         telemetry.addData("Shooter RPM", "%.1f", shooter_rpm);
         telemetry.addLine("----Intake----");
-        telemetry.addData("Intake Jam Status", isJammed());
+        telemetry.addData("Intake Jam Status", jammed);
         telemetry.addData("Intake Speed", robot.intakeMotor.getPower());
         telemetry.addData("Intake Ticks/sec", "%.1f", intake_ticksPerSec);
         telemetry.addData("Intake RPM", "%.1f", intake_rpm);
@@ -142,8 +156,10 @@ public class TestTeleOp extends OpMode {
 
     // Intake Jam Helper
     private boolean isJammed() {
-        if (intake_rpm < RobotActionConfig.intakeRPM_THRESHOLD && robot.intakeMotor.isBusy()) {
-            return true;
+        if (  ) {
+            if (jamTimer.seconds() > 0.3) return true; // jam confirmed for 0.3s
+        } else {
+            jamTimer.reset();
         }
         return false;
     }
