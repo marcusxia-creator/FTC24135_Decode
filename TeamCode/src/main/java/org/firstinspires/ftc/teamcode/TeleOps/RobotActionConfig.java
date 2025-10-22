@@ -15,6 +15,8 @@ public class RobotActionConfig {
     public static double angleResetPos                  = 0.0;
     //Speed
     public static double intakeSpeed                    = 1.0;
+
+    public static double intakeRPM_THRESHOLD            = 100.0;
     public static double shooterSpeed                   = 0.9;
     public static double powerFactor                    = 0.9;
     public static double accel_Slowness                 = 0.25;

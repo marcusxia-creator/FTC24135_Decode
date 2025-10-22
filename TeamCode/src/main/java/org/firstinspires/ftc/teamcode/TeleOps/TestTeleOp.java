@@ -28,6 +28,9 @@ public class TestTeleOp extends OpMode {
     public static double SHOOTER_RPM_CONVERSION = 60.0 / SHOOTER_TICKS_PER_REV;
     public static double INTAKE_RPM_CONVERSION = 60.0 / INTAKE_TICKS_PER_REV;
 
+    private double shooter_rpm;
+    private double intake_rpm;
+
     @Override
     public void init() {
         gamepad_1 = new GamepadEx(gamepad1);
@@ -56,7 +59,8 @@ public class TestTeleOp extends OpMode {
     public void loop() {
         // === Read velocity in ticks/sec and convert to RPM ===
         double shooter_ticksPerSec = robot.shooterMotor.getVelocity();
-        double shooter_rpm = shooter_ticksPerSec * SHOOTER_RPM_CONVERSION;
+
+        shooter_rpm = shooter_ticksPerSec * SHOOTER_RPM_CONVERSION;
 
         double intake_ticksPerSec = robot.intakeMotor.getVelocity();
         double intake_rpm = intake_ticksPerSec * INTAKE_RPM_CONVERSION;
@@ -105,16 +109,21 @@ public class TestTeleOp extends OpMode {
             robot.intakeMotor.setPower(0);
         }
 
+        if (isJammed()) {
+            robot.intakeMotor.setPower(0);
+        }
+
         // Telemetry (DS + Dashboard)       
         telemetry.addData("Ramp Position", robot.pushRampServo.getPosition());
         telemetry.addData("Left Gate Position", robot.leftGateServo.getPosition());
         telemetry.addData("Right Gate Position", robot.rightGateServo.getPosition());
         telemetry.addData("Spindexer Position", robot.spindexerServo.getPosition());
-        telemetry.addline("----Shooter----");
+        telemetry.addLine("----Shooter----");
         telemetry.addData("Shooter Speed", robot.shooterMotor.getPower());
         telemetry.addData("Shooter Ticks/sec", "%.1f", shooter_ticksPerSec);
         telemetry.addData("Shooter RPM", "%.1f", shooter_rpm);
-        telemetry.addline("----Shooter----");
+        telemetry.addLine("----Intake----");
+        telemetry.addData("Intake Jam Status", isJammed());
         telemetry.addData("Intake Speed", robot.intakeMotor.getPower());
         telemetry.addData("Intake Ticks/sec", "%.1f", intake_ticksPerSec);
         telemetry.addData("Intake RPM", "%.1f", intake_rpm);
@@ -133,7 +142,7 @@ public class TestTeleOp extends OpMode {
 
     // Intake Jam Helper
     private boolean isJammed() {
-        if (intake_rpm < RobotActionConfig.DEBOUNCE_THRESHOLD) {
+        if (intake_rpm < RobotActionConfig.intakeRPM_THRESHOLD && robot.intakeMotor.isBusy()) {
             return true;
         }
         return false;
