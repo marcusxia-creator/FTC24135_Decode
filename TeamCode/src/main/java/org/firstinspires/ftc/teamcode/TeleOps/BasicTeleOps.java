@@ -27,7 +27,6 @@ public class BasicTeleOps extends OpMode {
     private RobotHardware robot;
     private GamepadEx gamepadCo1, gamepadCo2;
     private RobotDrive robotDrive;
-    private ServoTest servoTest;
 
     private ControlState controlState = ControlState.RUN;
     private ElapsedTime debounceTimer = new ElapsedTime();
@@ -50,9 +49,6 @@ public class BasicTeleOps extends OpMode {
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
-
-
-        servoTest = new ServoTest(robot, gamepadCo1, gamepadCo2);
 
         /// Get all hubs from the hardwareMap
         allHubs = hardwareMap.getAll(LynxModule.class);
@@ -136,7 +132,6 @@ public class BasicTeleOps extends OpMode {
         }
         /// Control condition -  Check TEST Status for Servo Test
         if (controlState == ControlState.TEST) {
-            servoTest.loop();
         }
 
         telemetry.addLine("--------------Op Mode--------------");
@@ -145,12 +140,6 @@ public class BasicTeleOps extends OpMode {
 
 
         telemetry.addData("Heading", robot.imu.getRobotYawPitchRollAngles().getYaw());
-        telemetry.addLine("--------Deposit-------------");
-        telemetry.addData("Deposit Arm Position", robot.depositLeftArmServo.getPosition());
-        telemetry.addData("Deposit Wrist Position", robot.depositWristServo.getPosition());
-        telemetry.addData("Deposit Claw Position", robot.depositClawServo.getPosition());
-        telemetry.addLine("--------Intake-------------");
-
 
         telemetry.update();
     }
