@@ -8,14 +8,14 @@ public class Ball {
 
     public double slotAngle;
 
-    public boolean release;
+    public boolean hasBall;
 
     //constructor ball
-    public Ball(String ballColor, int slotPosition,double slotAngle, boolean release ){
+    public Ball(String ballColor, int slotPosition,double slotAngle, boolean hasBall ){
         this.ballColor = ballColor;
         this.slotPosition = slotPosition;
         this.slotAngle = slotAngle;
-        this.release = release;
+        this.hasBall = hasBall;
     }
 
     //return ballColor
@@ -32,8 +32,8 @@ public class Ball {
         return slotAngle;
     }
 
-    private boolean isRelease(){
-        return release;
+    private boolean isBall(){
+        return hasBall;
     }
 
     @NonNull

@@ -42,8 +42,9 @@ public class IntakeBall {
     private INTAKEBALLSTATE state = INTAKEBALLSTATE.INTAKE_START;
 
     private List<Ball> balls = new ArrayList<>();
-    private double[] slotAngles = {0.0, 120.0 / 180.0, 240.0 / 180.0};
+    private double[] slotAngles = {0.0, 120.0 / 290.0, 240.0 / 290.0};
     private int currentSlot = 0;
+    private int nextSlot;
 
     private boolean colorDetected = false;
     private String detectedColor = "Unknown";
@@ -58,7 +59,7 @@ public class IntakeBall {
     }
 
     // --- FSM Update Loop ---
-    public void update() {
+    public void IntkaeBallUpdate() {
         // === Read velocity in ticks/sec and convert to RPM ===
         double intake_ticksPerSec = robot.intakeMotor.getVelocity();
         intake_rpm = intake_ticksPerSec * INTAKE_RPM_CONVERSION;
@@ -72,12 +73,17 @@ public class IntakeBall {
                 robot.spindexerServo.setPosition(slotAngles[0]);
 
                 if (gamepad1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
-
+                    //start the intake motor
+                    robot.intakeMotor.setPower(0.6);
+                    // waiting ball into the slot
                     state = INTAKEBALLSTATE.INTAKE_SWEEPING;
+                    timer.reset();
                 }
                 break;
 
             case INTAKE_SWEEPING:
+                /// intaking balls
+                /// detect if the ball is jammed
                 if (jammed) {
                     robot.intakeMotor.setPower(-0.2);
                     try {
@@ -87,39 +93,42 @@ public class IntakeBall {
                     }
                     robot.intakeMotor.setPower(0.0);
                 }
-                else{
-                    robot.intakeMotor.setPower(0.55);
-                }
-
-                detectedColor = colorDetection.detectColorHue();
-
-                if (!detectedColor.equals("Unknown")) {
-                    colorDetected = true;
-                    robot.intakeMotor.setPower(0.0);
+                /// check if the ball is present at slot
+                if (colorDetection.isBallPresent()) {
+                    colorDetection.startDetection(); // set color detection parameters to initial start.
                     timer.reset();
                     state = INTAKEBALLSTATE.INTAKE_DETECTED;
                 }
-
                 break;
 
             case INTAKE_DETECTED:
-                if (colorDetected) {
-                    Ball newBall = new Ball(detectedColor, currentSlot, slotAngles[currentSlot], false);
-                    balls.add(newBall);
-                    currentSlot++;
+                ///color detection - checking ball colors
+                colorDetection.updateDetection();
 
-                    if (currentSlot < slotAngles.length) {
-                        robot.spindexerServo.setPosition(slotAngles[currentSlot]);
+                if (colorDetection.isColorStable()) {
+                    colorDetected = true;
+                    detectedColor = colorDetection.getStableColor();
+                    Ball newBall = new Ball(detectedColor, currentSlot, slotAngles[currentSlot], true);
+                    balls.add(newBall);
+                    nextSlot = (currentSlot+1)%3;
+
+                    if (!areAllSlotsFull()) {
+                        ///if slot are not full, rotate slot
+                        robot.spindexerServo.setPosition(slotAngles[nextSlot]);
+                        currentSlot=nextSlot;
                         timer.reset();
                         state = INTAKEBALLSTATE.INTAKE_INDEXING;
                     } else {
-                        robot.intakeMotor.setPower(0.0);
                         state = INTAKEBALLSTATE.INTAKE_FULL;
                     }
+                } else if (timer.seconds() > 0.8){
+                    ///Timeout safer
+                    state = INTAKEBALLSTATE.INTAKE_INDEXING;
                 }
                 break;
 
             case INTAKE_INDEXING:
+                /// waiti spindexer rotating
                 if (timer.seconds() > 0.5) {
                     colorDetected = false;
                     detectedColor = "Unknown";
@@ -136,11 +145,13 @@ public class IntakeBall {
 
     // --- Getters ---
     public INTAKEBALLSTATE getState() { return state; }
+    public void setState(INTAKEBALLSTATE state) { this.state = state; }
     public boolean isFull() { return state == INTAKEBALLSTATE.INTAKE_FULL; }
     public List<Ball> getBalls() { return balls; }
     public int getCurrentSlot() { return currentSlot; }
+    public void resetSpindexerSlot(){ currentSlot = 0; robot.spindexerServo.setPosition(0); }
 
-    // Intake Jam Helper
+    /// Intake Jam Helper
     private boolean isJammed() {
         if (robot.intakeMotor.getPower() > 0.2 && intake_rpm < RobotActionConfig.intakeRPM_THRESHOLD) {
             if (jamTimer.seconds() > 0.3) return true; // jam confirmed for 0.3s
@@ -150,12 +161,20 @@ public class IntakeBall {
         return false;
     }
 
-    // Button Debounce Helper
+    /// Button Debounce Helper
     private boolean isButtonDebounced() {
         if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             return true;
         }
         return false;
+    }
+    ///helper to determine spindexer full or not.
+    public boolean areAllSlotsFull() {
+        int fullCount = 0;
+        for (Ball b : balls) {
+            if (b.hasBall) fullCount++;
+        }
+        return fullCount == 3;
     }
 }

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 //import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
@@ -85,6 +86,7 @@ public class RobotHardware {
     ///ColorSensor
     public ColorSensor colorSensor;
 
+    public DistanceSensor distanceSensor;
     ///public DigitalChannel limitSwitch;// Limit Switch
 
     /// goBilda LED light
@@ -98,10 +100,6 @@ public class RobotHardware {
     public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
     public  double vMinAccept = 10.5;            // discard anything below this as junk
     public  double vDefault   = 12.0;           // fallback
-
-    public RobotHardware(HardwareMap hardwareMap) {
-    }
-
 
     public void init(HardwareMap hardwareMap) {
 
@@ -123,6 +121,7 @@ public class RobotHardware {
         rightGateServo = hardwareMap.get(Servo.class, "Right_Gate_Servo");
         //color sensor
         colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "Color_Sensor");
         //limit switch
         //limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
         //limitSwitch.setMode(DigitalChannel.Mode.INPUT);
