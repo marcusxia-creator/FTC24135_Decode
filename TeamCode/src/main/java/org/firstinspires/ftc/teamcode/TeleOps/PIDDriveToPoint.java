@@ -1,198 +1,221 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
-import com.acmerobotics.roadrunner.ftc.MidpointTimer;
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
+/**
+ * PID + Motion Profile Mecanum Drive Controller
+ * Integrates PID correction with trapezoidal feedforward.
+ *
+ * Units: mm, radians internally
+ */
+@Config
 public class PIDDriveToPoint {
-    private RobotHardware robot = null;
+
+    private final RobotHardware robot;
     private final double ticksPerMM;
     private final double maxTicks;
+
+    // PID controllers
     private final PIDController pidX;
     private final PIDController pidY;
     private final PIDController pidH;
-    private MidpointTimer settleTimer;
 
-    public enum DriveMotor{
-        LEFT_FRONT,
-        LEFT_BACK,
-        RIGHT_FRONT,
-        RIGHT_BACK
-    }
-    private enum Direction{
-        x,
-        y,
-        h
-    }
-    private enum InBounds{
-        NOT_IN_BOUNDS,
-        IN_X_Y,
-        IN_HEADING,
-        IN_BOUNDS,
-        DISABLE
-    }
+    // Motion profile parameters
+    public static double MAX_VEL_MM_S = 900;     // mm/s
+    public static double MAX_ACC_MM_S2 = 1800;   // mm/s^2
 
-    private static double xyTolerance = 12;
-    private static double headingTolerance = 0.5;
-    private static double pGain = 0.008;
+    // Feedforward constants
+    public static double kV = 0.020;   // velocity feedforward gain
+    public static double kS = 0.120;   // static friction offset
 
-    private static double dGain = 0.00001;
+    // PID gains
+    public static double pGain = 0.008;
+    public static double dGain = 0.00001;
+    public static double yawPGain = 5.0;
+    public static double yawDGain = 0.0;
 
-    private static double accel = 10;
+    // Tolerances
+    public static double xyToleranceMM = 12;
+    public static double headingToleranceDeg = 1.5;
 
-    private static double yawpGain = 5;
-    private static double yawdGain = 0.0;
-    private static double yawAccel = 20;
+    // Internal timers
+    private final ElapsedTime profileTimer = new ElapsedTime();
+    private final ElapsedTime settleTimer = new ElapsedTime();
 
-    private static double kv = 0.020;
-
-    private static double ks = 0.120;
-
-    private double leftFrontMotorOutput = 0;
-    private double rightFrontMotorOutput = 0;
-    private double leftBackMotorOutput   = 0;
-    private double rightBackMotorOutput  = 0;
-
-    private final ElapsedTime holdTimer = new ElapsedTime();
-    private final ElapsedTime PIDTimer = new ElapsedTime();
-
+    // Motion profile state
+    private MotionProfile profile;
     private boolean profileActive = false;
 
-    private double power = 0.0;
+    // Poses
+    private Pose2D startPose;
+    private Pose2D targetPose;
+    private Pose2D currentPose;
 
-    Pose2D targetPos2D;
-    Pose2D currentPos2D;
-
-
-    public PIDDriveToPoint(double ticksPerMM, double maxTicks, Pose2D targetPos2D, Pose2D currentPos2D) {
+    public PIDDriveToPoint(RobotHardware robot, double ticksPerMM, double maxTicks) {
+        this.robot = robot;
         this.ticksPerMM = ticksPerMM;
         this.maxTicks = maxTicks;
 
-        this.targetPos2D = targetPos2D;
-        this.currentPos2D = currentPos2D;
+        pidX = new PIDController(pGain, 0, dGain);
+        pidY = new PIDController(pGain, 0, dGain);
+        pidH = new PIDController(yawPGain, 0, yawDGain);
 
-        this.pidX = new PIDController(pGain, 0, dGain);
-        this.pidY = new PIDController(pGain, 0, dGain);
-        this.pidH = new PIDController(yawpGain, 0, yawdGain);
+        pidX.setTolerance(xyToleranceMM);
+        pidY.setTolerance(xyToleranceMM);
+        pidH.setTolerance(headingToleranceDeg);
+    }
 
+    /** Start a new motion toward target */
+    public void setTarget(Pose2D currentPose, Pose2D targetPose) {
+        this.startPose = currentPose;
+        this.targetPose = targetPose;
+        this.currentPose = currentPose;
 
-        // Tolerance: normalized if maxTicks provided, else raw ticks
-        if (maxTicks > 0) {
-            pidX.setTolerance(10*ticksPerMM / maxTicks);
-            pidY.setTolerance(10*ticksPerMM / maxTicks);
-        } else {
-            pidX.setTolerance(10*ticksPerMM);
-            pidY.setTolerance(10*ticksPerMM);
+        // Plan motion profile distance
+        double dx = targetPose.getX(DistanceUnit.MM) - startPose.getX(DistanceUnit.MM);
+        double dy = targetPose.getY(DistanceUnit.MM) - startPose.getY(DistanceUnit.MM);
+        double distance = Math.hypot(dx, dy);
+
+        this.profile = new MotionProfile(distance, MAX_VEL_MM_S, MAX_ACC_MM_S2);
+        profileTimer.reset();
+        profileActive = true;
+        settleTimer.reset();
+
+        // PID setpoints
+        pidX.setSetPoint(targetPose.getX(DistanceUnit.MM));
+        pidY.setSetPoint(targetPose.getY(DistanceUnit.MM));
+        pidH.setSetPoint(targetPose.getHeading(AngleUnit.DEGREES));
+    }
+
+    /** Update robot motion each control loop */
+    public void update(Pose2D currentPose) {
+        this.currentPose = currentPose;
+        if (targetPose == null || !profileActive) return;
+
+        // Compute vector to target
+        double dx = targetPose.getX(DistanceUnit.MM) - currentPose.getX(DistanceUnit.MM);
+        double dy = targetPose.getY(DistanceUnit.MM) - currentPose.getY(DistanceUnit.MM);
+        double distance = Math.hypot(dx, dy);
+        double headingToTarget = Math.atan2(dy, dx);
+
+        // Get motion profile reference velocity (mm/s)
+        double vRef = profile.getTargetVelocity(profileTimer.seconds());
+
+        // Feedforward + PID corrections (world frame)
+        double vxFF = vRef * Math.cos(headingToTarget);
+        double vyFF = vRef * Math.sin(headingToTarget);
+
+        double vxPID = pidX.calculate(currentPose.getX(DistanceUnit.MM));
+        double vyPID = pidY.calculate(currentPose.getY(DistanceUnit.MM));
+        double vhPID = pidH.calculate(currentPose.getHeading(AngleUnit.DEGREES));
+
+        double vxWorld = vxFF + vxPID * MAX_VEL_MM_S;
+        double vyWorld = vyFF + vyPID * MAX_VEL_MM_S;
+
+        // Convert to robot frame (field-centric)
+        double headingRad = currentPose.getHeading(AngleUnit.RADIANS);
+        double cosH = Math.cos(headingRad);
+        double sinH = Math.sin(headingRad);
+        double forward = vxWorld * cosH + vyWorld * sinH;
+        double strafe  = -vxWorld * sinH + vyWorld * cosH;
+
+        // Combine feedforward + PID + voltage compensation
+        double ff = kV * vRef + kS * Math.signum(vRef);
+        double voltageScale = getVoltageComp();
+        double powerScale = ff * voltageScale;
+
+        // Apply mecanum wheel powers
+        setMecanumPowers(forward * powerScale, strafe * powerScale, vhPID * 0.015);
+
+        // Check completion
+        if (atTarget()) {
+            stop();
         }
-
-        // Tolerance for heading
-        pidH.setTolerance(0.5);
-
-        // Set target
-        this.robot = robot;
     }
 
-    public void setTarget(Pose2D targetPos2D) {
-        this.targetPos2D = targetPos2D;
-
-        pidX.setSetPoint(targetPos2D.getX(DistanceUnit.CM));
-        pidX.setTolerance(0.5);
-        pidY.setSetPoint(targetPos2D.getY(DistanceUnit.CM));
-        pidY.setTolerance(0.5);
-        pidH.setSetPoint(targetPos2D.getHeading(AngleUnit.DEGREES));
-        pidH.setTolerance(1.0);
+    /** Stop all motion */
+    public void stop() {
+        robot.frontLeftMotor.setPower(0);
+        robot.frontRightMotor.setPower(0);
+        robot.backLeftMotor.setPower(0);
+        robot.backRightMotor.setPower(0);
+        profileActive = false;
     }
 
-    public void update(){
-        double measurementX = currentPos2D.getX(DistanceUnit.CM) - targetPos2D.getX(DistanceUnit.CM);
-        double measurementY = currentPos2D.getY(DistanceUnit.CM) - targetPos2D.getY(DistanceUnit.CM);
-        double measurementH = currentPos2D.getHeading(AngleUnit.DEGREES) - targetPos2D.getHeading(AngleUnit.DEGREES);
-        double setPointX = targetPos2D.getX(DistanceUnit.CM);
-        double setPointY = targetPos2D.getY(DistanceUnit.CM);
-        double setPointH = targetPos2D.getHeading(AngleUnit.DEGREES);
-        double vx = pidX.calculate(measurementX,setPointX);
-        double vy = pidX.calculate(measurementY,setPointY);
-        double vh = pidX.calculate(measurementH,setPointH);
-            }
-
-    //Mecanum drive
-    private void setMecanumPowers(double vx, double vy, double omega) {
-        double lfPower = vx + vy + omega;
-        double rfPower = vx - vy - omega;
-        double lbPower = vx - vy + omega;
-        double rbPower = vx + vy - omega;
-
-        double max = Math.max(1.0, Math.max(Math.abs(lfPower),
-                Math.max(Math.abs(rfPower),
-                        Math.max(Math.abs(lbPower), Math.abs(rbPower)))));
-
-        robot.frontLeftMotor.setPower(lfPower / max);
-        robot.frontRightMotor.setPower(rfPower / max);
-        robot.backLeftMotor.setPower(lbPower / max);
-        robot.backRightMotor.setPower(rbPower / max);
-    }
-
-    //Helper - at target or not.
+    /** Returns true if within all tolerances and settled */
     public boolean atTarget() {
-        // profile inactive AND PID within tolerance AND settled
-        boolean pidOk = pidX.atSetPoint(); // make sure you set tolerance appropriately
-        double settleHoldSec = 1;
-        return !profileActive && pidOk && (settleTimer.seconds() >= settleHoldSec);
+        boolean xyOK = pidX.atSetPoint() && pidY.atSetPoint();
+        boolean hOK = pidH.atSetPoint();
+        if (xyOK && hOK) {
+            if (settleTimer.seconds() >= 0.3) return true;
+        } else {
+            settleTimer.reset();
+        }
+        return false;
     }
 
-
-    /// Convert linear inches to encoder ticks; adjust counts and diameter
-    private double mmToTicks(double mm) {
-        return mm * RobotActionConfig.TICKS_PER_MM_SLIDES;
-    }
-
-    public double getpower(){return power;}
-
-    // call this each loop or cache periodically
+    /** Voltage compensation relative to 12V nominal */
     private double getVoltageComp() {
-        double v = robot.getBatteryVoltageRobust(); // implement in your RobotHardware
-        return (v > 6.0) ? (12.0 / v) : 1.0; // scale relative to 12V nominal
+        double v = robot.getBatteryVoltageRobust();
+        return (v > 6.0) ? (12.0 / v) : 1.0;
     }
 
-    //Motion Profile
-    public class MotionProfile2D {
-        private double maxVel;
-        private double maxAccel;
+    /** Mecanum drive mapping */
+    private void setMecanumPowers(double forward, double strafe, double omega) {
+        double lf = forward + strafe + omega;
+        double rf = forward - strafe - omega;
+        double lb = forward - strafe + omega;
+        double rb = forward + strafe - omega;
 
-        public MotionProfile2D(double maxVel, double maxAccel) {
+        double max = Math.max(1.0, Math.max(Math.abs(lf),
+                Math.max(Math.abs(rf), Math.max(Math.abs(lb), Math.abs(rb)))));
+
+        robot.frontLeftMotor.setPower(lf / max);
+        robot.frontRightMotor.setPower(rf / max);
+        robot.backLeftMotor.setPower(lb / max);
+        robot.backRightMotor.setPower(rb / max);
+    }
+
+    // -------------------- Motion Profile Inner Class --------------------
+    public static class MotionProfile {
+        private final double distance, maxVel, maxAcc;
+        private final double t1, t2, t3, vPeak;
+
+        public MotionProfile(double distance, double maxVel, double maxAcc) {
+            this.distance = distance;
             this.maxVel = maxVel;
-            this.maxAccel = maxAccel;
+            this.maxAcc = maxAcc;
+
+            double tAccel = maxVel / maxAcc;
+            double dAccel = 0.5 * maxAcc * tAccel * tAccel;
+
+            if (2 * dAccel >= distance) {
+                // triangular profile
+                vPeak = Math.sqrt(distance * maxAcc);
+                t1 = vPeak / maxAcc;
+                t2 = t1;
+                t3 = 2 * t1;
+            } else {
+                vPeak = maxVel;
+                double dCruise = distance - 2 * dAccel;
+                double tCruise = dCruise / maxVel;
+                t1 = tAccel;
+                t2 = t1 + tCruise;
+                t3 = t2 + t1;
+            }
         }
 
-        public double getTotalTime(double distance) {
-            double tAccel = maxVel / maxAccel;
-            double dAccel = 0.5 * maxAccel * tAccel * tAccel;
-            double dCruise = distance - 2 * dAccel;
-            double tCruise = Math.max(0, dCruise / maxVel);
-            return 2 * tAccel + tCruise;
-        }
-
-        public double getTargetVelocity(double t, double distance) {
-            double tAccel = maxVel / maxAccel;
-            double dAccel = 0.5 * maxAccel * tAccel * tAccel;
-            double dCruise = distance - 2 * dAccel;
-            double tCruise = Math.max(0, dCruise / maxVel);
-            double tTotal = 2 * tAccel + tCruise;
-
-            if (t < tAccel) return maxAccel * t;
-            else if (t < tAccel + tCruise) return maxVel;
-            else if (t < tTotal) return maxAccel * (tTotal - t);
-            else return 0.0;
+        public double getTargetVelocity(double t) {
+            if (t <= t1) return maxAcc * t;
+            else if (t <= t2) return vPeak;
+            else if (t <= t3) return maxAcc * (t3 - t);
+            else return 0;
         }
     }
-
 }
