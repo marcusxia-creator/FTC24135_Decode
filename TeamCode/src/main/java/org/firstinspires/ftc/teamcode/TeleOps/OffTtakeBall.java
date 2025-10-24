@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BallSorter {
+public class OffTtakeBall {
     private RobotHardware robot;
     private IntakeBall intakeBall;
     private List<Ball> balls;   // reference from IntakeBall
@@ -12,7 +12,7 @@ public class BallSorter {
     private List<String> requiredSequence;
     private boolean sortingComplete = false;
 
-    public BallSorter(RobotHardware robot, List<Ball> balls, double[] slotAngles) {
+    public OffTtakeBall(RobotHardware robot, List<Ball> balls, double[] slotAngles) {
         this.robot = robot;
         this.balls = balls;
         this.slotAngles = slotAngles;
