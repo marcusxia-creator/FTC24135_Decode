@@ -40,7 +40,7 @@ public class BasicTeleOps extends OpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         robot = new RobotHardware(hardwareMap);
-        robot.init(hardwareMap);
+        robot.init();
 
 
         gamepadCo1 = new GamepadEx(gamepad1);
