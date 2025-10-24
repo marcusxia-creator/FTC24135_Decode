@@ -101,9 +101,12 @@ public class RobotHardware {
     public  double vMinAccept = 10.5;            // discard anything below this as junk
     public  double vDefault   = 12.0;           // fallback
 
-    public void init(HardwareMap hardwareMap) {
+    public RobotHardware(HardwareMap hardwareMap) {
+        this.hardwareMap = hardwareMap;
+    }
 
-        this.hardwareMap = hardwareMap; // store the hardwareMap reference
+    public void init() {
+
         /**Set up motors**/
         //Drive train motors
         frontLeftMotor = hardwareMap.get(DcMotorEx.class, "FL_Motor");

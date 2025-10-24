@@ -44,7 +44,7 @@ public class RobotTest extends OpMode {
         gamepad_1 = new GamepadEx(gamepad1);
         gamepad_2 = new GamepadEx(gamepad2);
         robot = new RobotHardware(hardwareMap);
-        robot.init(hardwareMap);
+        robot.init();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         servoposition = 0.0;
         speed = 0.0;
