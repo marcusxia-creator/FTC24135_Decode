@@ -19,20 +19,20 @@ public class Ball {
     }
 
     //return ballColor
-    private String getBallColor(){
+    public String getBallColor(){
         return ballColor;
     }
 
     //return ball slotPosition
-    private int getSlotPosition(){
+    public int getSlotPosition(){
         return slotPosition;
     }
 
-    private double getSlotAngle(){
+    public double getSlotAngle(){
         return slotAngle;
     }
 
-    private boolean isBall(){
+    public boolean isBall(){
         return hasBall;
     }
 
