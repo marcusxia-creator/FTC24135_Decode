@@ -13,9 +13,11 @@ import java.util.List;
 public class IntakeBall {
 
     private final GamepadEx gamepad1;
+    private final double[] slotAngles;
+    private final List<Ball> balls;
 
     public enum INTAKEBALLSTATE{
-        INTAKE_START,
+        INTAKE_READY,
         INTAKE_SWEEPING,
         INTAKE_DETECTED,
         INTAKE_INDEXING,
@@ -39,10 +41,9 @@ public class IntakeBall {
     private double shooter_rpm;
     private double intake_rpm;
 
-    private INTAKEBALLSTATE state = INTAKEBALLSTATE.INTAKE_START;
+    private INTAKEBALLSTATE state = INTAKEBALLSTATE.INTAKE_READY;
 
-    private List<Ball> balls = new ArrayList<>();
-    private double[] slotAngles = {0.0, 120.0 / 290.0, 240.0 / 290.0};
+
     private int currentSlot = 0;
     private int nextSlot;
 
@@ -50,28 +51,39 @@ public class IntakeBall {
     private String detectedColor = "Unknown";
 
     // --- Constructor ---
-    public IntakeBall(RobotHardware robot, GamepadEx gamepad) {
+    public IntakeBall(RobotHardware robot, GamepadEx gamepad, double[] slotAngles, List<Ball> balls) {
         this.robot = robot;
         this.gamepad1 = gamepad;
         this.colorDetection = new ColorDetection(robot);
+        this.slotAngles = slotAngles;
+        this.balls = balls;
+        // --- NEW: Initialize the list with empty ball objects ---
+        // This ensures the list always represents the 3 physical slots.
+        for (int i = 0; i < this.slotAngles.length; i++) {
+            // Add a "placeholder" ball for each slot, marked as not having a ball.
+            this.balls.add(new Ball("Empty", i, this.slotAngles[i], false));
+        }
+        // --------------------------------------------------------
         this.robot.spindexerServo.setPosition(slotAngles[0]);
         timer.reset();
     }
 
     // --- FSM Update Loop ---
     public void IntkaeBallUpdate() {
-        // === Read velocity in ticks/sec and convert to RPM ===
+        /// === Read velocity in ticks/sec and convert to RPM ===
         double intake_ticksPerSec = robot.intakeMotor.getVelocity();
         intake_rpm = intake_ticksPerSec * INTAKE_RPM_CONVERSION;
 
+        /// * check on jammed or not /
         boolean jammed = isJammed();
 
         switch (state) {
-            case INTAKE_START:
-                balls.clear();
-                currentSlot = 0;
-                robot.spindexerServo.setPosition(slotAngles[0]);
-
+            case INTAKE_READY:
+                currentSlot = findEmptySlot();
+                if (currentSlot == -1) { // Should not happen after resetting, but a good safeguard.
+                    currentSlot = 0;
+                }
+                robot.spindexerServo.setPosition(getCurrentSlot());
                 if (gamepad1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
                     //start the intake motor
                     robot.intakeMotor.setPower(0.6);
@@ -108,9 +120,12 @@ public class IntakeBall {
                 if (colorDetection.isColorStable()) {
                     colorDetected = true;
                     detectedColor = colorDetection.getStableColor();
-                    Ball newBall = new Ball(detectedColor, currentSlot, slotAngles[currentSlot], true);
-                    balls.add(newBall);
-                    nextSlot = (currentSlot+1)%3;
+                    Ball currentSlotBall = balls.get(currentSlot);
+                    currentSlotBall.hasBall = true;
+                    currentSlotBall.ballColor = detectedColor;
+                    robot.intakeMotor.setPower(0.0);
+
+                    nextSlot = findEmptySlot();
 
                     if (!areAllSlotsFull()) {
                         ///if slot are not full, rotate slot
@@ -146,10 +161,17 @@ public class IntakeBall {
     // --- Getters ---
     public INTAKEBALLSTATE getState() { return state; }
     public void setState(INTAKEBALLSTATE state) { this.state = state; }
+    public boolean isReady() { return state == INTAKEBALLSTATE.INTAKE_READY; }
+    public INTAKEBALLSTATE state() { return state;}
     public boolean isFull() { return state == INTAKEBALLSTATE.INTAKE_FULL; }
     public List<Ball> getBalls() { return balls; }
     public int getCurrentSlot() { return currentSlot; }
     public void resetSpindexerSlot(){ currentSlot = 0; robot.spindexerServo.setPosition(0); }
+
+    ///  Intake Stop Helper
+    public void stopIntake() {
+        robot.intakeMotor.setPower(0.0);
+    }
 
     /// Intake Jam Helper
     private boolean isJammed() {
@@ -171,10 +193,38 @@ public class IntakeBall {
     }
     ///helper to determine spindexer full or not.
     public boolean areAllSlotsFull() {
-        int fullCount = 0;
+        return getNumberOfBalls() == 3;
+    }
+
+    // Add this helper method inside your IntakeBall.java class
+
+    /**
+     * Finds the index of the first available (empty) slot in the spindexer.
+     *
+     * @return The index of the first empty slot, or -1 if all slots are full.
+     */
+    public int findEmptySlot() {
+        // Iterate through each ball object, which represents a physical slot.
         for (Ball b : balls) {
-            if (b.hasBall) fullCount++;
+            // Check if this slot is marked as empty.
+            if (!b.hasBall) {
+                // If it's empty, return its position index.
+                return b.getSlotPosition();
+            }
         }
-        return fullCount == 3;
+        // If the loop finishes, it means no ball had hasBall = false, so all slots are full.
+        return -1;
+    }
+
+    public int getNumberOfBalls() {
+        int ballCount = 0;
+        // Loop through every ball in the shared list
+        for (Ball b : balls) {
+            // If the ball's hasBall flag is true, increment the counter
+            if (b.hasBall) {
+                ballCount++;
+            }
+        }
+        return ballCount;
     }
 }
