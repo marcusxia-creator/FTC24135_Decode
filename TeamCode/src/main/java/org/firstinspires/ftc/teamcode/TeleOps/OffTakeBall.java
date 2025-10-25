@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OffTtakeBall {
+public class OffTakeBall {
     private RobotHardware robot;
     private IntakeBall intakeBall;
     private List<Ball> balls;   // reference from IntakeBall
@@ -12,7 +12,14 @@ public class OffTtakeBall {
     private List<String> requiredSequence;
     private boolean sortingComplete = false;
 
-    public OffTtakeBall(RobotHardware robot, List<Ball> balls, double[] slotAngles) {
+    public enum OFFTAKEBALLSTATE{
+        FLOW,
+        SORT
+    }
+
+    private OFFTAKEBALLSTATE offTakeBallState = OFFTAKEBALLSTATE.FLOW;
+
+    public OffTakeBall(RobotHardware robot, List<Ball> balls, double[] slotAngles) {
         this.robot = robot;
         this.balls = balls;
         this.slotAngles = slotAngles;
@@ -32,13 +39,34 @@ public class OffTtakeBall {
         return sortingComplete;
     }
 
-    /** Main update loop – call periodically (for example from TeleOp loop) */
+    /**
+     * Executes the main logic for the off-take process.
+     * This method should be called periodically, for example, within the main TeleOp loop.
+     *
+     * It checks if the off-take sequence is complete or empty. If not, it identifies the
+     * next required ball color from the sequence. If a ball of the target color is found,
+     * it rotates the spindexer to that ball's position, marks the ball as removed, and
+     * advances to the next target in the sequence.
+     *
+     * The process is marked as complete if all balls in the sequence are processed or if
+     * a required ball color cannot be found in the current inventory.
+     */
     public void update() {
+
+        switch (offTakeBallState){
+            case FLOW:
+
+                break;
+            case SORT:
+
+                break;
+        }
+
         if (sortingComplete || requiredSequence.isEmpty()) return;
 
         if (currentTargetIndex >= requiredSequence.size()) {
             sortingComplete = true;
-            intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_START);
+            intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
             return;
         }
 
