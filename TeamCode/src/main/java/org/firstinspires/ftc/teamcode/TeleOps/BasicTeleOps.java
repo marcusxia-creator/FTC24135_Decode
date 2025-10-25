@@ -6,8 +6,10 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.LynxModule.BulkData;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -16,6 +18,11 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Config
@@ -24,6 +31,13 @@ public class BasicTeleOps extends OpMode {
 
     public enum ControlState { RUN, TEST }
 
+    // Master state machine for ball handling to prevent conflicts
+    public enum BallHandlingState {
+        IDLE,       // Not actively intaking or sorting
+        INTAKING,   // Actively running the intake logic
+        SORTING     // Actively running the offtake/sorting logic
+    }
+
     private RobotHardware robot;
     private GamepadEx gamepadCo1, gamepadCo2;
     private RobotDrive robotDrive;
@@ -31,6 +45,15 @@ public class BasicTeleOps extends OpMode {
     private ControlState controlState = ControlState.RUN;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private boolean lBstartPressed = false;
+
+    // === NEW: Ball Handling Objects and State ===
+    private BallHandlingState ballHandlingState = BallHandlingState.IDLE;
+    private List<Ball> sharedBallList;
+    private IntakeBall intakeBall;
+    private OffTakeBall offTakeBall;
+    private double[] spindexerSlotAngles = {0.0, 0.46, 0.92}; // Example angles
+    // ============================================
+
     private List<LynxModule> allHubs;
 
 
@@ -38,17 +61,23 @@ public class BasicTeleOps extends OpMode {
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
+        /// Robot subsystem
         robot = new RobotHardware(hardwareMap);
         robot.init();
-
-
+        /// Controller
         gamepadCo1 = new GamepadEx(gamepad1);
         gamepadCo2 = new GamepadEx(gamepad2);
-
+        /// Robot Drive
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
+        /// === NEW: Initialize ball handling subsystems ===
+        // 1. Create the single, shared list for balls.
+        sharedBallList = new ArrayList<>();
+
+        // 2. Instantiate subsystems, passing the *same* list to both.
+        intakeBall = new IntakeBall(robot, gamepadCo2, spindexerSlotAngles,sharedBallList);
+        offTakeBall = new OffTakeBall(robot, sharedBallList, spindexerSlotAngles);
 
         /// Get all hubs from the hardwareMap
         allHubs = hardwareMap.getAll(LynxModule.class);
@@ -56,18 +85,11 @@ public class BasicTeleOps extends OpMode {
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
-        ///
-        int lfPos = robot.frontLeftMotor.getCurrentPosition();
-        int rfPos = robot.frontRightMotor.getCurrentPosition();
-        int lbPos = robot.backLeftMotor.getCurrentPosition();
-        int rbPos = robot.backRightMotor.getCurrentPosition();
 
-
+        /// telemetry
         telemetry.addLine("-------------------");
         telemetry.addData("Status", "initialized");
         telemetry.addData("Control Mode", robotDrive.getDriveMode().name());
-        telemetry.addData("Shooter Power", robot.shooterMotor.getPower());
-        telemetry.addData("Intake Motor Power", robot.intakeMotor.getPower());
         telemetry.update();
     }
     @Override
@@ -95,28 +117,7 @@ public class BasicTeleOps extends OpMode {
         }
         */
 
-        int lfPos = robot.frontLeftMotor.getCurrentPosition();
-        int rfPos = robot.frontRightMotor.getCurrentPosition();
-        int lbPos = robot.backLeftMotor.getCurrentPosition();
-        int rbPos = robot.backRightMotor.getCurrentPosition();
-
-
-
-        /// Drive train control
-        robotDrive.DriveLoop();
-
-        if (gamepadCo1.getButton(BACK) && gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()) {
-            /// LEFT BUMPER + BACK Button for lower deposit
-
-        }
-
-        /// BACK Button to lower the slides
-        if (gamepadCo1.getButton(BACK) && !gamepadCo1.getButton(LEFT_BUMPER) && isButtonDebounced()) {
-            debounceTimer.reset();
-
-        }
-
-        /// START BUTTON + LEFT BUMPER to toggle control state
+        ///  Start Button && LEFT BUMPER for Control State toggle
         if (gamepadCo1.getButton(START) && gamepadCo1.getButton(LEFT_BUMPER) && !lBstartPressed) {
             toggleControlState();
             debounceTimer.reset();
@@ -125,21 +126,86 @@ public class BasicTeleOps extends OpMode {
             lBstartPressed = false;
         }
 
+        /// Drive train control
+        robotDrive.DriveLoop();
+
         /// Control condition -  Check Run Status
         if (controlState == ControlState.RUN) {
+            robot.pinpointDriver.update();
+            /// Telemetry
+            telemetry.addLine("-------Odometry-------------------");
+            telemetry.addData("Pinpoint X", "%.2f inches", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
+            telemetry.addData("Pinpoint Y", "%.2f inches", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
+            telemetry.addData("Pinpoint Heading", "%.2f degrees", robot.pinpointDriver.getHeading(AngleUnit.DEGREES));
+            telemetry.addLine("-------Shooter Motor-------------------");
+            telemetry.addData("Shooter Power", robot.shooterMotor.getPower());
+            telemetry.addLine("-------Intake Motor Motor-------------------");
+            telemetry.addData("Intake Motor Power", robot.intakeMotor.getPower());
+            telemetry.addData("Empty Slot", intakeBall.getNumberOfBalls());
+            telemetry.addData("Empty Slot", intakeBall.findEmptySlot());
 
 
+            // === NEW: Master State Machine for Ball Handling ===
+            // Use Gamepad 2 for ball controls to separate from driving
+            // Press 'A' to start intaking
+            if (gamepadCo2.getButton(A)) {
+                ballHandlingState = BallHandlingState.INTAKING;
+            }
+
+            /**
+            // Press 'Y' to start sorting
+            if (gamepadCo2.getButton(Y)) {
+                // Define the shooting sequence
+               // offTakeBall.setRequiredSequence(Arrays.asList("Purple", "Green","Purple"));
+                ballHandlingState = BallHandlingState.SORTING;
+                intakeBall.stopIntake(); // Ensure intake motor is off before sorting
+            }
+             */
+
+            // The core of the state machine. Only one case will run per loop.
+            switch (ballHandlingState) {
+                case INTAKING:
+                    intakeBall.IntkaeBallUpdate();
+                    // NOTE: You could add a button press here (e.g., gamepadCo2.getButton(B))
+                    // to manually switch back to IDLE if needed.
+                    if (gamepadCo2.getButton(B)) {
+                        ballHandlingState = BallHandlingState.IDLE;
+                    }
+                    break;
+
+                case SORTING:
+                    /**
+                    offTakeBall.update();
+                    // Check if the sorting process has finished
+                    if (offTakeBall.isSortingComplete()) {
+                        ballHandlingState = BallHandlingState.IDLE; // Or INTAKING, your choice
+                    }
+                     */
+                    break;
+
+                case IDLE:
+                    // Do nothing related to ball handling.
+                    // Motors for intake/spindexer should be off.
+                    intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_FULL);
+                    intakeBall.stopIntake(); // Optional: ensure motors are off
+                    break;
+            }
+            // =================================================
         }
         /// Control condition -  Check TEST Status for Servo Test
         if (controlState == ControlState.TEST) {
+            telemetry.addLine("-----No Code-----------");
+            telemetry.addLine("-----No Code-----------");
+            telemetry.addLine("-----No Code-----------");
         }
 
         telemetry.addLine("--------------Op Mode--------------");
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", robotDrive.getDriveMode().name());
-
-
+        telemetry.addData("Intake State", intakeBall.state());
+        //telemetry.addData("offTake State", offTakeBall.getOffTakeState());
         telemetry.addData("Heading", robot.imu.getRobotYawPitchRollAngles().getYaw());
+        telemetry.addData("Battery Voltage", getBatteryVoltage());
 
         telemetry.update();
     }
@@ -159,14 +225,6 @@ public class BasicTeleOps extends OpMode {
     private void toggleControlState() {
         controlState = (controlState == ControlState.RUN) ? ControlState.TEST : ControlState.RUN;
     }
-
-    /**
-    private boolean LSisPressed() {
-        return robot.limitSwitch.getState();
-    }
-     */
-
-
     /// Helper -- to Button Debouncer
     private boolean isButtonDebounced() {
         if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
