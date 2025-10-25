@@ -13,6 +13,7 @@ public class OffTakeBall {
     private boolean sortingComplete = false;
 
     public enum OFFTAKEBALLSTATE{
+        READY,
         FLOW,
         SORT
     }
@@ -54,28 +55,36 @@ public class OffTakeBall {
     public void update() {
 
         switch (offTakeBallState){
+            case READY:
+            if gamepad1.Button(X) {
+             offTakeBallState = OFFTAKEBALLSTATE.FLOW}
+           if gamepad1.Button(Y) {
+             offTakeBallState = OFFTAKEBALLSTATE.SORT}
+                break;
             case FLOW:
+        
 
                 break;
             case SORT:
+            String targetColor = requiredSequence.get(currentTargetIndex);
+        Ball targetBall = findBallByColor(targetColor);
 
                 break;
         }
 
-        if (sortingComplete || requiredSequence.isEmpty()) return;
+  if (sortingComplete || requiredSequence.isEmpty()) return;      
 
         if (currentTargetIndex >= requiredSequence.size()) {
-            sortingComplete = true;
-            intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
-            return;
+            sortingComplete = true;          intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
         }
 
-        String targetColor = requiredSequence.get(currentTargetIndex);
-        Ball targetBall = findBallByColor(targetColor);
+        
+
+/** Helper to rotate the spindexer*/
+   private void RotateSpindexer(Ball targetBall){
 
         if (targetBall != null) {
-            // Rotate spindexer to ball slot angle
-            robot.spindexerServo.setPosition(targetBall.slotAngle);
+            // Rotate spindexer to ball slot angle           robot.spindexerServo.setPosition(targetBall.slotAngle);
 
             // Mark ball as removed
             targetBall.hasBall = false;
@@ -83,7 +92,7 @@ public class OffTakeBall {
             // Move to next color
             currentTargetIndex++;
 
-            if (currentTargetIndex >= requiredSequence.size()) {
+            if (currentTargetIndex >= 3) {
                 sortingComplete = true;
             }
 
@@ -103,15 +112,22 @@ public class OffTakeBall {
         return null;
     }
 
+   /** Helper to find the first ball hasBall is True
+*/
+    private Ball findBall (){
+         for ( Ball :balls) {
+            if (b.hwsBall ){ return b}  
+         }
+    return null;
+}
+
     /** Example off-take: reverse intake motor for short time */
-    private void ejectBall(Ball ball) {
+    private void ShootBall(double power) {
         // Rotate already done before calling
-        robot.intakeMotor.setPower(-0.6);
-        try {
-            Thread.sleep(500);  // run motor backward 0.5s
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        robot.intakeMotor.setPower(0);
+        robot.offTakeMotor.setPower(power);
+    }
+    private void StopShootBall(){
+        // Stop shooter
+        robot.offTakeMotor.setPower(0);
     }
 }
