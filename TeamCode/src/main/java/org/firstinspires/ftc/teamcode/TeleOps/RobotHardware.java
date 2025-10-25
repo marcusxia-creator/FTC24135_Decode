@@ -16,11 +16,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 import java.util.List;
 import java.util.ArrayList;
-
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 /*
@@ -92,6 +92,12 @@ public class RobotHardware {
     /// goBilda LED light
     public Servo rgbLED;
 
+    /// goBilda Pinpoint Driver
+    public GoBildaPinpointDriver pinpointDriver;
+    public Pose2D pinpointPose;
+
+    ///IMU
+
     public IMU imu; //IMU
     public HardwareMap hardwareMap;
     public ArrayList <VoltageSensor> voltageSensors;
@@ -132,6 +138,10 @@ public class RobotHardware {
         //goBilda LED light
         rgbLED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
 
+        //goBilda Pinpoint Driver
+        pinpointDriver = hardwareMap.get(GoBildaPinpointDriver.class, "Pinpoint");
+
+        //voltage sensor
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
         //Reset the drive train motor encoders
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
