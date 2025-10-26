@@ -16,24 +16,20 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler;
-
 @TeleOp (name = "Basic TeleOp", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOp extends OpMode {
     private RobotHardware robot;
     private GamepadEx gamepadCo1, gamepadCo2;
     private RobotDrive robotDrive;
-
     private FSMIntake intakeControl;
-    private FSMShooterManual shooterControl;
-    private FSMAprilTagProc aprilTagProc;
-    private IceWaddler iceWaddler;
+    private FSMShooterManual shooterManualControl;
+    private ElapsedTime debounceTimer = new ElapsedTime();
+
 
     @Override
     public void init() {
+        gamepadCo1 = new GamepadEx(gamepad1);
+        gamepadCo2 = new GamepadEx(gamepad2);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         robot = new RobotHardware(hardwareMap);
@@ -41,15 +37,18 @@ public class BasicTeleOp extends OpMode {
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
-        aprilTagProc = new FSMAprilTagProc(robot);
-        aprilTagProc.init();
+        intakeControl = new FSMIntake(robot, gamepadCo1, gamepadCo2);
+        intakeControl.Init();
+
+        shooterManualControl = new FSMShooterManual(gamepadCo1, gamepadCo2, robot);
+        shooterManualControl.Init();
 
 
     }
 
     @Override
     public void loop() {
-        aprilTagProc.loop();
+
     }
 
     @Override
@@ -58,5 +57,12 @@ public class BasicTeleOp extends OpMode {
         robot.frontRightMotor.setPower(0);
         robot.backLeftMotor.setPower(0);
         robot.backRightMotor.setPower(0);
+    }
+    public boolean isButtonDebounced() {
+        if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+            debounceTimer.reset();
+            return true;
+        }
+        return false;
     }
 }

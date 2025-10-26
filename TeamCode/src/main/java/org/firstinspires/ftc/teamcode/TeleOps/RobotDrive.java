@@ -31,7 +31,6 @@ public class RobotDrive {
     private final GamepadEx gamepad_1;
     private final GamepadEx gamepad_2;
     private final RobotHardware robot;
-    private DriveMode driveMode = DriveMode.ROBOT_CENTRIC;
 
     private ElapsedTime debounceTimer = new ElapsedTime(); // Timer for debouncing
 
@@ -65,7 +64,6 @@ public class RobotDrive {
     public void DriveLoop() {
         // Toggle control mode
         if ((gamepad_1.getButton(START) || gamepad_2.getButton(START)) && !startPressed && (!gamepad_1.getButton(LEFT_BUMPER) || !gamepad_2.getButton(LEFT_BUMPER))) {
-            toggleControlMode();
             debounceTimer.reset();
             startPressed = true;
         } else if (!gamepad_1.getButton(START) || !gamepad_2.getButton(START)) {
@@ -131,13 +129,7 @@ public class RobotDrive {
         return -heading;
     }
 
-    private void toggleControlMode() {
-        if (driveMode == DriveMode.FIELD_CENTRIC) {
-            driveMode = DriveMode.ROBOT_CENTRIC;
-        } else {
-            driveMode = DriveMode.FIELD_CENTRIC;
-        }
-    }
+
     double deadband(double input, double threshold) {
         if (Math.abs(input) < threshold) { // Ignore small values
             return 0.0;
@@ -152,13 +144,7 @@ public class RobotDrive {
 
     private void setMecanumDrivePower(double drive, double strafe, double rotate, double currentHeading, double powerFactor) {
         // Determine the drive mode
-        if (driveMode == DriveMode.FIELD_CENTRIC) {
-            // Adjust for field-centric control using the gyro angle
-            double headingRad = Math.toRadians(currentHeading);
-            double temp = drive * Math.cos(headingRad) + strafe * Math.sin(headingRad);
-            strafe = -drive * Math.sin(headingRad) + strafe * Math.cos(headingRad);
-            drive = temp;
-        }
+
 
         // Mecanum wheel drive formula
         double desiredFrontLeftPower = drive + strafe + rotate;
@@ -212,11 +198,4 @@ public class RobotDrive {
         return velocities;
     }
 
-    public enum DriveMode {
-        FIELD_CENTRIC,
-        ROBOT_CENTRIC
-    }
-    public DriveMode getDriveMode() {
-        return driveMode;
-    }
 }

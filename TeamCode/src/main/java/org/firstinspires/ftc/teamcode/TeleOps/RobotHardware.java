@@ -5,22 +5,15 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.qualcomm.robotcore.hardware.configuration.WebcamConfiguration;
-
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-
 import java.util.List;
 import java.util.ArrayList;
 
 
-import java.util.ArrayList;
 import java.util.Collections;
 
 /*
@@ -67,20 +60,26 @@ Control hub
  */
 
 public class RobotHardware {
-    //Drive chassis motor
+    //motors
     public DcMotorEx frontLeftMotor;
     public DcMotorEx backLeftMotor;
     public DcMotorEx frontRightMotor;
     public DcMotorEx backRightMotor;
-
-    public WebcamName webcam1;
-
-
-    //Intake servos
+    public DcMotorEx shooterMotor;
+    public DcMotorEx intakeMotor;
+    //servos
+    //public Servo angleServo;
+    public Servo pushRampServo;
+    public Servo spindexerServo;
+    public Servo leftGateServo;
+    public Servo rightGateServo;
+    //limit switch
+    public DigitalChannel limitSwitch;
 
     //public ColorSensor colorSensor;// Color Sensor
     ///for debug colorSensor
-    public NormalizedColorSensor colorSensor;
+    public ColorSensor colorSensor;
+    public DistanceSensor distanceSensor;
 
     ///public DigitalChannel limitSwitch;// Limit Switch
 
@@ -92,7 +91,6 @@ public class RobotHardware {
     public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
     public  double vMinAccept = 10.5;            // discard anything below this as junk
     public  double vDefault   = 12.0;           // fallback
-
 
     public RobotHardware(HardwareMap hardwareMap) {
     }
@@ -107,10 +105,21 @@ public class RobotHardware {
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "BL_Motor");
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
-        //Webcam
-        webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
-
-                // limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+        //Intake and shooter servos
+        shooterMotor = hardwareMap.get(DcMotorEx.class, "Shooter_Motor");
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
+        //Servos
+        //angleServo = hardwareMap.get(Servo.class, "Angle_Servo");
+        pushRampServo = hardwareMap.get(Servo.class, "Ramp_Servo");
+        spindexerServo = hardwareMap.get(Servo.class, "Spindexer_Servo");
+        leftGateServo = hardwareMap.get(Servo.class, "Left_Gate_Servo");
+        rightGateServo = hardwareMap.get(Servo.class, "Right_Gate_Servo");
+        //color sensor
+        colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "Color_Sensor"); // same device
+        //limit switch
+        //limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
+        //limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
         //Reset the drive train motor encoders
@@ -124,12 +133,14 @@ public class RobotHardware {
         backLeftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); //set motor mode
         frontRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
         backRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
+        //Set run mode of intake and shooter motors
+        intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        shooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         // set robot motor power 0
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
-
 
     }// End of init
 
