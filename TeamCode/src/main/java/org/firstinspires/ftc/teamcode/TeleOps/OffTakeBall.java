@@ -1,4 +1,7 @@
+
+/*
 package org.firstinspires.ftc.teamcode.TeleOps;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +30,7 @@ public class OffTakeBall {
         this.requiredSequence = new ArrayList<>();
     }
 
-    /** Define the required off-take sequence such as ["Purple", "Green", "Purple"] */
+    /** Define the required off-take sequence such as ["Purple", "Green", "Purple"] *
     public void setRequiredSequence(List<String> sequence) {
         this.requiredSequence.clear();
         this.requiredSequence.addAll(sequence);
@@ -35,7 +38,7 @@ public class OffTakeBall {
         sortingComplete = false;
     }
 
-    /** Check whether all required colors have been off-taken */
+    /** Check whether all required colors have been off-taken *
     public boolean isSortingComplete() {
         return sortingComplete;
     }
@@ -51,7 +54,7 @@ public class OffTakeBall {
      *
      * The process is marked as complete if all balls in the sequence are processed or if
      * a required ball color cannot be found in the current inventory.
-     */
+     *
     public void update() {
 
         switch (offTakeBallState){
@@ -80,7 +83,7 @@ public class OffTakeBall {
 
         
 
-/** Helper to rotate the spindexer*/
+/** Helper to rotate the spindexer*
    private void RotateSpindexer(Ball targetBall){
 
         if (targetBall != null) {
@@ -102,7 +105,7 @@ public class OffTakeBall {
         }
     }
 
-    /** Helper to find the first ball matching the target color that still exists */
+    /** Helper to find the first ball matching the target color that still exists *
     private Ball findBallByColor(String color) {
         for (Ball b : balls) {
             if (b.hasBall && b.ballColor.equalsIgnoreCase(color)) {
@@ -113,7 +116,7 @@ public class OffTakeBall {
     }
 
    /** Helper to find the first ball hasBall is True
-*/
+*
     private Ball findBall (){
          for ( Ball :balls) {
             if (b.hwsBall ){ return b}  
@@ -121,7 +124,7 @@ public class OffTakeBall {
     return null;
 }
 
-    /** Example off-take: reverse intake motor for short time */
+    /** Example off-take: reverse intake motor for short time *
     private void ShootBall(double power) {
         // Rotate already done before calling
         robot.offTakeMotor.setPower(power);
@@ -131,3 +134,5 @@ public class OffTakeBall {
         robot.offTakeMotor.setPower(0);
     }
 }
+
+ */

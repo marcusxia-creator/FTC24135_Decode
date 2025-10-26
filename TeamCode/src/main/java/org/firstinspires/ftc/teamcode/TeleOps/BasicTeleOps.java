@@ -50,7 +50,7 @@ public class BasicTeleOps extends OpMode {
     private BallHandlingState ballHandlingState = BallHandlingState.IDLE;
     private List<Ball> sharedBallList;
     private IntakeBall intakeBall;
-    private OffTakeBall offTakeBall;
+    ///private OffTakeBall offTakeBall;
     private double[] spindexerSlotAngles = {0.0, 0.46, 0.92}; // Example angles
     // ============================================
 
@@ -77,7 +77,7 @@ public class BasicTeleOps extends OpMode {
 
         // 2. Instantiate subsystems, passing the *same* list to both.
         intakeBall = new IntakeBall(robot, gamepadCo2, spindexerSlotAngles,sharedBallList);
-        offTakeBall = new OffTakeBall(robot, sharedBallList, spindexerSlotAngles);
+        //offTakeBall = new OffTakeBall(robot, sharedBallList, spindexerSlotAngles);
 
         /// Get all hubs from the hardwareMap
         allHubs = hardwareMap.getAll(LynxModule.class);
