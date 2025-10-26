@@ -35,7 +35,7 @@ public class BasicTeleOps extends OpMode {
     public enum BallHandlingState {
         IDLE,       // Not actively intaking or sorting
         INTAKING,   // Actively running the intake logic
-        SORTING     // Actively running the offtake/sorting logic
+        OFFTAKING     // Actively running the offtake/sorting logic
     }
 
     private RobotHardware robot;
@@ -79,8 +79,8 @@ public class BasicTeleOps extends OpMode {
         sharedBallList = new ArrayList<>();
 
         // 2. Instantiate subsystems, passing the *same* list to both.
-        intakeBall = new IntakeBall(robot, gamepadCo2, spindexerSlotAngles,sharedBallList);
-        offTakeBall = new OffTakeBall(robot, sharedBallList, spindexerSlotAngles);
+        intakeBall = new IntakeBall(robot, gamepadCo2, sharedBallList, spindexerSlotAngles);
+        offTakeBall = new OffTakeBall(robot, gamepadCo2, sharedBallList, spindexerSlotAngles);
 
         /// Get all hubs from the hardwareMap
         allHubs = hardwareMap.getAll(LynxModule.class);
@@ -143,15 +143,14 @@ public class BasicTeleOps extends OpMode {
                 intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
             }
 
-            /**
-            // Press 'Y' to start sorting
-            if (gamepadCo2.getButton(Y)) {
-                // Define the shooting sequence
+            /**Press 'Y' to start sorting*/
+            if (gamepadCo2.getButton(X)) {
                // offTakeBall.setRequiredSequence(Arrays.asList("Purple", "Green","Purple"));
-                ballHandlingState = BallHandlingState.SORTING;
+                ballHandlingState = BallHandlingState.OFFTAKING;
+                OffTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.READY);
                 intakeBall.stopIntake(); // Ensure intake motor is off before sorting
             }
-             */
+
 
             // The core of the state machine. Only one case will run per loop.
             switch (ballHandlingState) {
@@ -164,14 +163,12 @@ public class BasicTeleOps extends OpMode {
                     }
                     break;
 
-                case SORTING:
-                    /**
+                case OFFTAKING:
                     offTakeBall.update();
                     // Check if the sorting process has finished
                     if (offTakeBall.isSortingComplete()) {
                         ballHandlingState = BallHandlingState.IDLE; // Or INTAKING, your choice
                     }
-                     */
                     break;
 
                 case IDLE:
@@ -179,6 +176,8 @@ public class BasicTeleOps extends OpMode {
                     // Motors for intake/spindexer should be off.
                     intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_FULL);
                     intakeBall.stopIntake(); // Optional: ensure motors are off
+                    offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.READY);
+                    offTakeBall.stopShootBall(); // Optional: ensure motors are off
                     break;
             }
             // =================================================

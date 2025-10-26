@@ -17,6 +17,7 @@ public class OffTakeBall {
     private GamepadEx gamepad1;
     private AprilTagUpdate AprilTagUpdate;
     private List<Ball> balls;   // reference from IntakeBall
+    private Ball targetBall;
     private double[] slotAngles;
     private int currentTargetIndex = 0;
     private List<String> requiredSequence;
@@ -24,6 +25,8 @@ public class OffTakeBall {
     private ElapsedTime timer = new ElapsedTime();
     private ElapsedTime debounceTimer = new ElapsedTime();
     private Map<Integer, List<String>> aprilTagSequences;
+
+
     //private HashMap<Integer, List<String>> aprilTagSequence =  new HashMap<>();
     /** DEFINE OFFTAKEBALLSTATE*/
     public enum OFFTAKEBALLSTATE {
@@ -32,12 +35,13 @@ public class OffTakeBall {
         SETSORTSEQUENCE,
         SORT,
         SHOOT,
+        EMPTY
     }
     /** SET INITIAL OFFTAKEBALLSTATE*/
     private OFFTAKEBALLSTATE offTakeBallState = OFFTAKEBALLSTATE.READY;
 
     // --- Constructor ---
-    public OffTakeBall(RobotHardware robot, List<Ball> balls, double[] slotAngles, GamepadEx gamepad1) {
+    public OffTakeBall(RobotHardware robot, GamepadEx gamepad1,List<Ball> balls, double[] slotAngles) {
         this.robot = robot;
         this.balls = balls;
         this.slotAngles = slotAngles;
@@ -110,10 +114,17 @@ public class OffTakeBall {
                 break;
 
             case FLOW:
-
-
-
+                targetBall = findBall();
+                if (targetBall.hasBall && targetBall != null) {
+                    rotateSpindexer(targetBall);
+                    offTakeBallState = OFFTAKEBALLSTATE.SHOOT;
+                    timer.reset();
+                }else{
+                    sortingComplete = true;
+                    offTakeBallState = OFFTAKEBALLSTATE.READY;
+                }
                 break;
+
             case SETSORTSEQUENCE:
                 setRequiredSequence(getSequenceByAprilTagId(AprilTagUpdate.getTagID()));
                 offTakeBallState=OFFTAKEBALLSTATE.SORT;
@@ -121,11 +132,11 @@ public class OffTakeBall {
 
             case SORT:
                     String targetColor = requiredSequence.get(currentTargetIndex);
-                    Ball targetBall = findBallByColor(targetColor);
+                    targetBall = findBallByColor(targetColor);
                     if (currentTargetIndex >= requiredSequence.size()) {
                         sortingComplete = true;
                         intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
-                        offTakeBallState = OFFTAKEBALLSTATE.READY;
+                        offTakeBallState = OFFTAKEBALLSTATE.EMPTY;
                     }
                     if (targetBall.hasBall && targetBall != null) {
                         rotateSpindexer(targetBall);
@@ -139,9 +150,8 @@ public class OffTakeBall {
 
             case SHOOT:
                 if (targetBall != null) {
-                    rotateSpindexer(targetBall);
                     if (timer.seconds() > 0.5) {
-                        ShootBall(0.75);
+                        shootBall(0.75);
                     }
                     if (timer.seconds() > 1.5) {
                         robot.pushRampServo.setPosition(RobotActionConfig.rampUpPos);
@@ -194,13 +204,15 @@ public class OffTakeBall {
     return null;
 }
     /** Example off-take: reverse intake motor for short time */
-    private void ShootBall(double power) {
+    private void shootBall(double power) {
         // Rotate already done before calling
         robot.shooterMotor.setPower(power);
     }
     private void StopShootBall(){
         // Stop shooter
         robot.shooterMotor.setPower(0);
+    }
+    public void stopShootBall() {
     }
     /** Helper ButtonDebounce */
     private boolean isButtonDebounced() {
@@ -211,4 +223,15 @@ public class OffTakeBall {
         }
         return false;
     }
+
+    // --- Getters ---
+    public OFFTAKEBALLSTATE getOffTakeBallState() {
+        return offTakeBallState;
+    }
+    public static void setState(OFFTAKEBALLSTATE offTakeBallState) {offTakeBallState = offTakeBallState; }
+    public boolean isReady() { return offTakeBallState == OFFTAKEBALLSTATE.READY; }
+    public OFFTAKEBALLSTATE state() { return offTakeBallState;}
+    public boolean isEmpty() { return offTakeBallState == OFFTAKEBALLSTATE.EMPTY; }
+    public List<Ball> getBalls() { return balls; }
+
 }
