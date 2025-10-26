@@ -12,20 +12,18 @@ import java.util.List;
 
 public class IntakeBall {
 
-    private final GamepadEx gamepad1;
-    private final double[] slotAngles;
-    private final List<Ball> balls;
-
-    public enum INTAKEBALLSTATE{
+       public enum INTAKEBALLSTATE{
         INTAKE_READY,
         INTAKE_SWEEPING,
         INTAKE_DETECTED,
         INTAKE_INDEXING,
         INTAKE_FULL
     }
-
     private RobotHardware robot;
     private ColorDetection colorDetection;
+    private final GamepadEx gamepad1;
+    private final double[] slotAngles;
+    private final List<Ball> balls;
     private ElapsedTime timer = new ElapsedTime();
 
     private ElapsedTime jamTimer = new ElapsedTime();
@@ -83,7 +81,9 @@ public class IntakeBall {
                 if (currentSlot == -1) { // Should not happen after resetting, but a good safeguard.
                     currentSlot = 0;
                 }
-                robot.spindexerServo.setPosition(getCurrentSlot());
+                robot.spindexerServo.setPosition(currentSlot);
+                robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
+                robot.rightGateServo.setPosition(RobotActionConfig.gateUp);
                 if (gamepad1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
                     //start the intake motor
                     robot.intakeMotor.setPower(0.6);
@@ -107,6 +107,9 @@ public class IntakeBall {
                 }
                 /// check if the ball is present at slot
                 if (colorDetection.isBallPresent()) {
+                    robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
+                    robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
+
                     colorDetection.startDetection(); // set color detection parameters to initial start.
                     timer.reset();
                     state = INTAKEBALLSTATE.INTAKE_DETECTED;
@@ -124,7 +127,6 @@ public class IntakeBall {
                     currentSlotBall.hasBall = true;
                     currentSlotBall.ballColor = detectedColor;
                     robot.intakeMotor.setPower(0.0);
-
                     nextSlot = findEmptySlot();
 
                     if (!areAllSlotsFull()) {
@@ -149,6 +151,9 @@ public class IntakeBall {
                     detectedColor = "Unknown";
                     robot.intakeMotor.setPower(0.6);
                     state = INTAKEBALLSTATE.INTAKE_SWEEPING;
+                    robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
+                    robot.rightGateServo.setPosition(RobotActionConfig.gateUp);
+                    timer.reset();
                 }
                 break;
 
@@ -166,7 +171,7 @@ public class IntakeBall {
     public boolean isFull() { return state == INTAKEBALLSTATE.INTAKE_FULL; }
     public List<Ball> getBalls() { return balls; }
     public int getCurrentSlot() { return currentSlot; }
-    public void resetSpindexerSlot(){ currentSlot = 0; robot.spindexerServo.setPosition(0); }
+    public void resetSpindexerSlot(){ currentSlot = 0; robot.spindexerServo.setPosition(0); balls.clear();}
 
     ///  Intake Stop Helper
     public void stopIntake() {
