@@ -19,7 +19,7 @@ public class ColorDetection {
     // Parameters
     private final int REQUIRED_STABLE_COUNT = 10; // number of consistent readings (~0.3s if called every 20ms)
     private final double TIMEOUT_MS = 500;        // maximum time allowed to detect color
-    private final double BALL_PRESENT_THRESHOLD_MM = 10; // adjust per sensor mounting
+    private final double BALL_PRESENT_THRESHOLD_MM = 100; // adjust per sensor mounting
     public ColorDetection(RobotHardware robot) {
         this.robot = robot;
     }
@@ -49,12 +49,11 @@ public class ColorDetection {
 
         String currentColor;
 
-        if (hue >= 250 && hue <= 290) currentColor = "Purple";
-        else if (hue >= 80 && hue <= 160) currentColor = "Green";
+        if (hue >= 170 && hue <= 230) currentColor = "Purple";
+        else if (hue >= 135 && hue <= 160) currentColor = "Green";
         else currentColor = "Unknown";
 
-        //Stability Check
-
+        /**Stability Check*/
         if (currentColor.equals(lastColor) && !currentColor.equals("Unknow"))
         {
             stableCount++;
@@ -67,19 +66,19 @@ public class ColorDetection {
         lastColor = currentColor;
     }
 
+    /** return is color stable boolean. */
     public boolean isColorStable(){
         return !stableColor.equals("Unknow");
     }
 
+    /** check if the ball is present. */
     public boolean isBallPresent() {
         // Check if ball is in slot first
         double distance = robot.distanceSensor.getDistance(DistanceUnit.MM);
         return distance < BALL_PRESENT_THRESHOLD_MM;
     }
 
-    /**
-     * Returns the raw hue value (useful for telemetry or tuning).
-     */
+    /** Returns the raw hue value (useful for telemetry or tuning). */
     public float getHue() {
         float hsv[] = new float[3];
         Color.RGBToHSV(
@@ -91,9 +90,7 @@ public class ColorDetection {
         return hsv[0];
     }
 
-    /**
-     * Returns raw RGB readings for diagnostics.
-     */
+    /**Returns raw RGB readings for diagnostics.*/
     public String getRawRGB() {
         return "R:" + robot.colorSensor.red() + " G:" + robot.colorSensor.green() + " B:" + robot.colorSensor.blue();
     }
