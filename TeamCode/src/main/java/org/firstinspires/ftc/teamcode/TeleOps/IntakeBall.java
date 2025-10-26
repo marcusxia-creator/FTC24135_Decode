@@ -26,9 +26,7 @@ public class IntakeBall {
     private final double[] slotAngles;
     private final List<Ball> balls;
     private ElapsedTime timer = new ElapsedTime();
-
     private ElapsedTime jamTimer = new ElapsedTime();
-
     private ElapsedTime debounceTimer = new ElapsedTime();
 
     // Example: gobilda 1150= 145.1 ticks/rev, 6000=28, GoBilda 5202/5203 = 537.7 ticks/rev.for 312rpm
@@ -37,11 +35,9 @@ public class IntakeBall {
     public static double SHOOTER_RPM_CONVERSION = 60.0 / SHOOTER_TICKS_PER_REV;
     public static double INTAKE_RPM_CONVERSION = 60.0 / INTAKE_TICKS_PER_REV;
 
-    private double shooter_rpm;
     private double intake_rpm;
 
     private INTAKEBALLSTATE state = INTAKEBALLSTATE.INTAKE_READY;
-
 
     private int currentSlot = 0;
     private int nextSlot;
@@ -59,7 +55,7 @@ public class IntakeBall {
         this.balls = balls;
         // --- NEW: Initialize the list with empty ball objects ---
         // This ensures the list always represents the 3 physical slots.
-        for (int i = 0; i < this.slotAngles.length; i++) {
+        //for (int i = 0; i < this.slotAngles.length; i++) {
             // Add a "placeholder" ball for each slot, marked as not having a ball.
             // this.balls.add(new Ball("Empty", i, this.slotAngles[i], false));
         }
@@ -67,13 +63,8 @@ public class IntakeBall {
         this.robot.spindexerServo.setPosition(slotAngles[0]);
         timer.reset();
     }
-// Retreat slot position to previous one
- if (gamepad1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
-                    // RETURN ball into the PREVIOUS slot
-                    state = INTAKEBALLSTATE.INTAKE_INDEXING_RETRY;
-                    timer.reset();
-                }
 
+   
 
     // --- FSM Update Loop ---
     public void IntkaeBallUpdate() {
@@ -84,6 +75,13 @@ public class IntakeBall {
         /// * check on jammed or not /
         boolean jammed = isJammed();
 
+       // Reverse slot position to previous one
+       if (gamepad1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
+                    // RETURN ball into the PREVIOUS slot
+                    state = INTAKEBALLSTATE.INTAKE_INDEXING_RETRY;
+                    timer.reset();
+                }
+       // FSM STATES
         switch (state) {
             case INTAKE_READY:
                 currentSlot = findEmptySlot();
@@ -135,14 +133,14 @@ public class IntakeBall {
                     Ball currentSlotBall = balls.get(currentSlot);
                     currentSlotBall.hasBall = true;
                     currentSlotBall.ballColor = detectedColor;
-                    robot.intakeMotor.setPower(0.0);
+                    stopIntake();
                     nextSlot = findEmptySlot();
 
                     if (!areAllSlotsFull()) {
                         ///if slot are not full, rotate slot
                         robot.spindexerServo.setPosition(slotAngles[nextSlot]);
-previousSlot = currentSlot;                    
-currentSlot = nextSlot;
+                        previousSlot = currentSlot;                    
+                        currentSlot = nextSlot;
                         timer.reset();
                         state = INTAKEBALLSTATE.INTAKE_INDEXING;
                     } else {
@@ -168,16 +166,17 @@ currentSlot = nextSlot;
                 break;
 
             case INTAKE_FULL:
-                robot.intakeMotor.setPower(0.0);
+                      stopIntake();
                 break;
 
             case INTAKE_INDEXING_RETRY:
-currentTime = system.running.time              robot.spindexerServo.setPosition(slotAngles[previousSlot]);
-if (system.running.time - currentTime > 0.5) { 
-inTakeBallState = INTAKEBALLSTATE.INTAKE_READY
-}
-timer.reset()
-break;
+                      double currentTime = getRunTime();
+                      robot.spindexerServo.setPosition(slotAngles[previousSlot]);
+                      if (getRuntime()- currentTime > 0.5) { 
+                            inTakeBallState = INTAKEBALLSTATE.INTAKE_READY
+                            }
+                     timer.reset()
+              break;
         }
     }
 
