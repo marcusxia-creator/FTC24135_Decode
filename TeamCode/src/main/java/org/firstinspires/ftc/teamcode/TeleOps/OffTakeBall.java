@@ -1,41 +1,84 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OffTakeBall {
     private RobotHardware robot;
     private IntakeBall intakeBall;
+    private ColorDetection colorDetection;
+    private GamepadEx gamepad1;
+    private AprilTagUpdate AprilTagUpdate;
     private List<Ball> balls;   // reference from IntakeBall
     private double[] slotAngles;
     private int currentTargetIndex = 0;
     private List<String> requiredSequence;
     private boolean sortingComplete = false;
-
-    public enum OFFTAKEBALLSTATE{
+    private ElapsedTime timer = new ElapsedTime();
+    private ElapsedTime debounceTimer = new ElapsedTime();
+    private Map<Integer, List<String>> aprilTagSequences;
+    //private HashMap<Integer, List<String>> aprilTagSequence =  new HashMap<>();
+    /** DEFINE OFFTAKEBALLSTATE*/
+    public enum OFFTAKEBALLSTATE {
         READY,
         FLOW,
-        SORT
+        SETSORTSEQUENCE,
+        SORT,
+        SHOOT,
     }
+    /** SET INITIAL OFFTAKEBALLSTATE*/
+    private OFFTAKEBALLSTATE offTakeBallState = OFFTAKEBALLSTATE.READY;
 
-    private OFFTAKEBALLSTATE offTakeBallState = OFFTAKEBALLSTATE.FLOW;
-
-    public OffTakeBall(RobotHardware robot, List<Ball> balls, double[] slotAngles) {
+    // --- Constructor ---
+    public OffTakeBall(RobotHardware robot, List<Ball> balls, double[] slotAngles, GamepadEx gamepad1) {
         this.robot = robot;
         this.balls = balls;
         this.slotAngles = slotAngles;
-        this.requiredSequence = new ArrayList<>();
+        this.gamepad1 = gamepad1;
+        this.colorDetection = new ColorDetection(robot);
+
+        initializeAprilTagSequences();
     }
 
-    /** Define the required off-take sequence such as ["Purple", "Green", "Purple"] */
+    // --- NEW: Helper method to populate the lookup table ---
+    private void initializeAprilTagSequences(){
+        aprilTagSequences = new HashMap<>();
+        aprilTagSequences.put(21,Arrays.asList("Green", "Purple", "Purple"));
+        aprilTagSequences.put(22,Arrays.asList("Purple", "Green","Purple"));
+        aprilTagSequences.put(23,Arrays.asList("Purple","Purple","Green"));
+    }
+
+    // --- NEW: Method to set sequence based on a detected AprilTag ID ---
+    public List<String> getSequenceByAprilTagId(int tagId) {
+        List<String> sequence;
+        if (aprilTagSequences.containsKey(tagId)) {
+            sequence = aprilTagSequences.get(tagId);
+        } else {
+            // Handle case where the AprilTag ID is not in our lookup table
+            // For example, do nothing or set a default sequence
+            sequence = Arrays.asList("Green", "Purple", "Purple");
+        }
+        return sequence;
+    }
+    /**
+     * Define the required off-take sequence such as ["Purple", "Green", "Purple"]
+     */
     public void setRequiredSequence(List<String> sequence) {
         this.requiredSequence.clear();
         this.requiredSequence.addAll(sequence);
         currentTargetIndex = 0;
         sortingComplete = false;
     }
-
-    /** Check whether all required colors have been off-taken */
+    /**
+     * Check whether all required colors have been off-taken
+     */
     public boolean isSortingComplete() {
         return sortingComplete;
     }
@@ -43,48 +86,81 @@ public class OffTakeBall {
     /**
      * Executes the main logic for the off-take process.
      * This method should be called periodically, for example, within the main TeleOp loop.
-     *
+     * <p>
      * It checks if the off-take sequence is complete or empty. If not, it identifies the
      * next required ball color from the sequence. If a ball of the target color is found,
      * it rotates the spindexer to that ball's position, marks the ball as removed, and
      * advances to the next target in the sequence.
-     *
+     * <p>
      * The process is marked as complete if all balls in the sequence are processed or if
      * a required ball color cannot be found in the current inventory.
      */
     public void update() {
 
-        switch (offTakeBallState){
+        switch (offTakeBallState) {
             case READY:
-            if gamepad1.Button(X) {
-             offTakeBallState = OFFTAKEBALLSTATE.FLOW}
-           if gamepad1.Button(Y) {
-             offTakeBallState = OFFTAKEBALLSTATE.SORT}
+                if (gamepad1.getButton(GamepadKeys.Button.X)) {
+                    timer.reset();
+                    offTakeBallState = OFFTAKEBALLSTATE.FLOW;
+                }
+                if (gamepad1.getButton(GamepadKeys.Button.Y)) {
+                    timer.reset();
+                    offTakeBallState = OFFTAKEBALLSTATE.SETSORTSEQUENCE;
+                }
                 break;
+
             case FLOW:
-        
+
+
 
                 break;
+            case SETSORTSEQUENCE:
+                setRequiredSequence(getSequenceByAprilTagId(AprilTagUpdate.getTagID()));
+                offTakeBallState=OFFTAKEBALLSTATE.SORT;
+                break;
+
             case SORT:
-            String targetColor = requiredSequence.get(currentTargetIndex);
-        Ball targetBall = findBallByColor(targetColor);
-
+                    String targetColor = requiredSequence.get(currentTargetIndex);
+                    Ball targetBall = findBallByColor(targetColor);
+                    if (currentTargetIndex >= requiredSequence.size()) {
+                        sortingComplete = true;
+                        intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
+                        offTakeBallState = OFFTAKEBALLSTATE.READY;
+                    }
+                    if (targetBall.hasBall && targetBall != null) {
+                        rotateSpindexer(targetBall);
+                        offTakeBallState = OFFTAKEBALLSTATE.SHOOT;
+                        timer.reset();
+                    }else{
+                        sortingComplete = true;
+                        offTakeBallState = OFFTAKEBALLSTATE.READY;
+                    }
                 break;
+
+            case SHOOT:
+                if (targetBall != null) {
+                    rotateSpindexer(targetBall);
+                    if (timer.seconds() > 0.5) {
+                        ShootBall(0.75);
+                    }
+                    if (timer.seconds() > 1.5) {
+                        robot.pushRampServo.setPosition(RobotActionConfig.rampUpPos);
+                    }
+                    if (timer.seconds() > 2.5){
+                        robot.pushRampServo.setPosition(RobotActionConfig.rampResetPos);
+                    }
+                } else {
+                    sortingComplete = true;
+                    offTakeBallState = OFFTAKEBALLSTATE.READY;
+                }
         }
+    }
 
-  if (sortingComplete || requiredSequence.isEmpty()) return;      
-
-        if (currentTargetIndex >= requiredSequence.size()) {
-            sortingComplete = true;          intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
-        }
-
-        
-
-/** Helper to rotate the spindexer*/
-   private void RotateSpindexer(Ball targetBall){
-
+    /** Helper to rotate the spindexer*/
+   private void rotateSpindexer(Ball targetBall){
         if (targetBall != null) {
-            // Rotate spindexer to ball slot angle           robot.spindexerServo.setPosition(targetBall.slotAngle);
+            // Rotate spindexer to ball slot angle
+            robot.spindexerServo.setPosition(targetBall.slotAngle);
 
             // Mark ball as removed
             targetBall.hasBall = false;
@@ -95,12 +171,11 @@ public class OffTakeBall {
             if (currentTargetIndex >= 3) {
                 sortingComplete = true;
             }
-
         } else {
             // If color not found among current balls, stop or skip
             sortingComplete = true;
         }
-    }
+   }
 
     /** Helper to find the first ball matching the target color that still exists */
     private Ball findBallByColor(String color) {
@@ -111,23 +186,29 @@ public class OffTakeBall {
         }
         return null;
     }
-
-   /** Helper to find the first ball hasBall is True
-*/
+   /** Helper to find the first ball hasBall is True*/
     private Ball findBall (){
-         for ( Ball :balls) {
-            if (b.hwsBall ){ return b}  
+         for ( Ball b :balls) {
+            if (b.hasBall ){ return b;}
          }
     return null;
 }
-
     /** Example off-take: reverse intake motor for short time */
     private void ShootBall(double power) {
         // Rotate already done before calling
-        robot.offTakeMotor.setPower(power);
+        robot.shooterMotor.setPower(power);
     }
     private void StopShootBall(){
         // Stop shooter
-        robot.offTakeMotor.setPower(0);
+        robot.shooterMotor.setPower(0);
+    }
+    /** Helper ButtonDebounce */
+    private boolean isButtonDebounced() {
+
+        if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+            debounceTimer.reset();
+            return true;
+        }
+        return false;
     }
 }
