@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import java.util.List;
@@ -78,7 +78,8 @@ public class RobotHardware {
 
     //public ColorSensor colorSensor;// Color Sensor
     ///for debug colorSensor
-    public NormalizedColorSensor colorSensor;
+    public ColorSensor colorSensor;
+    public DistanceSensor distanceSensor;
 
     ///public DigitalChannel limitSwitch;// Limit Switch
 
@@ -114,7 +115,8 @@ public class RobotHardware {
         leftGateServo = hardwareMap.get(Servo.class, "Left_Gate_Servo");
         rightGateServo = hardwareMap.get(Servo.class, "Right_Gate_Servo");
         //color sensor
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "Color_Sensor");
+        colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "Color_Sensor"); // same device
         colorSensor.setGain(2);
         //limit switch
         //limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
