@@ -13,6 +13,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 
 @TeleOp (name = "RobotTest", group = "org.firstinspires.ftc.teamcode")
 public class RobotTest extends OpMode {
@@ -33,6 +35,10 @@ public class RobotTest extends OpMode {
     private double shooter_rpm;
     private double intake_rpm;
 
+    private ColorDetection colorDetection;
+
+    private boolean colorStable;
+
     //
     private ElapsedTime jamTimer = new ElapsedTime();
 
@@ -43,22 +49,27 @@ public class RobotTest extends OpMode {
     public void init() {
         gamepad_1 = new GamepadEx(gamepad1);
         gamepad_2 = new GamepadEx(gamepad2);
+
         robot = new RobotHardware(hardwareMap);
         robot.init();
+
+        colorDetection = new ColorDetection(robot);
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         servoposition = 0.0;
         speed = 0.0;
 
         robot.pushRampServo.setPosition(RobotActionConfig.rampResetPos);
 
-        robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
-        robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
+        robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
+        robot.rightGateServo.setPosition(RobotActionConfig.gateUp);
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
 
         robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        colorDetection.startDetection();
     }
 
     @Override
@@ -69,9 +80,31 @@ public class RobotTest extends OpMode {
         shooter_rpm = shooter_ticksPerSec * SHOOTER_RPM_CONVERSION;
 
         double intake_ticksPerSec = robot.intakeMotor.getVelocity();
+
         intake_rpm = intake_ticksPerSec * INTAKE_RPM_CONVERSION;
 
         boolean jammed = isJammed();
+
+        colorDetection.updateDetection();
+
+        if (colorDetection.isBallPresent()) {
+            if (colorDetection.isColorStable()) {
+                robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
+                robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
+
+                if (colorDetection.getStableColor().equals("Green")) {
+                    robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot2);
+                }
+                if (colorDetection.getStableColor().equals("Purple")) {
+                    robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot3);
+                }
+            }
+        }
+        else {
+            robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
+            robot.rightGateServo.setPosition(RobotActionConfig.gateUp);
+
+        }
 
         if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
             //servoposition = robot.pushRampServo.getPosition() + 0.01;
@@ -84,24 +117,26 @@ public class RobotTest extends OpMode {
             robot.pushRampServo.setPosition(RobotActionConfig.rampResetPos);
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
-            double i = 120.0 / 290.0;
+            double i = 130.0 / 275.0;
             servoposition = robot.spindexerServo.getPosition() + i;
-            robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
+            robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 0.92));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
-            double i = 120.0 / 290.0;
+            double i = 130.0 / 275.0;
             servoposition = robot.spindexerServo.getPosition() - i;
-            robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
+            robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 0.92));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && isButtonDebounced()) {
-            servoposition = robot.leftGateServo.getPosition() + 0.01;
-            robot.leftGateServo.setPosition(Range.clip(servoposition, 0, 1));
-            robot.rightGateServo.setPosition(Range.clip(servoposition,0,1));
+            //servoposition = robot.leftGateServo.getPosition() + 0.01;
+            servoposition = RobotActionConfig.gateUp;
+            robot.leftGateServo.setPosition(Range.clip(servoposition, 0, 0.5));
+            robot.rightGateServo.setPosition(Range.clip(servoposition,0,0.5));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_DOWN) && isButtonDebounced()) {
-            servoposition = robot.leftGateServo.getPosition() - 0.01;
-            robot.leftGateServo.setPosition(Range.clip(servoposition, 0, 1));
-            robot.rightGateServo.setPosition(Range.clip(servoposition,0,1));
+            //servoposition = robot.leftGateServo.getPosition() - 0.01;
+            servoposition = RobotActionConfig.gateDown;
+            robot.leftGateServo.setPosition(Range.clip(servoposition, 0, 0.5));
+            robot.rightGateServo.setPosition(Range.clip(servoposition,0,0.5));
         }
         if (gamepad_2.getButton(GamepadKeys.Button.X) && isButtonDebounced()){
             speed = robot.shooterMotor.getPower() + 0.05;
@@ -133,6 +168,13 @@ public class RobotTest extends OpMode {
         telemetry.addData("Ramp Position", robot.pushRampServo.getPosition());
         telemetry.addData("Left Gate Position", robot.leftGateServo.getPosition());
         telemetry.addData("Right Gate Position", robot.rightGateServo.getPosition());
+        telemetry.addLine("----color----");
+        telemetry.addData("Color Stable", colorDetection.isColorStable());
+        telemetry.addData("Ball Present", colorDetection.isBallPresent());
+        telemetry.addData("Distance", robot.distanceSensor.getDistance(DistanceUnit.MM));
+        telemetry.addData("Hue", colorDetection.getHue());
+        telemetry.addData("Color", colorDetection.getStableColor());
+        telemetry.addLine("----Spindexer----");
         telemetry.addData("Spindexer Position", robot.spindexerServo.getPosition());
         telemetry.addLine("----Shooter----");
         telemetry.addData("Shooter Speed", robot.shooterMotor.getPower());
