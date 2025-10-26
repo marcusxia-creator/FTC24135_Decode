@@ -49,7 +49,7 @@ public class IntakeBall {
     private String detectedColor = "Unknown";
 
     // --- Constructor ---
-    public IntakeBall(RobotHardware robot, GamepadEx gamepad, double[] slotAngles, List<Ball> balls) {
+    public IntakeBall(RobotHardware robot, GamepadEx gamepad, List<Ball> balls,double[] slotAngles) {
         this.robot = robot;
         this.gamepad1 = gamepad;
         this.colorDetection = new ColorDetection(robot);
