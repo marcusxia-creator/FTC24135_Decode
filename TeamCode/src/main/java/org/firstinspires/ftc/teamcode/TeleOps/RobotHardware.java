@@ -157,6 +157,9 @@ public class RobotHardware {
         //Set run mode of intake and shooter motors
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        //reverse drive motor directions
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         // set robot motor power 0
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
