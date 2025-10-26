@@ -197,8 +197,8 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Shooter Power", robot.shooterMotor.getPower());
         telemetry.addLine("-------Intake Motor Motor-------------------");
         telemetry.addData("Intake Motor Power", robot.intakeMotor.getPower());
-        telemetry.addData("Empty Slot number", intakeBall.getNumberOfBalls());
-        telemetry.addData("Empty Slot", intakeBall.findEmptySlot());
+        telemetry.addData("Number of Balls", intakeBall.getNumberOfBalls());
+        telemetry.addData("Empty Slot Id", intakeBall.findEmptySlot());
         telemetry.addLine("--------------Op Mode--------------");
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", robotDrive.getDriveMode().name());
