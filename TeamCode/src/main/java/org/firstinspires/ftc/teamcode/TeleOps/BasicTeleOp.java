@@ -1,19 +1,10 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.*;
-
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.hardware.lynx.LynxModule.BulkData;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp (name = "Basic TeleOp", group = "org.firstinspires.ftc.teamcode")
@@ -22,7 +13,7 @@ public class BasicTeleOp extends OpMode {
     private GamepadEx gamepadCo1, gamepadCo2;
     private RobotDrive robotDrive;
     private FSMIntake intakeControl;
-    private FSMShooterManual shooterManualControl;
+    private FSMShooter shooterManualControl;
     private ElapsedTime debounceTimer = new ElapsedTime();
 
 
@@ -40,7 +31,7 @@ public class BasicTeleOp extends OpMode {
         intakeControl = new FSMIntake(robot, gamepadCo1, gamepadCo2);
         intakeControl.Init();
 
-        shooterManualControl = new FSMShooterManual(gamepadCo1, gamepadCo2, robot);
+        shooterManualControl = new FSMShooter(gamepadCo1, gamepadCo2, robot);
         shooterManualControl.Init();
 
 
