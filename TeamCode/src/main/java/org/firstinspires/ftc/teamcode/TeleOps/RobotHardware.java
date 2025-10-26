@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -81,7 +82,8 @@ public class RobotHardware {
 
     //public ColorSensor colorSensor;// Color Sensor
     ///for debug colorSensor
-    public NormalizedColorSensor colorSensor;
+    ColorSensor colorSensor;
+    DistanceSensor distanceSensor;
 
     ///public DigitalChannel limitSwitch;// Limit Switch
 
@@ -94,6 +96,7 @@ public class RobotHardware {
     public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
     public  double vMinAccept = 10.5;            // discard anything below this as junk
     public  double vDefault   = 12.0;           // fallback
+
 
 
     public RobotHardware(HardwareMap hardwareMap) {
@@ -109,6 +112,16 @@ public class RobotHardware {
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "BL_Motor");
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
+
+        colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "colorSensor");
+
+
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
         //Webcam
         webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
 
@@ -131,6 +144,10 @@ public class RobotHardware {
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
+
+        odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
+
+
 
 
     }// End of init

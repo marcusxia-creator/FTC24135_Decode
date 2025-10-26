@@ -127,6 +127,7 @@ public class RobotDrive {
 
         // Mecanum drive calculations
         iceWaddler.runByPower(new Pose2D(DistanceUnit.METER, drive, strafe, AngleUnit.DEGREES, 0), rotate);
+        iceWaddler.loop();
         // Update telemetry with the latest data
         // empty
     }// end of driveloop

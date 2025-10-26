@@ -38,10 +38,6 @@ public class FSMAprilTagProc {
     }
 
     public void init () {
-
-        ftcDashboard = FtcDashboard.getInstance();
-        telemetry = new MultipleTelemetry(telemetry, ftcDashboard.getTelemetry());
-
         tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
