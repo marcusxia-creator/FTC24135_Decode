@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-//import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -99,8 +98,11 @@ public class RobotHardware {
     ///IMU
 
     public IMU imu; //IMU
+
     public HardwareMap hardwareMap;
     public ArrayList <VoltageSensor> voltageSensors;
+
+    public GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
 
     private double vEma = 12.0;                 // EMA state
     public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
@@ -128,9 +130,13 @@ public class RobotHardware {
         spindexerServo = hardwareMap.get(Servo.class, "Spindexer_Servo");
         leftGateServo = hardwareMap.get(Servo.class, "Left_Gate_Servo");
         rightGateServo = hardwareMap.get(Servo.class, "Right_Gate_Servo");
+
+        leftGateServo.setDirection(Servo.Direction.REVERSE);
+        rightGateServo.setDirection(Servo.Direction.FORWARD);
         //color sensor
         colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
         distanceSensor = hardwareMap.get(DistanceSensor.class, "Color_Sensor");
+
         //limit switch
         //limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
         //limitSwitch.setMode(DigitalChannel.Mode.INPUT);
@@ -143,6 +149,11 @@ public class RobotHardware {
 
         //voltage sensor
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
+
+        //set motor mode and motor direction
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed
+        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed
+
         //Reset the drive train motor encoders
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -154,9 +165,13 @@ public class RobotHardware {
         backLeftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); //set motor mode
         frontRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
         backRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
+
         //Set run mode of intake and shooter motors
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+
+        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
         // set robot motor power 0
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
@@ -173,10 +188,17 @@ public class RobotHardware {
         myIMUparameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
+                        RevHubOrientationOnRobot.UsbFacingDirection.DOWN
                 ));
         imu.initialize(myIMUparameters);
         imu.resetYaw();
+    }
+
+    public void initPinPoint() {
+        pinpointDriver.setOffsets(-149.225, -165.1,DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+        pinpointDriver.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        pinpointDriver.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        pinpointDriver.resetPosAndIMU();
     }
 
     private static double median(List<Double> xs) {
