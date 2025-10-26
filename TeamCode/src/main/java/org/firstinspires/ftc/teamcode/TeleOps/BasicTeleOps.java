@@ -71,6 +71,9 @@ public class BasicTeleOps extends OpMode {
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
+        /// Pinpoint Initialization
+        robot.initPinPoint();
+
         /// === NEW: Initialize ball handling subsystems ===
         // 1. Create the single, shared list for balls.
         sharedBallList = new ArrayList<>();
@@ -132,24 +135,12 @@ public class BasicTeleOps extends OpMode {
         /// Control condition -  Check Run Status
         if (controlState == ControlState.RUN) {
             robot.pinpointDriver.update();
-            /// Telemetry
-            telemetry.addLine("-------Odometry-------------------");
-            telemetry.addData("Pinpoint X", "%.2f inches", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
-            telemetry.addData("Pinpoint Y", "%.2f inches", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
-            telemetry.addData("Pinpoint Heading", "%.2f degrees", robot.pinpointDriver.getHeading(AngleUnit.DEGREES));
-            telemetry.addLine("-------Shooter Motor-------------------");
-            telemetry.addData("Shooter Power", robot.shooterMotor.getPower());
-            telemetry.addLine("-------Intake Motor Motor-------------------");
-            telemetry.addData("Intake Motor Power", robot.intakeMotor.getPower());
-            telemetry.addData("Empty Slot", intakeBall.getNumberOfBalls());
-            telemetry.addData("Empty Slot", intakeBall.findEmptySlot());
-
-
             // === NEW: Master State Machine for Ball Handling ===
             // Use Gamepad 2 for ball controls to separate from driving
             // Press 'A' to start intaking
             if (gamepadCo2.getButton(A)) {
                 ballHandlingState = BallHandlingState.INTAKING;
+                intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
             }
 
             /**
@@ -198,7 +189,17 @@ public class BasicTeleOps extends OpMode {
             telemetry.addLine("-----No Code-----------");
             telemetry.addLine("-----No Code-----------");
         }
-
+        /// Telemetry
+        telemetry.addLine("-------Odometry-------------------");
+        telemetry.addData("Pinpoint X", "%.2f inches", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
+        telemetry.addData("Pinpoint Y", "%.2f inches", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
+        telemetry.addData("Pinpoint Heading", "%.2f degrees", robot.pinpointDriver.getHeading(AngleUnit.DEGREES));
+        telemetry.addLine("-------Shooter Motor-------------------");
+        telemetry.addData("Shooter Power", robot.shooterMotor.getPower());
+        telemetry.addLine("-------Intake Motor Motor-------------------");
+        telemetry.addData("Intake Motor Power", robot.intakeMotor.getPower());
+        telemetry.addData("Empty Slot number", intakeBall.getNumberOfBalls());
+        telemetry.addData("Empty Slot", intakeBall.findEmptySlot());
         telemetry.addLine("--------------Op Mode--------------");
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", robotDrive.getDriveMode().name());
