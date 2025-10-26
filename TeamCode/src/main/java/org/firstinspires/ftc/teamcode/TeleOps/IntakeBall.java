@@ -17,7 +17,8 @@ public class IntakeBall {
         INTAKE_SWEEPING,
         INTAKE_DETECTED,
         INTAKE_INDEXING,
-        INTAKE_FULL
+        INTAKE_FULL,
+        INTAKE_INDEXING_RETRY
     }
     private RobotHardware robot;
     private ColorDetection colorDetection;
@@ -44,6 +45,7 @@ public class IntakeBall {
 
     private int currentSlot = 0;
     private int nextSlot;
+    private int previousSlot = 0;
 
     private boolean colorDetected = false;
     private String detectedColor = "Unknown";
@@ -59,12 +61,19 @@ public class IntakeBall {
         // This ensures the list always represents the 3 physical slots.
         for (int i = 0; i < this.slotAngles.length; i++) {
             // Add a "placeholder" ball for each slot, marked as not having a ball.
-            this.balls.add(new Ball("Empty", i, this.slotAngles[i], false));
+            // this.balls.add(new Ball("Empty", i, this.slotAngles[i], false));
         }
         // --------------------------------------------------------
         this.robot.spindexerServo.setPosition(slotAngles[0]);
         timer.reset();
     }
+// Retreat slot position to previous one
+ if (gamepad1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
+                    // RETURN ball into the PREVIOUS slot
+                    state = INTAKEBALLSTATE.INTAKE_INDEXING_RETRY;
+                    timer.reset();
+                }
+
 
     // --- FSM Update Loop ---
     public void IntkaeBallUpdate() {
@@ -132,7 +141,8 @@ public class IntakeBall {
                     if (!areAllSlotsFull()) {
                         ///if slot are not full, rotate slot
                         robot.spindexerServo.setPosition(slotAngles[nextSlot]);
-                        currentSlot=nextSlot;
+previousSlot = currentSlot;                    
+currentSlot = nextSlot;
                         timer.reset();
                         state = INTAKEBALLSTATE.INTAKE_INDEXING;
                     } else {
@@ -160,6 +170,14 @@ public class IntakeBall {
             case INTAKE_FULL:
                 robot.intakeMotor.setPower(0.0);
                 break;
+
+            case INTAKE_INDEXING_RETRY:
+currentTime = system.running.time              robot.spindexerServo.setPosition(slotAngles[previousSlot]);
+if (system.running.time - currentTime > 0.5) { 
+inTakeBallState = INTAKEBALLSTATE.INTAKE_READY
+}
+timer.reset()
+break;
         }
     }
 
