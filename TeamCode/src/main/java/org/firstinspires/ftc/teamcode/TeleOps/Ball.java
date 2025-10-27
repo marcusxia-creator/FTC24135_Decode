@@ -4,14 +4,14 @@ import androidx.annotation.NonNull;
 
 public class Ball {
     public String ballColor;
-    public int slotPosition;
+    public int slotNumber;
     public double slotAngle;
     public boolean hasBall;
 
     //constructor ball
     public Ball(String ballColor, int slotPosition,double slotAngle, boolean hasBall ){
         this.ballColor = ballColor;
-        this.slotPosition = slotPosition;
+        this.slotNumber = slotPosition;
         this.slotAngle = slotAngle;
         this.hasBall = hasBall;
     }
@@ -26,7 +26,7 @@ public class Ball {
 
     //return ball slotPosition
     public int getSlotPosition(){
-        return slotPosition;
+        return slotNumber;
     }
 
     public double getSlotAngle(){
@@ -41,6 +41,6 @@ public class Ball {
 
     @NonNull
     public String toString(){
-        return "Slot "+slotPosition + "("+slotAngle+")"+ballColor;
+        return "Slot "+slotNumber + "("+slotAngle+")"+ballColor;
     }
 }
