@@ -23,6 +23,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 @Config
@@ -41,23 +43,26 @@ public class BasicTeleOps extends OpMode {
     private RobotHardware robot;
     private GamepadEx gamepadCo1, gamepadCo2;
     private RobotDrive robotDrive;
+    private IntakeBall intakeBall;
+    private OffTakeBall offTakeBall;
+    private ColorDetection colorDetection = new ColorDetection(robot);
+    private AprilTagUpdate aprilTagUpdate = new AprilTagUpdate(hardwareMap);
 
+    //=======================States & Time & Lists========================================
     private ControlState controlState = ControlState.RUN;
     private ElapsedTime debounceTimer = new ElapsedTime();
-
 
     private boolean lBstartPressed = false;
 
     // === NEW: Ball Handling Objects and State ===
     private BallHandlingState ballHandlingState = BallHandlingState.IDLE;
     private List<Ball> sharedBallList;
-    private IntakeBall intakeBall;
-    private OffTakeBall offTakeBall;
-    private ColorDetection colorDetection = new ColorDetection(robot);
-
     private double[] spindexerSlotAngles = {0.0, 0.46, 0.92}; // Example angles
-    // ============================================
 
+    // =================April Tag and AprilTag Sequence===========================
+    HashMap<Object, Object> aprilTagSequences = new HashMap<>();
+    List<String> sequence;
+    private int tagId;
     private List<LynxModule> allHubs;
 
     @Override
@@ -78,10 +83,11 @@ public class BasicTeleOps extends OpMode {
 
         /// === NEW: Initialize ball handling subsystems ===
         // 1. Create the single, shared list for balls.
-        sharedBallList = new ArrayList<>();
+        sharedBallList = Collections.synchronizedList(new ArrayList<>());
 
         // 2. Instantiate subsystems, passing the *same* list to both.
         intakeBall = new IntakeBall(robot, gamepadCo2, sharedBallList, spindexerSlotAngles);
+
         offTakeBall = new OffTakeBall(robot, gamepadCo2, sharedBallList, spindexerSlotAngles);
 
         /// Get all hubs from the hardwareMap
@@ -90,6 +96,8 @@ public class BasicTeleOps extends OpMode {
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
+        /// initialize AprilTag Sequences and assign Apriltag Sequences
+        initializeAprilTagSequences();
 
         /// telemetry
         telemetry.addLine("-------------------");
@@ -105,6 +113,15 @@ public class BasicTeleOps extends OpMode {
 
     @Override
     public void loop() {
+        /// set April Tag and April Tag Sequence
+        if (gamepadCo1.getButton(BACK)){
+            tagId = aprilTagUpdate.getTagID();
+            if (tagId != 0) {
+                sequence = getSequenceByAprilTagId(tagId);
+            }
+        } else {
+            sequence = new ArrayList<>();
+        }
         /**
         /// Lynx for Motor encoder reading
         for (LynxModule hub : allHubs) {
@@ -146,11 +163,11 @@ public class BasicTeleOps extends OpMode {
                 intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
             }
 
-            /**Press 'Y' to start sorting*/
+            /**Press 'X' to start sorting*/
             if (gamepadCo2.getButton(X)) {
                // offTakeBall.setRequiredSequence(Arrays.asList("Purple", "Green","Purple"));
                 ballHandlingState = BallHandlingState.OFFTAKING;
-                OffTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.READY);
+                offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.READY);
                 intakeBall.stopIntake(); // Ensure intake motor is off before sorting
             }
 
@@ -170,6 +187,7 @@ public class BasicTeleOps extends OpMode {
                     break;
 
                 case OFFTAKING:
+                    offTakeBall.setRequiredSequence(sequence);
                     offTakeBall.update();
                     // Check if the sorting process has finished
                     if (offTakeBall.isSortingComplete()) {
@@ -254,6 +272,25 @@ public class BasicTeleOps extends OpMode {
         }
         // If we never found a positive reading, default to 0
         return (result == Double.POSITIVE_INFINITY) ? 0.0 : result;
+    }
+
+    private void initializeAprilTagSequences(){
+        aprilTagSequences.put(21,Arrays.asList("Green", "Purple", "Purple"));
+        aprilTagSequences.put(22,Arrays.asList("Purple", "Green","Purple"));
+        aprilTagSequences.put(23,Arrays.asList("Purple","Purple","Green"));
+    }
+
+    // --- NEW: Method to set sequence based on a detected AprilTag ID ---
+    private List<String> getSequenceByAprilTagId(int tagId) {
+        List<String> sequence;
+        if (aprilTagSequences.containsKey(tagId)) {
+            sequence = (List<String>) aprilTagSequences.get(tagId);
+        } else {
+            // Handle case where the AprilTag ID is not in our lookup table
+            // For example, do nothing or set a default sequence
+            sequence = Arrays.asList("Green", "Purple", "Purple");
+        }
+        return sequence;
     }
 
 }
