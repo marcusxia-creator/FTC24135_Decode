@@ -5,9 +5,7 @@ import androidx.annotation.NonNull;
 public class Ball {
     public String ballColor;
     public int slotPosition;
-
     public double slotAngle;
-
     public boolean hasBall;
 
     //constructor ball
@@ -18,9 +16,12 @@ public class Ball {
         this.hasBall = hasBall;
     }
 
-    //return ballColor
+    //return and set ballColor
     public String getBallColor(){
         return ballColor;
+    }
+    public void setBallColor(String ballColor){
+        this.ballColor = ballColor;
     }
 
     //return ball slotPosition
@@ -32,8 +33,10 @@ public class Ball {
         return slotAngle;
     }
 
-    public boolean isBall(){
-        return hasBall;
+    //return and set hasBall
+    public boolean hasBall() {return hasBall;}
+    public void setHasBall(boolean hasBall) {
+        this.hasBall = hasBall;
     }
 
     @NonNull
