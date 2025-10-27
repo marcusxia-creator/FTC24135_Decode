@@ -206,27 +206,6 @@ public class IntakeBall {
         return getNumberOfBalls() == 3;
     }
 
-    // Add this helper method inside your IntakeBall.java class
-    public Ball getBallBySlot(int slotNumber) {
-        if (slotNumber < 0 || slotNumber >= balls.size()) return null;
-        return balls.get(slotNumber);
-    }
-
-    public void setSlotBall(int slotNumber, String color) {
-        Ball b = getBallBySlot(slotNumber);
-        if (b != null) {
-            b.setHasBall(true);
-            b.setBallColor(color);
-        }
-    }
-
-    public void setSlotEmpty(int slotNumber) {
-        Ball b = getBallBySlot(slotNumber);
-        if (b != null) {
-            b.setHasBall(false);
-            b.setBallColor("Empty");
-        }
-    }
 
     /**
      * Finds the index of the first available (empty) slot in the spindexer.
