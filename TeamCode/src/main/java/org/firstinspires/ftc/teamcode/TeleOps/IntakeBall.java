@@ -172,7 +172,7 @@ public class IntakeBall {
             case INTAKE_UNJAMMING:
                       double currentTime = runtime.seconds();
                       robot.spindexerServo.setPosition(slotAngles[previousSlot]);
-                      if (runtime.seconds()- currentTime > 0.5) {
+                      if (runtime.seconds()- currentTime > 0.25) {
                             state = INTAKEBALLSTATE.INTAKE_READY;
                             }
                      timer.reset();
