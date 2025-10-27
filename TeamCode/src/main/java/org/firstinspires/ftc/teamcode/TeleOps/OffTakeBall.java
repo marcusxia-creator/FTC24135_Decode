@@ -124,6 +124,9 @@ public class OffTakeBall {
                     }
                     if (timer.seconds() > 2.5){
                         robot.pushRampServo.setPosition(RobotActionConfig.rampResetPos);
+                        robot.shooterMotor.setPower(0);
+                        offTakeBallState = OFFTAKEBALLSTATE.SORT;
+                        timer.reset();
                     }
                 } else {
                     sortingComplete = true;
