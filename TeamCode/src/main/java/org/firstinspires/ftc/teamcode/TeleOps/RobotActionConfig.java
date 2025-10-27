@@ -7,7 +7,7 @@ public class RobotActionConfig {
     public static double gateInitDown                   = 0.0;
 
     public static double gateDown                       = 0.11;
-    public static double gateUp                         = gateDown+0.18;
+    public static double gateUp                         = gateDown+0.19;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
     public static double spindexerIncrement             = 0.333;
 
