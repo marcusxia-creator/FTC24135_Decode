@@ -4,119 +4,126 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class OffTakeBall {
-    private RobotHardware robot;
-    private IntakeBall intakeBall;
-    private GamepadEx gamepad1;
-    private List<Ball> balls;
-    private double[] slotAngles;
-    private int currentTargetIndex = 0;
-    private List<String> requiredSequence = new ArrayList<>();
-    private boolean sortingComplete = false;
-    private ElapsedTime timer = new ElapsedTime();
-
-    public void setState(OFFTAKEBALLSTATE offtakeballstate) {offTakeBallState = offtakeballstate;}
-    public OFFTAKEBALLSTATE state() {return offTakeBallState;}
-
-    public void stopShootBall() { robot.shooterMotor.setPower(0);}
 
     public enum OFFTAKEBALLSTATE {
-        READY, SORT, SHOOT, EMPTY
+        OFFTAKE_IDLE,
+        OFFTAKE_AIMING,
+        OFFTAKE_SHOOTING,
+        OFFTAKE_EJECTING,
+        OFFTAKE_DONE
     }
+    private OFFTAKEBALLSTATE state = OFFTAKEBALLSTATE.OFFTAKE_IDLE;
+    private ElapsedTime timer = new ElapsedTime();
 
-    private OFFTAKEBALLSTATE offTakeBallState = OFFTAKEBALLSTATE.READY;
+    private RobotHardware robot;
+    private GamepadEx gamepad2;
 
-    public OffTakeBall(RobotHardware robot, GamepadEx gamepad1, List<Ball> balls, double[] slotAngles) {
+    //------Ball System
+    private List<Ball> balls; // shared balls list
+    private Ball targetBall;
+
+    // --- color sequence logic ---
+    private String[] targetSequence = {"Purple", "Green","Purple"}; // example priority
+    private int currentTargetIndex = 0;
+
+    // --- constructor ---
+    public OffTakeBall(RobotHardware robot, GamepadEx gamepad2, List<Ball> balls) {
         this.robot = robot;
-        this.gamepad1 = gamepad1;
-        this.balls = balls != null ? balls : new ArrayList<>();
-        this.slotAngles = slotAngles;
-        this.requiredSequence = new ArrayList<>();  // ✅ FIX ADDED HERE
+        this.gamepad2 = gamepad2;
+        this.balls = balls;
     }
-
-    public void setRequiredSequence(List<String> sequence) {
-        requiredSequence.clear();
-        if (sequence != null) requiredSequence.addAll(sequence);
-        currentTargetIndex = 0;
-        sortingComplete = false;
-        offTakeBallState = OFFTAKEBALLSTATE.READY;
-    }
-
-    public boolean isSortingComplete() { return sortingComplete; }
 
     public void update() {
-        switch (offTakeBallState) {
-
-            case READY:
-                if (gamepad1.wasJustPressed(GamepadKeys.Button.Y)) {
+        switch (state) {
+            case OFFTAKE_IDLE:
+                robot.shooterMotor.setPower(0.0);
+                if (gamepad2.getButton(GamepadKeys.Button.A)) {
+                    // Start the shooting cycle
+                    state = OFFTAKEBALLSTATE.OFFTAKE_AIMING;
                     timer.reset();
-                    offTakeBallState = OFFTAKEBALLSTATE.SORT;
                 }
                 break;
 
-            case SORT:
-                if (currentTargetIndex >= requiredSequence.size()) {
-                    sortingComplete = true;
-                    offTakeBallState = OFFTAKEBALLSTATE.EMPTY;
-                    break;
-                }
-
-                String targetColor = requiredSequence.isEmpty() ? null : requiredSequence.get(currentTargetIndex);
-                Ball targetBall = (targetColor != null) ? findBallByColor(targetColor) : findBall();
-
-                if (targetBall != null && targetBall.hasBall) {
-                    rotateSpindexer(targetBall);
-                    offTakeBallState = OFFTAKEBALLSTATE.SHOOT;
+            case OFFTAKE_AIMING:
+                targetBall = findNextTargetBall();
+                if (targetBall != null) {
+                    // Move spindexer to that slot
+                    robot.spindexerServo.setPosition(targetBall.getSlotAngle());
+                    state = OFFTAKEBALLSTATE.OFFTAKE_SHOOTING;
                     timer.reset();
                 } else {
-                    sortingComplete = true;
-                    offTakeBallState = OFFTAKEBALLSTATE.EMPTY;
+                    // No matching color ball found
+                    state = OFFTAKEBALLSTATE.OFFTAKE_DONE;
                 }
                 break;
 
-            case SHOOT:
-                if (timer.seconds() > 0.5) robot.shooterMotor.setPower(0.75);
-                if (timer.seconds() > 1.5) robot.pushRampServo.setPosition(RobotActionConfig.rampUpPos);
-                if (timer.seconds() > 2.5) {
-                    robot.pushRampServo.setPosition(RobotActionConfig.rampResetPos);
-                    robot.shooterMotor.setPower(0);
-                    currentTargetIndex++;
-                    offTakeBallState = OFFTAKEBALLSTATE.SORT;
+            case OFFTAKE_SHOOTING:
+                if (timer.seconds() > 0.1) {
+                    // Example shooting logic (you can modify as needed)
+                    robot.shooterMotor.setPower(0.75);
+                    if (timer.seconds() > 0.5) {
+                        robot.pushRampServo.setPosition(RobotActionConfig.rampUpPos);
+                    }
+                    if (timer.seconds() > 1.5) {
+                        robot.shooterMotor.setPower(0.0);
+                        currentTargetIndex = (currentTargetIndex + 1) % targetSequence.length;
+                        robot.pushRampServo.setPosition(RobotActionConfig.rampResetPos);
+                        state = OFFTAKEBALLSTATE.OFFTAKE_EJECTING;
+                        timer.reset();
+                    }
                 }
                 break;
 
-            case EMPTY:
-                robot.shooterMotor.setPower(0);
-                sortingComplete = true;
+            case OFFTAKE_EJECTING:
+                // add ball removing from list here
+                ejectCurrentBall(targetBall);
+                if (timer.seconds() > 0.2) {
+                    state = OFFTAKEBALLSTATE.OFFTAKE_AIMING; // Continue with next ball if any
+                }
+                break;
+
+            case OFFTAKE_DONE:
+                // Sequence complete or no matching ball
+                if (gamepad2.getButton(GamepadKeys.Button.B)) {
+                    state = OFFTAKEBALLSTATE.OFFTAKE_IDLE;
+                }
                 break;
         }
     }
-
-    private void rotateSpindexer(Ball targetBall) {
-        if (targetBall != null) {
-            robot.spindexerServo.setPosition(targetBall.slotAngle);
-            targetBall.hasBall = false;
-        }
-    }
-
-    private Ball findBallByColor(String color) {
-        for (Ball b : balls)
-            if (b.hasBall && b.ballColor.equalsIgnoreCase(color))
+    /// =====================================================================================
+    // --- find the next ball that matches color sequence ---
+    private Ball findNextTargetBall() {
+        if (currentTargetIndex >= targetSequence.length) {
+            return null; // No more balls to shoot
+        };
+        String targetColor = targetSequence[currentTargetIndex];
+        for (Ball b : balls) {
+            if (b.hasBall() && b.getBallColor().equalsIgnoreCase(targetColor)) {
                 return b;
+            }
+        }
+        // No ball of this color found
         return null;
     }
 
-    private Ball findBall() {
-        for (Ball b : balls)
-            if (b.hasBall) return b;
-        return null;
+    //---- update - eject ball from shared ball list -----
+    private void ejectCurrentBall(Ball b) {
+        if (b != null) {
+            b.setHasBall(false);
+            b.setBallColor("Empty");
+        }
     }
 
+    // --- check if the sequence is complete ---
+    public boolean isSortingComplete(){return state == OFFTAKEBALLSTATE.OFFTAKE_DONE;}
+    // --- getters ---
+    public OFFTAKEBALLSTATE getState() { return state; }
+    // ---- set sequence ------
+    public void setSequence(String[] sequence) { this.targetSequence = sequence; }
+    // --- setters ---
+    public void setState(OFFTAKEBALLSTATE state) { this.state = state; }
 
 }
