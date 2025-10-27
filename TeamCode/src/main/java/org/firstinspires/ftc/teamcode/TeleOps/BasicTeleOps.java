@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.LynxModule.BulkData;
@@ -45,7 +46,7 @@ public class BasicTeleOps extends OpMode {
     private RobotDrive robotDrive;
     private IntakeBall intakeBall;
     private OffTakeBall offTakeBall;
-    private ColorDetection colorDetection = new ColorDetection(robot);
+    private ColorDetection colorDetection;
     private AprilTagUpdate aprilTagUpdate = new AprilTagUpdate(hardwareMap);
 
     //=======================States & Time & Lists========================================
@@ -56,7 +57,7 @@ public class BasicTeleOps extends OpMode {
 
     // === NEW: Ball Handling Objects and State ===
     private BallHandlingState ballHandlingState = BallHandlingState.IDLE;
-    private List<Ball> sharedBallList;
+    private ArrayList<Ball> sharedBallList;
     private double[] spindexerSlotAngles = {0.0, 0.46, 0.92}; // Example angles
 
     // =================April Tag and AprilTag Sequence===========================
@@ -83,12 +84,15 @@ public class BasicTeleOps extends OpMode {
 
         /// === NEW: Initialize ball handling subsystems ===
         // 1. Create the single, shared list for balls.
-        sharedBallList = Collections.synchronizedList(new ArrayList<>());
+        sharedBallList = new ArrayList<>();
 
         // 2. Instantiate subsystems, passing the *same* list to both.
         intakeBall = new IntakeBall(robot, gamepadCo2, sharedBallList, spindexerSlotAngles);
 
         offTakeBall = new OffTakeBall(robot, gamepadCo2, sharedBallList, spindexerSlotAngles);
+
+        colorDetection = new ColorDetection(robot);
+
 
         /// Get all hubs from the hardwareMap
         allHubs = hardwareMap.getAll(LynxModule.class);
@@ -113,15 +117,7 @@ public class BasicTeleOps extends OpMode {
 
     @Override
     public void loop() {
-        /// set April Tag and April Tag Sequence
-        if (gamepadCo1.getButton(BACK)){
-            tagId = aprilTagUpdate.getTagID();
-            if (tagId != 0) {
-                sequence = getSequenceByAprilTagId(tagId);
-            }
-        } else {
-            sequence = new ArrayList<>();
-        }
+
         /**
         /// Lynx for Motor encoder reading
         for (LynxModule hub : allHubs) {
@@ -180,6 +176,7 @@ public class BasicTeleOps extends OpMode {
             switch (ballHandlingState) {
                 case INTAKING:
                     intakeBall.IntkaeBallUpdate();
+                    sharedBallList = (ArrayList<Ball>) intakeBall.getBalls();
                     if(intakeBall.isFull()) {
                         ballHandlingState = BallHandlingState.IDLE; // Or INTAKING, your choice
                     }
@@ -187,13 +184,20 @@ public class BasicTeleOps extends OpMode {
                     break;
 
                 case OFFTAKING:
-                    offTakeBall.setRequiredSequence(sequence);
-                    offTakeBall.update();
-                    // Check if the sorting process has finished
-                    if (offTakeBall.isSortingComplete()) {
-                        ballHandlingState = BallHandlingState.IDLE; // Or INTAKING, your choice
+                    // Only assign sequence once when pressing BACK
+                    if (gamepadCo1.wasJustPressed(GamepadKeys.Button.BACK)) {
+                        int tagId = aprilTagUpdate.getTagID();
+                        if (tagId != 0) {
+                            List<String> seq = getSequenceByAprilTagId(tagId);
+                            offTakeBall.setRequiredSequence(seq);
+                        }
                     }
-                    break;
+
+                    offTakeBall.update();
+
+                    if (offTakeBall.isSortingComplete()) {
+                        ballHandlingState = BallHandlingState.IDLE;
+                    }
 
                 case IDLE:
                     // Do nothing related to ball handling.
@@ -212,6 +216,7 @@ public class BasicTeleOps extends OpMode {
             telemetry.addLine("-----No Code-----------");
             telemetry.addLine("-----No Code-----------");
         }
+        colorDetection.updateDetection();
         /// Telemetry
         telemetry.addLine("-------Odometry-------------------");
         telemetry.addData("Pinpoint X", "%.2f inches", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
@@ -222,10 +227,15 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Shooter Power", robot.shooterMotor.getPower());
         telemetry.addLine("-------Intake Motor Motor-------------------");
         telemetry.addData("Intake Motor Power", robot.intakeMotor.getPower());
+        telemetry.addData("IntakeBall State",intakeBall.getState());
         telemetry.addData("Number of Balls", intakeBall.getNumberOfBalls());
         telemetry.addData("Empty Slot Id", intakeBall.findEmptySlot());
         telemetry.addData("color sensor depth", robot.distanceSensor.getDistance(DistanceUnit.MM));
+        String stablecolor = intakeBall.getDetectedColor();
+        telemetry.addData("intake color", stablecolor);
         telemetry.addData("color sensor color", colorDetection.getStableColor());
+        telemetry.addData("color sensor hue", colorDetection.getHue());
+        telemetry.addData("intake balls", intakeBall.getBalls());
         telemetry.addData("shared Ball List", sharedBallList);
         telemetry.addLine("--------------Op Mode--------------");
         telemetry.addData("Run Mode", controlState);

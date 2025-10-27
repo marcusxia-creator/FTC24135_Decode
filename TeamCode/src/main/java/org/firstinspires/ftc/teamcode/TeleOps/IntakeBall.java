@@ -1,6 +1,7 @@
 
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static java.lang.Runtime.getRuntime;
 import static java.lang.Thread.sleep;
 
@@ -25,7 +26,7 @@ public class IntakeBall {
     private ColorDetection colorDetection;
     private final GamepadEx gamepad1;
     private final double[] slotAngles;
-    private final List<Ball> balls;
+    private final ArrayList<Ball> balls;
     private final ElapsedTime runtime = new ElapsedTime();  //run time
     private ElapsedTime timer = new ElapsedTime();
     private ElapsedTime jamTimer = new ElapsedTime();
@@ -49,7 +50,7 @@ public class IntakeBall {
     private String detectedColor = "Unknown";
 
     // --- Constructor ---
-    public IntakeBall(RobotHardware robot, GamepadEx gamepad, List<Ball> balls,double[] slotAngles) {
+    public IntakeBall(RobotHardware robot, GamepadEx gamepad, ArrayList<Ball> balls,double[] slotAngles) {
         this.robot = robot;
         this.gamepad1 = gamepad;
         this.colorDetection = new ColorDetection(robot);
@@ -125,9 +126,8 @@ public class IntakeBall {
                 break;
 
             case INTAKE_DETECTED:
-                ///color detection - checking ball colors
                 colorDetection.updateDetection();
-
+                ///color detection - checking ball colors
                 if (colorDetection.isColorStable()) {
                     colorDetected = true;
                     detectedColor = colorDetection.getStableColor();
@@ -188,6 +188,7 @@ public class IntakeBall {
     public boolean isFull() { return state == INTAKEBALLSTATE.INTAKE_FULL; }
     public List<Ball> getBalls() { return balls; }
     public int getCurrentSlot() { return currentSlot; }
+    public String getDetectedColor() { return detectedColor; }
     public void resetSpindexerSlot(){ currentSlot = 0; robot.spindexerServo.setPosition(0); balls.clear();}
 
     ///  Intake Stop Helper

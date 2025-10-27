@@ -21,6 +21,11 @@ public class OffTakeBall {
     private boolean sortingComplete = false;
     private ElapsedTime timer = new ElapsedTime();
 
+    public void setState(OFFTAKEBALLSTATE offtakeballstate) {offTakeBallState = offtakeballstate;}
+    public OFFTAKEBALLSTATE state() {return offTakeBallState;}
+
+    public void stopShootBall() { robot.shooterMotor.setPower(0);}
+
     public enum OFFTAKEBALLSTATE {
         READY, SORT, SHOOT, EMPTY
     }
@@ -32,6 +37,7 @@ public class OffTakeBall {
         this.gamepad1 = gamepad1;
         this.balls = balls != null ? balls : new ArrayList<>();
         this.slotAngles = slotAngles;
+        this.requiredSequence = new ArrayList<>();  // ✅ FIX ADDED HERE
     }
 
     public void setRequiredSequence(List<String> sequence) {
@@ -111,4 +117,6 @@ public class OffTakeBall {
             if (b.hasBall) return b;
         return null;
     }
+
+
 }
