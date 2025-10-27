@@ -19,7 +19,7 @@ public class IntakeBall {
         INTAKE_DETECTED,
         INTAKE_INDEXING,
         INTAKE_FULL,
-        INTAKE_INDEXING_RETRY
+        INTAKE_UNJAMMING
     }
     private RobotHardware robot;
     private ColorDetection colorDetection;
@@ -79,7 +79,7 @@ public class IntakeBall {
        // Reverse slot position to previous one
        if (gamepad1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
                     // RETURN ball into the PREVIOUS slot
-                    state = INTAKEBALLSTATE.INTAKE_INDEXING_RETRY;
+                    state = INTAKEBALLSTATE.INTAKE_UNJAMMING;
                     timer.reset();
                 }
        // FSM STATES
@@ -169,7 +169,7 @@ public class IntakeBall {
                       stopIntake();
                 break;
 
-            case INTAKE_INDEXING_RETRY:
+            case INTAKE_UNJAMMING:
                       double currentTime = runtime.seconds();
                       robot.spindexerServo.setPosition(slotAngles[previousSlot]);
                       if (runtime.seconds()- currentTime > 0.5) {
