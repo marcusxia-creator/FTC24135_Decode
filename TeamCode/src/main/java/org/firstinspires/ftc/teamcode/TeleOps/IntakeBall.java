@@ -1,6 +1,7 @@
 
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import static java.lang.Runtime.getRuntime;
 import static java.lang.Thread.sleep;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -131,25 +132,24 @@ public class IntakeBall {
 
                     if (!areAllSlotsFull()) {
                         ///if slot are not full, rotate slot
-                        robot.spindexerServo.setPosition(slotAngles[nextSlot]);
                         currentSlot=nextSlot;
                         timer.reset();
                         state = INTAKEBALLSTATE.INTAKE_INDEXING;
                     } else {
                         state = INTAKEBALLSTATE.INTAKE_FULL;
                     }
-                } else if (timer.seconds() > 0.8){
-                    ///Timeout safer
-                    state = INTAKEBALLSTATE.INTAKE_INDEXING;
                 }
                 break;
 
             case INTAKE_INDEXING:
                 /// waiti spindexer rotating
-                if (timer.seconds() > 0.5) {
+                if (timer.seconds() > 0.25) {
+                    robot.spindexerServo.setPosition(slotAngles[nextSlot]);
                     colorDetected = false;
                     detectedColor = "Unknown";
                     robot.intakeMotor.setPower(0.6);
+                }
+                if (timer.seconds()>0.5){
                     state = INTAKEBALLSTATE.INTAKE_SWEEPING;
                     robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
                     robot.rightGateServo.setPosition(RobotActionConfig.gateUp);
