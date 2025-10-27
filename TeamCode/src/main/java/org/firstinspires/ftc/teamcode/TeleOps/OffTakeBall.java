@@ -24,10 +24,7 @@ public class OffTakeBall {
     private boolean sortingComplete = false;
     private ElapsedTime timer = new ElapsedTime();
     private ElapsedTime debounceTimer = new ElapsedTime();
-    private Map<Integer, List<String>> aprilTagSequences;
 
-
-    //private HashMap<Integer, List<String>> aprilTagSequence =  new HashMap<>();
     /** DEFINE OFFTAKEBALLSTATE*/
     public enum OFFTAKEBALLSTATE {
         READY,
@@ -47,30 +44,8 @@ public class OffTakeBall {
         this.slotAngles = slotAngles;
         this.gamepad1 = gamepad1;
         this.colorDetection = new ColorDetection(robot);
-
-        initializeAprilTagSequences();
     }
 
-    // --- NEW: Helper method to populate the lookup table ---
-    private void initializeAprilTagSequences(){
-        aprilTagSequences = new HashMap<>();
-        aprilTagSequences.put(21,Arrays.asList("Green", "Purple", "Purple"));
-        aprilTagSequences.put(22,Arrays.asList("Purple", "Green","Purple"));
-        aprilTagSequences.put(23,Arrays.asList("Purple","Purple","Green"));
-    }
-
-    // --- NEW: Method to set sequence based on a detected AprilTag ID ---
-    public List<String> getSequenceByAprilTagId(int tagId) {
-        List<String> sequence;
-        if (aprilTagSequences.containsKey(tagId)) {
-            sequence = aprilTagSequences.get(tagId);
-        } else {
-            // Handle case where the AprilTag ID is not in our lookup table
-            // For example, do nothing or set a default sequence
-            sequence = Arrays.asList("Green", "Purple", "Purple");
-        }
-        return sequence;
-    }
     /**
      * Define the required off-take sequence such as ["Purple", "Green", "Purple"]
      */
@@ -109,7 +84,7 @@ public class OffTakeBall {
                 }
                 if (gamepad1.getButton(GamepadKeys.Button.Y)) {
                     timer.reset();
-                    offTakeBallState = OFFTAKEBALLSTATE.SETSORTSEQUENCE;
+                    offTakeBallState = OFFTAKEBALLSTATE.SORT;
                 }
                 break;
 
@@ -123,11 +98,6 @@ public class OffTakeBall {
                     sortingComplete = true;
                     offTakeBallState = OFFTAKEBALLSTATE.READY;
                 }
-                break;
-
-            case SETSORTSEQUENCE:
-                setRequiredSequence(getSequenceByAprilTagId(AprilTagUpdate.getTagID()));
-                offTakeBallState=OFFTAKEBALLSTATE.SORT;
                 break;
 
             case SORT:
@@ -208,15 +178,13 @@ public class OffTakeBall {
         // Rotate already done before calling
         robot.shooterMotor.setPower(power);
     }
-    private void StopShootBall(){
+    public void stopShootBall(){
         // Stop shooter
         robot.shooterMotor.setPower(0);
     }
-    public void stopShootBall() {
-    }
+
     /** Helper ButtonDebounce */
     private boolean isButtonDebounced() {
-
         if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             return true;
@@ -228,7 +196,7 @@ public class OffTakeBall {
     public OFFTAKEBALLSTATE getOffTakeBallState() {
         return offTakeBallState;
     }
-    public static void setState(OFFTAKEBALLSTATE offTakeBallState) {offTakeBallState = offTakeBallState; }
+    public void setState(OFFTAKEBALLSTATE state) {offTakeBallState = state; }
     public boolean isReady() { return offTakeBallState == OFFTAKEBALLSTATE.READY; }
     public OFFTAKEBALLSTATE state() { return offTakeBallState;}
     public boolean isEmpty() { return offTakeBallState == OFFTAKEBALLSTATE.EMPTY; }
