@@ -51,7 +51,7 @@ public class BasicTeleOps extends OpMode {
     // === NEW: Ball Handling Objects and State ===
     private BallHandlingState ballHandlingState = BallHandlingState.IDLE;
     private SharedBallList sharedBallList;
-    private double[] spindexerSlotAngles = {0.0, 0.46, 0.92}; // Example angles
+    private double[] spindexerSlotAngles = {RobotActionConfig.spindexerSlot1, RobotActionConfig.spindexerSlot2, RobotActionConfig.spindexerSlot3}; // Example angles
 
     // =================April Tag and AprilTag Sequence===========================
     HashMap<Object, Object> aprilTagSequences = new HashMap<>();
