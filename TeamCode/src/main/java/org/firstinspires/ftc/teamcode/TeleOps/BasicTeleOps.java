@@ -7,15 +7,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.hardware.lynx.LynxModule.BulkData;
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -24,7 +18,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -57,7 +50,7 @@ public class BasicTeleOps extends OpMode {
 
     // === NEW: Ball Handling Objects and State ===
     private BallHandlingState ballHandlingState = BallHandlingState.IDLE;
-    private ArrayList<Ball> sharedBallList;
+    private SharedBallList sharedBallList;
     private double[] spindexerSlotAngles = {0.0, 0.46, 0.92}; // Example angles
 
     // =================April Tag and AprilTag Sequence===========================
@@ -84,12 +77,12 @@ public class BasicTeleOps extends OpMode {
 
         /// === NEW: Initialize ball handling subsystems ===
         // 1. Create the single, shared list for balls.
-        sharedBallList = new ArrayList<>();
+        sharedBallList = new SharedBallList(spindexerSlotAngles);;
 
         // 2. Instantiate subsystems, passing the *same* list to both.
-        intakeBall = new IntakeBall(robot, gamepadCo2, sharedBallList, spindexerSlotAngles);
+        intakeBall = new IntakeBall(robot, gamepadCo2, sharedBallList.getBalls(), spindexerSlotAngles);
 
-        offTakeBall = new OffTakeBall(robot, gamepadCo2, sharedBallList, spindexerSlotAngles);
+        offTakeBall = new OffTakeBall(robot, gamepadCo2, sharedBallList.getBalls());
 
         colorDetection = new ColorDetection(robot);
 
@@ -163,7 +156,7 @@ public class BasicTeleOps extends OpMode {
             if (gamepadCo2.getButton(X)) {
                // offTakeBall.setRequiredSequence(Arrays.asList("Purple", "Green","Purple"));
                 ballHandlingState = BallHandlingState.OFFTAKING;
-                offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.READY);
+                offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.OFFTAKE_IDLE);
                 intakeBall.stopIntake(); // Ensure intake motor is off before sorting
             }
 
@@ -175,8 +168,7 @@ public class BasicTeleOps extends OpMode {
             /// The core of the state machine. Only one case will run per loop.
             switch (ballHandlingState) {
                 case INTAKING:
-                    intakeBall.IntkaeBallUpdate();
-                    sharedBallList = (ArrayList<Ball>) intakeBall.getBalls();
+                    intakeBall.IntakeBallUpdate();
                     if(intakeBall.isFull()) {
                         ballHandlingState = BallHandlingState.IDLE; // Or INTAKING, your choice
                     }
@@ -188,24 +180,21 @@ public class BasicTeleOps extends OpMode {
                     if (gamepadCo1.wasJustPressed(GamepadKeys.Button.BACK)) {
                         int tagId = aprilTagUpdate.getTagID();
                         if (tagId != 0) {
-                            List<String> seq = getSequenceByAprilTagId(tagId);
-                            offTakeBall.setRequiredSequence(seq);
+                            String [] seq = getSequenceByAprilTagId(tagId);
+                            offTakeBall.setSequence(seq);
                         }
                     }
-
                     offTakeBall.update();
-
                     if (offTakeBall.isSortingComplete()) {
                         ballHandlingState = BallHandlingState.IDLE;
                     }
-
+                    break;
                 case IDLE:
                     // Do nothing related to ball handling.
                     // Motors for intake/spindexer should be off.
                     intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_FULL);
                     intakeBall.stopIntake(); // Optional: ensure motors are off
-                    offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.READY);
-                    offTakeBall.stopShootBall(); // Optional: ensure motors are off
+                    offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.OFFTAKE_IDLE);
                     break;
             }
             // =================================================
@@ -222,29 +211,25 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Pinpoint X", "%.2f inches", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
         telemetry.addData("Pinpoint Y", "%.2f inches", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
         telemetry.addData("Pinpoint Heading", "%.2f degrees", robot.pinpointDriver.getHeading(AngleUnit.DEGREES));
-        telemetry.addLine("-------Shooter Motor-------------------");
-        telemetry.addData("Shooter Sequence", sequence);
-        telemetry.addData("Shooter Power", robot.shooterMotor.getPower());
-        telemetry.addLine("-------Intake Motor Motor-------------------");
-        telemetry.addData("Intake Motor Power", robot.intakeMotor.getPower());
-        telemetry.addData("IntakeBall State",intakeBall.getState());
-        telemetry.addData("Number of Balls", intakeBall.getNumberOfBalls());
-        telemetry.addData("Empty Slot Id", intakeBall.findEmptySlot());
-        telemetry.addData("color sensor depth", robot.distanceSensor.getDistance(DistanceUnit.MM));
-        String stablecolor = intakeBall.getDetectedColor();
-        telemetry.addData("intake color", stablecolor);
-        telemetry.addData("color sensor color", colorDetection.getStableColor());
-        telemetry.addData("color sensor hue", colorDetection.getHue());
-        telemetry.addData("intake balls", intakeBall.getBalls());
-        telemetry.addData("shared Ball List", sharedBallList);
         telemetry.addLine("--------------Op Mode--------------");
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", robotDrive.getDriveMode().name());
-        telemetry.addData("Intake State", intakeBall.state());
-        telemetry.addData("offTake State", offTakeBall.state());
         telemetry.addData("Heading", robot.imu.getRobotYawPitchRollAngles().getYaw());
         telemetry.addData("Battery Voltage", getBatteryVoltage());
 
+        telemetry.addLine("-----------Intake Info--------------");
+        telemetry.addData("Intake State", intakeBall.getState());
+        telemetry.addData("Detected Color", intakeBall.getDetectedColor());
+        telemetry.addData("Color Stable", intakeBall.isColorDetected());
+        telemetry.addData("Current Slot", intakeBall.getCurrentSlot());
+        telemetry.addData("Ball Count", intakeBall.getNumberOfBalls());
+        List<Ball> balls = intakeBall.getBalls();
+        for (int i = 0; i < balls.size(); i++) {
+            Ball b = balls.get(i);
+            telemetry.addData("Slot " + i, b.ballColor + " (" + (b.hasBall ? "Full" : "Empty") + ")");
+        }
+        telemetry.addLine("-----------Offtake Info--------------");
+        telemetry.addData("offTake State", offTakeBall.getState());
         telemetry.update();
     }
 
@@ -292,14 +277,14 @@ public class BasicTeleOps extends OpMode {
     }
 
     // --- NEW: Method to set sequence based on a detected AprilTag ID ---
-    private List<String> getSequenceByAprilTagId(int tagId) {
-        List<String> sequence;
+    private String [] getSequenceByAprilTagId(int tagId) {
+        String [] sequence;
         if (aprilTagSequences.containsKey(tagId)) {
-            sequence = (List<String>) aprilTagSequences.get(tagId);
+            sequence = (String[]) aprilTagSequences.get(tagId);
         } else {
             // Handle case where the AprilTag ID is not in our lookup table
             // For example, do nothing or set a default sequence
-            sequence = Arrays.asList("Green", "Purple", "Purple");
+            sequence = new String[]{"Purple", "Green", "Purple"};
         }
         return sequence;
     }
