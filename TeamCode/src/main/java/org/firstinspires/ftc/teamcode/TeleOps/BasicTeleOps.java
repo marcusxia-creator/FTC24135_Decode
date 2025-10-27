@@ -218,6 +218,7 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Pinpoint Y", "%.2f inches", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
         telemetry.addData("Pinpoint Heading", "%.2f degrees", robot.pinpointDriver.getHeading(AngleUnit.DEGREES));
         telemetry.addLine("-------Shooter Motor-------------------");
+        telemetry.addData("Shooter Sequence", sequence);
         telemetry.addData("Shooter Power", robot.shooterMotor.getPower());
         telemetry.addLine("-------Intake Motor Motor-------------------");
         telemetry.addData("Intake Motor Power", robot.intakeMotor.getPower());
@@ -225,12 +226,12 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Empty Slot Id", intakeBall.findEmptySlot());
         telemetry.addData("color sensor depth", robot.distanceSensor.getDistance(DistanceUnit.MM));
         telemetry.addData("color sensor color", colorDetection.getStableColor());
+        telemetry.addData("shared Ball List", sharedBallList);
         telemetry.addLine("--------------Op Mode--------------");
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", robotDrive.getDriveMode().name());
         telemetry.addData("Intake State", intakeBall.state());
-        //telemetry.addData("offTake State", offTakeBall.getOffTakeState());
-        telemetry.addData("shared Ball List", sharedBallList);
+        telemetry.addData("offTake State", offTakeBall.state());
         telemetry.addData("Heading", robot.imu.getRobotYawPitchRollAngles().getYaw());
         telemetry.addData("Battery Voltage", getBatteryVoltage());
 

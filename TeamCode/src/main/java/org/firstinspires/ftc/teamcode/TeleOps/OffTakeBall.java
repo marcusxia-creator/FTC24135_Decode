@@ -29,7 +29,6 @@ public class OffTakeBall {
     public enum OFFTAKEBALLSTATE {
         READY,
         FLOW,
-        SETSORTSEQUENCE,
         SORT,
         SHOOT,
         EMPTY
@@ -50,8 +49,8 @@ public class OffTakeBall {
      * Define the required off-take sequence such as ["Purple", "Green", "Purple"]
      */
     public void setRequiredSequence(List<String> sequence) {
-        this.requiredSequence.clear();
-        this.requiredSequence.addAll(sequence);
+        requiredSequence.clear();
+        requiredSequence.addAll(sequence);
         currentTargetIndex = 0;
         sortingComplete = false;
     }
@@ -78,29 +77,15 @@ public class OffTakeBall {
 
         switch (offTakeBallState) {
             case READY:
-                if (gamepad1.getButton(GamepadKeys.Button.X)) {
-                    timer.reset();
-                    offTakeBallState = OFFTAKEBALLSTATE.FLOW;
-                }
                 if (gamepad1.getButton(GamepadKeys.Button.Y)) {
                     timer.reset();
                     offTakeBallState = OFFTAKEBALLSTATE.SORT;
                 }
                 break;
 
-            case FLOW:
-                targetBall = findBall();
-                if (targetBall.hasBall && targetBall != null) {
-                    rotateSpindexer(targetBall);
-                    offTakeBallState = OFFTAKEBALLSTATE.SHOOT;
-                    timer.reset();
-                }else{
-                    sortingComplete = true;
-                    offTakeBallState = OFFTAKEBALLSTATE.READY;
-                }
-                break;
-
             case SORT:
+                if (requiredSequence != null && !requiredSequence.isEmpty()) {
+                    // safe to use, and has elements
                     String targetColor = requiredSequence.get(currentTargetIndex);
                     targetBall = findBallByColor(targetColor);
                     if (currentTargetIndex >= requiredSequence.size()) {
@@ -112,10 +97,21 @@ public class OffTakeBall {
                         rotateSpindexer(targetBall);
                         offTakeBallState = OFFTAKEBALLSTATE.SHOOT;
                         timer.reset();
+                    } else {
+                        sortingComplete = true;
+                        offTakeBallState = OFFTAKEBALLSTATE.READY;
+                    }
+                } else {
+                    targetBall = findBall();
+                    if (targetBall.hasBall && targetBall != null) {
+                        rotateSpindexer(targetBall);
+                        offTakeBallState = OFFTAKEBALLSTATE.SHOOT;
+                        timer.reset();
                     }else{
                         sortingComplete = true;
                         offTakeBallState = OFFTAKEBALLSTATE.READY;
                     }
+                }
                 break;
 
             case SHOOT:
@@ -131,8 +127,15 @@ public class OffTakeBall {
                     }
                 } else {
                     sortingComplete = true;
-                    offTakeBallState = OFFTAKEBALLSTATE.READY;
+                    offTakeBallState = OFFTAKEBALLSTATE.EMPTY;
                 }
+                break;
+            case EMPTY:
+                robot.shooterMotor.setPower(0);
+                intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
+                break;
+            default:
+                break;
         }
     }
 
