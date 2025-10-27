@@ -140,9 +140,9 @@ public class BasicTeleOps extends OpMode {
         /// Control condition -  Check Run Status
         if (controlState == ControlState.RUN) {
             robot.pinpointDriver.update();
-            // === NEW: Master State Machine for Ball Handling ===
-            // Use Gamepad 2 for ball controls to separate from driving
-            // Press 'A' to start intaking
+            /// === NEW: Master State Machine for Ball Handling ===
+            /// Use Gamepad 2 for ball controls to separate from driving
+            /// Press 'A' to start intaking
             if (gamepadCo2.getButton(A)) {
                 ballHandlingState = BallHandlingState.INTAKING;
                 intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
@@ -156,13 +156,12 @@ public class BasicTeleOps extends OpMode {
                 intakeBall.stopIntake(); // Ensure intake motor is off before sorting
             }
 
-            // to manually switch back to IDLE if needed.
+            /// to manually switch back to IDLE if needed.
             if (gamepadCo2.getButton(B)) {
                 ballHandlingState = BallHandlingState.IDLE;
             }
 
-
-            // The core of the state machine. Only one case will run per loop.
+            /// The core of the state machine. Only one case will run per loop.
             switch (ballHandlingState) {
                 case INTAKING:
                     intakeBall.IntkaeBallUpdate();
