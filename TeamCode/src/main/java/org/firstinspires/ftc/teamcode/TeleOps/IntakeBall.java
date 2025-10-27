@@ -1,15 +1,12 @@
 
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-import static java.lang.Runtime.getRuntime;
 import static java.lang.Thread.sleep;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 public class IntakeBall {
@@ -22,54 +19,49 @@ public class IntakeBall {
         INTAKE_FULL,
         INTAKE_UNJAMMING
     }
+    //=============SUBSYSTEMS=================================
     private RobotHardware robot;
-    private ColorDetection colorDetection;
     private final GamepadEx gamepad1;
-    private final double[] slotAngles;
-    private final ArrayList<Ball> balls;
+
+    //============TIMER==================================
     private final ElapsedTime runtime = new ElapsedTime();  //run time
     private ElapsedTime timer = new ElapsedTime();
     private ElapsedTime jamTimer = new ElapsedTime();
     private ElapsedTime debounceTimer = new ElapsedTime();
-
     // Example: gobilda 1150= 145.1 ticks/rev, 6000=28, GoBilda 5202/5203 = 537.7 ticks/rev.for 312rpm
-    public static double SHOOTER_TICKS_PER_REV = 28;   // change to your motor
     public static double INTAKE_TICKS_PER_REV = 145.1;   // change to your motor
-    public static double SHOOTER_RPM_CONVERSION = 60.0 / SHOOTER_TICKS_PER_REV;
     public static double INTAKE_RPM_CONVERSION = 60.0 / INTAKE_TICKS_PER_REV;
-
+    //============INTAKE MOTOR==================================
     private double intake_rpm;
-
+    //===========INTAKE STATE===================================
     private INTAKEBALLSTATE state = INTAKEBALLSTATE.INTAKE_READY;
-
+    //===========SPINDEXER===================================
+    private final double[] slotAngles;
+    private List<Ball> balls = new ArrayList<>() ;
     private int currentSlot = 0;
     private int nextSlot;
     private int previousSlot = 0;
-
+    //==========COLOR DETECTION================================
+    private ColorDetection colorDetection;
     private boolean colorDetected = false;
     private String detectedColor = "Unknown";
 
     // --- Constructor ---
-    public IntakeBall(RobotHardware robot, GamepadEx gamepad, ArrayList<Ball> balls,double[] slotAngles) {
+    public IntakeBall(RobotHardware robot, GamepadEx gamepad, List<Ball> balls, double[] slotAngles) {
         this.robot = robot;
         this.gamepad1 = gamepad;
-        this.colorDetection = new ColorDetection(robot);
-        this.slotAngles = slotAngles;
         this.balls = balls;
-        // --- NEW: Initialize the list with empty ball objects ---
-        // This ensures the list always represents the 3 physical slots.
-        for (int i = 0; i < this.slotAngles.length; i++) {
-            // Add a "placeholder" ball for each slot, marked as not having a ball.
-            this.balls.add(new Ball("Empty", i, this.slotAngles[i], false));
-        }
+        this.slotAngles = slotAngles;
+
         // --------------------------------------------------------
         this.robot.spindexerServo.setPosition(slotAngles[0]);
+        this.colorDetection = new ColorDetection(robot);
         timer.reset();
         runtime.reset();
     }
 
     // --- FSM Update Loop ---
-    public void IntkaeBallUpdate() {
+    public void IntakeBallUpdate() {
         /// === Read velocity in ticks/sec and convert to RPM ===
         double intake_ticksPerSec = robot.intakeMotor.getVelocity();
         intake_rpm = intake_ticksPerSec * INTAKE_RPM_CONVERSION;
@@ -131,9 +123,8 @@ public class IntakeBall {
                 if (colorDetection.isColorStable()) {
                     colorDetected = true;
                     detectedColor = colorDetection.getStableColor();
-                    Ball currentSlotBall = balls.get(currentSlot);
-                    currentSlotBall.hasBall = true;
-                    currentSlotBall.ballColor = detectedColor;
+                    balls.get(currentSlot).setHasBall(true);
+                    balls.get(currentSlot).setBallColor(detectedColor);
                     stopIntake();
                     nextSlot = findEmptySlot();
 
@@ -172,24 +163,28 @@ public class IntakeBall {
             case INTAKE_UNJAMMING:
                       double currentTime = runtime.seconds();
                       robot.spindexerServo.setPosition(slotAngles[previousSlot]);
-                      if (runtime.seconds()- currentTime > 0.25) {
-                            state = INTAKEBALLSTATE.INTAKE_READY;
+                      if (runtime.seconds()- currentTime > 0.35) {
+                          currentSlot = previousSlot;
+                          balls.get(previousSlot).setHasBall(false);
+                            state = INTAKEBALLSTATE.INTAKE_SWEEPING;
                             }
                      timer.reset();
                break;
         }
     }
 
-    // --- Getters ---
+    /// --- Getters ---
     public INTAKEBALLSTATE getState() { return state; }
-    public void setState(INTAKEBALLSTATE state) { this.state = state; }
     public boolean isReady() { return state == INTAKEBALLSTATE.INTAKE_READY; }
-    public INTAKEBALLSTATE state() { return state;}
     public boolean isFull() { return state == INTAKEBALLSTATE.INTAKE_FULL; }
-    public List<Ball> getBalls() { return balls; }
-    public int getCurrentSlot() { return currentSlot; }
-    public String getDetectedColor() { return detectedColor; }
     public void resetSpindexerSlot(){ currentSlot = 0; robot.spindexerServo.setPosition(0); balls.clear();}
+    public List<Ball> getBalls() { return balls; }
+    public String getDetectedColor() { return detectedColor; }
+    public boolean isColorDetected() { return colorDetected; }
+
+    /// --- Setter ---
+    public void setState(INTAKEBALLSTATE state) { this.state = state; }
+    public int getCurrentSlot() { return currentSlot; }
 
     ///  Intake Stop Helper
     public void stopIntake() {
@@ -206,20 +201,32 @@ public class IntakeBall {
         return false;
     }
 
-    /// Button Debounce Helper
-    private boolean isButtonDebounced() {
-        if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
-            debounceTimer.reset();
-            return true;
-        }
-        return false;
-    }
     ///helper to determine spindexer full or not.
     public boolean areAllSlotsFull() {
         return getNumberOfBalls() == 3;
     }
 
     // Add this helper method inside your IntakeBall.java class
+    public Ball getBallBySlot(int slotNumber) {
+        if (slotNumber < 0 || slotNumber >= balls.size()) return null;
+        return balls.get(slotNumber);
+    }
+
+    public void setSlotBall(int slotNumber, String color) {
+        Ball b = getBallBySlot(slotNumber);
+        if (b != null) {
+            b.setHasBall(true);
+            b.setBallColor(color);
+        }
+    }
+
+    public void setSlotEmpty(int slotNumber) {
+        Ball b = getBallBySlot(slotNumber);
+        if (b != null) {
+            b.setHasBall(false);
+            b.setBallColor("Empty");
+        }
+    }
 
     /**
      * Finds the index of the first available (empty) slot in the spindexer.
@@ -249,5 +256,14 @@ public class IntakeBall {
             }
         }
         return ballCount;
+    }
+
+    /// Button Debounce Helper
+    private boolean isButtonDebounced() {
+        if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+            debounceTimer.reset();
+            return true;
+        }
+        return false;
     }
 }
