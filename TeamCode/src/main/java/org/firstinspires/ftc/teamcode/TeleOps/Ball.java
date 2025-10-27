@@ -9,7 +9,7 @@ public class Ball {
     public boolean hasBall;
 
     //constructor ball
-    public Ball(String ballColor, int slotPosition,double slotAngle, boolean hasBall ){
+    public Ball(String ballColor, int slotPosition,double slotAngle, boolean hasBall){
         this.ballColor = ballColor;
         this.slotNumber = slotPosition;
         this.slotAngle = slotAngle;
