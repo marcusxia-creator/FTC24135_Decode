@@ -60,8 +60,6 @@ public class BasicTeleOps extends OpMode {
 
     private List<LynxModule> allHubs;
 
-
-
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -214,6 +212,7 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Drive Mode", robotDrive.getDriveMode().name());
         telemetry.addData("Intake State", intakeBall.state());
         //telemetry.addData("offTake State", offTakeBall.getOffTakeState());
+        telemetry.addData("shared Ball List", sharedBallList);
         telemetry.addData("Heading", robot.imu.getRobotYawPitchRollAngles().getYaw());
         telemetry.addData("Battery Voltage", getBatteryVoltage());
 
