@@ -26,6 +26,7 @@ public class IntakeBall {
     private final GamepadEx gamepad1;
     private final double[] slotAngles;
     private final List<Ball> balls;
+    private final ElapsedTime runtime = new ElapsedTime();  //run time
     private ElapsedTime timer = new ElapsedTime();
     private ElapsedTime jamTimer = new ElapsedTime();
     private ElapsedTime debounceTimer = new ElapsedTime();
@@ -63,6 +64,7 @@ public class IntakeBall {
         // --------------------------------------------------------
         this.robot.spindexerServo.setPosition(slotAngles[0]);
         timer.reset();
+        runtime.reset();
     }
 
     // --- FSM Update Loop ---
@@ -168,13 +170,13 @@ public class IntakeBall {
                 break;
 
             case INTAKE_INDEXING_RETRY:
-                      double currentTime = getRunTime();
+                      double currentTime = runtime.seconds();
                       robot.spindexerServo.setPosition(slotAngles[previousSlot]);
-                      if (getRuntime()- currentTime > 0.5) {
-                            inTakeBallState = INTAKEBALLSTATE.INTAKE_READY
+                      if (runtime.seconds()- currentTime > 0.5) {
+                            state = INTAKEBALLSTATE.INTAKE_READY;
                             }
                      timer.reset();
-              break;
+               break;
         }
     }
 
