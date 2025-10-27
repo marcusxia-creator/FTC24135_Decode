@@ -203,8 +203,8 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Shooter Power", robot.shooterMotor.getPower());
         telemetry.addLine("-------Intake Motor Motor-------------------");
         telemetry.addData("Intake Motor Power", robot.intakeMotor.getPower());
-        telemetry.addData("Empty Slot number", intakeBall.getNumberOfBalls());
-        telemetry.addData("Empty Slot", intakeBall.findEmptySlot());
+        telemetry.addData("Number of Balls", intakeBall.getNumberOfBalls());
+        telemetry.addData("Empty Slot Id", intakeBall.findEmptySlot());
         telemetry.addData("color sensor depth", robot.distanceSensor.getDistance(DistanceUnit.MM));
         telemetry.addData("color sensor color", colorDetection.getStableColor());
         telemetry.addLine("--------------Op Mode--------------");
