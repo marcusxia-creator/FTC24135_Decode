@@ -51,6 +51,8 @@ public class BasicTeleOps extends OpMode {
     private List<Ball> sharedBallList;
     private IntakeBall intakeBall;
     private OffTakeBall offTakeBall;
+    private ColorDetection colorDetection = new ColorDetection(robot);
+
     private double[] spindexerSlotAngles = {0.0, 0.46, 0.92}; // Example angles
     // ============================================
 
@@ -151,16 +153,20 @@ public class BasicTeleOps extends OpMode {
                 intakeBall.stopIntake(); // Ensure intake motor is off before sorting
             }
 
+            // to manually switch back to IDLE if needed.
+            if (gamepadCo2.getButton(B)) {
+                ballHandlingState = BallHandlingState.IDLE;
+            }
+
 
             // The core of the state machine. Only one case will run per loop.
             switch (ballHandlingState) {
                 case INTAKING:
                     intakeBall.IntkaeBallUpdate();
-                    // NOTE: You could add a button press here (e.g., gamepadCo2.getButton(B))
-                    // to manually switch back to IDLE if needed.
-                    if (gamepadCo2.getButton(B)) {
-                        ballHandlingState = BallHandlingState.IDLE;
+                    if(intakeBall.isFull()) {
+                        ballHandlingState = BallHandlingState.IDLE; // Or INTAKING, your choice
                     }
+                    // NOTE: You could add a button press here (e.g., gamepadCo2.getButton(B))
                     break;
 
                 case OFFTAKING:
@@ -199,6 +205,8 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Intake Motor Power", robot.intakeMotor.getPower());
         telemetry.addData("Empty Slot number", intakeBall.getNumberOfBalls());
         telemetry.addData("Empty Slot", intakeBall.findEmptySlot());
+        telemetry.addData("color sensor depth", robot.distanceSensor.getDistance(DistanceUnit.MM));
+        telemetry.addData("color sensor color", colorDetection.getStableColor());
         telemetry.addLine("--------------Op Mode--------------");
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", robotDrive.getDriveMode().name());
