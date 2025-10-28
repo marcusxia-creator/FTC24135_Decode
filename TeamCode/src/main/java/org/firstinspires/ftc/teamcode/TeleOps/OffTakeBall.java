@@ -138,12 +138,8 @@ public class OffTakeBall {
         return state;
     }
 
-    public void setSequence(String[] sequence) {
-        // Convert String[] → BallColor[]
-        targetSequence = new BallColor[sequence.length];
-        for (int i = 0; i < sequence.length; i++) {
-            targetSequence[i] = BallColor.fromString(sequence[i]);
-        }
+    public void setSequence(BallColor[] sequence) {
+        targetSequence = sequence;
         currentTargetIndex = 0;
     }
 

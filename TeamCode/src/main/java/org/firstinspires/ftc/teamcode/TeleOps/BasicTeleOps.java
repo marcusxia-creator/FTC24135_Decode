@@ -89,7 +89,7 @@ public class BasicTeleOps extends OpMode {
         }
 
         initializeAprilTagSequences();
-        offTakeBall.setSequence(new String[]{"Purple", "Green", "Purple"});
+        offTakeBall.setSequence(new BallColor[]{BallColor.PURPLE, BallColor.GREEN,  BallColor.PURPLE});
 
         telemetry.addLine("-------------------");
         telemetry.addData("Status", "initialized");

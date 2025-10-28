@@ -150,7 +150,7 @@ public class IntakeBall {
         if (colorDetection.isColorStable()) {
             colorDetected = true;
             // Convert string result → enum
-            detectedColor = BallColor.fromString(colorDetection.getStableColor());
+            detectedColor = colorDetection.getStableColor();
 
             Ball b = balls.get(currentSlot);
             b.setHasBall(true);

@@ -53,7 +53,7 @@ public class ColorDetection {
         if (currentColor == lastColor && currentColor.isKnown())
         {
             stableCount++;
-            if(stableCount >REQUIRED_STABLE_COUNT){
+            if(stableCount > REQUIRED_STABLE_COUNT){
                 stableColor = currentColor;
                 timer.reset();
             }

@@ -149,7 +149,7 @@ public class AutoIntake {
     private void handleDetectedState() {
         if (colorDetection.isColorStable()) {
             colorDetected = true;
-            detectedColor = BallColor.fromString(colorDetection.getStableColor());
+            detectedColor = colorDetection.getStableColor();
 
             Ball b = balls.get(currentSlot);
             b.setHasBall(true);
