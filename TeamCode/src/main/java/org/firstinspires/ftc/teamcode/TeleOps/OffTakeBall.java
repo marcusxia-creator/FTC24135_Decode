@@ -139,7 +139,7 @@ public class OffTakeBall {
     }
 
     public void setSequence(BallColor[] sequence) {
-        targetSequence = sequence;
+        this.targetSequence = sequence;
         currentTargetIndex = 0;
     }
 
