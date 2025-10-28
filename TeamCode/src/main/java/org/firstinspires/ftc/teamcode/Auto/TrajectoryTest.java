@@ -21,16 +21,18 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Autonomous(name = "BLUE_TEST_AUTO_PIXEL", group = "Autonomous")
 public class TrajectoryTest extends LinearOpMode {
 
+    public static Pose2d initialPose = new Pose2d(64,8, Math.toRadians(0));
+
 
     @Override
     public void runOpMode() throws InterruptedException {
-        MecanumDrive drive = new MecanumDrive(hardwareMap,new Pose2d(0,0,0));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         waitForStart();
 
         while (opModeIsActive()) {
             Actions.runBlocking(
-                    drive.actionBuilder(new Pose2d(0, 0, 0))
+                    drive.actionBuilder(initialPose)
                             .strafeToLinearHeading(new Vector2d(36,32),Math.toRadians(90))
                             .strafeToLinearHeading(new Vector2d(36,48),Math.toRadians(90))
                             .strafeToLinearHeading(new Vector2d(12,12),Math.toRadians(22.5))
