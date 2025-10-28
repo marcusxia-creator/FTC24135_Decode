@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @Config
 @TeleOp(name = "TeleOps_Decode_gw", group = "org.firstinspires.ftc.teamcode")
@@ -53,7 +54,7 @@ public class BasicTeleOps extends OpMode {
             RobotActionConfig.spindexerSlot3
     };
 
-    private HashMap<Object, Object> aprilTagSequences = new HashMap<>();
+    private HashMap<Integer, BallColor[]> aprilTagSequences = new HashMap<>();
     private List<LynxModule> allHubs;
 
     // --- Telemetry optimization ---
@@ -88,7 +89,7 @@ public class BasicTeleOps extends OpMode {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        initializeAprilTagSequences();
+        initAprilTagSequences();
         offTakeBall.setSequence(new BallColor[]{BallColor.PURPLE, BallColor.GREEN,  BallColor.PURPLE});
 
         telemetry.addLine("-------------------");
@@ -237,10 +238,16 @@ public class BasicTeleOps extends OpMode {
         return (result == Double.POSITIVE_INFINITY) ? 0.0 : result;
     }
 
-    private void initializeAprilTagSequences() {
-        aprilTagSequences.put(21, Arrays.asList("Green", "Purple", "Purple"));
-        aprilTagSequences.put(22, Arrays.asList("Purple", "Green", "Purple"));
-        aprilTagSequences.put(23, Arrays.asList("Purple", "Purple", "Green"));
+    public void initAprilTagSequences() {
+        aprilTagSequences.put(21, new BallColor[] {
+                BallColor.GREEN, BallColor.PURPLE, BallColor.PURPLE
+        });
+        aprilTagSequences.put(22, new BallColor[] {
+                BallColor.PURPLE, BallColor.GREEN, BallColor.PURPLE
+        });
+        aprilTagSequences.put(23, new BallColor[] {
+                BallColor.PURPLE, BallColor.PURPLE, BallColor.GREEN
+        });
     }
 
     private String[] getSequenceByAprilTagId(int tagId) {
