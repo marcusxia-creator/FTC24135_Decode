@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import java.util.List;
 
 public class OffTakeBall {
@@ -15,34 +14,38 @@ public class OffTakeBall {
         OFFTAKE_EJECTING,
         OFFTAKE_DONE
     }
+
     private OFFTAKEBALLSTATE state = OFFTAKEBALLSTATE.OFFTAKE_IDLE;
-    private ElapsedTime timer = new ElapsedTime();
+    private final ElapsedTime timer = new ElapsedTime();
 
-    private RobotHardware robot;
-    private GamepadEx gamepad2;
+    private final RobotHardware robot;
+    private final GamepadEx gamepad2;
 
-    //------Ball System
-    private List<Ball> balls; // shared balls list
+    //------ Shared ball system ------
+    private final List<Ball> balls;
     private Ball targetBall;
 
-    // --- color sequence logic ---
-    private String[] targetSequence = {"Purple", "Green","Purple"}; // example priority
+    // --- Color sequence logic (now enum-based) ---
+    private BallColor[] targetSequence = {
+            BallColor.PURPLE,  // adjust depending on your defined colors
+            BallColor.GREEN,
+            BallColor.PURPLE
+    };
     private int currentTargetIndex = 0;
 
-    // --- constructor ---
+    // --- Constructor ---
     public OffTakeBall(RobotHardware robot, GamepadEx gamepad2, List<Ball> balls) {
         this.robot = robot;
         this.gamepad2 = gamepad2;
         this.balls = balls;
     }
 
+    // --- Main update loop ---
     public void update() {
-
         switch (state) {
             case OFFTAKE_IDLE:
                 robot.shooterMotor.setPower(0.0);
-                if (gamepad2.getButton(GamepadKeys.Button.A)) {
-                    // Start the shooting cycle
+                if (gamepad2.getButton(GamepadKeys.Button.Y)) {
                     state = OFFTAKEBALLSTATE.OFFTAKE_AIMING;
                     timer.reset();
                 }
@@ -51,27 +54,25 @@ public class OffTakeBall {
             case OFFTAKE_AIMING:
                 targetBall = findNextTargetBall();
                 if (targetBall != null) {
-                    // Move spindexer to that slot
                     robot.spindexerServo.setPosition(targetBall.getSlotAngle());
                     state = OFFTAKEBALLSTATE.OFFTAKE_SHOOTING;
                     timer.reset();
                 } else {
-                    // No matching color ball found
                     state = OFFTAKEBALLSTATE.OFFTAKE_DONE;
                 }
                 break;
 
             case OFFTAKE_SHOOTING:
+                // Spin-up and fire
                 if (timer.seconds() > 0.1) {
-                    // Example shooting logic (you can modify as needed)
-                    robot.shooterMotor.setPower(0.75);
+                    robot.shooterMotor.setPower(0.75); // example power
                     if (timer.seconds() > 0.5) {
                         robot.pushRampServo.setPosition(RobotActionConfig.rampUpPos);
                     }
                     if (timer.seconds() > 1.5) {
                         robot.shooterMotor.setPower(0.0);
-                        currentTargetIndex = (currentTargetIndex + 1) % targetSequence.length;
                         robot.pushRampServo.setPosition(RobotActionConfig.rampResetPos);
+                        currentTargetIndex = (currentTargetIndex + 1) % targetSequence.length;
                         state = OFFTAKEBALLSTATE.OFFTAKE_EJECTING;
                         timer.reset();
                     }
@@ -79,52 +80,69 @@ public class OffTakeBall {
                 break;
 
             case OFFTAKE_EJECTING:
-                // add ball removing from list here
                 ejectCurrentBall(targetBall);
-                if (timer.seconds() > 0.2) {
-                    state = OFFTAKEBALLSTATE.OFFTAKE_AIMING; // Continue with next ball if any
+                if (timer.seconds() > 0.25) {
+                    state = OFFTAKEBALLSTATE.OFFTAKE_AIMING; // Continue next ball
                 }
                 break;
 
             case OFFTAKE_DONE:
-                // Sequence complete or no matching ball
-                if (gamepad2.getButton(GamepadKeys.Button.B)) {
-                    state = OFFTAKEBALLSTATE.OFFTAKE_IDLE;
+                if (gamepad2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
+                    resetCycle();
                 }
                 break;
         }
     }
-    /// =====================================================================================
-    // --- find the next ball that matches color sequence ---
+
+    // =============================================================
+    // --- Find next ball matching target sequence color ---
     private Ball findNextTargetBall() {
         if (currentTargetIndex >= targetSequence.length) {
-            return null; // No more balls to shoot
-        };
-        String targetColor = targetSequence[currentTargetIndex];
+            return null; // all done
+        }
+        BallColor targetColor = targetSequence[currentTargetIndex];
         for (Ball b : balls) {
-            if (b.hasBall() && b.getBallColor().equalsIgnoreCase(targetColor)) {
+            if (b.hasBall() && b.getColor() == targetColor) {
                 return b;
             }
         }
-        // No ball of this color found
-        return null;
+        return null; // none found
     }
 
-    //---- update - eject ball from shared ball list -----
+    // --- Eject current ball (mark slot empty) ---
     private void ejectCurrentBall(Ball b) {
         if (b != null) {
             b.setHasBall(false);
-            b.setBallColor("Empty");
+            b.setBallColor(BallColor.UNKNOWN);
         }
     }
 
-    // --- check if the sequence is complete ---
-    public boolean isSortingComplete(){return state == OFFTAKEBALLSTATE.OFFTAKE_DONE;}
-    // --- getters ---
-    public OFFTAKEBALLSTATE getState() { return state; }
-    // ---- set sequence ------
-    public void setSequence(String[] sequence) { this.targetSequence = sequence; }
-    // --- setters ---
-    public void setState(OFFTAKEBALLSTATE state) { this.state = state; }
+    // --- Reset shooter cycle manually ---
+    private void resetCycle() {
+        currentTargetIndex = 0;
+        state = OFFTAKEBALLSTATE.OFFTAKE_IDLE;
+        robot.shooterMotor.setPower(0.0);
+    }
 
+    // --- Public API ---
+    public boolean isSortingComplete() {
+        return state == OFFTAKEBALLSTATE.OFFTAKE_DONE;
+    }
+
+    public OFFTAKEBALLSTATE getState() {
+        return state;
+    }
+
+    public void setSequence(String[] sequence) {
+        // Convert String[] → BallColor[]
+        targetSequence = new BallColor[sequence.length];
+        for (int i = 0; i < sequence.length; i++) {
+            targetSequence[i] = BallColor.fromString(sequence[i]);
+        }
+        currentTargetIndex = 0;
+    }
+
+    public void setState(OFFTAKEBALLSTATE newState) {
+        this.state = newState;
+    }
 }
