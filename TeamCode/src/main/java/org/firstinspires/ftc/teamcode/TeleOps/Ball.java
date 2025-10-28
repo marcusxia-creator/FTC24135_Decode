@@ -3,44 +3,34 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 import androidx.annotation.NonNull;
 
 public class Ball {
-    public String ballColor;
-    public int slotNumber;
-    public double slotAngle;
-    public boolean hasBall;
 
-    //constructor ball
-    public Ball(String ballColor, int slotPosition,double slotAngle, boolean hasBall){
-        this.ballColor = ballColor;
-        this.slotNumber = slotPosition;
+    private final int slotPosition;   // Slot index (0, 1, 2)
+    private final double slotAngle;   // Servo position for this slot
+    private boolean hasBall;          // True if a ball is present
+    private BallColor color;          // Enum color (RED, BLUE, YELLOW, UNKNOWN)
+
+    // --- Constructor ---
+    public Ball(int slotPosition, double slotAngle) {
+        this.slotPosition = slotPosition;
         this.slotAngle = slotAngle;
-        this.hasBall = hasBall;
+        this.hasBall = false;
+        this.color = BallColor.UNKNOWN;  // Start empty
     }
 
-    //return and set ballColor
-    public String getBallColor(){
-        return ballColor;
-    }
-    public void setBallColor(String ballColor){
-        this.ballColor = ballColor;
+    // --- Getters ---
+    public int getSlotPosition() { return slotPosition; }
+    public double getSlotAngle() { return slotAngle; }
+    public boolean hasBall() { return hasBall; }
+    public BallColor getColor() { return color; }
+
+    // --- Setters ---
+    public void setHasBall(boolean hasBall) { this.hasBall = hasBall; }
+    public void setBallColor(BallColor color) {
+        if (this.color != color) this.color = color;
     }
 
-    //return ball slotPosition
-    public int getSlotPosition(){
-        return slotNumber;
-    }
-
-    public double getSlotAngle(){
-        return slotAngle;
-    }
-
-    //return and set hasBall
-    public boolean hasBall() {return hasBall;}
-    public void setHasBall(boolean hasBall) {
-        this.hasBall = hasBall;
-    }
-
-    @NonNull
-    public String toString(){
-        return "Slot "+slotNumber + "("+slotAngle+")"+ballColor;
+    public void reset() {
+        hasBall = false;
+        color = BallColor.UNKNOWN;
     }
 }
