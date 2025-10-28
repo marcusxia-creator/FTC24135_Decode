@@ -46,18 +46,23 @@ public class OffTakeBall {
             case OFFTAKE_IDLE:
                 robot.shooterMotor.setPower(0.0);
                 if (gamepad2.getButton(GamepadKeys.Button.Y)) {
+                    currentTargetIndex =0;
                     state = OFFTAKEBALLSTATE.OFFTAKE_AIMING;
                     timer.reset();
                 }
                 break;
 
             case OFFTAKE_AIMING:
-                targetBall = findNextTargetBall();
-                if (targetBall != null) {
-                    robot.spindexerServo.setPosition(targetBall.getSlotAngle());
-                    state = OFFTAKEBALLSTATE.OFFTAKE_SHOOTING;
-                    timer.reset();
-                } else {
+                targetBall = findNextTargetBall(currentTargetIndex);
+                if (currentTargetIndex < targetSequence.length) {
+                    if (targetBall != null) {
+                        robot.spindexerServo.setPosition(targetBall.getSlotAngle());
+                        state = OFFTAKEBALLSTATE.OFFTAKE_SHOOTING;
+                        timer.reset();
+                    }else{
+                        currentTargetIndex ++;
+                    }
+                }else{
                     state = OFFTAKEBALLSTATE.OFFTAKE_DONE;
                 }
                 break;
@@ -96,11 +101,11 @@ public class OffTakeBall {
 
     // =============================================================
     // --- Find next ball matching target sequence color ---
-    private Ball findNextTargetBall() {
-        if (currentTargetIndex >= targetSequence.length) {
+    private Ball findNextTargetBall(int targetIndex) {
+        if (targetIndex >= targetSequence.length) {
             return null; // all done
         }
-        BallColor targetColor = targetSequence[currentTargetIndex];
+        BallColor targetColor = targetSequence[targetIndex];
         for (Ball b : balls) {
             if (b.hasBall() && b.getColor() == targetColor) {
                 return b;
