@@ -13,12 +13,12 @@ public class ColorDetection {
     private String lastColor = "Unknown";
     private String stableColor = "Unknown";
     private int stableCount = 0;
-    private boolean ballPresent = false;
+
     private ElapsedTime timer = new ElapsedTime();
 
     // Parameters
-    private final int REQUIRED_STABLE_COUNT = 10; // number of consistent readings (~0.3s if called every 20ms)
-    private final double TIMEOUT_MS = 500;        // maximum time allowed to detect color
+    private final int REQUIRED_STABLE_COUNT = 5; // number of consistent readings (~0.3s if called every 20ms)
+    private final double TIMEOUT_S = 1.0;        // maximum time allowed to detect color
     private final double BALL_PRESENT_THRESHOLD_MM = 100; // adjust per sensor mounting
     public ColorDetection(RobotHardware robot) {
         this.robot = robot;
@@ -54,21 +54,29 @@ public class ColorDetection {
         else currentColor = "Unknown";
 
         /**Stability Check*/
-        if (currentColor.equals(lastColor) && !currentColor.equals("Unknow"))
+        if (currentColor.equals(lastColor) && !currentColor.equals("Unknown"))
         {
             stableCount++;
             if(stableCount >REQUIRED_STABLE_COUNT){
                 stableColor = currentColor;
+                timer.reset();
             }
         }else {
             stableCount = 0;
         }
+
+        // --- Timeout reset ---
+        if (timer.seconds() > TIMEOUT_S) {
+            stableColor = "Unknown";
+            timer.reset();
+        }
+
         lastColor = currentColor;
     }
 
     /** return is color stable boolean. */
     public boolean isColorStable(){
-        return !stableColor.equals("Unknow");
+        return !stableColor.equals("Unknown");
     }
 
     /** check if the ball is present. */
@@ -96,4 +104,8 @@ public class ColorDetection {
     }
 
     public String getStableColor(){ return stableColor;}
+    /** Direct BallColor output — optional helper. */
+    public BallColor getStableBallColor() {
+        return BallColor.fromString(stableColor);
+    }
 }
