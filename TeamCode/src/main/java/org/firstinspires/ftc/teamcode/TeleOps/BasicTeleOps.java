@@ -49,7 +49,7 @@ public class BasicTeleOps extends OpMode {
     // === NEW: Ball Handling Objects and Shared List ===
     private BallHandlingState ballHandlingState = BallHandlingState.IDLE;
     private SharedBallList sharedBallList;
-    private double[] spindexerSlotAngles = {
+    private final double[] spindexerSlotAngles = {
             RobotActionConfig.spindexerSlot1,
             RobotActionConfig.spindexerSlot2,
             RobotActionConfig.spindexerSlot3
@@ -107,6 +107,8 @@ public class BasicTeleOps extends OpMode {
 
     @Override
     public void loop() {
+
+        // === LOAD APRIL TAG SEQUENCE AFTER 100s ===
         double t = runTime.seconds();
         if (t > 100.0)
             { //set sequence for offtake ball
@@ -115,8 +117,9 @@ public class BasicTeleOps extends OpMode {
                     telemetry.addData("Loaded Sequence", Arrays.toString(SharedColorSequence.aprilTagSequence));
                 }
             }
+
         // === CONTROL MODE TOGGLE ===
-        if (gamepadCo1.getButton(START) && gamepadCo1.getButton(LEFT_BUMPER) && !lBstartPressed) {
+        if (gamepadCo1.getButton(START) && gamepadCo1.getButton(LEFT_BUMPER) && !lBstartPressed && debounceTimer.milliseconds() > 250) {
             toggleControlState();
             debounceTimer.reset();
             lBstartPressed = true;
@@ -173,9 +176,6 @@ public class BasicTeleOps extends OpMode {
             telemetry.addLine("----- Test Mode Active -----");
         }
 
-        // === COLOR DETECTION UPDATE ===
-        colorDetection.updateDetection();
-
         // === TELEMETRY ===
         telemetry.addLine("-------Odometry-------------------");
         telemetry.addData("Pinpoint X", "%.2f in", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
@@ -226,6 +226,8 @@ public class BasicTeleOps extends OpMode {
         robot.backRightMotor.setPower(0);
         robot.shooterMotor.setPower(0);
         robot.intakeMotor.setPower(0);
+        intakeBall.stopIntake();
+        offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.OFFTAKE_IDLE);
         telemetry.addData("Status", "Robot Stopped");
         telemetry.update();
     }
