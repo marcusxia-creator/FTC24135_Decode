@@ -37,6 +37,7 @@ public class OffTakeBall {
     }
 
     public void update() {
+
         switch (state) {
             case OFFTAKE_IDLE:
                 robot.shooterMotor.setPower(0.0);

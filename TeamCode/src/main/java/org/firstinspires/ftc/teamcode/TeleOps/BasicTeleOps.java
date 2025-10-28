@@ -55,8 +55,10 @@ public class BasicTeleOps extends OpMode {
 
     // =================April Tag and AprilTag Sequence===========================
     HashMap<Object, Object> aprilTagSequences = new HashMap<>();
-    List<String> sequence;
+
     private int tagId;
+
+    //
     private List<LynxModule> allHubs;
 
     @Override
@@ -95,6 +97,14 @@ public class BasicTeleOps extends OpMode {
         }
         /// initialize AprilTag Sequences and assign Apriltag Sequences
         initializeAprilTagSequences();
+        /// AprilTag Update
+        int tagId = aprilTagUpdate.getTagID();
+        if (tagId != 0) {
+            String [] seq = getSequenceByAprilTagId(tagId);
+            offTakeBall.setSequence(seq);
+        }else{
+            offTakeBall.setSequence(new String[]{"Purple", "Green", "Purple"});
+        }
 
         /// telemetry
         telemetry.addLine("-------------------");
@@ -137,6 +147,8 @@ public class BasicTeleOps extends OpMode {
         } else if (!gamepadCo1.getButton(START) || !gamepadCo1.getButton(LEFT_BUMPER)) {
             lBstartPressed = false;
         }
+        /// Only assign sequence once when pressing BACK
+
 
         /// Drive train control
         robotDrive.DriveLoop();
@@ -154,7 +166,6 @@ public class BasicTeleOps extends OpMode {
 
             /**Press 'X' to start sorting*/
             if (gamepadCo2.getButton(X)) {
-               // offTakeBall.setRequiredSequence(Arrays.asList("Purple", "Green","Purple"));
                 ballHandlingState = BallHandlingState.OFFTAKING;
                 offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.OFFTAKE_IDLE);
                 intakeBall.stopIntake(); // Ensure intake motor is off before sorting
@@ -176,14 +187,6 @@ public class BasicTeleOps extends OpMode {
                     break;
 
                 case OFFTAKING:
-                    // Only assign sequence once when pressing BACK
-                    if (gamepadCo1.wasJustPressed(GamepadKeys.Button.BACK)) {
-                        int tagId = aprilTagUpdate.getTagID();
-                        if (tagId != 0) {
-                            String [] seq = getSequenceByAprilTagId(tagId);
-                            offTakeBall.setSequence(seq);
-                        }
-                    }
                     offTakeBall.update();
                     if (offTakeBall.isSortingComplete()) {
                         ballHandlingState = BallHandlingState.IDLE;

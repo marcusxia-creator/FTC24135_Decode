@@ -54,11 +54,7 @@ public class AprilTagUpdate {
     @NonNull
     public HashMap<Integer, Integer[]> getAprilTagCoordinates() {
         HashMap<Integer, Integer[]> aprilTagCoordinates = new HashMap<>();
-        aprilTagCoordinates.put(11, new Integer[]{-72, 48});
-        aprilTagCoordinates.put(12, new Integer[]{0, 72});
-        aprilTagCoordinates.put(13, new Integer[]{72, 48});
-        aprilTagCoordinates.put(14, new Integer[]{72, -48});
-        aprilTagCoordinates.put(15, new Integer[]{0, -72});
+        aprilTagCoordinates.put(11, new Integer[]{72, 72});
         aprilTagCoordinates.put(16, new Integer[]{-72, -48});
         return aprilTagCoordinates;
     }
