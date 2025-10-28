@@ -6,7 +6,6 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -16,7 +15,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -27,11 +25,10 @@ public class BasicTeleOps extends OpMode {
 
     public enum ControlState { RUN, TEST }
 
-    // Master state machine for ball handling to prevent conflicts
     public enum BallHandlingState {
-        IDLE,       // Not actively intaking or sorting
-        INTAKING,   // Actively running the intake logic
-        OFFTAKING     // Actively running the offtake/sorting logic
+        IDLE,
+        INTAKING,
+        OFFTAKING
     }
 
     private RobotHardware robot;
@@ -42,107 +39,72 @@ public class BasicTeleOps extends OpMode {
     private ColorDetection colorDetection;
     private AprilTagUpdate aprilTagUpdate = new AprilTagUpdate(hardwareMap);
 
-    //=======================States & Time & Lists========================================
+    //======================= States & Timers ===============================
     private ControlState controlState = ControlState.RUN;
     private ElapsedTime debounceTimer = new ElapsedTime();
-
     private boolean lBstartPressed = false;
 
-    // === NEW: Ball Handling Objects and State ===
+    // === NEW: Ball Handling Objects and Shared List ===
     private BallHandlingState ballHandlingState = BallHandlingState.IDLE;
     private SharedBallList sharedBallList;
-    private double[] spindexerSlotAngles = {RobotActionConfig.spindexerSlot1, RobotActionConfig.spindexerSlot2, RobotActionConfig.spindexerSlot3}; // Example angles
+    private double[] spindexerSlotAngles = {
+            RobotActionConfig.spindexerSlot1,
+            RobotActionConfig.spindexerSlot2,
+            RobotActionConfig.spindexerSlot3
+    };
 
-    // =================April Tag and AprilTag Sequence===========================
-    HashMap<Object, Object> aprilTagSequences = new HashMap<>();
-
-    private int tagId;
-
-    //
+    private HashMap<Object, Object> aprilTagSequences = new HashMap<>();
     private List<LynxModule> allHubs;
+
+    // --- Telemetry optimization ---
+    private BallColor lastDisplayedColor = BallColor.UNKNOWN;
 
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        /// Robot subsystem
+
+        /// --- Robot and subsystems ---
         robot = new RobotHardware(hardwareMap);
         robot.init();
-        /// Controller
         gamepadCo1 = new GamepadEx(gamepad1);
         gamepadCo2 = new GamepadEx(gamepad2);
-        /// Robot Drive
+
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
-        /// Pinpoint Initialization
         robot.initPinPoint();
 
-        /// === NEW: Initialize ball handling subsystems ===
-        // 1. Create the single, shared list for balls.
-        sharedBallList = new SharedBallList(spindexerSlotAngles);;
-
-        // 2. Instantiate subsystems, passing the *same* list to both.
+        /// === NEW: Ball Handling Setup ===
+        sharedBallList = new SharedBallList(spindexerSlotAngles);
         intakeBall = new IntakeBall(robot, gamepadCo2, sharedBallList.getBalls(), spindexerSlotAngles);
-
         offTakeBall = new OffTakeBall(robot, gamepadCo2, sharedBallList.getBalls());
 
         colorDetection = new ColorDetection(robot);
+        colorDetection.startDetection();
 
-
-        /// Get all hubs from the hardwareMap
+        /// Bulk caching optimization
         allHubs = hardwareMap.getAll(LynxModule.class);
-        ///Set bulk caching mode to Auto
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
-        /// initialize AprilTag Sequences and assign Apriltag Sequences
+
         initializeAprilTagSequences();
-        /// AprilTag Update
-        /**
-        int tagId = aprilTagUpdate.getTagID();
-        if (tagId != 0) {
-            String [] seq = getSequenceByAprilTagId(tagId);
-            offTakeBall.setSequence(seq);
-        }else{
-            offTakeBall.setSequence(new String[]{"Purple", "Green", "Purple"});
-        }
-         */
         offTakeBall.setSequence(new String[]{"Purple", "Green", "Purple"});
 
-        /// telemetry
         telemetry.addLine("-------------------");
         telemetry.addData("Status", "initialized");
         telemetry.addData("Control Mode", robotDrive.getDriveMode().name());
         telemetry.update();
     }
+
     @Override
     public void start() {
-       ;    // ← reset your timer right when start() is called
-
+        debounceTimer.reset();
     }
 
     @Override
     public void loop() {
-
-        /**
-        /// Lynx for Motor encoder reading
-        for (LynxModule hub : allHubs) {
-            BulkData bulkData = hub.getBulkData();
-            if (bulkData != null) {
-                if (hub.equals(allHubs.get(0))) {
-                    telemetry.addData("Drive FL Pos", bulkData.getMotorCurrentPosition(robot.frontLeftMotor.getPortNumber()));
-                    telemetry.addData("Drive FR Pos", bulkData.getMotorCurrentPosition(robot.frontRightMotor.getPortNumber()));
-                    telemetry.addData("Drive BL Pos", bulkData.getMotorCurrentPosition(robot.backLeftMotor.getPortNumber()));
-                    telemetry.addData("Drive BR Pos", bulkData.getMotorCurrentPosition(robot.backRightMotor.getPortNumber()));
-                } else {
-                    telemetry.addData("Lift L Pos", bulkData.getMotorCurrentPosition(robot.liftMotorLeft.getPortNumber()));
-                    telemetry.addData("Lift R Pos", bulkData.getMotorCurrentPosition(robot.liftMotorRight.getPortNumber()));
-                }
-            }
-        }
-        */
-
-        ///  Start Button && LEFT BUMPER for Control State toggle
+        // === CONTROL MODE TOGGLE ===
         if (gamepadCo1.getButton(START) && gamepadCo1.getButton(LEFT_BUMPER) && !lBstartPressed) {
             toggleControlState();
             debounceTimer.reset();
@@ -150,43 +112,35 @@ public class BasicTeleOps extends OpMode {
         } else if (!gamepadCo1.getButton(START) || !gamepadCo1.getButton(LEFT_BUMPER)) {
             lBstartPressed = false;
         }
-        /// Only assign sequence once when pressing BACK
 
-
-        /// Drive train control
+        // === DRIVE ===
         robotDrive.DriveLoop();
 
-        /// Control condition -  Check Run Status
         if (controlState == ControlState.RUN) {
             robot.pinpointDriver.update();
-            /// === NEW: Master State Machine for Ball Handling ===
-            /// Use Gamepad 2 for ball controls to separate from driving
-            /// Press 'A' to start intaking
+
+            // === MASTER BALL HANDLING STATE MACHINE ===
             if (gamepadCo2.getButton(A)) {
                 ballHandlingState = BallHandlingState.INTAKING;
                 intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
             }
 
-            /**Press 'X' to start sorting*/
             if (gamepadCo2.getButton(X)) {
                 ballHandlingState = BallHandlingState.OFFTAKING;
                 offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.OFFTAKE_IDLE);
-                intakeBall.stopIntake(); // Ensure intake motor is off before sorting
+                intakeBall.stopIntake();
             }
 
-            /// to manually switch back to IDLE if needed.
             if (gamepadCo2.getButton(B)) {
                 ballHandlingState = BallHandlingState.IDLE;
             }
 
-            /// The core of the state machine. Only one case will run per loop.
             switch (ballHandlingState) {
                 case INTAKING:
                     intakeBall.IntakeBallUpdate();
-                    if(intakeBall.isFull()) {
-                        ballHandlingState = BallHandlingState.IDLE; // Or INTAKING, your choice
+                    if (intakeBall.isFull()) {
+                        ballHandlingState = BallHandlingState.IDLE;
                     }
-                    // NOTE: You could add a button press here (e.g., gamepadCo2.getButton(B))
                     break;
 
                 case OFFTAKING:
@@ -195,47 +149,50 @@ public class BasicTeleOps extends OpMode {
                         ballHandlingState = BallHandlingState.IDLE;
                     }
                     break;
+
                 case IDLE:
-                    // Do nothing related to ball handling.
-                    // Motors for intake/spindexer should be off.
-                    intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_FULL);
-                    intakeBall.stopIntake(); // Optional: ensure motors are off
+                    intakeBall.stopIntake();
                     offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.OFFTAKE_IDLE);
                     break;
             }
-            // =================================================
         }
-        /// Control condition -  Check TEST Status for Servo Test
+
+        // === TEST MODE ===
         if (controlState == ControlState.TEST) {
-            telemetry.addLine("-----No Code-----------");
-            telemetry.addLine("-----No Code-----------");
-            telemetry.addLine("-----No Code-----------");
+            telemetry.addLine("----- Test Mode Active -----");
         }
+
+        // === COLOR DETECTION UPDATE ===
         colorDetection.updateDetection();
-        /// Telemetry
+
+        // === TELEMETRY ===
         telemetry.addLine("-------Odometry-------------------");
-        telemetry.addData("Pinpoint X", "%.2f inches", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
-        telemetry.addData("Pinpoint Y", "%.2f inches", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
-        telemetry.addData("Pinpoint Heading", "%.2f degrees", robot.pinpointDriver.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("Pinpoint X", "%.2f in", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
+        telemetry.addData("Pinpoint Y", "%.2f in", robot.pinpointDriver.getPosY(DistanceUnit.INCH));
+        telemetry.addData("Pinpoint Heading", "%.2f°", robot.pinpointDriver.getHeading(AngleUnit.DEGREES));
+
         telemetry.addLine("--------------Op Mode--------------");
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", robotDrive.getDriveMode().name());
-        telemetry.addData("Heading", robot.imu.getRobotYawPitchRollAngles().getYaw());
+        telemetry.addData("Ball Mode", ballHandlingState.name());
         telemetry.addData("Battery Voltage", getBatteryVoltage());
 
         telemetry.addLine("-----------Intake Info--------------");
         telemetry.addData("Intake State", intakeBall.getState());
-        telemetry.addData("Detected Color", intakeBall.getDetectedColor());
-        telemetry.addData("Color Stable", intakeBall.isColorDetected());
+        telemetry.addData("Is Color Detected?", intakeBall.isColorDetected());
         telemetry.addData("Current Slot", intakeBall.getCurrentSlot());
         telemetry.addData("Ball Count", intakeBall.getNumberOfBalls());
-        List<Ball> balls = intakeBall.getBalls();
-        for (int i = 0; i < balls.size(); i++) {
-            Ball b = balls.get(i);
-            telemetry.addData("Slot " + i, b.ballColor + " (" + (b.hasBall ? "Full" : "Empty") + ")");
+        telemetry.addData("Detected Color (enum)", intakeBall.getDetectedColor().name());
+
+        // Optimized color telemetry (only update if changed)
+        BallColor currentColor = intakeBall.getDetectedColor();
+        if (currentColor != lastDisplayedColor) {
+            telemetry.addLine("Color changed → " + currentColor.name());
+            lastDisplayedColor = currentColor;
         }
+
         telemetry.addLine("-----------Offtake Info--------------");
-        telemetry.addData("offTake State", offTakeBall.getState());
+        telemetry.addData("Offtake State", offTakeBall.getState());
         telemetry.update();
     }
 
@@ -250,20 +207,14 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Status", "Robot Stopped");
         telemetry.update();
     }
-    /// Helper -- toggle control state - RUN vs TEST
+
+    // === Helper Methods ===
     private void toggleControlState() {
-        controlState = (controlState == ControlState.RUN) ? ControlState.TEST : ControlState.RUN;
-    }
-    /// Helper -- to Button Debouncer
-    private boolean isButtonDebounced() {
-        if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
-            debounceTimer.reset();
-            return true;
-        }
-        return false;
+        controlState = (controlState == ControlState.RUN)
+                ? ControlState.TEST
+                : ControlState.RUN;
     }
 
-    /// Add a voltage sensor
     public double getBatteryVoltage() {
         double result = Double.POSITIVE_INFINITY;
         for (VoltageSensor sensor : hardwareMap.voltageSensor) {
@@ -272,27 +223,22 @@ public class BasicTeleOps extends OpMode {
                 result = voltage;
             }
         }
-        // If we never found a positive reading, default to 0
         return (result == Double.POSITIVE_INFINITY) ? 0.0 : result;
     }
 
-    private void initializeAprilTagSequences(){
-        aprilTagSequences.put(21,Arrays.asList("Green", "Purple", "Purple"));
-        aprilTagSequences.put(22,Arrays.asList("Purple", "Green","Purple"));
-        aprilTagSequences.put(23,Arrays.asList("Purple","Purple","Green"));
+    private void initializeAprilTagSequences() {
+        aprilTagSequences.put(21, Arrays.asList("Green", "Purple", "Purple"));
+        aprilTagSequences.put(22, Arrays.asList("Purple", "Green", "Purple"));
+        aprilTagSequences.put(23, Arrays.asList("Purple", "Purple", "Green"));
     }
 
-    // --- NEW: Method to set sequence based on a detected AprilTag ID ---
-    private String [] getSequenceByAprilTagId(int tagId) {
-        String [] sequence;
+    private String[] getSequenceByAprilTagId(int tagId) {
+        String[] sequence;
         if (aprilTagSequences.containsKey(tagId)) {
             sequence = (String[]) aprilTagSequences.get(tagId);
         } else {
-            // Handle case where the AprilTag ID is not in our lookup table
-            // For example, do nothing or set a default sequence
             sequence = new String[]{"Purple", "Green", "Purple"};
         }
         return sequence;
     }
-
 }
