@@ -12,13 +12,17 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
+import org.firstinspires.ftc.teamcode.TeleOps.BallColor;
 import org.firstinspires.ftc.teamcode.TeleOps.IntakeBall;
 import org.firstinspires.ftc.teamcode.TeleOps.SharedBallList;
 import org.firstinspires.ftc.teamcode.TeleOps.Ball;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.Auto.AutoIntake;
+import org.firstinspires.ftc.teamcode.TeleOps.SharedData;
+import org.firstinspires.ftc.teamcode.Vision.AprilTagUpdate;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Auto_RR1_IntakeAndShoot3Balls extends LinearOpMode {
@@ -30,6 +34,7 @@ public class Auto_RR1_IntakeAndShoot3Balls extends LinearOpMode {
         // === Hardware & Drive ===
         RobotHardware robot = new RobotHardware(hardwareMap);
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+        AprilTagUpdate aprilTagUpdate = new AprilTagUpdate(hardwareMap);
 
         // === Spindexer Slots ===
         double[] slotAngles = {0.15, 0.45, 0.75};
@@ -40,6 +45,7 @@ public class Auto_RR1_IntakeAndShoot3Balls extends LinearOpMode {
         Pose2d startPose = initialPose;
         Pose2d pickupPose = new Pose2d(32, 32, Math.toRadians(90));
         Pose2d shootPose = new Pose2d(0, 0, Math.toRadians(45));
+        BallColor[] targetSequence = {};
 
         AutoIntake autoIntake = new AutoIntake(robot,balls,slotAngles);
 
@@ -69,6 +75,9 @@ public class Auto_RR1_IntakeAndShoot3Balls extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
+        aprilTagUpdate.update();;
+        SharedData.aprilTagSequence = aprilTagUpdate.getSequence();
+        SharedData.detectedTagId = aprilTagUpdate.getTagID();
         if (isStopRequested()) return;
 
         // === Step 1: Move to intake area ===
@@ -97,7 +106,7 @@ public class Auto_RR1_IntakeAndShoot3Balls extends LinearOpMode {
 
         // === Step 4: Shoot balls ===
         shootBalls(robot, balls);
-
+        telemetry.addData("Stored Sequence", Arrays.toString(SharedData.aprilTagSequence));
         telemetry.addLine("Auto Complete!");
         telemetry.update();
     }
