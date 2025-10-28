@@ -14,12 +14,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Vision.AprilTagUpdate;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 @Config
 @TeleOp(name = "TeleOps_Decode_gw", group = "org.firstinspires.ftc.teamcode")
@@ -112,9 +110,9 @@ public class BasicTeleOps extends OpMode {
         double t = runTime.seconds();
         if (t > 100.0)
             { //set sequence for offtake ball
-                if (SharedData.aprilTagSequence != null && SharedData.aprilTagSequence.length > 0) {
-                    offTakeBall.setSequence(SharedData.aprilTagSequence);
-                    telemetry.addData("Loaded Sequence", Arrays.toString(SharedData.aprilTagSequence));
+                if (SharedColorSequence.aprilTagSequence != null && SharedColorSequence.aprilTagSequence.length > 0) {
+                    offTakeBall.setSequence(SharedColorSequence.aprilTagSequence);
+                    telemetry.addData("Loaded Sequence", Arrays.toString(SharedColorSequence.aprilTagSequence));
                 }
             }
         // === CONTROL MODE TOGGLE ===

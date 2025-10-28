@@ -7,19 +7,13 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
-import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.TeleOps.BallColor;
-import org.firstinspires.ftc.teamcode.TeleOps.IntakeBall;
 import org.firstinspires.ftc.teamcode.TeleOps.SharedBallList;
 import org.firstinspires.ftc.teamcode.TeleOps.Ball;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
-import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
-import org.firstinspires.ftc.teamcode.Auto.AutoIntake;
-import org.firstinspires.ftc.teamcode.TeleOps.SharedData;
+import org.firstinspires.ftc.teamcode.TeleOps.SharedColorSequence;
 import org.firstinspires.ftc.teamcode.Vision.AprilTagUpdate;
 
 import java.util.Arrays;
@@ -76,8 +70,8 @@ public class Auto_RR1_IntakeAndShoot3Balls extends LinearOpMode {
 
         waitForStart();
         aprilTagUpdate.update();;
-        SharedData.aprilTagSequence = aprilTagUpdate.getSequence();
-        SharedData.detectedTagId = aprilTagUpdate.getTagID();
+        SharedColorSequence.aprilTagSequence = aprilTagUpdate.getSequence();
+        SharedColorSequence.detectedTagId = aprilTagUpdate.getTagID();
         if (isStopRequested()) return;
 
         // === Step 1: Move to intake area ===
@@ -106,7 +100,7 @@ public class Auto_RR1_IntakeAndShoot3Balls extends LinearOpMode {
 
         // === Step 4: Shoot balls ===
         shootBalls(robot, balls);
-        telemetry.addData("Stored Sequence", Arrays.toString(SharedData.aprilTagSequence));
+        telemetry.addData("Stored Sequence", Arrays.toString(SharedColorSequence.aprilTagSequence));
         telemetry.addLine("Auto Complete!");
         telemetry.update();
     }
