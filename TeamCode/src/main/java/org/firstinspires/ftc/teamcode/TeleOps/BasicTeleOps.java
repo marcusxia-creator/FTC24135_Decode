@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Vision.AprilTagUpdate;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,11 +39,13 @@ public class BasicTeleOps extends OpMode {
     private IntakeBall intakeBall;
     private OffTakeBall offTakeBall;
     private ColorDetection colorDetection;
-    private AprilTagUpdate aprilTagUpdate = new AprilTagUpdate(hardwareMap);
+    //private AprilTagUpdate aprilTagUpdate = new AprilTagUpdate(hardwareMap);
 
     //======================= States & Timers ===============================
     private ControlState controlState = ControlState.RUN;
     private ElapsedTime debounceTimer = new ElapsedTime();
+    private ElapsedTime runTime = new ElapsedTime();
+
     private boolean lBstartPressed = false;
 
     // === NEW: Ball Handling Objects and Shared List ===
@@ -89,9 +92,9 @@ public class BasicTeleOps extends OpMode {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        initAprilTagSequences();
-        offTakeBall.setSequence(new BallColor[]{BallColor.PURPLE, BallColor.GREEN,  BallColor.PURPLE});
-
+       ///  set default sequences for ball
+        offTakeBall.setSequence(new BallColor[]{BallColor.UNKNOWN, BallColor.UNKNOWN,  BallColor.UNKNOWN});
+        telemetry.addLine("No AprilTag sequence found!");
         telemetry.addLine("-------------------");
         telemetry.addData("Status", "initialized");
         telemetry.addData("Control Mode", robotDrive.getDriveMode().name());
@@ -101,10 +104,19 @@ public class BasicTeleOps extends OpMode {
     @Override
     public void start() {
         debounceTimer.reset();
+        runTime.reset();
     }
 
     @Override
     public void loop() {
+        double t = runTime.seconds();
+        if (t > 100.0)
+            { //set sequence for offtake ball
+                if (SharedData.aprilTagSequence != null && SharedData.aprilTagSequence.length > 0) {
+                    offTakeBall.setSequence(SharedData.aprilTagSequence);
+                    telemetry.addData("Loaded Sequence", Arrays.toString(SharedData.aprilTagSequence));
+                }
+            }
         // === CONTROL MODE TOGGLE ===
         if (gamepadCo1.getButton(START) && gamepadCo1.getButton(LEFT_BUMPER) && !lBstartPressed) {
             toggleControlState();
@@ -238,25 +250,6 @@ public class BasicTeleOps extends OpMode {
         return (result == Double.POSITIVE_INFINITY) ? 0.0 : result;
     }
 
-    public void initAprilTagSequences() {
-        aprilTagSequences.put(21, new BallColor[] {
-                BallColor.GREEN, BallColor.PURPLE, BallColor.PURPLE
-        });
-        aprilTagSequences.put(22, new BallColor[] {
-                BallColor.PURPLE, BallColor.GREEN, BallColor.PURPLE
-        });
-        aprilTagSequences.put(23, new BallColor[] {
-                BallColor.PURPLE, BallColor.PURPLE, BallColor.GREEN
-        });
-    }
 
-    private String[] getSequenceByAprilTagId(int tagId) {
-        String[] sequence;
-        if (aprilTagSequences.containsKey(tagId)) {
-            sequence = (String[]) aprilTagSequences.get(tagId);
-        } else {
-            sequence = new String[]{"Purple", "Green", "Purple"};
-        }
-        return sequence;
-    }
+
 }

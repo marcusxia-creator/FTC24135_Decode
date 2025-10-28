@@ -53,17 +53,25 @@ public class OffTakeBall {
                 break;
 
             case OFFTAKE_AIMING:
-                targetBall = findNextTargetBall(currentTargetIndex);
-                if (currentTargetIndex < targetSequence.length) {
-                    if (targetBall != null) {
-                        robot.spindexerServo.setPosition(targetBall.getSlotAngle());
-                        state = OFFTAKEBALLSTATE.OFFTAKE_SHOOTING;
-                        timer.reset();
-                    }else{
-                        currentTargetIndex ++;
+                if (!isUnknownSequence(targetSequence)) {
+                    // --- Color-sequence-based shooting ---
+                    targetBall = findNextTargetBall(currentTargetIndex);
+                } else {
+                    // --- Default sequential shooting ---
+                    targetBall = findNextAvailableBall(currentTargetIndex);
+                }
+
+                if (targetBall != null) {
+                    robot.spindexerServo.setPosition(targetBall.getSlotAngle());
+                    state = OFFTAKEBALLSTATE.OFFTAKE_SHOOTING;
+                    timer.reset();
+                } else {
+                    currentTargetIndex++;
+                    if (targetSequence != null && currentTargetIndex >= targetSequence.length) {
+                        state = OFFTAKEBALLSTATE.OFFTAKE_DONE;
+                    } else if (currentTargetIndex >= balls.size()) {
+                        state = OFFTAKEBALLSTATE.OFFTAKE_DONE;
                     }
-                }else{
-                    state = OFFTAKEBALLSTATE.OFFTAKE_DONE;
                 }
                 break;
 
@@ -100,18 +108,32 @@ public class OffTakeBall {
     }
 
     // =============================================================
-    // --- Find next ball matching target sequence color ---
+    /** --- Find next ball matching target sequence color ---*/
     private Ball findNextTargetBall(int targetIndex) {
-        if (targetIndex >= targetSequence.length) {
-            return null; // all done
+        if (!isUnknownSequence(targetSequence)) {
+
+            if (targetIndex >= targetSequence.length) {
+                return null; // all done
+            }
+            BallColor targetColor = targetSequence[targetIndex];
+            for (Ball b : balls) {
+                if (b.hasBall() && b.getColor() == targetColor) {
+                    return b;
+                }
+            }
+            return null; // none found
         }
-        BallColor targetColor = targetSequence[targetIndex];
+        return null;
+    }
+    /** Find next available ball regardless of color (sequential fallback). */
+    private Ball findNextAvailableBall(int targetIndex) {
+        if (balls == null || balls.isEmpty()) return null;
         for (Ball b : balls) {
-            if (b.hasBall() && b.getColor() == targetColor) {
+            if (b.hasBall()) {
                 return b;
             }
         }
-        return null; // none found
+        return null;
     }
 
     // --- Eject current ball (mark slot empty) ---
@@ -145,5 +167,16 @@ public class OffTakeBall {
 
     public void setState(OFFTAKEBALLSTATE newState) {
         this.state = newState;
+    }
+
+    public boolean isUnknownSequence(BallColor[] sequence) {
+        if (sequence == null || sequence.length == 0) return true;
+
+        for (BallColor color : sequence) {
+            if (color != BallColor.UNKNOWN) {
+                return false; // found a known color
+            }
+        }
+        return true; // all are UNKNOWN
     }
 }
