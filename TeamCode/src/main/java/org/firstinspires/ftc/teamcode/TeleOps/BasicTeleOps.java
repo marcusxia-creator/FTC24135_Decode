@@ -183,7 +183,18 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Current Slot", intakeBall.getCurrentSlot());
         telemetry.addData("Ball Count", intakeBall.getNumberOfBalls());
         telemetry.addData("Detected Color (enum)", intakeBall.getDetectedColor().name());
-
+        // ---------- Shared Ball List Telemetry ----------
+        telemetry.addLine("-----------Shared Ball Slots-----------");
+        List<Ball> sharedBalls = sharedBallList.getBalls();
+        for (Ball b : sharedBalls) {
+            telemetry.addData(
+                    "Slot " + b.getSlotPosition(),
+                    "Ball=%s | Color=%s | Angle=%.2f",
+                    b.hasBall() ? "YES" : "NO",
+                    b.getColor().name(),
+                    b.getSlotAngle()
+            );
+        }
         // Optimized color telemetry (only update if changed)
         BallColor currentColor = intakeBall.getDetectedColor();
         if (currentColor != lastDisplayedColor) {
