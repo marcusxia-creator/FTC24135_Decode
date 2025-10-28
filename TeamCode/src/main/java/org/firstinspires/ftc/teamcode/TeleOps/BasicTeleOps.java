@@ -98,6 +98,7 @@ public class BasicTeleOps extends OpMode {
         /// initialize AprilTag Sequences and assign Apriltag Sequences
         initializeAprilTagSequences();
         /// AprilTag Update
+        /**
         int tagId = aprilTagUpdate.getTagID();
         if (tagId != 0) {
             String [] seq = getSequenceByAprilTagId(tagId);
@@ -105,6 +106,8 @@ public class BasicTeleOps extends OpMode {
         }else{
             offTakeBall.setSequence(new String[]{"Purple", "Green", "Purple"});
         }
+         */
+        offTakeBall.setSequence(new String[]{"Purple", "Green", "Purple"});
 
         /// telemetry
         telemetry.addLine("-------------------");
