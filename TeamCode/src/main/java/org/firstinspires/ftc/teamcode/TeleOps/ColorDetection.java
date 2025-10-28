@@ -10,8 +10,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class ColorDetection {
     private RobotHardware robot;
     // For state tracking
-    private String lastColor = "Unknown";
-    private String stableColor = "Unknown";
+    private BallColor lastColor = BallColor.UNKNOWN;
+    private BallColor stableColor = BallColor.UNKNOWN;
     private int stableCount = 0;
 
     private ElapsedTime timer = new ElapsedTime();
@@ -29,8 +29,8 @@ public class ColorDetection {
      * Returns "Purple", "Green", or "Unknown".
      */
     public void startDetection() {
-        stableColor = "Unknown";
-        lastColor = "Unknown";
+        stableColor = BallColor.UNKNOWN;
+        lastColor = BallColor.UNKNOWN;
         stableCount = 0;
         timer.reset();
     }
@@ -47,14 +47,10 @@ public class ColorDetection {
         );
         float hue = hsv[0];
 
-        String currentColor;
-
-        if (hue >= 170 && hue <= 230) currentColor = "Purple";
-        else if (hue >= 135 && hue <= 160) currentColor = "Green";
-        else currentColor = "Unknown";
+        BallColor currentColor = BallColor.fromHue(hue);
 
         /**Stability Check*/
-        if (currentColor.equals(lastColor) && !currentColor.equals("Unknown"))
+        if (currentColor == lastColor && currentColor.isKnown())
         {
             stableCount++;
             if(stableCount >REQUIRED_STABLE_COUNT){
@@ -67,7 +63,7 @@ public class ColorDetection {
 
         // --- Timeout reset ---
         if (timer.seconds() > TIMEOUT_S) {
-            stableColor = "Unknown";
+            stableColor = BallColor.UNKNOWN;
             timer.reset();
         }
 
@@ -76,7 +72,7 @@ public class ColorDetection {
 
     /** return is color stable boolean. */
     public boolean isColorStable(){
-        return !stableColor.equals("Unknown");
+        return stableColor.isKnown();
     }
 
     /** check if the ball is present. */
@@ -103,9 +99,5 @@ public class ColorDetection {
         return "R:" + robot.colorSensor.red() + " G:" + robot.colorSensor.green() + " B:" + robot.colorSensor.blue();
     }
 
-    public String getStableColor(){ return stableColor;}
-    /** Direct BallColor output — optional helper. */
-    public BallColor getStableBallColor() {
-        return BallColor.fromString(stableColor);
-    }
+    public BallColor getStableColor(){ return stableColor;}
 }
