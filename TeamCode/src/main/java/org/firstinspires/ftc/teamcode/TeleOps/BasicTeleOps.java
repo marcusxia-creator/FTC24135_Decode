@@ -247,7 +247,4 @@ public class BasicTeleOps extends OpMode {
         }
         return (result == Double.POSITIVE_INFINITY) ? 0.0 : result;
     }
-
-
-
 }
