@@ -6,23 +6,28 @@ import com.acmerobotics.dashboard.config.Config;
 public class RobotActionConfig {
     public static double gateInitDown                   = 0.0;
 
-    public static double gateDown                       = 0.12;
-    public static double gateUp                         = gateDown+0.18;
+    public static double GATEDOWN                       = 0.12;
+    public static double GATEUP                          = GATEDOWN+0.18;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
     public static double spindexerIncrement             = 0.333;
-
-
+    //Sorter
     public static double spindexerSlot1                 = 0.02;
     public static double spindexerSlot2                 = 0.46;
     public static double spindexerSlot3                 = 0.90;
-    public static double rampResetPos                   = 0.47; //change to 0.45
-    public static double rampUpPos                      = 0.35;
+    public static double RAMP_RESET_POSITION = 0.47; //change to 0.45
+    public static double RAMP_UP                      = 0.35;
     public static double angleResetPos                  = 0.0;
-    //Speed
-    public static double intakeSpeed                    = 1.0;
-
+    //Intake Speed
+    public static double INTAKE_SPEED                    = 0.6;
     public static double intakeRPM_THRESHOLD            = 100.0;
-    public static double shooterSpeed                   = 0.9;
+
+    //Offtake speed
+    public static final double SHOOTER_POWER = 0.85;
+    public static final double RAMP_UP_TIME = 0.75;
+    public static final double FIRE_TIME = 1.25;
+    public static final double EJECT_TIME = 0.25;
+
+    //Drive Train
     public static double powerFactor                    = 0.9;
     public static double accel_Slowness                 = 0.25;
     public static double decel_Slowness                 = 0.5;
