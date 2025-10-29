@@ -211,7 +211,6 @@ public class BasicTeleOps extends OpMode {
         if (controlState == ControlState.TEST) {
             telemetry.addLine("----- Test Mode Active -----");
         }
-
         // === TELEMETRY ===
         telemetry.addLine("-------Odometry-------------------");
         telemetry.addData("Pinpoint X", "%.2f in", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
