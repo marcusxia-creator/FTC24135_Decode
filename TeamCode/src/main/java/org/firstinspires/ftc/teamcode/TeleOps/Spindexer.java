@@ -67,7 +67,7 @@ public class Spindexer {
                 }
             }
 
-            runToSlot(n);
+            //runToSlot(n);
             return true;
         }
         else{

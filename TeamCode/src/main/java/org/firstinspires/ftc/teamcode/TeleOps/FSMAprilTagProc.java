@@ -50,7 +50,7 @@ public class FSMAprilTagProc {
 
         visionPortal = new VisionPortal.Builder()
                 .addProcessor(tagProcessor)
-                .setCamera(robot.webcam1)
+                //.setCamera(robot.webcam1)
                 .setCameraResolution(new Size(640, 480))
                 .build();
 

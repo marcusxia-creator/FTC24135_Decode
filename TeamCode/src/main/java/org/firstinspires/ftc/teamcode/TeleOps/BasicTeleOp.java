@@ -12,7 +12,6 @@ public class BasicTeleOp extends OpMode {
     private RobotHardware robot;
     private GamepadEx gamepadCo1, gamepadCo2;
     private RobotDrive robotDrive;
-    private FSMIntake intakeControl;
     private FSMShooter shooterManualControl;
     private ElapsedTime debounceTimer = new ElapsedTime();
 
@@ -28,9 +27,6 @@ public class BasicTeleOp extends OpMode {
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
-        intakeControl = new FSMIntake(robot, gamepadCo1, gamepadCo2);
-        intakeControl.Init();
-
         shooterManualControl = new FSMShooter(gamepadCo1, gamepadCo2, robot);
         shooterManualControl.Init();
 
@@ -39,7 +35,8 @@ public class BasicTeleOp extends OpMode {
 
     @Override
     public void loop() {
-
+        //robotDrive.DriveLoop();
+        shooterManualControl.ShooterLoop();
     }
 
     @Override

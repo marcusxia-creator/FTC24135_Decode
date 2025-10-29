@@ -113,6 +113,7 @@ public class RobotHardware {
         pushRampServo = hardwareMap.get(Servo.class, "Ramp_Servo");
         spindexerServo = hardwareMap.get(Servo.class, "Spindexer_Servo");
         leftGateServo = hardwareMap.get(Servo.class, "Left_Gate_Servo");
+        leftGateServo.setDirection(Servo.Direction.REVERSE);
         rightGateServo = hardwareMap.get(Servo.class, "Right_Gate_Servo");
         //color sensor
         colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");

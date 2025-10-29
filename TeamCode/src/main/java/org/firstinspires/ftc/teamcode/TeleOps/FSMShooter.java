@@ -44,6 +44,9 @@ public class FSMShooter {
         robot.shooterMotor.setPower(0);
         robot.pushRampServo.setPosition(RobotActionConfig.rampDownPos);
         shooterState = SHOOTERSTATE.FLYWHEEL_START;
+        robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
+        robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
+        robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
     }
 
     public void ShooterLoop() {
