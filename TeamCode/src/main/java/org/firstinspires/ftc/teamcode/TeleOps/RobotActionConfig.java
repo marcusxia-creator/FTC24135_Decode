@@ -18,10 +18,9 @@ public class RobotActionConfig {
     public static double RAMP_UP                        = 0.35;
     public static double angleResetPos                  = 0.0;
     //Intake Speed
-    public static double INTAKE_SPEED                   = 0.6;
-    public static double INTAKE_REVERSE_SPEED           = -0.2;
+    public static double INTAKE_POWER                   = 0.6;
+    public static double INTAKE_REVERSE_POWER           = -0.2;
     public static double INTAKE_HEAVYJAM_REVERSE_SPEED  = -0.8;
-    public static double OUTTAKE_SPEED                  = 0.6;
     public static double intakeRPM_THRESHOLD            = 100.0;
 
     //Offtake speed
