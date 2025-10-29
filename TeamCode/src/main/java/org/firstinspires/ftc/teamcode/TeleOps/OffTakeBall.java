@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class OffTakeBall {
 
@@ -23,6 +24,7 @@ public class OffTakeBall {
 
     //------ Shared ball system ------
     private final List<Ball> balls;
+    private List<Ball> ballsWithBall;
     private Ball targetBall;
 
     // --- Color sequence logic (now enum-based) ---
@@ -31,7 +33,10 @@ public class OffTakeBall {
             BallColor.GREEN,
             BallColor.PURPLE
     };
-    private int currentTargetIndex = 0;
+    private boolean useColorSequence = true;
+    private int currentColorTargetIndex = 0;    // for color based sequence indexing
+    private int currentCounterIndex = 0;   // for non color based sequence indexing
+    private int cycle_no = 0;      // counter for non color based sequence times
 
     // --- Constructor ---
     public OffTakeBall(RobotHardware robot, GamepadEx gamepad2, List<Ball> balls) {
@@ -46,19 +51,37 @@ public class OffTakeBall {
             case OFFTAKE_IDLE:
                 robot.shooterMotor.setPower(0.0);
                 if (gamepad2.getButton(GamepadKeys.Button.Y)) {
-                    currentTargetIndex =0;
-                    state = OFFTAKEBALLSTATE.OFFTAKE_AIMING;
+                    // new control logic
+                    ballsWithBall = balls.stream()
+                            .filter(ball -> ball.hasBall)
+                            .collect(Collectors.toList());
+                    // original
+                    cycle_no = ballsWithBall.size();
+                    currentColorTargetIndex = 0;
+                    currentCounterIndex = 0;
                     timer.reset();
+                    // Decide mode once per cycle
+                    useColorSequence = !isUnknownSequence(targetSequence);
+                    state = OFFTAKEBALLSTATE.OFFTAKE_AIMING;
                 }
                 break;
 
             case OFFTAKE_AIMING:
-                if (!isUnknownSequence(targetSequence)) {
-                    // --- Color-sequence-based shooting ---
-                    targetBall = findNextTargetBall(currentTargetIndex);
+                // will check if the sequence will be used
+                if (useColorSequence) {
+                    // --- Color-based sequence ---
+                    if (currentColorTargetIndex < targetSequence.length) {
+                        targetBall = findNextTargetBall(currentColorTargetIndex);
+                    } else {
+                        targetBall = null;
+                    }
                 } else {
-                    // --- Default sequential shooting ---
-                    targetBall = findNextAvailableBall(currentTargetIndex);
+                    // --- Non-color sequential ---
+                    if (currentCounterIndex < cycle_no) {
+                        targetBall = ballsWithBall.get(cycle_no - currentCounterIndex - 1);
+                    } else {
+                        targetBall = null;
+                    }
                 }
 
                 if (targetBall != null) {
@@ -66,36 +89,42 @@ public class OffTakeBall {
                     state = OFFTAKEBALLSTATE.OFFTAKE_SHOOTING;
                     timer.reset();
                 } else {
-                    currentTargetIndex++;
-                    if (targetSequence != null && currentTargetIndex >= targetSequence.length) {
-                        state = OFFTAKEBALLSTATE.OFFTAKE_DONE;
-                    } else if (currentTargetIndex >= balls.size()) {
-                        state = OFFTAKEBALLSTATE.OFFTAKE_DONE;
-                    }
+                    state = OFFTAKEBALLSTATE.OFFTAKE_DONE;
                 }
                 break;
 
             case OFFTAKE_SHOOTING:
                 // Spin-up and fire
-                if (timer.seconds() > 0.1) {
-                    robot.shooterMotor.setPower(0.75); // example power
-                    if (timer.seconds() > 0.5) {
-                        robot.pushRampServo.setPosition(RobotActionConfig.rampUpPos);
-                    }
-                    if (timer.seconds() > 1.5) {
-                        robot.shooterMotor.setPower(0.0);
-                        robot.pushRampServo.setPosition(RobotActionConfig.rampResetPos);
-                        currentTargetIndex = (currentTargetIndex + 1) % targetSequence.length;
-                        state = OFFTAKEBALLSTATE.OFFTAKE_EJECTING;
-                        timer.reset();
-                    }
+                robot.shooterMotor.setPower(0.85); // example power
+                if (timer.seconds() > 0.5) {
+                    robot.pushRampServo.setPosition(RobotActionConfig.rampUpPos);
+                }
+                if (timer.seconds() > 1.5) {
+                    robot.shooterMotor.setPower(0.0);
+                    robot.pushRampServo.setPosition(RobotActionConfig.rampResetPos);
+                    state = OFFTAKEBALLSTATE.OFFTAKE_EJECTING;
+                    timer.reset();
                 }
                 break;
 
             case OFFTAKE_EJECTING:
                 ejectCurrentBall(targetBall);
                 if (timer.seconds() > 0.25) {
-                    state = OFFTAKEBALLSTATE.OFFTAKE_AIMING; // Continue next ball
+                    if (useColorSequence) {
+                        currentColorTargetIndex++;
+                        if (currentColorTargetIndex < targetSequence.length) {
+                            state = OFFTAKEBALLSTATE.OFFTAKE_AIMING;
+                        } else {
+                            state = OFFTAKEBALLSTATE.OFFTAKE_DONE;
+                        }
+                    } else {
+                        currentCounterIndex++;
+                        if (currentCounterIndex < cycle_no) {
+                            state = OFFTAKEBALLSTATE.OFFTAKE_AIMING;
+                        } else {
+                            state = OFFTAKEBALLSTATE.OFFTAKE_DONE;
+                        }
+                    }
                 }
                 break;
 
@@ -111,7 +140,6 @@ public class OffTakeBall {
     /** --- Find next ball matching target sequence color ---*/
     private Ball findNextTargetBall(int targetIndex) {
         if (!isUnknownSequence(targetSequence)) {
-
             if (targetIndex >= targetSequence.length) {
                 return null; // all done
             }
@@ -146,7 +174,9 @@ public class OffTakeBall {
 
     // --- Reset shooter cycle manually ---
     private void resetCycle() {
-        currentTargetIndex = 0;
+        currentColorTargetIndex = 0;
+        currentCounterIndex = 0;
+        useColorSequence = false;
         state = OFFTAKEBALLSTATE.OFFTAKE_IDLE;
         robot.shooterMotor.setPower(0.0);
     }
@@ -162,7 +192,7 @@ public class OffTakeBall {
 
     public void setSequence(BallColor[] sequence) {
         this.targetSequence = sequence;
-        currentTargetIndex = 0;
+        currentColorTargetIndex = 0;
     }
 
     public void setState(OFFTAKEBALLSTATE newState) {
@@ -178,5 +208,8 @@ public class OffTakeBall {
             }
         }
         return true; // all are UNKNOWN
+    }
+    public boolean isColorSequence() {
+        return useColorSequence;
     }
 }
