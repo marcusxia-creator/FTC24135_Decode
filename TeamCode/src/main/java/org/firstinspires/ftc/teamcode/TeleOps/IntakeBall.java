@@ -189,17 +189,21 @@ public class IntakeBall {
 
     private void handleUnjammingState() {
         robot.spindexerServo.setPosition(slotAngles[previousSlot]);
+        robot.intakeMotor.setPower(-0.75);
 
         if (timer.seconds() > 0.5) {
             Ball b = balls.get(previousSlot);
             b.setHasBall(false);
             b.setBallColor(BallColor.UNKNOWN);
             currentSlot = previousSlot;
+        }
+
+        if (timer .seconds() > 1.5) {
+            robot.intakeMotor.setPower(0.0);
             timer.reset();
             state = INTAKEBALLSTATE.INTAKE_SWEEPING;
         }
     }
-
     //======================== HELPERS ========================
 
     public void stopIntake() {
