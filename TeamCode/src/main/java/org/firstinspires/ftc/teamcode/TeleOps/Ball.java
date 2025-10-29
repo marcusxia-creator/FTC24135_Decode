@@ -6,8 +6,8 @@ public class Ball {
 
     private final int slotPosition;   // Slot index (0, 1, 2)
     private final double slotAngle;   // Servo position for this slot
-    private boolean hasBall;          // True if a ball is present
-    private BallColor color;          // Enum color (RED, BLUE, YELLOW, UNKNOWN)
+    public boolean hasBall;          // True if a ball is present
+    public BallColor color;          // Enum color (RED, BLUE, YELLOW, UNKNOWN)
 
     // --- Constructor ---
     public Ball(int slotPosition, double slotAngle) {
