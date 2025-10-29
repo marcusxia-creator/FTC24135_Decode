@@ -59,7 +59,6 @@ public class BasicTeleOps extends OpMode {
             RobotActionConfig.spindexerSlot3
     };
 
-    private HashMap<Integer, BallColor[]> aprilTagSequences = new HashMap<>();
     private List<LynxModule> allHubs;
 
     // --- Telemetry optimization ---
@@ -69,7 +68,7 @@ public class BasicTeleOps extends OpMode {
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        /// --- Robot and subsystems ---
+        /// -------- Robot and subsystems -----------
         robot = new RobotHardware(hardwareMap);
         robot.init();
         gamepadCo1 = new GamepadEx(gamepad1);
@@ -77,7 +76,7 @@ public class BasicTeleOps extends OpMode {
 
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
-        // odometery ini
+        ///----odometery initialization----------
         robot.initPinPoint();
 
         /// === NEW: Ball Handling Setup ===
@@ -88,7 +87,7 @@ public class BasicTeleOps extends OpMode {
         colorDetection = new ColorDetection(robot);
         colorDetection.startDetection();
 
-        // April Tag
+        /// April Tag
         aprilTagUpdate = new AprilTagUpdate(hardwareMap);
         SharedColorSequence.aprilTagSequence = new BallColor[]{
                 BallColor.UNKNOWN, BallColor.UNKNOWN, BallColor.UNKNOWN

@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.ArrayList;
 import java.util.List;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 public class IntakeBall {
 
@@ -117,8 +118,8 @@ public class IntakeBall {
         if (currentSlot == -1) currentSlot = 0;
 
         robot.spindexerServo.setPosition(slotAngles[currentSlot]);
-        robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
-        robot.rightGateServo.setPosition(RobotActionConfig.gateUp);
+        robot.leftGateServo.setPosition(GATEUP);
+        robot.rightGateServo.setPosition(GATEUP);
 
         if (gamepad1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
             robot.intakeMotor.setPower(0.6);
@@ -139,8 +140,8 @@ public class IntakeBall {
         }
 
         if (colorDetection.isBallPresent()) {
-            robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
-            robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
+            robot.leftGateServo.setPosition(GATEDOWN);
+            robot.rightGateServo.setPosition(GATEDOWN);
             timer.reset();
             state = INTAKEBALLSTATE.INTAKE_DETECTED;
         }
@@ -176,12 +177,12 @@ public class IntakeBall {
         if (t > 0.25) {
             robot.spindexerServo.setPosition(slotAngles[nextSlot]);
             colorDetected = false;
-            robot.intakeMotor.setPower(0.6);
+            robot.intakeMotor.setPower(INTAKE_SPEED);
         }
 
         if (t > 0.5) {
-            robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
-            robot.rightGateServo.setPosition(RobotActionConfig.gateUp);
+            robot.leftGateServo.setPosition(GATEUP);
+            robot.rightGateServo.setPosition(GATEUP);
             timer.reset();
             state = INTAKEBALLSTATE.INTAKE_SWEEPING;
         }
@@ -211,7 +212,7 @@ public class IntakeBall {
     }
 
     private boolean isJammed() {
-        if (robot.intakeMotor.getPower() > 0.2 && intake_rpm < RobotActionConfig.intakeRPM_THRESHOLD) {
+        if (robot.intakeMotor.getPower() > 0.2 && intake_rpm < intakeRPM_THRESHOLD) {
             if (jamTimer.seconds() > 0.3) return true;
         } else {
             jamTimer.reset();
@@ -237,7 +238,7 @@ public class IntakeBall {
     }
 
     private boolean isButtonDebounced() {
-        if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+        if (debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             return true;
         }

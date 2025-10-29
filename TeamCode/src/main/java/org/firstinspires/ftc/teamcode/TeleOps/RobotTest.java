@@ -59,7 +59,7 @@ public class RobotTest extends OpMode {
         servoposition = 0.0;
         speed = 0.0;
 
-        robot.pushRampServo.setPosition(RobotActionConfig.rampResetPos);
+        robot.pushRampServo.setPosition(RobotActionConfig.RAMP_RESET_POSITION);
 
         robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
         robot.rightGateServo.setPosition(RobotActionConfig.gateUp);
@@ -114,7 +114,7 @@ public class RobotTest extends OpMode {
         if (gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
             //servoposition = robot.pushRampServo.getPosition() - 0.01;
             //robot.pushRampServo.setPosition(Range.clip(servoposition, 0, 1));
-            robot.pushRampServo.setPosition(RobotActionConfig.rampResetPos);
+            robot.pushRampServo.setPosition(RobotActionConfig.RAMP_RESET_POSITION);
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
             double i = 130.0 / 275.0;
