@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -14,6 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Vision.AprilTagUpdate;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,7 +39,9 @@ public class BasicTeleOps extends OpMode {
     private IntakeBall intakeBall;
     private OffTakeBall offTakeBall;
     private ColorDetection colorDetection;
-    //private AprilTagUpdate aprilTagUpdate = new AprilTagUpdate(hardwareMap);
+    ///  AprilTag sequence setup
+    private AprilTagUpdate aprilTagUpdate;
+    private boolean useAprilTagSequence;
 
     //======================= States & Timers ===============================
     private ControlState controlState = ControlState.RUN;
@@ -73,16 +77,24 @@ public class BasicTeleOps extends OpMode {
 
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
-
+        // odometery ini
         robot.initPinPoint();
 
         /// === NEW: Ball Handling Setup ===
         sharedBallList = new SharedBallList(spindexerSlotAngles);
         intakeBall = new IntakeBall(robot, gamepadCo2, sharedBallList.getBalls(), spindexerSlotAngles);
         offTakeBall = new OffTakeBall(robot, gamepadCo2, sharedBallList.getBalls());
-
+        ///  color sensor set up
         colorDetection = new ColorDetection(robot);
         colorDetection.startDetection();
+
+        // April Tag
+        aprilTagUpdate = new AprilTagUpdate(hardwareMap);
+        SharedColorSequence.aprilTagSequence = new BallColor[]{
+                BallColor.UNKNOWN, BallColor.UNKNOWN, BallColor.UNKNOWN
+        };
+        telemetry.addLine("AprilTag camera initialized.");
+
 
         /// Bulk caching optimization
         allHubs = hardwareMap.getAll(LynxModule.class);
@@ -98,24 +110,48 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Control Mode", robotDrive.getDriveMode().name());
         telemetry.update();
     }
+    public void init_loop() {
+        aprilTagUpdate.update();
+        int detectedID = aprilTagUpdate.getTagID();
+        BallColor[] tagSequence = aprilTagUpdate.getSequence();
+        if (detectedID != -1 && tagSequence != null) {
+            SharedColorSequence.aprilTagSequence = tagSequence;
+            telemetry.addData("AprilTag ID", detectedID);
+            telemetry.addData("Detected Sequence", aprilTagUpdate.getSequenceAsString());
+        } else {
+            telemetry.addLine("No valid AprilTag detected yet.");
+        }
+
+    }
 
     @Override
     public void start() {
+
         debounceTimer.reset();
         runTime.reset();
     }
 
     @Override
     public void loop() {
+        // === Decide if AprilTag sequence will be used ===
+        if (gamepadCo2.getButton(GamepadKeys.Button.DPAD_UP)) {
+            useAprilTagSequence = true;
+            offTakeBall.setSequence(SharedColorSequence.aprilTagSequence);
+            telemetry.addLine("AprilTag sequence ENABLED");
+        }
+
+        if (gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+            useAprilTagSequence = false;
+            offTakeBall.setSequence(null); // sequential / free shooting mode
+            telemetry.addLine("AprilTag sequence DISABLED");
+        }
 
         // === LOAD APRIL TAG SEQUENCE AFTER 100s ===
         double t = runTime.seconds();
-        if (t > 100.0)
+        if (t > 100.0 && !useAprilTagSequence)
             { //set sequence for offtake ball
-                if (SharedColorSequence.aprilTagSequence != null && SharedColorSequence.aprilTagSequence.length > 0) {
-                    offTakeBall.setSequence(SharedColorSequence.aprilTagSequence);
-                    telemetry.addData("Loaded Sequence", Arrays.toString(SharedColorSequence.aprilTagSequence));
-                }
+                useAprilTagSequence = true;
+                offTakeBall.setSequence(SharedColorSequence.aprilTagSequence);
             }
 
         // === CONTROL MODE TOGGLE ===
@@ -181,13 +217,11 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Pinpoint X", "%.2f in", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
         telemetry.addData("Pinpoint Y", "%.2f in", robot.pinpointDriver.getPosY(DistanceUnit.INCH));
         telemetry.addData("Pinpoint Heading", "%.2f°", robot.pinpointDriver.getHeading(AngleUnit.DEGREES));
-
         telemetry.addLine("--------------Op Mode--------------");
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", robotDrive.getDriveMode().name());
         telemetry.addData("Ball Mode", ballHandlingState.name());
         telemetry.addData("Battery Voltage", getBatteryVoltage());
-
         telemetry.addLine("-----------Intake Info--------------");
         telemetry.addData("Intake State", intakeBall.getState());
         telemetry.addData("Is Color Detected?", intakeBall.isColorDetected());
@@ -212,10 +246,16 @@ public class BasicTeleOps extends OpMode {
             telemetry.addLine("Color changed → " + currentColor.name());
             lastDisplayedColor = currentColor;
         }
-
+        /// ===================================================================================================
         telemetry.addLine("-----------Offtake Info--------------");
         telemetry.addData("Offtake State", offTakeBall.getState());
         telemetry.addData("Offtake color used", offTakeBall.isColorSequence());
+        /// ===================================================================================================
+        telemetry.addLine("-----------AprilTag Info--------------");
+        telemetry.addData("Tag ID", aprilTagUpdate.getTagID());
+        telemetry.addData("Sequence Mode", useAprilTagSequence ? "TAG-GUIDED" : "FREE-SHOOTING");
+        telemetry.addData("Sequence Loaded", Arrays.toString(SharedColorSequence.aprilTagSequence));
+        telemetry.addData("Field Coord", aprilTagUpdate.getRobotFieldCoordinateAsString());
         telemetry.update();
     }
 
