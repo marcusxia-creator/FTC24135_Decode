@@ -215,6 +215,7 @@ public class BasicTeleOps extends OpMode {
 
         telemetry.addLine("-----------Offtake Info--------------");
         telemetry.addData("Offtake State", offTakeBall.getState());
+        telemetry.addData("Offtake color used", offTakeBall.isColorSequence());
         telemetry.update();
     }
 
