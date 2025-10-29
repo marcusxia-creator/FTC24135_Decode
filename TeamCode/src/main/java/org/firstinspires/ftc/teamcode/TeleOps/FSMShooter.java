@@ -2,11 +2,10 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.robotcore.robot.Robot;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.R;
 
 public class FSMShooter {
     private final GamepadEx gamepad_1;
@@ -16,18 +15,22 @@ public class FSMShooter {
     private ElapsedTime shootTimer = new ElapsedTime();
     private ElapsedTime rampTimer = new ElapsedTime();
     private SHOOTERSTATE shooterState;
-    private int slotNumber = 1;
+    public RAMPSTATE rampstate = RAMPSTATE.DOWN;
+    private int counter = 2;
 
 
-    boolean[] isFilled = {false, false, false};
-
+   // double [] isFilled = {false, false, false};
+    double [] slotAngle = {0.02, 0.46, 0.90};
 
     public enum SHOOTERSTATE {
-        SHOOTER_START,
+        FLYWHEEL_START,
         RAMP_UP,
-        COLOUR_SENSOR_CHECK,
+        DISTANCE_SENSOR_CHECK,
         SPINDEXER_ROTATE,
-        SHOOTER_STOP
+    }
+    public enum RAMPSTATE{
+        UP,
+        DOWN
     }
 
     public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot) {
@@ -37,70 +40,80 @@ public class FSMShooter {
     }
 
     public void Init() {
+        counter = 2;
         robot.shooterMotor.setPower(0);
         robot.pushRampServo.setPosition(RobotActionConfig.rampDownPos);
-        shooterState = SHOOTERSTATE.SHOOTER_START;
+        shooterState = SHOOTERSTATE.FLYWHEEL_START;
     }
 
     public void ShooterLoop() {
         switch (shooterState) {
-            case SHOOTER_START:
+            case FLYWHEEL_START:
                 if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
+                    robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     robot.shooterMotor.setPower(RobotActionConfig.shooterSpeed);
-                }
-                if (isFlywheelAtSpeed(RobotActionConfig.shooterSpeed)) {
-                    shooterState = SHOOTERSTATE.RAMP_UP;
+                    if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced()) {
+                        shooterState = SHOOTERSTATE.RAMP_UP;
+                    }
+                    shootTimer.reset();
                 }
                 break;
             case RAMP_UP:
+                toggleRamp();
+                updateServoState();
                 shootTimer.reset();
-                if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced()) {
-                    robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
-                    robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
-                    robot.pushRampServo.setPosition(RobotActionConfig.rampUpPos);
-
-                }
-                if (shootTimer.seconds() > 1.0) {
-                    robot.pushRampServo.setPosition(RobotActionConfig.rampDownPos);
-                    shooterState = SHOOTERSTATE.COLOUR_SENSOR_CHECK;
-                }
                 break;
-            case COLOUR_SENSOR_CHECK:
-                double distance = robot.distanceSensor.getDistance(DistanceUnit.CM);
-                if (distance < 10) {
-                    shooterState = SHOOTERSTATE.SPINDEXER_ROTATE;
-                } else {
-                    shooterState = SHOOTERSTATE.RAMP_UP;
+            case DISTANCE_SENSOR_CHECK:
+                if (shootTimer.seconds() > 0.5) {
+                    toggleRamp();
+                    updateServoState();
+                    double distance = robot.distanceSensor.getDistance(DistanceUnit.MM);
+                    if (distance < 100) {
+                        shooterState = SHOOTERSTATE.RAMP_UP;
+                        shootTimer.reset();
+                    } else {
+                        robot.pushRampServo.setPosition(RobotActionConfig.rampDownPos);
+                        shooterState = SHOOTERSTATE.SPINDEXER_ROTATE;
+                        shootTimer.reset();
+                    }
                 }
                 break;
             case SPINDEXER_ROTATE:
-                if (slotNumber == 1) {
-                    robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
-                    slotNumber = 2;
-                    shooterState = SHOOTERSTATE.RAMP_UP;
+                if (counter > 0) {
+                    counter = counter - 1;
+                    robot.spindexerServo.setPosition(slotAngle[counter]);
+                    if (shootTimer.seconds() > 0.2) {
+                        shooterState = SHOOTERSTATE.RAMP_UP;
+                    }
+                } else if (counter == 0) {
+                    shooterState = SHOOTERSTATE.FLYWHEEL_START;
                 }
-                else if (slotNumber == 2) {
-                    robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot2);
-                    slotNumber = 3;
-                    shooterState = SHOOTERSTATE.RAMP_UP;
-                }
-                else if (slotNumber == 3) {
-                    robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot3);
-                    slotNumber = 1;
-                    shooterState = SHOOTERSTATE.SHOOTER_STOP;
-                }
+                shootTimer.reset();
                 break;
-            case SHOOTER_STOP:
-                robot.shooterMotor.setPower(0.0);
-                shooterState = SHOOTERSTATE.SHOOTER_START;
-                break;
+            default:
+                shooterState = SHOOTERSTATE.FLYWHEEL_START;
+        }
+        if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()){
+            robot.pushRampServo.setPosition(RobotActionConfig.rampDownPos);
+            robot.shooterMotor.setPower(0);
+            shooterState = SHOOTERSTATE.FLYWHEEL_START;
+        }
+    }
+    private void toggleRamp (){
+        if (rampstate == RAMPSTATE.UP){
+            rampstate = RAMPSTATE.DOWN;
+        }else{
+            rampstate = RAMPSTATE.UP;
+        }
+    }
+    private void updateServoState (){
+        if (rampstate != RAMPSTATE.UP){
+            robot.pushRampServo.setPosition(RobotActionConfig.rampDownPos);
+        } else{
+            robot.pushRampServo.setPosition(RobotActionConfig.rampUpPos);
         }
     }
 
-    private boolean isFlywheelAtSpeed(double targetSpeed) {
-        double currentSpeed = robot.shooterMotor.getVelocity();
-        return currentSpeed - targetSpeed > 1.0;
-    }
 
     private boolean isButtonDebounced() {
         if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
