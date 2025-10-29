@@ -96,10 +96,10 @@ public class OffTakeBall {
             case OFFTAKE_SHOOTING:
                 // Spin-up and fire
                 robot.shooterMotor.setPower(0.85); // example power
-                if (timer.seconds() > 0.5) {
+                if (timer.seconds() > 0.75) {
                     robot.pushRampServo.setPosition(RobotActionConfig.rampUpPos);
                 }
-                if (timer.seconds() > 1.5) {
+                if (timer.seconds() > 1.25) {
                     robot.shooterMotor.setPower(0.0);
                     robot.pushRampServo.setPosition(RobotActionConfig.rampResetPos);
                     state = OFFTAKEBALLSTATE.OFFTAKE_EJECTING;
@@ -176,6 +176,7 @@ public class OffTakeBall {
     private void resetCycle() {
         currentColorTargetIndex = 0;
         currentCounterIndex = 0;
+        cycle_no = 0;
         useColorSequence = false;
         state = OFFTAKEBALLSTATE.OFFTAKE_IDLE;
         robot.shooterMotor.setPower(0.0);
