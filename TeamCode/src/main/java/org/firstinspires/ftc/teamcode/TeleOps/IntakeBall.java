@@ -36,8 +36,11 @@ public class IntakeBall {
     public static final double INTAKE_RPM_CONVERSION = 60.0 / INTAKE_TICKS_PER_REV;
 
     //============= INTAKE VARIABLES ==========================
-    private double intake_rpm;
+    private double intake_RPM;
     private INTAKEBALLSTATE state = INTAKEBALLSTATE.INTAKE_READY;
+
+    private final ElapsedTime sweepTimer = new ElapsedTime();
+    private boolean reversing = false;
 
     //============= SPINDEXER & BALLS =========================
     private final double[] slotAngles;
@@ -69,7 +72,7 @@ public class IntakeBall {
     public void IntakeBallUpdate() {
         /// === Read velocity in ticks/sec and convert to RPM ===
         double intake_ticksPerSec = robot.intakeMotor.getVelocity();
-        intake_rpm = intake_ticksPerSec * INTAKE_RPM_CONVERSION;
+        intake_RPM = intake_ticksPerSec * INTAKE_RPM_CONVERSION;
 
         /// check for jam
         boolean jammed = isJammed();
@@ -122,27 +125,35 @@ public class IntakeBall {
         robot.rightGateServo.setPosition(GATEUP);
 
         if (gamepad1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
-            robot.intakeMotor.setPower(0.6);
+            robot.intakeMotor.setPower(INTAKE_POWER);
             state = INTAKEBALLSTATE.INTAKE_SWEEPING;
             timer.reset();
         }
     }
 
     private void handleSweepingState(boolean jammed) {
-        if (jammed) {
-            robot.intakeMotor.setPower(-0.2);
-            try {
-                sleep(150);  // shorter to avoid slowdowns
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-            robot.intakeMotor.setPower(0.0);
+        if (jammed && !reversing) {
+            // start short reverse pulse
+            reversing = true;
+            sweepTimer.reset();
+            robot.intakeMotor.setPower(INTAKE_REVERSE_POWER);
         }
 
-        if (colorDetection.isBallPresent()) {
+        if (reversing) {
+            // let it reverse for 0.3 s, then stop
+            if (sweepTimer.seconds() > 0.3) {
+                robot.intakeMotor.setPower(0.0);
+                reversing = false;
+            }
+        }
+        if (!jammed && !reversing) {
+            // normal sweeping forward when not jammed
+            robot.intakeMotor.setPower(INTAKE_POWER);
+        }
+
+        if(colorDetection.isBallPresent()){
             robot.leftGateServo.setPosition(GATEDOWN);
             robot.rightGateServo.setPosition(GATEDOWN);
-            timer.reset();
             state = INTAKEBALLSTATE.INTAKE_DETECTED;
         }
     }
@@ -177,7 +188,7 @@ public class IntakeBall {
         if (t > 0.25) {
             robot.spindexerServo.setPosition(slotAngles[nextSlot]);
             colorDetected = false;
-            robot.intakeMotor.setPower(INTAKE_SPEED);
+            robot.intakeMotor.setPower(INTAKE_POWER);
         }
 
         if (t > 0.5) {
@@ -189,18 +200,29 @@ public class IntakeBall {
     }
 
     private void handleUnjammingState() {
-        robot.spindexerServo.setPosition(slotAngles[previousSlot]);
-        robot.intakeMotor.setPower(-0.75);
+        double t = timer.seconds();
+        // --- 1. Reverse intake roller early to clear jam ---
+        if (t < 0.1) {
+            // short reverse pulse
+            robot.intakeMotor.setPower(-0.7);
+        }
+        else if (t < 0.5) {
+            // pause motor briefly to let ball roll back
+            robot.intakeMotor.setPower(0.0);
+        }
 
-        if (timer.seconds() > 0.5) {
+        // --- 2. Return spindexer to previous slot to re-align ---
+        if (t >= 0.5 && t < 0.75) {
+            robot.spindexerServo.setPosition(slotAngles[previousSlot]);
+        }
+
+        // --- 3. After 1.0 s, mark the slot as cleared ---
+        if (t >= 0.75 ) {
             Ball b = balls.get(previousSlot);
             b.setHasBall(false);
             b.setBallColor(BallColor.UNKNOWN);
             currentSlot = previousSlot;
-        }
-
-        if (timer .seconds() > 1.5) {
-            robot.intakeMotor.setPower(0.0);
+            robot.intakeMotor.setPower(INTAKE_POWER);
             timer.reset();
             state = INTAKEBALLSTATE.INTAKE_SWEEPING;
         }
@@ -212,7 +234,7 @@ public class IntakeBall {
     }
 
     private boolean isJammed() {
-        if (robot.intakeMotor.getPower() > 0.2 && intake_rpm < intakeRPM_THRESHOLD) {
+        if (robot.intakeMotor.getPower() > 0.2 && intake_RPM < intakeRPM_THRESHOLD) {
             if (jamTimer.seconds() > 0.3) return true;
         } else {
             jamTimer.reset();
