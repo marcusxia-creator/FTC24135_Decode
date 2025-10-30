@@ -173,7 +173,7 @@ public class RobotTest extends OpMode {
 
         if (gamepad_2.getButton(GamepadKeys.Button.BACK)) {
             if (!backPressed) {
-                robot.pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH,0, 0.0, 0.0)); // reset pose (x,y,heading)
+                robot.pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH,0, 0.0, AngleUnit.DEGREES, 0)); // reset pose (x,y,heading)
                 telemetry.addLine("Pinpoint reset to (0,0,0)");
                 backPressed = true; // debounce
             }
