@@ -7,7 +7,7 @@ public class RobotActionConfig {
     public static double gateInitDown                    = 0.0;
 
     public static double GATEDOWN                        = 0.13;
-    public static double GATEUP                          = 0.3;
+    public static double GATEUP                          = 0.29;
     public static double DEBOUNCE_THRESHOLD              = 0.25;
     public static double spindexerIncrement              = 0.333;
     //Sorter
