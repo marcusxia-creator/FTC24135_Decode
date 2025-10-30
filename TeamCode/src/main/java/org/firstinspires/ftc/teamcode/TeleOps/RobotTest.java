@@ -60,6 +60,9 @@ public class RobotTest extends OpMode {
         robot.init();
         robot.initPinPoint();
 
+        robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
+        robotDrive.Init();
+
         colorDetection = new ColorDetection(robot);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -81,6 +84,9 @@ public class RobotTest extends OpMode {
 
     @Override
     public void loop() {
+
+        robotDrive.DriveLoop();
+
         // === Read velocity in ticks/sec and convert to RPM ===
         double shooter_ticksPerSec = robot.shooterMotor.getVelocity();
 
@@ -185,6 +191,7 @@ public class RobotTest extends OpMode {
         // Telemetry (DS + Dashboard)
         // === TELEMETRY ===
         telemetry.addLine("-------Odometry-------------------");
+        robot.pinpointDriver.update();
         double currentX = robot.pinpointDriver.getPosX(DistanceUnit.INCH);
         double currentY = robot.pinpointDriver.getPosY(DistanceUnit.INCH);
         // Compute distance to top-right corner
