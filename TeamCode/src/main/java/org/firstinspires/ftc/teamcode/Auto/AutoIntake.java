@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.Ball;
 import org.firstinspires.ftc.teamcode.TeleOps.BallColor;
 import org.firstinspires.ftc.teamcode.TeleOps.ColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.IntakeBall;
-import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 import java.util.ArrayList;
@@ -70,8 +70,8 @@ public class AutoIntake {
             currentSlot = findEmptySlot();
             if (currentSlot == -1) currentSlot = 0;
             robot.spindexerServo.setPosition(slotAngles[currentSlot]);
-            robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
-            robot.rightGateServo.setPosition(RobotActionConfig.gateUp);
+            robot.leftGateServo.setPosition(GATEUP);
+            robot.rightGateServo.setPosition(GATEUP);
             robot.intakeMotor.setPower(0.6);
             state = INTAKEBALLSTATE.INTAKE_SWEEPING;
             timer.reset();
@@ -139,8 +139,8 @@ public class AutoIntake {
         }
 
         if (colorDetection.isBallPresent()) {
-            robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
-            robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
+            robot.leftGateServo.setPosition(GATEDOWN);
+            robot.rightGateServo.setPosition(GATEDOWN);
             timer.reset();
             state = INTAKEBALLSTATE.INTAKE_DETECTED;
         }
@@ -177,8 +177,8 @@ public class AutoIntake {
             robot.intakeMotor.setPower(0.6);
         }
         if (t > 0.5) {
-            robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
-            robot.rightGateServo.setPosition(RobotActionConfig.gateUp);
+            robot.leftGateServo.setPosition(GATEUP);
+            robot.rightGateServo.setPosition(GATEUP);
             timer.reset();
             state = INTAKEBALLSTATE.INTAKE_SWEEPING;
         }
@@ -200,7 +200,7 @@ public class AutoIntake {
     // HELPERS
     //=============================================================
     private boolean isJammed() {
-        if (robot.intakeMotor.getPower() > 0.2 && intake_rpm < RobotActionConfig.intakeRPM_THRESHOLD) {
+        if (robot.intakeMotor.getPower() > 0.2 && intake_rpm < intakeRPM_THRESHOLD) {
             if (jamTimer.seconds() > 0.3) return true;
         } else {
             jamTimer.reset();
