@@ -133,6 +133,8 @@ public class RobotHardware {
 
         leftGateServo.setDirection(Servo.Direction.REVERSE);
         rightGateServo.setDirection(Servo.Direction.FORWARD);
+        spindexerServo.setDirection(Servo.Direction.REVERSE);
+
         //color sensor
         colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
         distanceSensor = hardwareMap.get(DistanceSensor.class, "Color_Sensor");

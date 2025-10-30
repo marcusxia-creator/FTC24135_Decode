@@ -83,6 +83,7 @@ public class BasicTeleOps extends OpMode {
         sharedBallList = new SharedBallList(spindexerSlotAngles);
         intakeBall = new IntakeBall(robot, gamepadCo2, sharedBallList.getBalls(), spindexerSlotAngles);
         offTakeBall = new OffTakeBall(robot, gamepadCo2, sharedBallList.getBalls());
+        robot.spindexerServo.setPosition(spindexerSlotAngles[0]);
         ///  color sensor set up
         colorDetection = new ColorDetection(robot);
         colorDetection.startDetection();
@@ -93,7 +94,6 @@ public class BasicTeleOps extends OpMode {
                 BallColor.UNKNOWN, BallColor.UNKNOWN, BallColor.UNKNOWN
         };
         telemetry.addLine("AprilTag camera initialized.");
-
 
         /// Bulk caching optimization
         allHubs = hardwareMap.getAll(LynxModule.class);

@@ -121,15 +121,27 @@ public class OffTakeBall {
 
     /** Handles spin-up, fire, and transition to ejecting. */
     private void handleShootingState() {
-        robot.shooterMotor.setPower(SHOOTER_POWER);
-
-        if (timer.seconds() > RAMP_UP_TIME) {
+        double startTime;
+        double shootPower;
+        if (currentCounterIndex == 0){
+            startTime = RAMP_UP_TIME_1st+0.5;
+            shootPower = SHOOTER_POWER+0.1;
+        }
+        else{
+            startTime = RAMP_UP_TIME;
+            shootPower = SHOOTER_POWER;
+        }
+        robot.shooterMotor.setPower(shootPower);
+        if (timer.seconds() > startTime-0.2) {
             robot.leftGateServo.setPosition(GATEUP);
             robot.rightGateServo.setPosition(GATEUP);
+        }
+
+        if (timer.seconds() > startTime) {
             robot.pushRampServo.setPosition(RAMP_UP);
         }
 
-        if (timer.seconds() > FIRE_TIME) {
+        if (timer.seconds() > startTime+0.5) {
             robot.shooterMotor.setPower(0.0);
             robot.pushRampServo.setPosition(RAMP_RESET_POSITION);
             robot.leftGateServo.setPosition(GATEDOWN);

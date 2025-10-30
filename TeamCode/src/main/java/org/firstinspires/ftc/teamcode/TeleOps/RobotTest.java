@@ -73,7 +73,7 @@ public class RobotTest extends OpMode {
 
         robot.leftGateServo.setPosition(GATEUP);
         robot.rightGateServo.setPosition(GATEUP);
-        robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
+        robot.spindexerServo.setPosition(0);
 
         robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -99,7 +99,7 @@ public class RobotTest extends OpMode {
         boolean jammed = isJammed();
 
         colorDetection.updateDetection();
-
+        /**
         if (colorDetection.isBallPresent()) {
             if (colorDetection.isColorStable()) {
                 robot.leftGateServo.setPosition(GATEDOWN);
@@ -116,8 +116,8 @@ public class RobotTest extends OpMode {
         else {
             robot.leftGateServo.setPosition(GATEUP);
             robot.rightGateServo.setPosition(GATEUP);
-
         }
+         */
 
         if (gamepad_2.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
             //servoposition = robot.pushRampServo.getPosition() + 0.01;
@@ -130,12 +130,12 @@ public class RobotTest extends OpMode {
             robot.pushRampServo.setPosition(RAMP_RESET_POSITION);
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
-            double i = 130.0 / 275.0;
+            double i = 0.01;
             servoposition = robot.spindexerServo.getPosition() + i;
             robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 0.92));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
-            double i = 130.0 / 275.0;
+            double i = 0.01;
             servoposition = robot.spindexerServo.getPosition() - i;
             robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 0.92));
         }
