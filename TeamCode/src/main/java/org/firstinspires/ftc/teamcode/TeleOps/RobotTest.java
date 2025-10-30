@@ -53,7 +53,7 @@ public class RobotTest extends OpMode {
 
         robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
         robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
-        robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
+        robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
 
         robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "BLUE_TEST_AUTO_PIXEL", group = "Autonomous")
+@Autonomous(name = "TrajectoryTest", group = "Autonomous")
 public class TrajectoryTest extends LinearOpMode {
 
     public static Pose2d initialPose = new Pose2d(64,8, Math.toRadians(0));
