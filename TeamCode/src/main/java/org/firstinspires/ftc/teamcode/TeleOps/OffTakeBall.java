@@ -124,12 +124,16 @@ public class OffTakeBall {
         robot.shooterMotor.setPower(SHOOTER_POWER);
 
         if (timer.seconds() > RAMP_UP_TIME) {
+            robot.leftGateServo.setPosition(GATEUP);
+            robot.rightGateServo.setPosition(GATEUP);
             robot.pushRampServo.setPosition(RAMP_UP);
         }
 
         if (timer.seconds() > FIRE_TIME) {
             robot.shooterMotor.setPower(0.0);
             robot.pushRampServo.setPosition(RAMP_RESET_POSITION);
+            robot.leftGateServo.setPosition(GATEDOWN);
+            robot.rightGateServo.setPosition(GATEDOWN);
             state = OFFTAKEBALLSTATE.OFFTAKE_EJECTING;
             timer.reset();
         }
