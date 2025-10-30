@@ -55,6 +55,9 @@ public class OffTakeBall {
                 robot.shooterMotor.setPower(0.0);
 
                 if (gamepad2.getButton(GamepadKeys.Button.Y)) {
+                    //Close the gate
+                    robot.leftGateServo.setPosition(GATEDOWN);
+                    robot.rightGateServo.setPosition(GATEDOWN);
                     // Prepare ball list
                     ballsWithBall = balls.stream()
                             .filter(Ball::hasBall)
@@ -73,7 +76,6 @@ public class OffTakeBall {
 
             case OFFTAKE_AIMING:
                 targetBall = getNextTargetBall();
-
                 if (targetBall != null) {
                     robot.spindexerServo.setPosition(targetBall.getSlotAngle());
                     state = OFFTAKEBALLSTATE.OFFTAKE_SHOOTING;
