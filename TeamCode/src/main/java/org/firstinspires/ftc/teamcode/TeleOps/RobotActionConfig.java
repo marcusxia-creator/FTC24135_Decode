@@ -6,7 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 public class RobotActionConfig {
     public static double gateInitDown                    = 0.0;
 
-    public static double GATEDOWN                        = 0.12;
+    public static double GATEDOWN                        = 0.115;
     public static double GATEUP                          = GATEDOWN+0.18;
     public static double DEBOUNCE_THRESHOLD              = 0.25;
     public static double spindexerIncrement              = 0.333;
@@ -14,8 +14,8 @@ public class RobotActionConfig {
     public static double spindexerSlot1                  = 0.02;
     public static double spindexerSlot2                  = 0.46;
     public static double spindexerSlot3                  = 0.90;
-    public static double RAMP_RESET_POSITION            = 0.47; //change to 0.45
-    public static double RAMP_UP                        = 0.35;
+    public static double RAMP_RESET_POSITION            = 0.42; //change to 0.45
+    public static double RAMP_UP                        = 0.12;
     public static double angleResetPos                  = 0.0;
     //Intake Speed
     public static double INTAKE_POWER                   = 0.6;
