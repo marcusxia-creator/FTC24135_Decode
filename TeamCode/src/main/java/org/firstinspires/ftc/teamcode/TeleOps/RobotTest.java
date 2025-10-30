@@ -46,6 +46,7 @@ public class RobotTest extends OpMode {
     private ElapsedTime jamTimer = new ElapsedTime();
 
     // Determine if Intake is jammed
+    private boolean backPressed = false;
 
 
     @Override
@@ -110,12 +111,12 @@ public class RobotTest extends OpMode {
 
         }
 
-        if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
+        if (gamepad_2.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
             //servoposition = robot.pushRampServo.getPosition() + 0.01;
             //robot.pushRampServo.setPosition(Range.clip(servoposition, 0.0, 1.0));
             robot.pushRampServo.setPosition(RAMP_UP);
         }
-        if (gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
+        if (gamepad_2.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
             //servoposition = robot.pushRampServo.getPosition() - 0.01;
             //robot.pushRampServo.setPosition(Range.clip(servoposition, 0, 1));
             robot.pushRampServo.setPosition(RAMP_RESET_POSITION);
@@ -167,6 +168,17 @@ public class RobotTest extends OpMode {
             }
             robot.intakeMotor.setPower(0.0);
         }
+
+        if (gamepad_2.getButton(GamepadKeys.Button.BACK)) {
+            if (!backPressed) {
+                robot.pinpointDriver.setPosition(new Pose2d(0.0, 0.0, 0.0)); // reset pose (x,y,heading)
+                telemetry.addLine("Pinpoint reset to (0,0,0)");
+                backPressed = true; // debounce
+            }
+        } else {
+            backPressed = false; // reset debounce when released
+        }
+
 
         // Telemetry (DS + Dashboard)
         // === TELEMETRY ===
