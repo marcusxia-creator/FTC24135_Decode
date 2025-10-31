@@ -21,6 +21,7 @@ public class TestTeleOp extends OpMode {
     private double speed;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private RobotDrive robotDrive;
+    private GamepadManager gamepadManager;
 
     @Override
     public void init() {
@@ -36,6 +37,8 @@ public class TestTeleOp extends OpMode {
         robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
         robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerReset);
+
+        gamepadManager=new GamepadManager(gamepad1,gamepad2);
     }
 
     @Override

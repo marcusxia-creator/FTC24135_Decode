@@ -21,6 +21,8 @@ public class RobotActionConfig {
     public static double accel_Slowness                 = 0.25;
     public static double decel_Slowness                 = 0.5;
 
-
-
+    //Intake capture timing
+    public static double gateDownTime                   = 0.1;
+    public static double SpindexerStartTime             = 0.7;
+    public static double SpindexerMoveTime              = 1.0;
 }

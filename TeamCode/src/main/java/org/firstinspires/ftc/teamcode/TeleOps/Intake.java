@@ -26,19 +26,16 @@ public class Intake {
     int[] purpleRangeLow = {115, 118};
     int[] purpleRangeHigh = {180, 230};
 
-    boolean[] isFilled = {false, false, false};
-
-    private int slotNumber = 1;
-
     private enum IntakeStates {
-        INTAKE_INIT,
-        INTAKE_START,
-        DETECT_COLOR,
-        SWITCH_SLOT,
-        INTAKE_STOP
+        INTAKE_STBY,
+
+        INTAKE_RUNNING,
+        INTAKE_CAPTURE,
+
+        INTAKE_REVERSE
     }
 
-    private IntakeStates intakeStates = IntakeStates.INTAKE_INIT;
+    private IntakeStates intakeStates = IntakeStates.INTAKE_STBY;
 
     private ElapsedTime debounceTimer = new ElapsedTime();
     private double DEBOUNCE_THRESHOLD = 0.25;
@@ -49,81 +46,91 @@ public class Intake {
     private final GamepadEx gamepad_1;
     private final GamepadEx gamepad_2;
 
+    Spindexer spindexer;
+    GamepadManager gamepadManager;
 
-    public Intake(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot) {
+    boolean recorded;
+
+    public Intake(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, Spindexer spindexer, GamepadManager gamepadManager) {
         this.robot = robot;
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
+
+        this.spindexer = spindexer;
+        this.gamepadManager = gamepadManager;
     }
 
     public void loop() {
         switch (intakeStates) {
-            case INTAKE_INIT:
+            case INTAKE_STBY:
                 robot.intakeMotor.setPower(0);
-                robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
-                if (gamepad_1.getButton(GamepadKeys.Button.A) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
-                    robot.intakeMotor.setPower(RobotActionConfig.intakeSpeed);
-                    intakeStates = IntakeStates.INTAKE_START;
-                }
-                break;
-            case INTAKE_START:
-                robot.intakeMotor.setPower(RobotActionConfig.intakeSpeed);
-                double distance = robot.distanceSensor.getDistance(DistanceUnit.CM);
-                if (distance < 10) {
-                    intakeTimer.reset();
-                    intakeStates = IntakeStates.DETECT_COLOR;
-                }
-                break;
-            case DETECT_COLOR:
-                Color.RGBToHSV(robot.colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, hsvValues);
                 robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
                 robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
-                robot.intakeMotor. setPower(0);
-                isFilled[slotNumber - 1] = true;
-
-                /**
-                if ((hsvValues[0] > greenRangeHigh[0] && hsvValues[0] < greenRangeHigh[1]) || (hsvValues[0] > greenRangeLow[0] && hsvValues[0] < greenRangeLow[1])) {
-                    artifacts.putArtifacts(slotNumber, 1);
+                if (gamepadManager.IntakeRun.PressState && spindexer.checkFor(Spindexer.SLOT.Empty)) {
+                    intakeStates = IntakeStates.INTAKE_RUNNING;
                 }
-
-                if ((hsvValues[0] > purpleRangeHigh[0] && hsvValues[0] < purpleRangeHigh[1]) || (hsvValues[0] > purpleRangeLow[0] && hsvValues[0] < purpleRangeLow[1])) {
-                    artifacts.putArtifacts(slotNumber, 2);
+                if (gamepadManager.IntakeReverse.PressState) {
+                    intakeStates = IntakeStates.INTAKE_REVERSE;
                 }
-
-                if (intakeTimer.seconds() > 0.3) {
-                    artifacts.putArtifacts(slotNumber, 3);
-                    intakeStates = IntakeStates.SWITCH_SLOT;
-                }
-                 */
-
                 break;
-            case SWITCH_SLOT:
-                if (slotNumber == 1) {
-                    robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot2);
-                    slotNumber = 2;
-                    intakeStates = IntakeStates.INTAKE_START;
-                }
-                if (slotNumber == 2) {
-                    robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
-                    slotNumber = 3;
-                    intakeStates = IntakeStates.INTAKE_START;
-                }
-                if (slotNumber == 3) {
-                    slotNumber = 1;
+
+            case INTAKE_RUNNING:
+                robot.intakeMotor.setPower(RobotActionConfig.intakeSpeed);
+                robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
+                robot.rightGateServo.setPosition(RobotActionConfig.gateUp);
+                if (robot.distanceSensor.getDistance(DistanceUnit.CM) < 10) {
                     intakeTimer.reset();
-                    intakeStates = IntakeStates.INTAKE_STOP;
+                    intakeStates = IntakeStates.INTAKE_CAPTURE;
+                    recorded = false;
+                }
+                if (gamepadManager.IntakeRun.PressState||gamepadManager.IntakeReverse.PressState||!spindexer.checkFor(Spindexer.SLOT.Empty)){
+                    intakeStates=IntakeStates.INTAKE_STBY;
                 }
                 break;
-            case INTAKE_STOP:
-                if (intakeTimer.seconds() < 0.2) {
-                    robot.intakeMotor.setPower(-0.2);
+
+            case INTAKE_CAPTURE:
+
+                //Put gates down
+                if (intakeTimer.seconds() > RobotActionConfig.gateDownTime) {
+                    robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
+                    robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
                 }
-                if (isFilled[0] && isFilled[1] && isFilled[2]) {
-                    intakeStates = IntakeStates.INTAKE_INIT;
+
+                if (intakeTimer.seconds() > RobotActionConfig.SpindexerStartTime && !recorded) {
+                    Color.RGBToHSV(robot.colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, hsvValues);
+
+                    if ((greenRangeLow[0] < hsvValues[0] && hsvValues[0] < greenRangeLow[1]) ||
+                            greenRangeHigh[0] < hsvValues[0] && hsvValues[0] < greenRangeHigh[1]) {
+                        //Green
+                        spindexer.writeToCurrent(Spindexer.SLOT.Green);
+                    } else if ((purpleRangeLow[0] < hsvValues[0] && hsvValues[0] < purpleRangeLow[1]) ||
+                            purpleRangeHigh[0] < hsvValues[0] && hsvValues[0] < purpleRangeHigh[1]) {
+                        //Purple
+                        spindexer.writeToCurrent(Spindexer.SLOT.Purple);
+                    }
+
+                    spindexer.runToSlot(Spindexer.SLOT.Empty);
+                    recorded = true;
+                }
+
+                if (intakeTimer.seconds() > RobotActionConfig.SpindexerMoveTime || robot.distanceSensor.getDistance(DistanceUnit.CM) > 10) {
+                    if (spindexer.checkFor(Spindexer.SLOT.Empty)) {
+                        intakeStates = IntakeStates.INTAKE_RUNNING;
+                    } else {
+                        intakeStates = IntakeStates.INTAKE_STBY;
+                    }
                 }
                 break;
-            default:
-                intakeStates = IntakeStates.INTAKE_INIT;
+
+            case INTAKE_REVERSE:
+                robot.intakeMotor.setPower(-RobotActionConfig.intakeSpeed);
+                robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
+                robot.rightGateServo.setPosition(RobotActionConfig.gateUp);
+
+                if (gamepadManager.IntakeRun.PressState||gamepadManager.IntakeReverse.PressState){
+                    intakeStates=IntakeStates.INTAKE_STBY;
+                }
+                break;
         }
     }
 }
