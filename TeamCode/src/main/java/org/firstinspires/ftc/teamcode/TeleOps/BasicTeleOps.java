@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Vision.AprilTagUpdate;
 
 import java.util.Arrays;
@@ -32,6 +33,15 @@ public class BasicTeleOps extends OpMode {
         INTAKING,
         OFFTAKING
     }
+    public enum IsApriTagSequence{
+        TRUE,
+        FALSE
+    }
+
+    public enum AllianceSide {
+        BLUE,
+        RED
+    }
 
     private RobotHardware robot;
     private GamepadEx gamepadCo1, gamepadCo2;
@@ -42,6 +52,8 @@ public class BasicTeleOps extends OpMode {
     ///  AprilTag sequence setup
     private AprilTagUpdate aprilTagUpdate;
     private boolean useAprilTagSequence;
+    private IsApriTagSequence isApriTagSequence;
+    private AllianceSide allianceSide;
 
     //======================= States & Timers ===============================
     private ControlState controlState = ControlState.RUN;
@@ -61,8 +73,9 @@ public class BasicTeleOps extends OpMode {
 
     private List<LynxModule> allHubs;
 
-    // --- Telemetry optimization ---
     private BallColor lastDisplayedColor = BallColor.UNKNOWN;
+
+    Pose2D targetGoalPos;
 
     @Override
     public void init() {
@@ -121,6 +134,21 @@ public class BasicTeleOps extends OpMode {
             telemetry.addLine("No valid AprilTag detected yet.");
         }
 
+        // Toggle the Alliance Side
+        if (gamepadCo1.getButton(BACK)&&gamepadCo1.getButton(LEFT_BUMPER)&&!lBstartPressed) {
+            lBstartPressed = true;
+            toggleAllianceSide();
+            if (allianceSide == AllianceSide.BLUE) {
+                targetGoalPos = new Pose2D( DistanceUnit.INCH,70,70, AngleUnit.DEGREES,45);
+                telemetry.addLine("Target Blue");
+            }else{
+                targetGoalPos = new Pose2D( DistanceUnit.INCH,70,70, AngleUnit.DEGREES,45);
+                telemetry.addLine("Target Red");
+            }
+        }
+        else if (!gamepadCo1.getButton(BACK) || !gamepadCo1.getButton(LEFT_BUMPER)) {
+                lBstartPressed = false;
+            }
     }
 
     @Override
@@ -132,19 +160,19 @@ public class BasicTeleOps extends OpMode {
 
     @Override
     public void loop() {
+
         // === Decide if AprilTag sequence will be used ===
         if (gamepadCo2.getButton(GamepadKeys.Button.DPAD_UP)) {
-            useAprilTagSequence = true;
-            offTakeBall.setSequence(SharedColorSequence.aprilTagSequence);
-            telemetry.addLine("AprilTag sequence ENABLED");
+            toggleAprilTagSequenceState();
+            if (isApriTagSequence == IsApriTagSequence.TRUE) {
+                offTakeBall.setSequence(SharedColorSequence.aprilTagSequence);
+                offTakeBall.setSequence(SharedColorSequence.aprilTagSequence);
+                telemetry.addLine("AprilTag sequence ENABLED");
+            }else{
+                offTakeBall.setSequence(null);
+                telemetry.addLine("AprilTag sequence DISABLED");
+            }
         }
-
-        if (gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-            useAprilTagSequence = false;
-            offTakeBall.setSequence(null); // sequential / free shooting mode
-            telemetry.addLine("AprilTag sequence DISABLED");
-        }
-
         // === LOAD APRIL TAG SEQUENCE AFTER 100s ===
         double t = runTime.seconds();
         if (t > 100.0 && !useAprilTagSequence)
@@ -162,9 +190,13 @@ public class BasicTeleOps extends OpMode {
             lBstartPressed = false;
         }
 
+
         // === DRIVE ===
         robotDrive.DriveLoop();
+        robot.pinpointDriver.update();
+        RobotActionConfig.distanceToGoal = getTargeGoalDist(targetGoalPos);
 
+        // RUn mode
         if (controlState == ControlState.RUN) {
             robot.pinpointDriver.update();
 
@@ -277,6 +309,16 @@ public class BasicTeleOps extends OpMode {
                 ? ControlState.TEST
                 : ControlState.RUN;
     }
+    private void toggleAprilTagSequenceState() {
+        isApriTagSequence = (isApriTagSequence == IsApriTagSequence.TRUE)
+                ? IsApriTagSequence.FALSE
+                : IsApriTagSequence.TRUE;
+    }
+    private void toggleAllianceSide() {
+        allianceSide = (allianceSide == AllianceSide.BLUE)
+                ? AllianceSide.BLUE
+                : AllianceSide.RED;
+    }
 
     public double getBatteryVoltage() {
         double result = Double.POSITIVE_INFINITY;
@@ -287,5 +329,13 @@ public class BasicTeleOps extends OpMode {
             }
         }
         return (result == Double.POSITIVE_INFINITY) ? 0.0 : result;
+    }
+    public double getTargeGoalDist(Pose2D targetGoalPos){
+        double tag_x = targetGoalPos.getX(DistanceUnit.INCH);
+        double tag_y = targetGoalPos.getY(DistanceUnit.INCH);
+        double rob_x = robot.pinpointDriver.getPosX(DistanceUnit.INCH);
+        double rob_y = robot.pinpointDriver.getPosY(DistanceUnit.INCH);
+        double targetGoalDist = Math.sqrt(Math.pow(Math.abs(tag_x - rob_x),2) + Math.pow(Math.abs(tag_y - rob_y),2));
+        return targetGoalDist;
     }
 }

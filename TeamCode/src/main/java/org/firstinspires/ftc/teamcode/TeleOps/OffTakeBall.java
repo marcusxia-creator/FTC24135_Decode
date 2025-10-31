@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,8 +29,6 @@ public class OffTakeBall {
 //------ Shooter Power Table ------
 
 ShooterPowerTable shooterTable = new ShooterPowerTable();
-double distance = robot.pinpoint.getTargetDistance(); // or AprilTag distance
-
 
     //------ Shared ball system ------
     private final List<Ball> balls;
@@ -130,12 +131,13 @@ double distance = robot.pinpoint.getTargetDistance(); // or AprilTag distance
     private void handleShootingState() {
         double startTime;
         double shootPower;
-shootPower = shooterTable.getPower(distance);
+        double distance = distanceToGoal;
+        shootPower = -14.88+0.7736667*distance-0.01416667*Math.pow(distance,2)+0.000113333*Math.pow(distance,3)-3.33333e-7*Math.pow(distance,4);
 
-telemetry.addData("Shooter Power", power);
+        telemetry.addData("Shooter Power", shootPower);
         if (currentCounterIndex == 0){
             startTime = RAMP_UP_TIME_1st+0.5;
-            shootPower = shootPower+0.1;
+            shootPower = Range.clip(shootPower+0.1, 0.5, 1.0);
         }
         else{
             startTime = RAMP_UP_TIME;

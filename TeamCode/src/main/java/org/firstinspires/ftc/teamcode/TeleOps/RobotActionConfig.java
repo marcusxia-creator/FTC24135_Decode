@@ -35,6 +35,9 @@ public class RobotActionConfig {
     public static double accel_Slowness                 = 0.25;
     public static double decel_Slowness                 = 0.5;
 
+    //Distance to goal
+    public static double distanceToGoal                 = 0.0;
+
 
 }
 

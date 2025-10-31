@@ -1,17 +1,21 @@
+package org.firstinspires.ftc.teamcode.TeleOps;
+
 import com.acmerobotics.dashboard.config.Config;
 import java.util.TreeMap;
 
 @Config
 public class ShooterPowerTable {
-    public static double DIST1 = 40.0;
-    public static double POWER1 = 0.65;
+    public static double DIST1 = 60.0;
+    public static double POWER1 = 0.70;
     public static double DIST2 = 80.0;
     public static double POWER2 = 0.75;
     public static double DIST3 = 110.0;
-    public static double POWER3 = 0.82;
+    public static double POWER3 = 0.86;
 
     private final TreeMap<Double, Double> table = new TreeMap<>();
 
+    //constructor for power table.
+    //updateTable to reflect live dashboard tuning
     public ShooterPowerTable() {
         updateTable();
     }
