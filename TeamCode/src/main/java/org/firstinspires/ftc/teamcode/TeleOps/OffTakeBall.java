@@ -23,6 +23,11 @@ public class OffTakeBall {
 
     private final RobotHardware robot;
     private final GamepadEx gamepad2;
+//------ Shooter Power Table ------
+
+ShooterPowerTable shooterTable = new ShooterPowerTable();
+double distance = robot.pinpoint.getTargetDistance(); // or AprilTag distance
+
 
     //------ Shared ball system ------
     private final List<Ball> balls;
@@ -125,13 +130,15 @@ public class OffTakeBall {
     private void handleShootingState() {
         double startTime;
         double shootPower;
+shootPower = shooterTable.getPower(distance);
+
+telemetry.addData("Shooter Power", power);
         if (currentCounterIndex == 0){
             startTime = RAMP_UP_TIME_1st+0.5;
-            shootPower = SHOOTER_POWER+0.1;
+            shootPower = shootPower+0.1;
         }
         else{
             startTime = RAMP_UP_TIME;
-            shootPower = SHOOTER_POWER;
         }
         robot.shooterMotor.setPower(shootPower);
         if (timer.seconds() > startTime-0.2) {
