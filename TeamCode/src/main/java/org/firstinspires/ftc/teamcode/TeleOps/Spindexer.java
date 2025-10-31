@@ -13,8 +13,8 @@ public class Spindexer {
     //For jams
     public int prevSlot;
 
-    Spindexer(SLOT slot1,SLOT slot2,SLOT slot3, int currentSlot){
-        slots = new SLOT[]{slot1, slot2, slot3};
+    Spindexer(SLOT slot0,SLOT slot1,SLOT slot2, int currentSlot){
+        slots = new SLOT[]{slot0, slot1, slot2};
         this.currentSlot = currentSlot;
     }
 
@@ -42,21 +42,21 @@ public class Spindexer {
 
     public void runToSlot(int n){
         prevSlot = currentSlot;
-        currentSlot = (n-1)%3+1;
+        currentSlot = n%3;
+        if(n==0){
+            robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
+        }
         if(n==1){
             robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
         }
         if(n==2){
             robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot2);
         }
-        if(n==3){
-            robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot3);
-        }
     }
 
     public Boolean runToSlot(SLOT a){
         if(checkFor(a)){
-            int n;
+            int n=0;
             int distance = 4;
 
             //look for closest slot
@@ -66,8 +66,7 @@ public class Spindexer {
                     n=i;
                 }
             }
-
-            //runToSlot(n);
+            runToSlot(n);
             return true;
         }
         else{
