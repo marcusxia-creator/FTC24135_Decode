@@ -14,9 +14,9 @@ public class FSMShooter {
     private ElapsedTime debounceTimer = new ElapsedTime();
     private ElapsedTime shootTimer = new ElapsedTime();
     private ElapsedTime rampTimer = new ElapsedTime();
-    private SHOOTERSTATE shooterState;
+    SHOOTERSTATE shooterState;
     public RAMPSTATE rampstate = RAMPSTATE.DOWN;
-    private int counter = 2;
+    int counter = 2;
 
     /**
      * BUTTON FOR SHOOTING
@@ -100,9 +100,9 @@ public class FSMShooter {
                 }
                 break;
             case DISTANCE_SENSOR_CHECK:
-                if (shootTimer.seconds() > 0.5 ) {
-                        rampstate = RAMPSTATE.DOWN;
-                        updateServoState();
+                if (shootTimer.seconds() > 0.75 ) {
+                    rampstate = RAMPSTATE.DOWN;
+                    updateServoState();
                 }
                 if(shootTimer.seconds() > 1.0){
                     double distance = robot.distanceSensor.getDistance(DistanceUnit.MM);
@@ -165,4 +165,3 @@ public class FSMShooter {
     }
 
 }
-
