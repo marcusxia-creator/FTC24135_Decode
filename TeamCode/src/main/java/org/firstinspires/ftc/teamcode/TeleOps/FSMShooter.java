@@ -16,7 +16,7 @@ public class FSMShooter {
     private ElapsedTime rampTimer = new ElapsedTime();
     SHOOTERSTATE shooterState;
     public RAMPSTATE rampstate = RAMPSTATE.DOWN;
-    int counter = 0;
+    int counter = 2;
 
     /**
      * BUTTON FOR SHOOTING
@@ -117,8 +117,8 @@ public class FSMShooter {
                 break;
             case SPINDEXER_ROTATE:
                 // Decrement counter to aim at the next slot
-                counter++;
-                if (counter <= 2) {
+                counter--;
+                if (counter >= 0) {
                     robot.spindexerServo.setPosition(slotAngle[counter]);
                     if (shootTimer.seconds() > 0.45) {
                         shooterState = SHOOTERSTATE.RAMP_UP;
