@@ -38,7 +38,7 @@ public class BasicTeleOp extends OpMode {
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
-        shooterManualControl = new FSMShooter(gamepadCo1, gamepadCo2, robot);
+        shooterManualControl = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, gamepadManager);
         shooterManualControl.Init();
 
         intake = new Intake(gamepadCo1, gamepadCo2, robot, spindexer, gamepadManager);
@@ -55,12 +55,14 @@ public class BasicTeleOp extends OpMode {
         spindexer.runToSlot();
 
         telemetry.addData("Intake State", intake.intakeStates);
+        telemetry.addData("Shooter State", shooterManualControl.shooterState);
         telemetry.addData("Sensor Distance", robot.distanceSensor.getDistance(DistanceUnit.CM));
         telemetry.addData("Slot 0", spindexer.slots[0]);
         telemetry.addData("Slot 1", spindexer.slots[1]);
         telemetry.addData("Slot 2", spindexer.slots[2]);
         telemetry.addData("Current Slot", spindexer.currentSlot);
         telemetry.addData("Spindexer Servo Pos", robot.spindexerServo.getPosition());
+        telemetry.addData("Target Colour", shooterManualControl.targetColour.name());
         telemetry.update();
     }
 

@@ -17,6 +17,8 @@ public class FSMShooter {
     SHOOTERSTATE shooterState;
     public RAMPSTATE rampstate = RAMPSTATE.DOWN;
     int counter = 2;
+    Spindexer spindexer;
+    Spindexer.SLOT targetColour = Spindexer.SLOT.Purple;
 
     /**
      * BUTTON FOR SHOOTING
@@ -33,11 +35,9 @@ public class FSMShooter {
 
     public enum SHOOTERSTATE {
         IDLE,
-        FLYWHEEL_START,
-        RAMP_UP,
-        DISTANCE_SENSOR_CHECK,
+        FLYWHEEL_RUNNING,
+        SHOOTING,
         SPINDEXER_ROTATE,
-        COOLDOWN
     }
     public enum RAMPSTATE{
         UP,
@@ -47,10 +47,14 @@ public class FSMShooter {
     // Define slotAngle
     double [] slotAngle;
 
-    public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot) {
+    GamepadManager gamepadManager;
+
+    public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, Spindexer spindexer, GamepadManager gamepadManager) {
         this.gamepad_1 = gamepad_1;
         this.robot = robot;
         slotAngle = new double[]{spindexerSlot0, spindexerSlot1, spindexerSlot2};
+        this.spindexer = spindexer;
+        this.gamepadManager = gamepadManager;
     }
 
     public void Init() {
@@ -60,7 +64,8 @@ public class FSMShooter {
         robot.leftGateServo.setPosition(gateDown);
         robot.rightGateServo.setPosition(gateDown);
         robot.spindexerServo.setPosition(slotAngle[counter]);
-        shooterState = SHOOTERSTATE.IDLE;;
+        shooterState = SHOOTERSTATE.IDLE;
+        robot.shooterMotor.setPower(0);
     }
 
     public void ShooterLoop() {
@@ -76,67 +81,89 @@ public class FSMShooter {
                 if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
                     robot.shooterMotor.setPower(shooterSpeed);
                     shootTimer.reset();
-                    shooterState = SHOOTERSTATE.FLYWHEEL_START;
+                    shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
+                }
+                if (gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
+                    targetColour = Spindexer.SLOT.Purple;
+                }
+                if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
+                    targetColour = Spindexer.SLOT.Green;
                 }
                 break;
-            case FLYWHEEL_START:
+            case FLYWHEEL_RUNNING:
                 // Give the flywheel time ProcessBuilder.Redirect.to get ProcessBuilder.Redirect.to speed (Log.e.g., 1 second)
-                if (shootTimer.seconds() > 1.0) {
-                    shooterState = SHOOTERSTATE.RAMP_UP;
+                // Press 'Y' to toggle ramp up/down]
+                if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced()) {
+                    shooterState = SHOOTERSTATE.SHOOTING;
+                    rampstate = RAMPSTATE.UP;
+                    updateServoState();
+                    robot.leftGateServo.setPosition(gateUp);
+                    robot.rightGateServo.setPosition(gateUp);
+                    shootTimer.reset();
                 }
                 // Press 'X' again to stop spinning the flywheel
                 // Allow driver to turn off flywheel if they change their mind with in 1 second
                 if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
-                    shooterState = SHOOTERSTATE.COOLDOWN;
+                    shooterState = SHOOTERSTATE.IDLE;
+                    robot.shooterMotor.setPower(0);
                 }
-                break;
-            case RAMP_UP:
-                // Press 'Y' to toggle ramp up/down
-                if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced()) {
-                    rampstate = RAMPSTATE.UP;
-                    updateServoState();
-                    shootTimer.reset();
-                    shooterState = SHOOTERSTATE.DISTANCE_SENSOR_CHECK;
+
+                //Launch Colour
+                if (((gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced())||!spindexer.checkFor(Spindexer.SLOT.Green))&&spindexer.checkFor(Spindexer.SLOT.Purple)) {
+                    targetColour = Spindexer.SLOT.Purple;
                 }
-                break;
-            case DISTANCE_SENSOR_CHECK:
-                if (shootTimer.seconds() > 0.75 ) {
-                    rampstate = RAMPSTATE.DOWN;
-                    updateServoState();
+                if (((gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced())||!spindexer.checkFor(Spindexer.SLOT.Purple))&&spindexer.checkFor(Spindexer.SLOT.Green)) {
+                    targetColour = Spindexer.SLOT.Green;
                 }
-                if(shootTimer.seconds() > 1.0){
-                    double distance = robot.distanceSensor.getDistance(DistanceUnit.MM);
-                    if (distance < 100) {
-                        shooterState = SHOOTERSTATE.RAMP_UP;
-                        shootTimer.reset();
-                    } else {
+
+                if (spindexer.slots[spindexer.currentSlot]!=targetColour){
+                    if(spindexer.checkFor(targetColour)) {
+                        spindexer.runToSlot(targetColour);
                         shooterState = SHOOTERSTATE.SPINDEXER_ROTATE;
-                        shootTimer.reset();
                     }
-                }
-                break;
-            case SPINDEXER_ROTATE:
-                // Decrement counter to aim at the next slot
-                counter--;
-                if (counter >= 0) {
-                    robot.spindexerServo.setPosition(slotAngle[counter]);
-                    if (shootTimer.seconds() > 0.45) {
-                        shooterState = SHOOTERSTATE.RAMP_UP;
+                    else{
+                        shooterState = SHOOTERSTATE.IDLE;
+                        robot.shooterMotor.setPower(0);
                     }
-                } else {
-                    shooterState = SHOOTERSTATE.COOLDOWN;
                 }
                 shootTimer.reset();
                 break;
-            case COOLDOWN:
-                // Spin down the motor and reset state to IDLE
-                robot.shooterMotor.setPower(0);
-                // After cooling down, we go back to the beginning.
-                // Re-initialize to reset the counter for the next cycle.
-                Init();
-                shooterState = SHOOTERSTATE.IDLE;
+                
+            case SHOOTING:
+                //Ramp Down
+                if (shootTimer.seconds() > 0.75 ) {
+                    rampstate = RAMPSTATE.DOWN;
+                    updateServoState();
+                    robot.leftGateServo.setPosition(gateDown);
+                    robot.rightGateServo.setPosition(gateDown);
+                }
+                //Check Distance
+                if(shootTimer.seconds() > 1.0){
+                    double distance = robot.distanceSensor.getDistance(DistanceUnit.MM);
+                    if (distance < 100) {
+                        //Ramp Up
+                        rampstate = RAMPSTATE.UP;
+                        updateServoState();
+                        robot.leftGateServo.setPosition(gateUp);
+                        robot.rightGateServo.setPosition(gateUp);
+                        shootTimer.reset();
+                    } else {
+                        //Countinue
+                        spindexer.writeToCurrent(Spindexer.SLOT.Empty);
+                        shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
+                        shootTimer.reset();
+                    }
+                }
                 break;
+
+            case SPINDEXER_ROTATE:
+                if (shootTimer.seconds() > 0.45) {
+                    shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
+                }
+                break;
+
             default:
+                robot.shooterMotor.setPower(0);
                 shooterState = SHOOTERSTATE.IDLE;
         }
     }

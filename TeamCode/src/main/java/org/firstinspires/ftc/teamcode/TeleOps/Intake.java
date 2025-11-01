@@ -64,8 +64,6 @@ public class Intake {
         switch (intakeStates) {
             case INTAKE_STBY:
                 robot.intakeMotor.setPower(0);
-                robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
-                robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
                 if (gamepadManager.IntakeRun.PressState && spindexer.checkFor(Spindexer.SLOT.Empty)) {
                     intakeStates = IntakeStates.INTAKE_RUNNING;
                 }
@@ -85,6 +83,8 @@ public class Intake {
                 }
                 if (gamepadManager.IntakeRun.PressState||gamepadManager.IntakeReverse.PressState||!spindexer.checkFor(Spindexer.SLOT.Empty)){
                     intakeStates=IntakeStates.INTAKE_STBY;
+                    robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
+                    robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
                 }
                 break;
 
@@ -108,7 +108,6 @@ public class Intake {
                         //Purple
                         spindexer.writeToCurrent(Spindexer.SLOT.Purple);
                     }
-
                     spindexer.runToSlot(Spindexer.SLOT.Empty);
                     recorded = true;
                 }
@@ -118,6 +117,8 @@ public class Intake {
                         intakeStates = IntakeStates.INTAKE_RUNNING;
                     } else {
                         intakeStates = IntakeStates.INTAKE_STBY;
+                        robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
+                        robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
                     }
                 }
                 break;
@@ -129,6 +130,8 @@ public class Intake {
 
                 if (gamepadManager.IntakeRun.PressState||gamepadManager.IntakeReverse.PressState){
                     intakeStates=IntakeStates.INTAKE_STBY;
+                    robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
+                    robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
                 }
                 break;
         }

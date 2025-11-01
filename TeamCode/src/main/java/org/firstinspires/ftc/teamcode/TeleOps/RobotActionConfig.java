@@ -9,7 +9,7 @@ public class RobotActionConfig {
     public static double DEBOUNCE_THRESHOLD             = 0.25;
     public static double spindexerSlot0                 = 0.02;
     public static double spindexerSlot1                 = 0.46;
-    public static double spindexerSlot2                 = 0.90;
+    public static double spindexerSlot2                 = 0.95;
     public static double spindexerReset                 = 0.0;
     public static double rampDownPos                    = 0.42; //changed from 0.45
     public static double rampUpPos                      = 0.10;

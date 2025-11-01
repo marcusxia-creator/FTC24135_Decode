@@ -28,8 +28,8 @@ public class GamepadManager {
         gamepad_1 = new GamepadEx(gamepad1);
         gamepad_2 = new GamepadEx(gamepad2);
 
-        IntakeRun = new Control(GamepadKeys.Button.DPAD_RIGHT, false);
-        IntakeReverse = new Control(GamepadKeys.Button.DPAD_LEFT, false);
+        IntakeRun = new Control(GamepadKeys.Button.DPAD_LEFT, false);
+        IntakeReverse = new Control(GamepadKeys.Button.DPAD_RIGHT, false);
         Flywheel = new Control(GamepadKeys.Button.X, false);
         Launch = new Control(GamepadKeys.Button.Y, false);
     }
