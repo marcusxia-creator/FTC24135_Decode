@@ -5,6 +5,8 @@ import android.graphics.Color;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Intake {
@@ -30,7 +32,9 @@ public class Intake {
 
     private int slotNumber = 1;
 
-    private enum IntakeStates {
+    public double distance;
+
+    public enum IntakeStates {
         INTAKE_INIT,
         INTAKE_START,
         DETECT_COLOR,
@@ -38,7 +42,7 @@ public class Intake {
         INTAKE_STOP
     }
 
-    private IntakeStates intakeStates = IntakeStates.INTAKE_INIT;
+    public IntakeStates intakeStates = IntakeStates.INTAKE_INIT;
 
     private ElapsedTime debounceTimer = new ElapsedTime();
     private double DEBOUNCE_THRESHOLD = 0.25;
@@ -57,29 +61,37 @@ public class Intake {
     }
 
     public void loop() {
+
+        Color.RGBToHSV(robot.colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, hsvValues);
+        distance = robot.distanceSensor.getDistance(DistanceUnit.CM);
+
         switch (intakeStates) {
             case INTAKE_INIT:
                 robot.intakeMotor.setPower(0);
+                robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
+                robot.rightGateServo.setPosition(RobotActionConfig.gateUp);
                 robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
-                if (gamepad_1.getButton(GamepadKeys.Button.A) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
+                if ((gamepad_1.getButton(GamepadKeys.Button.A) || gamepad_2.getButton(GamepadKeys.Button.A)) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
+                    debounceTimer.reset();
                     robot.intakeMotor.setPower(RobotActionConfig.intakeSpeed);
                     intakeStates = IntakeStates.INTAKE_START;
                 }
                 break;
             case INTAKE_START:
+                robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
+                robot.rightGateServo.setPosition(RobotActionConfig.gateUp);
                 robot.intakeMotor.setPower(RobotActionConfig.intakeSpeed);
-                double distance = robot.distanceSensor.getDistance(DistanceUnit.CM);
-                if (distance < 10) {
+                if (distance < 10 && intakeTimer.seconds() > 0.25) {
                     intakeTimer.reset();
                     intakeStates = IntakeStates.DETECT_COLOR;
                 }
                 break;
             case DETECT_COLOR:
-                Color.RGBToHSV(robot.colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, hsvValues);
                 robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
                 robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
                 robot.intakeMotor. setPower(0);
                 isFilled[slotNumber - 1] = true;
+                intakeStates = IntakeStates.SWITCH_SLOT;
 
                 /**
                 if ((hsvValues[0] > greenRangeHigh[0] && hsvValues[0] < greenRangeHigh[1]) || (hsvValues[0] > greenRangeLow[0] && hsvValues[0] < greenRangeLow[1])) {
@@ -98,17 +110,20 @@ public class Intake {
 
                 break;
             case SWITCH_SLOT:
-                if (slotNumber == 1) {
+                if (isFilled[0]) {
                     robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot2);
                     slotNumber = 2;
+                    intakeTimer.reset();
                     intakeStates = IntakeStates.INTAKE_START;
                 }
-                if (slotNumber == 2) {
-                    robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
+                if (isFilled[1]) {
+                    robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot3);
                     slotNumber = 3;
+                    intakeTimer.reset();
                     intakeStates = IntakeStates.INTAKE_START;
                 }
-                if (slotNumber == 3) {
+                if (isFilled[2]) {
+                    robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
                     slotNumber = 1;
                     intakeTimer.reset();
                     intakeStates = IntakeStates.INTAKE_STOP;
@@ -118,7 +133,10 @@ public class Intake {
                 if (intakeTimer.seconds() < 0.2) {
                     robot.intakeMotor.setPower(-0.2);
                 }
-                if (isFilled[0] && isFilled[1] && isFilled[2]) {
+                else {
+                    isFilled[0] = false;
+                    isFilled[1] = false;
+                    isFilled[2] = false;
                     intakeStates = IntakeStates.INTAKE_INIT;
                 }
                 break;

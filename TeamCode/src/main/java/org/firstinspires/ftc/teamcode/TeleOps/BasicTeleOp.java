@@ -21,7 +21,7 @@ public class BasicTeleOp extends OpMode {
     private RobotHardware robot;
     private GamepadEx gamepadCo1, gamepadCo2;
     private RobotDrive robotDrive;
-    private FSMIntake intakeControl;
+    private Intake intakeControl;
     private FSMShooterManual shooterManualControl;
     private ElapsedTime debounceTimer = new ElapsedTime();
 
@@ -37,18 +37,20 @@ public class BasicTeleOp extends OpMode {
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
-        intakeControl = new FSMIntake(robot, gamepadCo1, gamepadCo2);
-        intakeControl.Init();
+        intakeControl = new Intake(gamepadCo1, gamepadCo2, robot);
 
         shooterManualControl = new FSMShooterManual(gamepadCo1, gamepadCo2, robot);
         shooterManualControl.Init();
-
-
     }
 
     @Override
     public void loop() {
+        intakeControl.loop();
+        robotDrive.DriveLoop();
 
+        telemetry.addData("Distance", intakeControl.distance);
+        telemetry.addData("Hue", intakeControl.hsvValues[0]);
+        telemetry.addData("Intake States", intakeControl.intakeStates);
     }
 
     @Override
