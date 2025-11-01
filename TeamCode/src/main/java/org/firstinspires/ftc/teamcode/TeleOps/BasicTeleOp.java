@@ -37,6 +37,13 @@ public class BasicTeleOp extends OpMode {
     public void loop() {
         //robotDrive.DriveLoop();
         shooterManualControl.ShooterLoop();
+        telemetry.addData("Shooter State", shooterManualControl.shooterState);
+        telemetry.addData("Ramp State", shooterManualControl.rampstate);
+        telemetry.addData("Counter", shooterManualControl.counter);
+        telemetry.addData("Shooter Speed", robot.shooterMotor.getPower());
+        telemetry.addData("Spindexer", robot.spindexerServo.getPosition());
+        telemetry.addData("Ramp", robot.pushRampServo.getPosition());
+        telemetry.update();
     }
 
     @Override

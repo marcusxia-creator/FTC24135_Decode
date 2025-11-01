@@ -16,6 +16,7 @@ public class Spindexer {
     Spindexer(SLOT slot0,SLOT slot1,SLOT slot2, int currentSlot){
         slots = new SLOT[]{slot0, slot1, slot2};
         this.currentSlot = currentSlot;
+        runToSlot(currentSlot);
     }
 
     public void writeToCurrent(SLOT a){

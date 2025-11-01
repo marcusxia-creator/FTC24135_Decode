@@ -7,7 +7,7 @@ public class RobotActionConfig {
     public static double gateDown                       = 0.19;
     public static double gateUp                         = 0.30;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
-    public static double spindexerSlot0                 = 0.02;
+    public static double spindexerSlot0                 = 0.03;
     public static double spindexerSlot1                 = 0.46;
     public static double spindexerSlot2                 = 0.90;
     public static double spindexerReset                 = 0.0;
@@ -20,6 +20,9 @@ public class RobotActionConfig {
     public static double powerFactor                    = 0.9;
     public static double accel_Slowness                 = 0.25;
     public static double decel_Slowness                 = 0.5;
+    public static double gateDownTime                   = 0.1;
+    public static double SpindexerStartTime             = 0.7;
+    public static double SpindexerMoveTime              = 1.0;
 
 
 

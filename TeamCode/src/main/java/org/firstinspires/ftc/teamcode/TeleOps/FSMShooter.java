@@ -14,9 +14,9 @@ public class FSMShooter {
     private ElapsedTime debounceTimer = new ElapsedTime();
     private ElapsedTime shootTimer = new ElapsedTime();
     private ElapsedTime rampTimer = new ElapsedTime();
-    private SHOOTERSTATE shooterState;
+    SHOOTERSTATE shooterState;
     public RAMPSTATE rampstate = RAMPSTATE.DOWN;
-    private int counter = 2;
+    int counter = 0;
 
     /**
      * BUTTON FOR SHOOTING
@@ -50,7 +50,7 @@ public class FSMShooter {
     public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot) {
         this.gamepad_1 = gamepad_1;
         this.robot = robot;
-        slotAngle = new double[]{spindexerSlot1, spindexerSlot2, spindexerSlot3};
+        slotAngle = new double[]{spindexerSlot0, spindexerSlot1, spindexerSlot2};
     }
 
     public void Init() {
@@ -100,7 +100,7 @@ public class FSMShooter {
                 }
                 break;
             case DISTANCE_SENSOR_CHECK:
-                if (shootTimer.seconds() > 0.5 ) {
+                if (shootTimer.seconds() > 0.75 ) {
                         rampstate = RAMPSTATE.DOWN;
                         updateServoState();
                 }
@@ -117,8 +117,8 @@ public class FSMShooter {
                 break;
             case SPINDEXER_ROTATE:
                 // Decrement counter to aim at the next slot
-                counter--;
-                if (counter >= 0) {
+                counter++;
+                if (counter <= 2) {
                     robot.spindexerServo.setPosition(slotAngle[counter]);
                     if (shootTimer.seconds() > 0.45) {
                         shooterState = SHOOTERSTATE.RAMP_UP;
