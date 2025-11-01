@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -136,6 +137,8 @@ public class RobotHardware {
         backRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
         //Set run mode of intake and shooter motors
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         // set robot motor power 0
         frontLeftMotor.setPower(0);

@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 @TeleOp (name = "Basic TeleOp", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOp extends OpMode {
     private RobotHardware robot;
@@ -26,11 +28,13 @@ public class BasicTeleOp extends OpMode {
         gamepadCo2 = new GamepadEx(gamepad2);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        gamepadManager= new GamepadManager(gamepad1,gamepad2);
-        spindexer = new Spindexer(Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
-
-                robot = new RobotHardware(hardwareMap);
+        robot = new RobotHardware(hardwareMap);
         robot.init(hardwareMap);
+
+        gamepadManager= new GamepadManager(gamepad1,gamepad2);
+        spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
+        spindexer.runToSlot();
+
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
@@ -48,6 +52,16 @@ public class BasicTeleOp extends OpMode {
 
         shooterManualControl.ShooterLoop();
         intake.loop();
+        spindexer.runToSlot();
+
+        telemetry.addData("Intake State", intake.intakeStates);
+        telemetry.addData("Sensor Distance", robot.distanceSensor.getDistance(DistanceUnit.CM));
+        telemetry.addData("Slot 0", spindexer.slots[0]);
+        telemetry.addData("Slot 1", spindexer.slots[1]);
+        telemetry.addData("Slot 2", spindexer.slots[2]);
+        telemetry.addData("Current Slot", spindexer.currentSlot);
+        telemetry.addData("Spindexer Servo Pos", robot.spindexerServo.getPosition());
+        telemetry.update();
     }
 
     @Override

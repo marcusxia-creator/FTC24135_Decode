@@ -50,7 +50,7 @@ public class FSMShooter {
     public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot) {
         this.gamepad_1 = gamepad_1;
         this.robot = robot;
-        slotAngle = new double[]{spindexerSlot1, spindexerSlot2, spindexerSlot3};
+        slotAngle = new double[]{spindexerSlot0, spindexerSlot1, spindexerSlot2};
     }
 
     public void Init() {

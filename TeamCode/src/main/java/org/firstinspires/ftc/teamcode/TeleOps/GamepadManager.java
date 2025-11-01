@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class GamepadManager {
     private ElapsedTime debounceTimer = new ElapsedTime();
 
-    GamepadEx gamepad_1;
-    GamepadEx gamepad_2;
+    public GamepadEx gamepad_1;
+    public GamepadEx gamepad_2;
 
     public enum ControlType{
                         //Pressed ↓-↓  ↓-↓
@@ -19,14 +19,19 @@ public class GamepadManager {
     }
 
     //Buttons
-    public Control IntakeRun = new Control(GamepadKeys.Button.DPAD_RIGHT, false);
-    public Control IntakeReverse = new Control(GamepadKeys.Button.DPAD_LEFT, false);
-    public Control Flywheel = new Control(GamepadKeys.Button.X, false);
-    public Control Launch = new Control(GamepadKeys.Button.Y, false);
+    public Control IntakeRun;
+    public Control IntakeReverse;
+    public Control Flywheel;
+    public Control Launch;
 
     public GamepadManager(Gamepad gamepad1, Gamepad gamepad2){
         gamepad_1 = new GamepadEx(gamepad1);
         gamepad_2 = new GamepadEx(gamepad2);
+
+        IntakeRun = new Control(GamepadKeys.Button.DPAD_RIGHT, false);
+        IntakeReverse = new Control(GamepadKeys.Button.DPAD_LEFT, false);
+        Flywheel = new Control(GamepadKeys.Button.X, false);
+        Launch = new Control(GamepadKeys.Button.Y, false);
     }
 
     public void loop(){

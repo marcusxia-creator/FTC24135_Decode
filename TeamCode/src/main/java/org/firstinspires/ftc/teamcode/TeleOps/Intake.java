@@ -35,7 +35,7 @@ public class Intake {
         INTAKE_REVERSE
     }
 
-    private IntakeStates intakeStates = IntakeStates.INTAKE_STBY;
+    public IntakeStates intakeStates = IntakeStates.INTAKE_STBY;
 
     private ElapsedTime debounceTimer = new ElapsedTime();
     private double DEBOUNCE_THRESHOLD = 0.25;

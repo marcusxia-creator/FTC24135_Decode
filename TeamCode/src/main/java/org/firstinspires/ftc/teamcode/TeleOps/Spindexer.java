@@ -13,7 +13,8 @@ public class Spindexer {
     //For jams
     public int prevSlot;
 
-    Spindexer(SLOT slot0,SLOT slot1,SLOT slot2, int currentSlot){
+    Spindexer(RobotHardware robot, SLOT slot0,SLOT slot1,SLOT slot2, int currentSlot){
+        this.robot = robot;
         slots = new SLOT[]{slot0, slot1, slot2};
         this.currentSlot = currentSlot;
         runToSlot(currentSlot);
@@ -41,18 +42,23 @@ public class Spindexer {
         return count(a)>0;
     }
 
-    public void runToSlot(int n){
+    public void runToSlot(){
         prevSlot = currentSlot;
-        currentSlot = n%3;
-        if(n==0){
+        currentSlot = Math.floorMod(currentSlot,3);
+        if(currentSlot==0){
             robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
         }
-        if(n==1){
+        if(currentSlot==1){
             robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
         }
-        if(n==2){
+        if(currentSlot==2){
             robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot2);
         }
+    }
+
+    public void runToSlot(int n){
+        currentSlot = n;
+        runToSlot();
     }
 
     public Boolean runToSlot(SLOT a){
