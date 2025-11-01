@@ -79,8 +79,6 @@ public class RobotHardware {
     public Servo spindexerServo;
     public Servo leftGateServo;
     public Servo rightGateServo;
-    //limit switch
-    public DigitalChannel limitSwitch;
 
     ///ColorSensor
     public ColorSensor colorSensor;
@@ -93,7 +91,7 @@ public class RobotHardware {
 
     /// goBilda Pinpoint Driver
     public GoBildaPinpointDriver pinpointDriver;
-    public Pose2D pinpointPose;
+
 
     ///IMU
 
@@ -101,8 +99,6 @@ public class RobotHardware {
 
     public HardwareMap hardwareMap;
     public ArrayList <VoltageSensor> voltageSensors;
-
-    public GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
 
     private double vEma = 12.0;                 // EMA state
     public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
@@ -219,5 +215,17 @@ public class RobotHardware {
         // EMA smoothing
         vEma = vAlpha * vMed + (1.0 - vAlpha) * vEma;
         return vEma;
+    }
+
+    public void stopAllMotors() {
+        // Stop all drivetrain motors
+        frontLeftMotor.setPower(0);
+        frontRightMotor.setPower(0);
+        backLeftMotor.setPower(0);
+        backRightMotor.setPower(0);
+
+        // Stop all subsystem motors
+        shooterMotor.setPower(0);
+        intakeMotor.setPower(0);
     }
 }

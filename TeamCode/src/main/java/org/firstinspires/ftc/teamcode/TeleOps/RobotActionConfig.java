@@ -9,19 +9,18 @@ public class RobotActionConfig {
     public static double GATEDOWN                        = 0.13;
     public static double GATEUP                          = 0.29;
     public static double DEBOUNCE_THRESHOLD              = 0.25;
-    public static double spindexerIncrement              = 0.333;
     //Sorter
     public static double spindexerSlot1                  = 0.02;
     public static double spindexerSlot2                  = 0.5;
     public static double spindexerSlot3                  = 0.97;
     public static double RAMP_RESET_POSITION            = 0.42; //change to 0.45
     public static double RAMP_UP                        = 0.12;
-    public static double angleResetPos                  = 0.0;
     //Intake Speed
     public static double INTAKE_POWER                   = 0.6;
     public static double INTAKE_REVERSE_POWER           = -0.2;
     public static double INTAKE_HEAVYJAM_REVERSE_SPEED  = -0.8;
     public static double intakeRPM_THRESHOLD            = 100.0;
+    public static double BALL_PRESENT_THRESHOLD_MM = 55.0; // adjust per sensor mounting
 
     //Offtake speed
     public static final double SHOOTER_POWER    = 0.85;
@@ -31,12 +30,12 @@ public class RobotActionConfig {
     public static final double EJECT_TIME       = 0.25;
 
     //Drive Train
-    public static double powerFactor                    = 0.9;
-    public static double accel_Slowness                 = 0.25;
-    public static double decel_Slowness                 = 0.5;
+    public static double POWERFACTOR            = 0.9;
+    public static double ACCEL_SLOWNESS         = 0.25;
+    public static double DECEL_SLOWNESS         = 0.5;
 
     //Distance to goal
-    public static double distanceToGoal                 = 0.0;
+    public static double DISTANCETOGOAL         = 0.0;
 
 
 }

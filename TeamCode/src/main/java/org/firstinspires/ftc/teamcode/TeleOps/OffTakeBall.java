@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -26,9 +25,6 @@ public class OffTakeBall {
 
     private final RobotHardware robot;
     private final GamepadEx gamepad2;
-//------ Shooter Power Table ------
-
-ShooterPowerTable shooterTable = new ShooterPowerTable();
 
     //------ Shared ball system ------
     private final List<Ball> balls;
@@ -46,6 +42,11 @@ ShooterPowerTable shooterTable = new ShooterPowerTable();
     private int currentCounterIndex = 0;   // for non color based sequence indexing
     private int cycle_no = 0;      // counter for non color based sequence times
 
+    /// --- Shooter power table ---
+    private ShooterPowerTable shooterPowerTable = new ShooterPowerTable();
+    private double calculatedShootPower = 0;
+    private double currentDistanceToGoal;
+
     // --- Constructor ---
     public OffTakeBall(RobotHardware robot, GamepadEx gamepad2, List<Ball> balls) {
         this.robot = robot;
@@ -55,29 +56,14 @@ ShooterPowerTable shooterTable = new ShooterPowerTable();
 
     // --- Main update loop ---
     public void update() {
+        /// get distanceToGoal
+        calculatedShootPower = shooterPowerTable.getPower(currentDistanceToGoal);
+
         switch (state) {
 
             case OFFTAKE_IDLE:
                 robot.shooterMotor.setPower(0.0);
-
-                if (gamepad2.getButton(GamepadKeys.Button.Y)) {
-                    //Close the gate
-                    robot.leftGateServo.setPosition(GATEDOWN);
-                    robot.rightGateServo.setPosition(GATEDOWN);
-                    // Prepare ball list
-                    ballsWithBall = balls.stream()
-                            .filter(Ball::hasBall)
-                            .collect(Collectors.toList());
-
-                    cycle_no = ballsWithBall.size();
-                    currentColorTargetIndex = 0;
-                    currentCounterIndex = 0;
-                    timer.reset();
-
-                    // Determine mode for this cycle
-                    useColorSequence = !isUnknownSequence(targetSequence);
-                    state = OFFTAKEBALLSTATE.OFFTAKE_AIMING;
-                }
+                handleOfftakeIdleState();
                 break;
 
             case OFFTAKE_AIMING:
@@ -107,42 +93,47 @@ ShooterPowerTable shooterTable = new ShooterPowerTable();
         }
     }
 
-// ===============================================================
-// === Helper methods ===
-// ===============================================================
+    // ===============================================================
+    // === Helper methods ===
+    // ===============================================================
+    private void handleOfftakeIdleState() {
+        if (gamepad2.getButton(GamepadKeys.Button.Y)) {
+            //Close the gate
+            robot.leftGateServo.setPosition(GATEDOWN);
+            robot.rightGateServo.setPosition(GATEDOWN);
+            // Prepare ball list
+            ballsWithBall = balls.stream()
+                    .filter(Ball::hasBall)
+                    .collect(Collectors.toList());
 
-    /** Selects the next target ball based on current mode. */
-    private Ball getNextTargetBall() {
-        if (useColorSequence) {
-            // Tag-guided mode
-            if (currentColorTargetIndex < targetSequence.length) {
-                return findNextTargetBall(currentColorTargetIndex);
-            }
-        } else {
-            // Sequential (free shooting) mode
-            if (currentCounterIndex < cycle_no) {
-                return ballsWithBall.get(cycle_no - currentCounterIndex - 1);
-            }
+            cycle_no = ballsWithBall.size();
+            currentColorTargetIndex = 0;
+            currentCounterIndex = 0;
+            timer.reset();
+
+            // Determine mode for this cycle
+            useColorSequence = !isUnknownSequence(targetSequence);
+            state = OFFTAKEBALLSTATE.OFFTAKE_AIMING;
         }
-        return null;
     }
 
     /** Handles spin-up, fire, and transition to ejecting. */
+    // NEW: Add this public method to receive the distance from your TeleOp
+    public void setDistanceToGoal(double distance) {
+        this.currentDistanceToGoal = distance;
+    }
     private void handleShootingState() {
         double startTime;
-        double shootPower;
-        double distance = distanceToGoal;
-        shootPower = -14.88+0.7736667*distance-0.01416667*Math.pow(distance,2)+0.000113333*Math.pow(distance,3)-3.33333e-7*Math.pow(distance,4);
+        //shootPower = -14.88+0.7736667*distance-0.01416667*Math.pow(distance,2)+0.000113333*Math.pow(distance,3)-3.33333e-7*Math.pow(distance,4);
 
-        telemetry.addData("Shooter Power", shootPower);
         if (currentCounterIndex == 0){
-            startTime = RAMP_UP_TIME_1st+0.5;
-            shootPower = Range.clip(shootPower+0.1, 0.5, 1.0);
+            startTime = RAMP_UP_TIME_1st;
+            calculatedShootPower = Range.clip(calculatedShootPower+0.1, 0.5, 1.0);
         }
         else{
             startTime = RAMP_UP_TIME;
         }
-        robot.shooterMotor.setPower(shootPower);
+        robot.shooterMotor.setPower(calculatedShootPower);
         if (timer.seconds() > startTime-0.2) {
             robot.leftGateServo.setPosition(GATEUP);
             robot.rightGateServo.setPosition(GATEUP);
@@ -161,11 +152,9 @@ ShooterPowerTable shooterTable = new ShooterPowerTable();
             timer.reset();
         }
     }
-
     /** Handles ejection timing and advancing index. */
     private void handleEjectingState() {
         ejectCurrentBall(targetBall);
-
         if (timer.seconds() > EJECT_TIME) {
             if (useColorSequence) {
                 currentColorTargetIndex++;
@@ -186,6 +175,21 @@ ShooterPowerTable shooterTable = new ShooterPowerTable();
     }
 
     // =============================================================
+    /** Selects the next target ball based on current mode. */
+    private Ball getNextTargetBall() {
+        if (useColorSequence) {
+            // Tag-guided mode
+            if (currentColorTargetIndex < targetSequence.length) {
+                return findNextTargetBall(currentColorTargetIndex);
+            }
+        } else {
+            // Sequential (free shooting) mode
+            if (currentCounterIndex < cycle_no) {
+                return ballsWithBall.get(cycle_no - currentCounterIndex - 1);
+            }
+        }
+        return null;
+    }
     /** --- Find next ball matching target sequence color ---*/
     private Ball findNextTargetBall(int targetIndex) {
         if (!isUnknownSequence(targetSequence)) {
@@ -203,7 +207,7 @@ ShooterPowerTable shooterTable = new ShooterPowerTable();
         return null;
     }
 
-    // --- Eject current ball (mark slot empty) ---
+    /** --- Eject current ball (mark slot empty) ---*/
     private void ejectCurrentBall(Ball b) {
         if (b != null) {
             b.setHasBall(false);
@@ -252,4 +256,6 @@ ShooterPowerTable shooterTable = new ShooterPowerTable();
     public boolean isColorSequence() {
         return useColorSequence;
     }
+
+    public double getShooterPower(){return calculatedShootPower;}
 }

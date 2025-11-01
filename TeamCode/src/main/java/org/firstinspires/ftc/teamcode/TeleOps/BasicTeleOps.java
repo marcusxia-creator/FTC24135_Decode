@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.*;
 
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -19,7 +21,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Vision.AprilTagUpdate;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 @Config
@@ -52,8 +53,9 @@ public class BasicTeleOps extends OpMode {
     ///  AprilTag sequence setup
     private AprilTagUpdate aprilTagUpdate;
     private boolean useAprilTagSequence;
-    private IsApriTagSequence isApriTagSequence;
+    private IsApriTagSequence isApriTagSequence = IsApriTagSequence.FALSE;
     private AllianceSide allianceSide;
+
 
     //======================= States & Timers ===============================
     private ControlState controlState = ControlState.RUN;
@@ -75,7 +77,7 @@ public class BasicTeleOps extends OpMode {
 
     private BallColor lastDisplayedColor = BallColor.UNKNOWN;
 
-    Pose2D targetGoalPos;
+    Pose2D targetoGoalPos = new Pose2D(DistanceUnit.INCH,72,72,AngleUnit.DEGREES,45);
 
     @Override
     public void init() {
@@ -97,16 +99,24 @@ public class BasicTeleOps extends OpMode {
         intakeBall = new IntakeBall(robot, gamepadCo2, sharedBallList.getBalls(), spindexerSlotAngles);
         offTakeBall = new OffTakeBall(robot, gamepadCo2, sharedBallList.getBalls());
         robot.spindexerServo.setPosition(spindexerSlotAngles[0]);
+        robot.leftGateServo.setPosition(RobotActionConfig.GATEUP);
+        robot.rightGateServo.setPosition(RobotActionConfig.GATEUP);
+
         ///  color sensor set up
         colorDetection = new ColorDetection(robot);
         colorDetection.startDetection();
 
         /// April Tag
         aprilTagUpdate = new AprilTagUpdate(hardwareMap);
+        telemetry.addLine("AprilTag camera initialized.");
+
+        /// Default Shared Color Sequence
         SharedColorSequence.aprilTagSequence = new BallColor[]{
                 BallColor.UNKNOWN, BallColor.UNKNOWN, BallColor.UNKNOWN
         };
-        telemetry.addLine("AprilTag camera initialized.");
+
+        /// Alliance Side Default
+        allianceSide = AllianceSide.RED;
 
         /// Bulk caching optimization
         allHubs = hardwareMap.getAll(LynxModule.class);
@@ -135,25 +145,24 @@ public class BasicTeleOps extends OpMode {
         }
 
         // Toggle the Alliance Side
-        if (gamepadCo1.getButton(BACK)&&gamepadCo1.getButton(LEFT_BUMPER)&&!lBstartPressed) {
+        if (gamepadCo1.getButton(BACK)&&gamepadCo1.getButton(LEFT_BUMPER)&&!lBstartPressed&& debounceTimer.milliseconds()>DEBOUNCE_THRESHOLD) {
+            debounceTimer.reset();
             lBstartPressed = true;
             toggleAllianceSide();
             if (allianceSide == AllianceSide.BLUE) {
-                targetGoalPos = new Pose2D( DistanceUnit.INCH,70,70, AngleUnit.DEGREES,45);
-                telemetry.addLine("Target Blue");
+                targetoGoalPos = new Pose2D( DistanceUnit.INCH,-70,-70, AngleUnit.DEGREES,45);
             }else{
-                targetGoalPos = new Pose2D( DistanceUnit.INCH,70,70, AngleUnit.DEGREES,45);
-                telemetry.addLine("Target Red");
+                targetoGoalPos = new Pose2D( DistanceUnit.INCH,-70,70, AngleUnit.DEGREES,-45);
             }
         }
         else if (!gamepadCo1.getButton(BACK) || !gamepadCo1.getButton(LEFT_BUMPER)) {
                 lBstartPressed = false;
             }
+        telemetry.addData("Alliance Side", allianceSide.name());
     }
 
     @Override
     public void start() {
-
         debounceTimer.reset();
         runTime.reset();
     }
@@ -162,15 +171,13 @@ public class BasicTeleOps extends OpMode {
     public void loop() {
 
         // === Decide if AprilTag sequence will be used ===
-        if (gamepadCo2.getButton(GamepadKeys.Button.DPAD_UP)) {
+        if (gamepadCo2.getButton(GamepadKeys.Button.DPAD_UP)&&debounceTimer.milliseconds()>DEBOUNCE_THRESHOLD) {
+            debounceTimer.reset();
             toggleAprilTagSequenceState();
             if (isApriTagSequence == IsApriTagSequence.TRUE) {
                 offTakeBall.setSequence(SharedColorSequence.aprilTagSequence);
-                offTakeBall.setSequence(SharedColorSequence.aprilTagSequence);
-                telemetry.addLine("AprilTag sequence ENABLED");
             }else{
                 offTakeBall.setSequence(null);
-                telemetry.addLine("AprilTag sequence DISABLED");
             }
         }
         // === LOAD APRIL TAG SEQUENCE AFTER 100s ===
@@ -181,8 +188,8 @@ public class BasicTeleOps extends OpMode {
                 offTakeBall.setSequence(SharedColorSequence.aprilTagSequence);
             }
 
-        // === CONTROL MODE TOGGLE ===
-        if (gamepadCo1.getButton(START) && gamepadCo1.getButton(LEFT_BUMPER) && !lBstartPressed && debounceTimer.milliseconds() > 250) {
+        /// === CONTROL MODE TOGGLE ===
+        if (gamepadCo1.getButton(START) && gamepadCo1.getButton(LEFT_BUMPER) && !lBstartPressed && debounceTimer.milliseconds() > DEBOUNCE_THRESHOLD) {
             toggleControlState();
             debounceTimer.reset();
             lBstartPressed = true;
@@ -190,32 +197,36 @@ public class BasicTeleOps extends OpMode {
             lBstartPressed = false;
         }
 
-
-        // === DRIVE ===
+        /// === DRIVE ===
         robotDrive.DriveLoop();
-        robot.pinpointDriver.update();
-        RobotActionConfig.distanceToGoal = getTargeGoalDist(targetGoalPos);
 
-        // RUn mode
+        /// === RUn mode ===
         if (controlState == ControlState.RUN) {
+            // === UPDATE ODOMETRY ===
             robot.pinpointDriver.update();
+            // === CALCULATE TARGET DISTANCE ===
+            offTakeBall.setDistanceToGoal(getTargetGoalDist(targetoGoalPos));
 
             // === MASTER BALL HANDLING STATE MACHINE ===
-            if (gamepadCo2.getButton(A)) {
+            if (gamepadCo2.getButton(A)&& debounceTimer.milliseconds()>DEBOUNCE_THRESHOLD) {
+                debounceTimer.reset();
                 ballHandlingState = BallHandlingState.INTAKING;
                 intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
             }
 
-            if (gamepadCo2.getButton(X)) {
+            if (gamepadCo2.getButton(X) && debounceTimer.milliseconds()>DEBOUNCE_THRESHOLD) {
+                debounceTimer.reset();
                 ballHandlingState = BallHandlingState.OFFTAKING;
                 offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.OFFTAKE_IDLE);
                 intakeBall.stopIntake();
             }
 
-            if (gamepadCo2.getButton(B)) {
+            if (gamepadCo2.getButton(B)&& debounceTimer.milliseconds()>DEBOUNCE_THRESHOLD) {
+                debounceTimer.reset();
                 ballHandlingState = BallHandlingState.IDLE;
             }
 
+            /// ===== FSM MAIN CONTROL STATE =====
             switch (ballHandlingState) {
                 case INTAKING:
                     intakeBall.IntakeBallUpdate();
@@ -242,12 +253,14 @@ public class BasicTeleOps extends OpMode {
         if (controlState == ControlState.TEST) {
             telemetry.addLine("----- Test Mode Active -----");
         }
-        // === TELEMETRY ===
+        /** =================================== TELEMETRY =================================================== */
         telemetry.addLine("-------Odometry-------------------");
         telemetry.addData("Pinpoint X", "%.2f in", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
         telemetry.addData("Pinpoint Y", "%.2f in", robot.pinpointDriver.getPosY(DistanceUnit.INCH));
         telemetry.addData("Pinpoint Heading", "%.2f°", robot.pinpointDriver.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("Distance", getTargetGoalDist(targetoGoalPos));
         telemetry.addLine("--------------Op Mode--------------");
+        telemetry.addData("Run Time", "%.1f sec",t);
         telemetry.addData("Run Mode", controlState);
         telemetry.addData("Drive Mode", robotDrive.getDriveMode().name());
         telemetry.addData("Ball Mode", ballHandlingState.name());
@@ -258,7 +271,8 @@ public class BasicTeleOps extends OpMode {
         telemetry.addData("Current Slot", intakeBall.getCurrentSlot());
         telemetry.addData("Ball Count", intakeBall.getNumberOfBalls());
         telemetry.addData("Detected Color (enum)", intakeBall.getDetectedColor().name());
-        // ---------- Shared Ball List Telemetry ----------
+        telemetry.addData("Detected Distance", colorDetection.getDistance());
+        /// ---------- Shared Ball List Telemetry ----------------------------------------------------------
         telemetry.addLine("-----------Shared Ball Slots-----------");
         List<Ball> sharedBalls = sharedBallList.getBalls();
         for (Ball b : sharedBalls) {
@@ -267,10 +281,8 @@ public class BasicTeleOps extends OpMode {
                     "Ball=%s | Color=%s | Angle=%.2f",
                     b.hasBall() ? "YES" : "NO",
                     b.getColor().name(),
-                    b.getSlotAngle()
-            );
-        }
-        // Optimized color telemetry (only update if changed)
+                    b.getSlotAngle());}
+        /// ---------- Optimized color telemetry (only update if changed) ------------------------------------
         BallColor currentColor = intakeBall.getDetectedColor();
         if (currentColor != lastDisplayedColor) {
             telemetry.addLine("Color changed → " + currentColor.name());
@@ -280,6 +292,7 @@ public class BasicTeleOps extends OpMode {
         telemetry.addLine("-----------Offtake Info--------------");
         telemetry.addData("Offtake State", offTakeBall.getState());
         telemetry.addData("Offtake color used", offTakeBall.isColorSequence());
+        telemetry.addData("Offtake Shooter power", offTakeBall.getShooterPower());
         /// ===================================================================================================
         telemetry.addLine("-----------AprilTag Info--------------");
         telemetry.addData("Tag ID", aprilTagUpdate.getTagID());
@@ -330,12 +343,11 @@ public class BasicTeleOps extends OpMode {
         }
         return (result == Double.POSITIVE_INFINITY) ? 0.0 : result;
     }
-    public double getTargeGoalDist(Pose2D targetGoalPos){
+    public double getTargetGoalDist(Pose2D targetGoalPos){
         double tag_x = targetGoalPos.getX(DistanceUnit.INCH);
         double tag_y = targetGoalPos.getY(DistanceUnit.INCH);
         double rob_x = robot.pinpointDriver.getPosX(DistanceUnit.INCH);
         double rob_y = robot.pinpointDriver.getPosY(DistanceUnit.INCH);
-        double targetGoalDist = Math.sqrt(Math.pow(Math.abs(tag_x - rob_x),2) + Math.pow(Math.abs(tag_y - rob_y),2));
-        return targetGoalDist;
+        return Math.sqrt(Math.pow(Math.abs(tag_x - rob_x),2) + Math.pow(Math.abs(tag_y - rob_y),2));
     }
 }

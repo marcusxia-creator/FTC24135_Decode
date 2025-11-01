@@ -19,7 +19,6 @@ public class ColorDetection {
     // Parameters
     private final int REQUIRED_STABLE_COUNT = 5; // number of consistent readings (~0.3s if called every 20ms)
     private final double TIMEOUT_S = 1.0;        // maximum time allowed to detect color
-    private final double BALL_PRESENT_THRESHOLD_MM = 100; // adjust per sensor mounting
     public ColorDetection(RobotHardware robot) {
         this.robot = robot;
     }
@@ -79,7 +78,7 @@ public class ColorDetection {
     public boolean isBallPresent() {
         // Check if ball is in slot first
         double distance = robot.distanceSensor.getDistance(DistanceUnit.MM);
-        return distance < BALL_PRESENT_THRESHOLD_MM;
+        return distance < RobotActionConfig.BALL_PRESENT_THRESHOLD_MM;
     }
 
     /** Returns the raw hue value (useful for telemetry or tuning). */
@@ -100,4 +99,5 @@ public class ColorDetection {
     }
 
     public BallColor getStableColor(){ return stableColor;}
+    public double getDistance(){ return robot.distanceSensor.getDistance(DistanceUnit.MM);}
 }
