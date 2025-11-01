@@ -12,6 +12,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+//import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler;
 
 /** Button Config for Drive
  * * Joy Right Y                : Drive
@@ -39,6 +42,8 @@ public class RobotDrive {
 
     private double rotate_Slowness = 0.75;
 
+    //public IceWaddler iceWaddler;
+
     public RobotDrive(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2) {
         this.robot = robot;
         this.gamepad_1 = gamepad_1;
@@ -47,7 +52,13 @@ public class RobotDrive {
 
     public void Init() {
         // Initialize IMU from RobotHardware
-        robot.initIMU();
+        //iceWaddler = new IceWaddler(robot);
+
+       /* iceWaddler.Init(IceWaddler.CONTROLMODE.POWER,
+                new Pose2D(DistanceUnit.METER,0,0, AngleUnit.DEGREES,0),
+                false);
+
+        */
     }
 
 
@@ -101,7 +112,7 @@ public class RobotDrive {
         double currentHeading = getRobotHeading();
 
         // Mecanum drive calculations
-        setMecanumDrivePower(drive, strafe, rotate, currentHeading, powerFactor);
+        setMecanumDrivePower(drive, strafe, rotate, powerFactor);
         // Update telemetry with the latest data
         // empty
     }// end of driveloop
@@ -121,6 +132,8 @@ public class RobotDrive {
     }
 
 
+
+
     double deadband(double input, double threshold) {
         if (Math.abs(input) < threshold) { // Ignore small values
             return 0.0;
@@ -133,7 +146,7 @@ public class RobotDrive {
         return current + alpha * (target - current);
     }
 
-    private void setMecanumDrivePower(double drive, double strafe, double rotate, double currentHeading, double powerFactor) {
+    private void setMecanumDrivePower(double drive, double strafe, double rotate, double powerFactor) {
         // Determine the drive mode
 
 

@@ -40,17 +40,32 @@ public class BasicTeleOp extends OpMode {
         intakeControl = new Intake(gamepadCo1, gamepadCo2, robot);
 
         shooterManualControl = new FSMShooterManual(gamepadCo1, gamepadCo2, robot);
+        shooterManualControl = new FSMShooter(gamepadCo1, gamepadCo2, robot);
         shooterManualControl.Init();
+        spindexer = new Spindexer(Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0);
+        intakeManualControl = new FSMIntake(gamepadCo1, gamepadCo2, robot, spindexer);
+
+
     }
 
     @Override
     public void loop() {
         intakeControl.loop();
         robotDrive.DriveLoop();
+        //robotDrive.DriveLoop();
+        shooterManualControl.ShooterLoop();
+        intakeManualControl.loop();
 
         telemetry.addData("Distance", intakeControl.distance);
         telemetry.addData("Hue", intakeControl.hsvValues[0]);
         telemetry.addData("Intake States", intakeControl.intakeStates);
+        telemetry.addData("Shooter State", shooterManualControl.shooterState);
+        telemetry.addData("Ramp State", shooterManualControl.rampstate);
+        telemetry.addData("Counter", shooterManualControl.counter);
+        telemetry.addData("Shooter Speed", robot.shooterMotor.getPower());
+        telemetry.addData("Spindexer", robot.spindexerServo.getPosition());
+        telemetry.addData("Ramp", robot.pushRampServo.getPosition());
+        telemetry.update();
     }
 
     @Override
