@@ -13,6 +13,8 @@ public class BasicTeleOp extends OpMode {
     private GamepadEx gamepadCo1, gamepadCo2;
     private RobotDrive robotDrive;
     private FSMShooter shooterManualControl;
+    private FSMIntake intakeManualControl;
+    private Spindexer spindexer;
     private ElapsedTime debounceTimer = new ElapsedTime();
 
 
@@ -29,6 +31,8 @@ public class BasicTeleOp extends OpMode {
 
         shooterManualControl = new FSMShooter(gamepadCo1, gamepadCo2, robot);
         shooterManualControl.Init();
+        spindexer = new Spindexer(Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0);
+        intakeManualControl = new FSMIntake(gamepadCo1, gamepadCo2, robot, spindexer);
 
 
     }
@@ -37,6 +41,8 @@ public class BasicTeleOp extends OpMode {
     public void loop() {
         //robotDrive.DriveLoop();
         shooterManualControl.ShooterLoop();
+        intakeManualControl.loop();
+
         telemetry.addData("Shooter State", shooterManualControl.shooterState);
         telemetry.addData("Ramp State", shooterManualControl.rampstate);
         telemetry.addData("Counter", shooterManualControl.counter);
