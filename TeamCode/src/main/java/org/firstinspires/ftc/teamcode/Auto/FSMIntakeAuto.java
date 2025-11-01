@@ -32,7 +32,6 @@ public class FSMIntakeAuto {
                 robot.init();
                 currentState = INTAKESTATE.INTAKE_RUN;
                 break;
-
             case INTAKE_RUN:
                 robot.intakeMotor.setPower(RobotActionConfig.intakeSpeed);
                 break;
@@ -41,6 +40,10 @@ public class FSMIntakeAuto {
             case INTAKE_INDEX:
                 break;
             case INTAKE_SPIN:
+                break;
+            case INTAKE_UNJAM:
+                break;
+            case INTAKE_END:
                 break;
 
         }
