@@ -15,7 +15,7 @@ public class ShooterPowerCalculator {
     private Pose2D redGoalPose = new Pose2D(DistanceUnit.INCH, -70, 70, AngleUnit.DEGREES, -45);
     private Pose2D blueGoalPose = new Pose2D(DistanceUnit.INCH, 70, 70, AngleUnit.DEGREES, -45);
 
-    public ShooterPowerCalculator (RobotHardware robot) {
+    public void init (RobotHardware robot) {
         this.robot = robot;
     }
 

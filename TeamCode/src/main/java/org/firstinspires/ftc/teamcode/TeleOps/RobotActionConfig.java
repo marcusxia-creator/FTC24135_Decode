@@ -30,7 +30,7 @@ public class RobotActionConfig {
     public static double a                              = 0;
     public static double exp                            = 1;
 
-
+    //Colour Profiles
     public static double distanceThreshold              = 100;
     public static int[] none                            = {105, 110};
 

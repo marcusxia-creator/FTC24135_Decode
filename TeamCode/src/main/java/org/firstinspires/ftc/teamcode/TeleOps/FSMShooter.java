@@ -10,6 +10,7 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 
 public class FSMShooter {
+    public ShooterPowerCalculator shooterPowerCalculator;
     private final GamepadEx gamepad_1;
     private final RobotHardware robot;
     private ElapsedTime debounceTimer = new ElapsedTime();
@@ -69,6 +70,7 @@ public class FSMShooter {
         robot.shooterMotor.setPower(0);
         robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        shooterPowerCalculator.init(robot);
     }
 
     public void ShooterLoop() {
