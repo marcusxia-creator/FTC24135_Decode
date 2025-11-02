@@ -23,6 +23,8 @@ public class GamepadManager {
     public Control IntakeReverse;
     public Control Flywheel;
     public Control Launch;
+    public Control Green;
+    public Control Purple;
 
     public GamepadManager(Gamepad gamepad1, Gamepad gamepad2){
         gamepad_1 = new GamepadEx(gamepad1);
@@ -32,6 +34,8 @@ public class GamepadManager {
         IntakeReverse = new Control(GamepadKeys.Button.DPAD_RIGHT, false);
         Flywheel = new Control(GamepadKeys.Button.X, false);
         Launch = new Control(GamepadKeys.Button.Y, false);
+        Green = new Control(GamepadKeys.Button.A, false);
+        Purple = new Control(GamepadKeys.Button.B, false);
     }
 
     public void loop(){
