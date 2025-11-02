@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -11,6 +12,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -85,6 +89,9 @@ public class RobotHardware {
     ///public DigitalChannel limitSwitch;// Limit Switch
 
     public IMU imu; //IMU
+
+    public GoBildaPinpointDriver odo;
+
     public HardwareMap hardwareMap;
     public ArrayList <VoltageSensor> voltageSensors;
 
@@ -122,6 +129,8 @@ public class RobotHardware {
         //limit switch
         //limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
         //limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+
+        odo = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
         //Reset the drive train motor encoders
@@ -165,6 +174,13 @@ public class RobotHardware {
                 ));
         imu.initialize(myIMUparameters);
         imu.resetYaw();
+    }
+
+    public void initOdo() {
+        odo.setOffsets(-149.225, -165.1, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        odo.resetPosAndIMU();
     }
 
     private static double median(List<Double> xs) {

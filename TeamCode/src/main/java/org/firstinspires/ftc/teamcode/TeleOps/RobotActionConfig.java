@@ -26,4 +26,7 @@ public class RobotActionConfig {
     public static double gateDownTime                   = 0.1;
     public static double SpindexerStartTime             = 0.7;
     public static double SpindexerMoveTime              = 1.0;
+
+    public static double a                              = 0;
+    public static double exp                            = 1;
 }

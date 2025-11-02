@@ -82,6 +82,8 @@ public class FSMShooter {
                 // Press 'X' to start spinning the flywheel
                 if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
                     robot.shooterMotor.setPower(shooterSpeed);
+
+                    //robot.shooterMotor.setPower(shooterPowerCalculator.getPower());
                     robot.shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
