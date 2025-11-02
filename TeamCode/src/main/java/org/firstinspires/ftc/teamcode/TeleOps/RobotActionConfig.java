@@ -26,4 +26,14 @@ public class RobotActionConfig {
     public static double gateDownTime                   = 0.1;
     public static double SpindexerStartTime             = 0.7;
     public static double SpindexerMoveTime              = 1.0;
+
+
+    public static double distanceThreshold              = 100;
+    public static int[] none                            = {105, 110};
+
+    public static int[] greenRangeLow                   = {120, 130};
+    public static int[] greenRangeHigh                  = {145, 165};
+
+    public static int[] purpleRangeLow                  = {115, 118};
+    public static int[] purpleRangeHigh                 = {180, 230};
 }

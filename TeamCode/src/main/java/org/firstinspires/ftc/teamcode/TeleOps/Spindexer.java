@@ -1,5 +1,18 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.distanceThreshold;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.greenRangeHigh;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.greenRangeLow;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.purpleRangeHigh;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.purpleRangeLow;
+
+import android.graphics.Color;
+
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 public class Spindexer {
     public enum SLOT{
         Empty,
@@ -22,6 +35,26 @@ public class Spindexer {
 
     public void writeToCurrent(SLOT a){
         slots[currentSlot]=a;
+    }
+
+    public void writeToCurrent(ColorSensor colorSensor, DistanceSensor distanceSensor) {
+        float[] hsvValues = new float[3];
+        Color.RGBToHSV(colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, hsvValues);
+
+        if (distanceSensor.getDistance(DistanceUnit.MM)<distanceThreshold) {
+            if ((greenRangeHigh[0] < hsvValues[0] && hsvValues[0] < greenRangeLow[1]) ||
+                    greenRangeHigh[0] < hsvValues[0] && hsvValues[0] < greenRangeHigh[1]) {
+                //Green
+                writeToCurrent(Spindexer.SLOT.Green);
+            } else if ((purpleRangeLow[0] < hsvValues[0] && hsvValues[0] < purpleRangeLow[1]) ||
+                    purpleRangeHigh[0] < hsvValues[0] && hsvValues[0] < purpleRangeHigh[1]) {
+                //Purple
+                writeToCurrent(Spindexer.SLOT.Purple);
+            }
+        }
+        else{
+            writeToCurrent(SLOT.Empty);
+        }
     }
 
     public void writeToCurrent(ColourCriterion[] criteria){
