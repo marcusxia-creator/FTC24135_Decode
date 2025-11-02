@@ -94,6 +94,8 @@ public class Intake {
                 if (intakeTimer.seconds() > RobotActionConfig.gateDownTime) {
                     robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
                     robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
+                    //Run intake backward
+                    robot.intakeMotor.setPower(RobotActionConfig.ejectSpeed);
                 }
 
                 if (intakeTimer.seconds() > RobotActionConfig.SpindexerStartTime && !recorded) {
@@ -114,11 +116,13 @@ public class Intake {
 
                 if (intakeTimer.seconds() > RobotActionConfig.SpindexerMoveTime || robot.distanceSensor.getDistance(DistanceUnit.CM) > 10) {
                     if (spindexer.checkFor(Spindexer.SLOT.Empty)) {
+                        robot.intakeMotor.setPower(RobotActionConfig.intakeSpeed);
                         intakeStates = IntakeStates.INTAKE_RUNNING;
                     } else {
                         intakeStates = IntakeStates.INTAKE_STBY;
                         robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
                         robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
+                        robot.intakeMotor.setPower(0);
                     }
                 }
                 break;

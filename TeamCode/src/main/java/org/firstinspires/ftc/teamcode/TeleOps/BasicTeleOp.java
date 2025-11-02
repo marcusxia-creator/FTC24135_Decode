@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp (name = "Basic TeleOp", group = "org.firstinspires.ftc.teamcode")
@@ -30,10 +31,11 @@ public class BasicTeleOp extends OpMode {
 
         robot = new RobotHardware(hardwareMap);
         robot.init(hardwareMap);
+        robot.initIMU();
 
         gamepadManager= new GamepadManager(gamepad1,gamepad2);
         spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
-        spindexer.runToSlot();
+        spindexer.runToSlot(0);
 
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
@@ -54,8 +56,9 @@ public class BasicTeleOp extends OpMode {
         intake.loop();
         spindexer.runToSlot();
 
+        robotDrive.DriveLoop();
+
         telemetry.addData("Intake State", intake.intakeStates);
-        telemetry.addData("Shooter State", shooterManualControl.shooterState);
         telemetry.addData("Sensor Distance", robot.distanceSensor.getDistance(DistanceUnit.CM));
         telemetry.addData("Slot 0", spindexer.slots[0]);
         telemetry.addData("Slot 1", spindexer.slots[1]);
@@ -63,6 +66,10 @@ public class BasicTeleOp extends OpMode {
         telemetry.addData("Current Slot", spindexer.currentSlot);
         telemetry.addData("Spindexer Servo Pos", robot.spindexerServo.getPosition());
         telemetry.addData("Target Colour", shooterManualControl.targetColour.name());
+        telemetry.addLine("-----");
+        telemetry.addData("Shooter State", shooterManualControl.shooterState);
+        telemetry.addData("Shooter Vel", robot.shooterMotor.getVelocity());
+        telemetry.addData("Shooter Motor Mode", robot.shooterMotor.getMode());
         telemetry.update();
     }
 

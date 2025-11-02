@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
@@ -66,20 +67,22 @@ public class FSMShooter {
         robot.spindexerServo.setPosition(slotAngle[counter]);
         shooterState = SHOOTERSTATE.IDLE;
         robot.shooterMotor.setPower(0);
+        robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 
     public void ShooterLoop() {
         // --- Global Controls (can be triggered from any state) ---
         // 'A' button is an emergency stop or reset.
-        if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
-            Init();
-            return; // Exit the loop for this cycle
-        }
         switch (shooterState) {
             case IDLE:
+                robot.shooterMotor.setPower(0);
+                robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                robot.shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 // Press 'X' to start spinning the flywheel
                 if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
                     robot.shooterMotor.setPower(shooterSpeed);
+                    robot.shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                 }
@@ -153,6 +156,15 @@ public class FSMShooter {
                         shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                         shootTimer.reset();
                     }
+                }
+                //Cancel
+                if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
+                    shooterState = SHOOTERSTATE.IDLE;
+                    robot.shooterMotor.setPower(0);
+                    rampstate = RAMPSTATE.DOWN;
+                    updateServoState();
+                    robot.leftGateServo.setPosition(gateDown);
+                    robot.rightGateServo.setPosition(gateDown);
                 }
                 break;
 
