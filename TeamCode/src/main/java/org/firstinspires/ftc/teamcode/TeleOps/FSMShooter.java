@@ -80,7 +80,7 @@ public class FSMShooter {
                 robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 robot.shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 // Press 'X' to start spinning the flywheel
-                if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
+                if (gamepadManager.Flywheel.PressState) {
                     robot.shooterMotor.setPower(shooterSpeed);
 
                     //robot.shooterMotor.setPower(shooterPowerCalculator.getPower());
@@ -88,17 +88,17 @@ public class FSMShooter {
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                 }
-                if (gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
+                if (gamepadManager.Purple.PressState) {
                     targetColour = Spindexer.SLOT.Purple;
                 }
-                if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
+                if (gamepadManager.Green.PressState) {
                     targetColour = Spindexer.SLOT.Green;
                 }
                 break;
             case FLYWHEEL_RUNNING:
                 // Give the flywheel time ProcessBuilder.Redirect.to get ProcessBuilder.Redirect.to speed (Log.e.g., 1 second)
                 // Press 'Y' to toggle ramp up/down]
-                if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced()) {
+                if (gamepadManager.Launch.HoldState) {
                     shooterState = SHOOTERSTATE.SHOOTING;
                     rampstate = RAMPSTATE.UP;
                     updateServoState();
@@ -108,16 +108,16 @@ public class FSMShooter {
                 }
                 // Press 'X' again to stop spinning the flywheel
                 // Allow driver to turn off flywheel if they change their mind with in 1 second
-                if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
+                if (gamepadManager.Flywheel.PressState) {
                     shooterState = SHOOTERSTATE.IDLE;
                     robot.shooterMotor.setPower(0);
                 }
 
                 //Launch Colour
-                if (((gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced())||!spindexer.checkFor(Spindexer.SLOT.Green))&&spindexer.checkFor(Spindexer.SLOT.Purple)) {
+                if ((gamepadManager.Purple.PressState)||!spindexer.checkFor(Spindexer.SLOT.Green)&&spindexer.checkFor(Spindexer.SLOT.Purple)) {
                     targetColour = Spindexer.SLOT.Purple;
                 }
-                if (((gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced())||!spindexer.checkFor(Spindexer.SLOT.Purple))&&spindexer.checkFor(Spindexer.SLOT.Green)) {
+                if ((gamepadManager.Green.PressState)||!spindexer.checkFor(Spindexer.SLOT.Purple)&&spindexer.checkFor(Spindexer.SLOT.Green)) {
                     targetColour = Spindexer.SLOT.Green;
                 }
 
@@ -160,7 +160,7 @@ public class FSMShooter {
                     }
                 }
                 //Cancel
-                if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
+                if (gamepadManager.Flywheel.PressState) {
                     shooterState = SHOOTERSTATE.IDLE;
                     robot.shooterMotor.setPower(0);
                     rampstate = RAMPSTATE.DOWN;

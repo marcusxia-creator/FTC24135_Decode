@@ -29,4 +29,14 @@ public class RobotActionConfig {
 
     public static double a                              = 0;
     public static double exp                            = 1;
+
+
+    public static double distanceThreshold              = 100;
+    public static int[] none                            = {105, 110};
+
+    public static int[] greenRangeLow                   = {120, 130};
+    public static int[] greenRangeHigh                  = {145, 165};
+
+    public static int[] purpleRangeLow                  = {115, 118};
+    public static int[] purpleRangeHigh                 = {180, 230};
 }

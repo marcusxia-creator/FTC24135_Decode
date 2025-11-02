@@ -16,16 +16,6 @@ public class Intake {
      * Green: 120 - 130, 145 - 160
      */
 
-    float[] hsvValues = {0F,0F,0F};
-
-    int[] none = {105, 110};
-
-    int[] greenRangeLow = {120, 130};
-    int[] greenRangeHigh = {145, 165};
-
-    int[] purpleRangeLow = {115, 118};
-    int[] purpleRangeHigh = {180, 230};
-
     private enum IntakeStates {
         INTAKE_STBY,
 
@@ -99,17 +89,7 @@ public class Intake {
                 }
 
                 if (intakeTimer.seconds() > RobotActionConfig.SpindexerStartTime && !recorded) {
-                    Color.RGBToHSV(robot.colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, hsvValues);
-
-                    if ((greenRangeLow[0] < hsvValues[0] && hsvValues[0] < greenRangeLow[1]) ||
-                            greenRangeHigh[0] < hsvValues[0] && hsvValues[0] < greenRangeHigh[1]) {
-                        //Green
-                        spindexer.writeToCurrent(Spindexer.SLOT.Green);
-                    } else if ((purpleRangeLow[0] < hsvValues[0] && hsvValues[0] < purpleRangeLow[1]) ||
-                            purpleRangeHigh[0] < hsvValues[0] && hsvValues[0] < purpleRangeHigh[1]) {
-                        //Purple
-                        spindexer.writeToCurrent(Spindexer.SLOT.Purple);
-                    }
+                    spindexer.writeToCurrent(robot.colorSensor, robot.distanceSensor);
                     spindexer.runToSlot(Spindexer.SLOT.Empty);
                     recorded = true;
                 }
