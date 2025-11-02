@@ -18,6 +18,7 @@ public class BasicTeleOp extends OpMode {
     private FSMShooter shooterManualControl;
     private Intake intake;
     private ElapsedTime debounceTimer = new ElapsedTime();
+    private SpindexerManualControl spindexerManualControl;
 
     private GamepadManager gamepadManager;
     private Spindexer spindexer;
@@ -37,6 +38,7 @@ public class BasicTeleOp extends OpMode {
         gamepadManager= new GamepadManager(gamepad1,gamepad2);
         spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
         spindexer.runToSlot(0);
+        spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadManager);
 
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
@@ -55,7 +57,9 @@ public class BasicTeleOp extends OpMode {
 
         shooterManualControl.ShooterLoop();
         intake.loop();
+
         spindexer.runToSlot();
+        spindexerManualControl.loop();
 
         robotDrive.DriveLoop();
 
