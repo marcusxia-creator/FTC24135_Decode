@@ -182,6 +182,11 @@ public class FSMShooter {
                 robot.shooterMotor.setPower(0);
                 shooterState = SHOOTERSTATE.IDLE;
         }
+        //STBY for spindexer manual control
+        if(gamepadManager.Unjam.HoldState||gamepadManager.spinPrev.HoldState||gamepadManager.spinNext.HoldState){
+            shooterState = SHOOTERSTATE.IDLE;
+            robot.shooterMotor.setPower(0);
+        }
     }
 
     private void toggleRamp(){

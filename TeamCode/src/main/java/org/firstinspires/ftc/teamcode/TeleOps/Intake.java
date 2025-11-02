@@ -119,5 +119,12 @@ public class Intake {
                 }
                 break;
         }
+        //STBY for spindexer manual control
+        if(gamepadManager.Unjam.HoldState||gamepadManager.spinPrev.HoldState||gamepadManager.spinNext.HoldState){
+            intakeStates = IntakeStates.INTAKE_STBY;
+            robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
+            robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
+            robot.intakeMotor.setPower(0);
+        }
     }
 }

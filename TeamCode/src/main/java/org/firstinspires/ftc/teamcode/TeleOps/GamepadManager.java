@@ -25,6 +25,10 @@ public class GamepadManager {
     public Control Launch;
     public Control Green;
     public Control Purple;
+    public Control Unjam;
+    public Control spinPrev;
+    public Control spinNext;
+    public Control reDetc;
 
     public GamepadManager(Gamepad gamepad1, Gamepad gamepad2){
         gamepad_1 = new GamepadEx(gamepad1);
@@ -36,13 +40,22 @@ public class GamepadManager {
         Launch = new Control(GamepadKeys.Button.Y, false);
         Green = new Control(GamepadKeys.Button.A, false);
         Purple = new Control(GamepadKeys.Button.B, false);
+        Unjam = new Control(GamepadKeys.Button.BACK, false);
+        spinPrev = new Control(GamepadKeys.Button.LEFT_BUMPER, false);
+        spinNext = new Control(GamepadKeys.Button.RIGHT_BUMPER, false);
+        reDetc = new Control(GamepadKeys.Button.START, false);
     }
 
     public void loop(){
         IntakeRun.Update();
         IntakeReverse.Update();
         Flywheel.Update();
-        Launch.Update();
+        Green.Update();
+        Purple.Update();
+        Unjam.Update();
+        spinPrev.Update();
+        spinNext.Update();
+        reDetc.Update();
     }
 
     public class Control{
