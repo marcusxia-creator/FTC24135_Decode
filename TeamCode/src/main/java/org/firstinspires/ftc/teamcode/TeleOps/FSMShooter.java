@@ -100,7 +100,7 @@ public class FSMShooter {
             case FLYWHEEL_RUNNING:
                 // Give the flywheel time ProcessBuilder.Redirect.to get ProcessBuilder.Redirect.to speed (Log.e.g., 1 second)
                 // Press 'Y' to toggle ramp up/down]
-                if (gamepadManager.Launch.HoldState) {
+                if (isShooterPower() && gamepadManager.Launch.HoldState) {
                     shooterState = SHOOTERSTATE.SHOOTING;
                     rampstate = RAMPSTATE.UP;
                     updateServoState();
@@ -205,6 +205,13 @@ public class FSMShooter {
             return true;
         }
         return false;
+    }
+    private boolean isShooterPower(){
+        if (robot.shooterMotor.getPower() <= shooterPowerCalculator.getPower() - 0.05 && robot.shooterMotor.getPower() >= shooterPowerCalculator.getPower() + 0.05) {
+            return true;
+        }else{
+            return false;
+        }
     }
 
 }
