@@ -76,7 +76,6 @@ public class Spindexer {
     }
 
     public void runToSlot(){
-        prevSlot = currentSlot;
         currentSlot = Math.floorMod(currentSlot,3);
         if(currentSlot==0){
             robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
@@ -90,6 +89,7 @@ public class Spindexer {
     }
 
     public void runToSlot(int n){
+        prevSlot = currentSlot;
         currentSlot = n;
         runToSlot();
     }
