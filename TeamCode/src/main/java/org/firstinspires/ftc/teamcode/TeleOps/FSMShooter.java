@@ -18,7 +18,6 @@ public class FSMShooter {
     private ElapsedTime rampTimer = new ElapsedTime();
     SHOOTERSTATE shooterState;
     public RAMPSTATE rampstate = RAMPSTATE.DOWN;
-    int counter = 2;
     Spindexer spindexer;
     Spindexer.SLOT targetColour = Spindexer.SLOT.Purple;
 
@@ -46,26 +45,21 @@ public class FSMShooter {
         DOWN
     }
 
-    // Define slotAngle
-    double [] slotAngle;
 
     GamepadManager gamepadManager;
 
     public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, Spindexer spindexer, GamepadManager gamepadManager) {
         this.gamepad_1 = gamepad_1;
         this.robot = robot;
-        slotAngle = new double[]{spindexerSlot0, spindexerSlot1, spindexerSlot2};
         this.spindexer = spindexer;
         this.gamepadManager = gamepadManager;
     }
 
     public void Init() {
-        counter = 2;
         robot.shooterMotor.setPower(0);
         robot.pushRampServo.setPosition(rampDownPos);
         robot.leftGateServo.setPosition(gateDown);
         robot.rightGateServo.setPosition(gateDown);
-        robot.spindexerServo.setPosition(slotAngle[counter]);
         shooterState = SHOOTERSTATE.IDLE;
         robot.shooterMotor.setPower(0);
         robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

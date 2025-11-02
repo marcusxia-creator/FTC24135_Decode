@@ -22,6 +22,7 @@ public class ShooterPowerCalculator {
     public double getPower() {
         robot.odo.update();
         distance = Math.sqrt(Math.pow(robot.odo.getPosX(DistanceUnit.INCH) - redGoalPose.getX(DistanceUnit.INCH),2) + Math.pow(robot.odo.getPosY(DistanceUnit.INCH) - redGoalPose.getY(DistanceUnit.INCH), 2));
-        return a * Math.pow(distance, exp);
+        //return a * Math.pow(distance, exp);
+        return 0.9;
     }
 }

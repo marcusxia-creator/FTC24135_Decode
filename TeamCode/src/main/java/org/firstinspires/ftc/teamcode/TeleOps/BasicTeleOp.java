@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp (name = "Basic TeleOp", group = "org.firstinspires.ftc.teamcode")
@@ -75,6 +76,7 @@ public class BasicTeleOp extends OpMode {
         telemetry.addData("Shooter State", shooterManualControl.shooterState);
         telemetry.addData("Shooter Vel", robot.shooterMotor.getVelocity());
         telemetry.addData("Shooter Motor Mode", robot.shooterMotor.getMode());
+        telemetry.addData("Shooter current draw", robot.shooterMotor.getCurrent(CurrentUnit.AMPS));
         telemetry.update();
     }
 
