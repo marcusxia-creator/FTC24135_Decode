@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -22,17 +19,9 @@ public class ShooterPowerCalculator {
         this.robot = robot;
     }
 
-    public void init() {
-        robot.initOdo();
-    }
-
-    public void updateDistance() {
+    public double getPower() {
         robot.odo.update();
         distance = Math.sqrt(Math.pow(robot.odo.getPosX(DistanceUnit.INCH) - redGoalPose.getX(DistanceUnit.INCH),2) + Math.pow(robot.odo.getPosY(DistanceUnit.INCH) - redGoalPose.getY(DistanceUnit.INCH), 2));
-    }
-
-    public double getPower() {
-        updateDistance();
         return a * Math.pow(distance, exp);
     }
 }

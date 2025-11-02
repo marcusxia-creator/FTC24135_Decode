@@ -32,6 +32,7 @@ public class BasicTeleOp extends OpMode {
         robot = new RobotHardware(hardwareMap);
         robot.init(hardwareMap);
         robot.initIMU();
+        robot.initOdo();
 
         gamepadManager= new GamepadManager(gamepad1,gamepad2);
         spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
