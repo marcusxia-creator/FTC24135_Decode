@@ -179,7 +179,7 @@ public class RobotTest extends OpMode {
 
         if (gamepad_2.getButton(GamepadKeys.Button.BACK)) {
             if (!backPressed) {
-                robot.pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH,0, 0.0, AngleUnit.DEGREES, 0)); // reset pose (x,y,heading)
+                robot.pinPoint.setPosition(new Pose2D(DistanceUnit.INCH,0, 0.0, AngleUnit.DEGREES, 0)); // reset pose (x,y,heading)
                 telemetry.addLine("Pinpoint reset to (0,0,0)");
                 backPressed = true; // debounce
             }
@@ -191,9 +191,9 @@ public class RobotTest extends OpMode {
         // Telemetry (DS + Dashboard)
         // === TELEMETRY ===
         telemetry.addLine("-------Odometry-------------------");
-        robot.pinpointDriver.update();
-        double currentX = robot.pinpointDriver.getPosX(DistanceUnit.INCH);
-        double currentY = robot.pinpointDriver.getPosY(DistanceUnit.INCH);
+        robot.pinPoint.update();
+        double currentX = robot.pinPoint.getPosX(DistanceUnit.INCH);
+        double currentY = robot.pinPoint.getPosY(DistanceUnit.INCH);
         // Compute distance to top-right corner
         double dx = -70.0 - currentX;
         double dy = 70.0 - currentY;
@@ -201,9 +201,9 @@ public class RobotTest extends OpMode {
 
 // Optional: direction (heading) to corner if needed
         double headingToCorner = Math.toDegrees(Math.atan2(dy, dx));
-        telemetry.addData("Pinpoint X", "%.2f in", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
-        telemetry.addData("Pinpoint Y", "%.2f in", robot.pinpointDriver.getPosY(DistanceUnit.INCH));
-        telemetry.addData("Pinpoint Heading", "%.2f°", robot.pinpointDriver.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("Pinpoint X", "%.2f in", robot.pinPoint.getPosX(DistanceUnit.INCH));
+        telemetry.addData("Pinpoint Y", "%.2f in", robot.pinPoint.getPosY(DistanceUnit.INCH));
+        telemetry.addData("Pinpoint Heading", "%.2f°", robot.pinPoint.getHeading(AngleUnit.DEGREES));
         telemetry.addData("Distance to Corner", "%.2f in", distanceToCorner);
         telemetry.addData("Heading to Corner", "%.2f°", headingToCorner);
         telemetry.addLine("-------Intake-------------------");

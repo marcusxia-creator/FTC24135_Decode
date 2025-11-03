@@ -126,7 +126,7 @@ public class OffTakeBall {
     }
     private void handleShootingState() {
         double startTime;
-        //shootPower = -14.88+0.7736667*distance-0.01416667*Math.pow(distance,2)+0.000113333*Math.pow(distance,3)-3.33333e-7*Math.pow(distance,4);
+        //calculatedShootPower = -14.88+0.7736667*distance-0.01416667*Math.pow(distance,2)+0.000113333*Math.pow(distance,3)-3.33333e-7*Math.pow(distance,4);
 
         if (currentCounterIndex == 0){
             startTime = RAMP_UP_TIME_1st;

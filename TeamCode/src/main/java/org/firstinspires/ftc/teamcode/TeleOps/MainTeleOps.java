@@ -4,7 +4,6 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.*;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.DEBOUNCE_THRESHOLD;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -116,7 +115,7 @@ public class MainTeleOps extends OpMode {
     public void loop() {
         //--- Universal Updates ---
         // Always update odometry and calculate distance, regardless of mode
-        robot.pinpointDriver.update();
+        robot.pinPoint.update();
         double distanceToGoal = getTargetGoalDist(targetGoalPos);
         offTakeBall.setDistanceToGoal(distanceToGoal);
 
@@ -237,7 +236,7 @@ public class MainTeleOps extends OpMode {
      */
     private void handleOdomReset() {
         if (gamepadCo1.getButton(DPAD_DOWN) && isDebounced()) {
-            robot.pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH,0,0,AngleUnit.DEGREES,0));
+            robot.pinPoint.setPosition(new Pose2D(DistanceUnit.INCH,0,0,AngleUnit.DEGREES,0));
             telemetry.addLine("!!! ODOMETRY RESET !!!");
         }
     }
@@ -311,8 +310,8 @@ public class MainTeleOps extends OpMode {
     }
 
     private double getTargetGoalDist(Pose2D targetPos) {
-        double deltaX = targetPos.getX(DistanceUnit.INCH) - robot.pinpointDriver.getPosX(DistanceUnit.INCH);
-        double deltaY = targetPos.getY(DistanceUnit.INCH) - robot.pinpointDriver.getPosY(DistanceUnit.INCH);
+        double deltaX = targetPos.getX(DistanceUnit.INCH) - robot.pinPoint.getPosX(DistanceUnit.INCH);
+        double deltaY = targetPos.getY(DistanceUnit.INCH) - robot.pinPoint.getPosY(DistanceUnit.INCH);
         return Math.hypot(deltaX, deltaY);
     }
 
@@ -337,9 +336,9 @@ public class MainTeleOps extends OpMode {
         telemetry.addData("Battery Voltage", "%.2f V", getBatteryVoltage());
 
         telemetry.addLine("--- Odometry ---");
-        telemetry.addData("X", "%.2f in", robot.pinpointDriver.getPosX(DistanceUnit.INCH));
-        telemetry.addData("Y", "%.2f in", robot.pinpointDriver.getPosY(DistanceUnit.INCH));
-        telemetry.addData("Heading", "%.2f°", robot.pinpointDriver.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("X", "%.2f in", robot.pinPoint.getPosX(DistanceUnit.INCH));
+        telemetry.addData("Y", "%.2f in", robot.pinPoint.getPosY(DistanceUnit.INCH));
+        telemetry.addData("Heading", "%.2f°", robot.pinPoint.getHeading(AngleUnit.DEGREES));
         telemetry.addData("Distance to Goal", "%.2f in", getTargetGoalDist(targetGoalPos));
 
         telemetry.addLine("--- Intake ---");

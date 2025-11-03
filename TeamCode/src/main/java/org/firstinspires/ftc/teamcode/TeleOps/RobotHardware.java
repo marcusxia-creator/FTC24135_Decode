@@ -3,23 +3,19 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 /*
@@ -90,7 +86,7 @@ public class RobotHardware {
     public Servo rgbLED;
 
     /// goBilda Pinpoint Driver
-    public GoBildaPinpointDriver pinpointDriver;
+    public GoBildaPinpointDriver pinPoint;
 
 
     ///IMU
@@ -143,7 +139,7 @@ public class RobotHardware {
         rgbLED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
 
         //goBilda Pinpoint Driver
-        pinpointDriver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        pinPoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         //voltage sensor
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
@@ -193,10 +189,10 @@ public class RobotHardware {
     }
 
     public void initPinPoint() {
-        pinpointDriver.setOffsets(-149.225, -165.1,DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
-        pinpointDriver.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        pinpointDriver.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
-        pinpointDriver.resetPosAndIMU();
+        pinPoint.setOffsets(-149.225, -165.1,DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+        pinPoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        pinPoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        pinPoint.resetPosAndIMU();
     }
 
     private static double median(List<Double> xs) {
