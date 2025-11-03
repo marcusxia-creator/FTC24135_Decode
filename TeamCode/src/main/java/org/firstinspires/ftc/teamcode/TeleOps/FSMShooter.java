@@ -60,6 +60,7 @@ public class FSMShooter {
         this.robot = robot;
         this.spindexer = spindexer;
         this.gamepadManager = gamepadManager;
+        this.shooterPowerCalculator = new ShooterPowerCalculator(robot);
     }
 
     public void Init() {
@@ -187,11 +188,6 @@ public class FSMShooter {
             default:
                 robot.shooterMotor.setPower(0);
                 shooterState = SHOOTERSTATE.IDLE;
-        }
-        //STBY for spindexer manual control
-        if(gamepadManager.Unjam.HoldState||gamepadManager.spinPrev.HoldState||gamepadManager.spinNext.HoldState){
-            shooterState = SHOOTERSTATE.IDLE;
-            robot.shooterMotor.setPower(0);
         }
     }
 
