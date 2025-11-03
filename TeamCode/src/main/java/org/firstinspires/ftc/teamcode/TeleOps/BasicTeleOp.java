@@ -74,9 +74,10 @@ public class BasicTeleOp extends OpMode {
         telemetry.addData("Target Colour", shooterManualControl.targetColour.name());
         telemetry.addLine("-----");
         telemetry.addData("Shooter State", shooterManualControl.shooterState);
-        telemetry.addData("Shooter Vel", robot.shooterMotor.getVelocity());
+        telemetry.addData("Shooter Power", robot.shooterMotor.getPower());
+        telemetry.addData("Shooter Velocity", robot.shooterMotor.getVelocity());
         telemetry.addData("Shooter Motor Mode", robot.shooterMotor.getMode());
-        telemetry.addData("Shooter current draw", robot.shooterMotor.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("Shooter dI", shooterManualControl.dt);
         telemetry.update();
     }
 

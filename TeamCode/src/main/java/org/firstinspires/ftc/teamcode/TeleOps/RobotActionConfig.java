@@ -15,12 +15,15 @@ public class RobotActionConfig {
     public static double rampUpPos                      = 0.10;
     public static double angleResetPos                  = 0.0;
     //Speed
-    public static double intakeSpeed                    = 1.0;
+    public static double intakeSpeed                    = 0.6;
     public static double ejectSpeed                     = -0.2;
-    public static double shooterSpeed                   = 0.9;
+    public static double shooterVel                     = 1900;
+    public static double shooterFactorThreshold         = 0.95;
     public static double powerFactor                    = 0.9;
     public static double accel_Slowness                 = 0.25;
     public static double decel_Slowness                 = 0.5;
+
+    public static double getDistanceThreshold           =0.02;
 
     //Intake capture timing
     public static double gateDownTime                   = 0.1;

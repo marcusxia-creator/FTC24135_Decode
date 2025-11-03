@@ -4,6 +4,8 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
@@ -20,6 +22,11 @@ public class FSMShooter {
     public RAMPSTATE rampstate = RAMPSTATE.DOWN;
     Spindexer spindexer;
     Spindexer.SLOT targetColour = Spindexer.SLOT.Purple;
+
+    //Amp draw conditions
+    public double dt;
+    private double lastI;
+    public double I;
 
     /**
      * BUTTON FOR SHOOTING
@@ -64,7 +71,8 @@ public class FSMShooter {
         robot.shooterMotor.setPower(0);
         robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        shooterPowerCalculator.init(robot);
+        //shooterPowerCalculator = new ShooterPowerCalculator();
+        //shooterPowerCalculator.init(robot);
     }
 
     public void ShooterLoop() {
@@ -75,9 +83,13 @@ public class FSMShooter {
                 robot.shooterMotor.setPower(0);
                 robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 robot.shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                // Find dI
+                I=robot.shooterMotor.getCurrent(CurrentUnit.AMPS);
+                dt=(I-lastI)/0.00091;
+                lastI=I;
                 // Press 'X' to start spinning the flywheel
                 if (gamepadManager.Flywheel.PressState) {
-                    robot.shooterMotor.setPower(shooterSpeed);
+                    robot.shooterMotor.setVelocity(shooterVel);
 
                     //robot.shooterMotor.setPower(shooterPowerCalculator.getPower());
                     robot.shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -94,7 +106,7 @@ public class FSMShooter {
             case FLYWHEEL_RUNNING:
                 // Give the flywheel time ProcessBuilder.Redirect.to get ProcessBuilder.Redirect.to speed (Log.e.g., 1 second)
                 // Press 'Y' to toggle ramp up/down]
-                if (isShooterPower() && gamepadManager.Launch.HoldState) {
+                if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced() && shooterVel*shooterFactorThreshold<=robot.shooterMotor.getVelocity()) {
                     shooterState = SHOOTERSTATE.SHOOTING;
                     rampstate = RAMPSTATE.UP;
                     updateServoState();
@@ -204,13 +216,6 @@ public class FSMShooter {
             return true;
         }
         return false;
-    }
-    private boolean isShooterPower(){
-        if (robot.shooterMotor.getPower() <= shooterPowerCalculator.getPower() - 0.05 && robot.shooterMotor.getPower() >= shooterPowerCalculator.getPower() + 0.05) {
-            return true;
-        }else{
-            return false;
-        }
     }
 
 }
