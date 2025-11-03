@@ -45,6 +45,7 @@ public class MainTeleOps extends OpMode {
     private OffTakeBall offTakeBall;
     private SharedBallList sharedBallList;
     private AprilTagUpdate aprilTagUpdate;
+    private ShooterPowerTable powerTable;
 
     //======================= Controllers & State =============================
     private GamepadEx gamepadCo1, gamepadCo2;
@@ -78,11 +79,13 @@ public class MainTeleOps extends OpMode {
         // Drivetrain
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
+        powerTable = new ShooterPowerTable();
+        powerTable.update();
 
         // Ball Handling Subsystems
         sharedBallList = new SharedBallList(spindexerSlotAngles);
         intakeBall = new IntakeBall(robot, gamepadCo2, sharedBallList.getBalls(), spindexerSlotAngles);
-        offTakeBall = new OffTakeBall(robot, gamepadCo2, sharedBallList.getBalls());
+        offTakeBall = new OffTakeBall(robot, gamepadCo2, sharedBallList.getBalls(), powerTable);
 
         // Vision
         aprilTagUpdate = new AprilTagUpdate(hardwareMap);
@@ -239,7 +242,6 @@ public class MainTeleOps extends OpMode {
             telemetry.addLine("!!! ODOMETRY RESET !!!");
         }
     }
-
 
     /**
      * Automatically loads the AprilTag sequence after 100 seconds.

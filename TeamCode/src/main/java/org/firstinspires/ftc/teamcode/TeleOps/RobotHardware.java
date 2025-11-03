@@ -143,7 +143,7 @@ public class RobotHardware {
         rgbLED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
 
         //goBilda Pinpoint Driver
-        pinpointDriver = hardwareMap.get(GoBildaPinpointDriver.class, "Pinpoint");
+        pinpointDriver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         //voltage sensor
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));

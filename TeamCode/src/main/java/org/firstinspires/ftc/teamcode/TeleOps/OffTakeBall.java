@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import java.util.List;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class OffTakeBall {
@@ -43,15 +44,16 @@ public class OffTakeBall {
     private int cycle_no = 0;      // counter for non color based sequence times
 
     /// --- Shooter power table ---
-    private ShooterPowerTable shooterPowerTable = new ShooterPowerTable();
+    ShooterPowerTable shooterPowerTable;
     private double calculatedShootPower = 0;
     private double currentDistanceToGoal;
 
     // --- Constructor ---
-    public OffTakeBall(RobotHardware robot, GamepadEx gamepad2, List<Ball> balls) {
+    public OffTakeBall(RobotHardware robot, GamepadEx gamepad2, List<Ball> balls, ShooterPowerTable shooterPowerTable) {
         this.robot = robot;
         this.gamepad2 = gamepad2;
         this.balls = balls;
+        this.shooterPowerTable = shooterPowerTable;
     }
 
     // --- Main update loop ---
@@ -259,3 +261,5 @@ public class OffTakeBall {
 
     public double getShooterPower(){return calculatedShootPower;}
 }
+
+
