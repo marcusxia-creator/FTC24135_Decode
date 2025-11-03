@@ -48,10 +48,10 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-import org.firstinspires.ftc.teamcode.messages.DriveCommandMessage;
-import org.firstinspires.ftc.teamcode.messages.PoseMessage;
-import org.firstinspires.ftc.teamcode.messages.TankCommandMessage;
-import org.firstinspires.ftc.teamcode.messages.TankLocalizerInputsMessage;
+import org.firstinspires.ftc.teamcode.Auto.messages.DriveCommandMessage;
+import org.firstinspires.ftc.teamcode.Auto.messages.PoseMessage;
+import org.firstinspires.ftc.teamcode.Auto.messages.TankCommandMessage;
+import org.firstinspires.ftc.teamcode.Auto.messages.TankLocalizerInputsMessage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +59,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-@Config
+//@Config
 public final class TankDrive {
     public static class Params {
         // IMU orientation

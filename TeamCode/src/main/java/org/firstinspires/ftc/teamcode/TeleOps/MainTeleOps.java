@@ -22,7 +22,6 @@ import org.firstinspires.ftc.teamcode.Vision.AprilTagUpdate;
 import java.util.Arrays;
 import java.util.List;
 
-@Config
 @TeleOp(name = "TeleOps_Decode_gw", group = "org.firstinspires.ftc.teamcode")
 public class MainTeleOps extends OpMode {
 

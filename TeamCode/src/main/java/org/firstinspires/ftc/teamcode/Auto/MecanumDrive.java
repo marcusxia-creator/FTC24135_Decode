@@ -41,17 +41,17 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.firstinspires.ftc.teamcode.messages.DriveCommandMessage;
-import org.firstinspires.ftc.teamcode.messages.MecanumCommandMessage;
-import org.firstinspires.ftc.teamcode.messages.MecanumLocalizerInputsMessage;
-import org.firstinspires.ftc.teamcode.messages.PoseMessage;
+import org.firstinspires.ftc.teamcode.Auto.messages.DriveCommandMessage;
+import org.firstinspires.ftc.teamcode.Auto.messages.MecanumCommandMessage;
+import org.firstinspires.ftc.teamcode.Auto.messages.MecanumLocalizerInputsMessage;
+import org.firstinspires.ftc.teamcode.Auto.messages.PoseMessage;
 
 import java.lang.Math;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-@Config
+//@Config
 public final class MecanumDrive {
     public static class Params {
         // IMU orientation

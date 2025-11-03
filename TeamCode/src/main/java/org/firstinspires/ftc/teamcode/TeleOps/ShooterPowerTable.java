@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import java.util.TreeMap;
+import com.acmerobotics.dashboard.config.Config;
 
+import java.util.TreeMap;
+@Config
 public class ShooterPowerTable {
     // These static variables are tunable via FTC Dashboard
     public static double DIST1 = 60.0;
