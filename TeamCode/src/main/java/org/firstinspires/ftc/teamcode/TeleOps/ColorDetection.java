@@ -45,8 +45,9 @@ public class ColorDetection {
                 hsv
         );
         float hue = hsv[0];
+        float value = hsv[2];
 
-        BallColor currentColor = BallColor.fromHue(hue);
+        BallColor currentColor = BallColor.fromHue(hue,value);
 
         /**Stability Check*/
         if (currentColor == lastColor && currentColor.isKnown())
