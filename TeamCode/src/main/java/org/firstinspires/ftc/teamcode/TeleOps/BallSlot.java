@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import androidx.annotation.NonNull;
-
-public class Ball {
+public class BallSlot {
 
     private final int slotPosition;   // Slot index (0, 1, 2)
     private final double slotAngle;   // Servo position for this slot
@@ -10,7 +8,7 @@ public class Ball {
     public BallColor color;          // Enum color (RED, BLUE, YELLOW, UNKNOWN)
 
     // --- Constructor ---
-    public Ball(int slotPosition, double slotAngle) {
+    public BallSlot(int slotPosition, double slotAngle) {
         this.slotPosition = slotPosition;
         this.slotAngle = slotAngle;
         this.hasBall = false;
