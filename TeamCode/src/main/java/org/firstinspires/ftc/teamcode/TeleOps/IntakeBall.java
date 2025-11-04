@@ -44,7 +44,7 @@ public class IntakeBall {
 
     //============= SPINDEXER & BALLS =========================
     private final double[] slotAngles;
-    private List<Ball> balls = new ArrayList<>();
+    private List<BallSlot> ballSlots = new ArrayList<>();
     private int currentSlot = 0;
     private int nextSlot;
     private int previousSlot = 0;
@@ -55,10 +55,10 @@ public class IntakeBall {
     private boolean colorDetected = false;
 
     // --- Constructor ---
-    public IntakeBall(RobotHardware robot, GamepadEx gamepad, List<Ball> balls, double[] slotAngles) {
+    public IntakeBall(RobotHardware robot, GamepadEx gamepad, List<BallSlot> ballSlots, double[] slotAngles) {
         this.robot = robot;
         this.gamepad1 = gamepad;
-        this.balls = balls;
+        this.ballSlots = ballSlots;
         this.slotAngles = slotAngles;
 
         this.colorDetection = new ColorDetection(robot);
@@ -164,7 +164,7 @@ public class IntakeBall {
             // Convert string result → enum
             detectedColor = colorDetection.getStableColor();
 
-            Ball b = balls.get(currentSlot);
+            BallSlot b = ballSlots.get(currentSlot);
             b.setHasBall(true);
             b.setBallColor(detectedColor);  // ultra-fast enum update
 
@@ -218,7 +218,7 @@ public class IntakeBall {
 
         // --- 3. After 1.0 s, mark the slot as cleared ---
         if (t >= 0.75 ) {
-            Ball b = balls.get(previousSlot);
+            BallSlot b = ballSlots.get(previousSlot);
             b.setHasBall(false);
             b.setBallColor(BallColor.UNKNOWN);
             currentSlot = previousSlot;
@@ -243,11 +243,11 @@ public class IntakeBall {
     }
 
     public boolean areAllSlotsFull() {
-        return getNumberOfBalls() == balls.size();
+        return getNumberOfBalls() == ballSlots.size();
     }
 
     public int findEmptySlot() {
-        for (Ball b : balls) {
+        for (BallSlot b : ballSlots) {
             if (!b.hasBall()) return b.getSlotPosition();
         }
         return -1;
@@ -255,7 +255,7 @@ public class IntakeBall {
 
     public int getNumberOfBalls() {
         int count = 0;
-        for (Ball b : balls) if (b.hasBall()) count++;
+        for (BallSlot b : ballSlots) if (b.hasBall()) count++;
         return count;
     }
 
@@ -275,13 +275,13 @@ public class IntakeBall {
     public int getCurrentSlot() { return currentSlot; }
     public BallColor getDetectedColor() { return detectedColor; }
     public boolean isColorDetected() { return colorDetected; }
-    public List<Ball> getBalls() { return balls; }
+    public List<BallSlot> getBalls() { return ballSlots; }
 
     public void setState(INTAKEBALLSTATE state) { this.state = state; }
 
     public void resetSpindexerSlot() {
         currentSlot = 0;
         robot.spindexerServo.setPosition(slotAngles[0]);
-        for (Ball b : balls) b.reset();
+        for (BallSlot b : ballSlots) b.reset();
     }
 }

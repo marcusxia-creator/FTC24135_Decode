@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import java.util.List;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class OffTakeBall {
@@ -28,9 +27,9 @@ public class OffTakeBall {
     private final GamepadEx gamepad2;
 
     //------ Shared ball system ------
-    private final List<Ball> balls;
-    private List<Ball> ballsWithBall;
-    private Ball targetBall;
+    private final List<BallSlot> ballSlots;
+    private List<BallSlot> ballsWithBallSlot;
+    private BallSlot targetBallSlot;
 
     // --- Color sequence logic (now enum-based) ---
     private BallColor[] targetSequence = {
@@ -49,10 +48,10 @@ public class OffTakeBall {
     private double currentDistanceToGoal;
 
     // --- Constructor ---
-    public OffTakeBall(RobotHardware robot, GamepadEx gamepad2, List<Ball> balls, ShooterPowerTable shooterPowerTable) {
+    public OffTakeBall(RobotHardware robot, GamepadEx gamepad2, List<BallSlot> ballSlots, ShooterPowerTable shooterPowerTable) {
         this.robot = robot;
         this.gamepad2 = gamepad2;
-        this.balls = balls;
+        this.ballSlots = ballSlots;
         this.shooterPowerTable = shooterPowerTable;
     }
 
@@ -69,9 +68,9 @@ public class OffTakeBall {
                 break;
 
             case OFFTAKE_AIMING:
-                targetBall = getNextTargetBall();
-                if (targetBall != null) {
-                    robot.spindexerServo.setPosition(targetBall.getSlotAngle());
+                targetBallSlot = getNextTargetBall();
+                if (targetBallSlot != null) {
+                    robot.spindexerServo.setPosition(targetBallSlot.getSlotAngle());
                     state = OFFTAKEBALLSTATE.OFFTAKE_SHOOTING;
                     timer.reset();
                 } else {
@@ -104,11 +103,11 @@ public class OffTakeBall {
             robot.leftGateServo.setPosition(GATEDOWN);
             robot.rightGateServo.setPosition(GATEDOWN);
             // Prepare ball list
-            ballsWithBall = balls.stream()
-                    .filter(Ball::hasBall)
+            ballsWithBallSlot = ballSlots.stream()
+                    .filter(BallSlot::hasBall)
                     .collect(Collectors.toList());
 
-            cycle_no = ballsWithBall.size();
+            cycle_no = ballsWithBallSlot.size();
             currentColorTargetIndex = 0;
             currentCounterIndex = 0;
             timer.reset();
@@ -156,7 +155,7 @@ public class OffTakeBall {
     }
     /** Handles ejection timing and advancing index. */
     private void handleEjectingState() {
-        ejectCurrentBall(targetBall);
+        ejectCurrentBall(targetBallSlot);
         if (timer.seconds() > EJECT_TIME) {
             if (useColorSequence) {
                 currentColorTargetIndex++;
@@ -178,7 +177,7 @@ public class OffTakeBall {
 
     // =============================================================
     /** Selects the next target ball based on current mode. */
-    private Ball getNextTargetBall() {
+    private BallSlot getNextTargetBall() {
         if (useColorSequence) {
             // Tag-guided mode
             if (currentColorTargetIndex < targetSequence.length) {
@@ -187,19 +186,19 @@ public class OffTakeBall {
         } else {
             // Sequential (free shooting) mode
             if (currentCounterIndex < cycle_no) {
-                return ballsWithBall.get(cycle_no - currentCounterIndex - 1);
+                return ballsWithBallSlot.get(cycle_no - currentCounterIndex - 1);
             }
         }
         return null;
     }
     /** --- Find next ball matching target sequence color ---*/
-    private Ball findNextTargetBall(int targetIndex) {
+    private BallSlot findNextTargetBall(int targetIndex) {
         if (!isUnknownSequence(targetSequence)) {
             if (targetIndex >= targetSequence.length) {
                 return null; // all done
             }
             BallColor targetColor = targetSequence[targetIndex];
-            for (Ball b : balls) {
+            for (BallSlot b : ballSlots) {
                 if (b.hasBall() && b.getColor() == targetColor) {
                     return b;
                 }
@@ -210,7 +209,7 @@ public class OffTakeBall {
     }
 
     /** --- Eject current ball (mark slot empty) ---*/
-    private void ejectCurrentBall(Ball b) {
+    private void ejectCurrentBall(BallSlot b) {
         if (b != null) {
             b.setHasBall(false);
             b.setBallColor(BallColor.UNKNOWN);

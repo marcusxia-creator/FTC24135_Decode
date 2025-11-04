@@ -41,7 +41,7 @@ public class MainTeleOps extends OpMode {
     private RobotDrive robotDrive;
     private IntakeBall intakeBall;
     private OffTakeBall offTakeBall;
-    private SharedBallList sharedBallList;
+    private SlotList slotList;
     private AprilTagUpdate aprilTagUpdate;
     private ShooterPowerTable powerTable;
 
@@ -81,9 +81,9 @@ public class MainTeleOps extends OpMode {
         powerTable.update();
 
         // Ball Handling Subsystems
-        sharedBallList = new SharedBallList(spindexerSlotAngles);
-        intakeBall = new IntakeBall(robot, gamepadCo2, sharedBallList.getBalls(), spindexerSlotAngles);
-        offTakeBall = new OffTakeBall(robot, gamepadCo2, sharedBallList.getBalls(), powerTable);
+        slotList = new SlotList(spindexerSlotAngles);
+        intakeBall = new IntakeBall(robot, gamepadCo2, slotList.getBalls(), spindexerSlotAngles);
+        offTakeBall = new OffTakeBall(robot, gamepadCo2, slotList.getBalls(), powerTable);
 
         // Vision
         aprilTagUpdate = new AprilTagUpdate(hardwareMap);
@@ -352,7 +352,7 @@ public class MainTeleOps extends OpMode {
         telemetry.addData("Shooter Power", "%.2f", offTakeBall.getShooterPower());
 
         telemetry.addLine("--- Shared Ball Slots ---");
-        for (Ball b : sharedBallList.getBalls()) {
+        for (BallSlot b : slotList.getBalls()) {
             telemetry.addData(
                     "Slot " + b.getSlotPosition(),
                     "HasBall=%s | Color=%s",
