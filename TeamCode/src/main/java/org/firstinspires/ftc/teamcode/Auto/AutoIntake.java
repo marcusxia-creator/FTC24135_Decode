@@ -5,10 +5,10 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.TeleOps.Ball;
+import org.firstinspires.ftc.teamcode.TeleOps.BallSlot;
 import org.firstinspires.ftc.teamcode.TeleOps.BallColor;
 import org.firstinspires.ftc.teamcode.TeleOps.ColorDetection;
-import org.firstinspires.ftc.teamcode.TeleOps.IntakeBall;
+
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
@@ -38,7 +38,7 @@ public class AutoIntake {
 
     //============= SPINDEXER & BALLS =========================
     private final double[] slotAngles;
-    private List<Ball> balls = new ArrayList<>();
+    private List<BallSlot> ballSlots = new ArrayList<>();
     private int currentSlot = 0;
     private int nextSlot;
     private int previousSlot = 0;
@@ -49,9 +49,9 @@ public class AutoIntake {
     private boolean colorDetected = false;
 
     // --- Constructor ---
-    public AutoIntake(RobotHardware robot, List<Ball> balls, double[] slotAngles) {
+    public AutoIntake(RobotHardware robot, List<BallSlot> ballSlots, double[] slotAngles) {
         this.robot = robot;
-        this.balls = balls;
+        this.ballSlots = ballSlots;
         this.slotAngles = slotAngles;
 
         this.colorDetection = new ColorDetection(robot);
@@ -151,7 +151,7 @@ public class AutoIntake {
             colorDetected = true;
             detectedColor = colorDetection.getStableColor();
 
-            Ball b = balls.get(currentSlot);
+            BallSlot b = ballSlots.get(currentSlot);
             b.setHasBall(true);
             b.setBallColor(detectedColor);
 
@@ -187,7 +187,7 @@ public class AutoIntake {
     private void handleUnjammingState() {
         robot.spindexerServo.setPosition(slotAngles[previousSlot]);
         if (timer.seconds() > 0.5) {
-            Ball b = balls.get(previousSlot);
+            BallSlot b = ballSlots.get(previousSlot);
             b.setHasBall(false);
             b.setBallColor(BallColor.UNKNOWN);
             currentSlot = previousSlot;
@@ -209,17 +209,17 @@ public class AutoIntake {
     }
 
     public boolean areAllSlotsFull() {
-        return getNumberOfBalls() == balls.size();
+        return getNumberOfBalls() == ballSlots.size();
     }
 
     public int findEmptySlot() {
-        for (Ball b : balls) if (!b.hasBall()) return b.getSlotPosition();
+        for (BallSlot b : ballSlots) if (!b.hasBall()) return b.getSlotPosition();
         return -1;
     }
 
     public int getNumberOfBalls() {
         int count = 0;
-        for (Ball b : balls) if (b.hasBall()) count++;
+        for (BallSlot b : ballSlots) if (b.hasBall()) count++;
         return count;
     }
 
@@ -255,14 +255,14 @@ public class AutoIntake {
     public int getCurrentSlot() { return currentSlot; }
     public BallColor getDetectedColor() { return detectedColor; }
     public boolean isColorDetected() { return colorDetected; }
-    public List<Ball> getBalls() { return balls; }
+    public List<BallSlot> getBalls() { return ballSlots; }
 
     public void setState(AutoIntake.INTAKEBALLSTATE state) { this.state = state; }
 
     public void resetSpindexerSlot() {
         currentSlot = 0;
         robot.spindexerServo.setPosition(slotAngles[0]);
-        for (Ball b : balls) b.reset();
+        for (BallSlot b : ballSlots) b.reset();
     }
 }
 

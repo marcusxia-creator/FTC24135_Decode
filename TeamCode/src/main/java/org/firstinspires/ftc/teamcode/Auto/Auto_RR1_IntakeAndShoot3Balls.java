@@ -10,8 +10,8 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.TeleOps.BallColor;
-import org.firstinspires.ftc.teamcode.TeleOps.SharedBallList;
-import org.firstinspires.ftc.teamcode.TeleOps.Ball;
+import org.firstinspires.ftc.teamcode.TeleOps.SlotList;
+import org.firstinspires.ftc.teamcode.TeleOps.BallSlot;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 import org.firstinspires.ftc.teamcode.TeleOps.SharedColorSequence;
 import org.firstinspires.ftc.teamcode.Vision.AprilTagUpdate;
@@ -32,8 +32,8 @@ public class Auto_RR1_IntakeAndShoot3Balls extends LinearOpMode {
 
         // === Spindexer Slots ===
         double[] slotAngles = {0.15, 0.45, 0.75};
-        SharedBallList sharedBalls = new SharedBallList(slotAngles);
-        List<Ball> balls = sharedBalls.getBalls();
+        SlotList sharedBalls = new SlotList(slotAngles);
+        List<BallSlot> ballSlots = sharedBalls.getBalls();
 
         // === Define key poses ===
         Pose2d startPose = initialPose;
@@ -41,7 +41,7 @@ public class Auto_RR1_IntakeAndShoot3Balls extends LinearOpMode {
         Pose2d shootPose = new Pose2d(0, 0, Math.toRadians(45));
         BallColor[] targetSequence = {};
 
-        AutoIntake autoIntake = new AutoIntake(robot,balls,slotAngles);
+        AutoIntake autoIntake = new AutoIntake(robot, ballSlots,slotAngles);
 
         // === Build trajectories ===
         TrajectoryActionBuilder toPickup = drive.actionBuilder(startPose)
@@ -99,7 +99,7 @@ public class Auto_RR1_IntakeAndShoot3Balls extends LinearOpMode {
         Actions.runBlocking(moveToShootAction);
 
         // === Step 4: Shoot balls ===
-        shootBalls(robot, balls);
+        shootBalls(robot, ballSlots);
         telemetry.addData("Stored Sequence", Arrays.toString(SharedColorSequence.aprilTagSequence));
         telemetry.addLine("Auto Complete!");
         telemetry.update();
@@ -109,14 +109,14 @@ public class Auto_RR1_IntakeAndShoot3Balls extends LinearOpMode {
     /**
      * Shoots all stored balls sequentially.
      */
-    private void shootBalls(RobotHardware robot, List<Ball> balls) {
+    private void shootBalls(RobotHardware robot, List<BallSlot> ballSlots) {
         robot.shooterMotor.setPower(1.0);
 
         int totalBalls = 0;
-        for (Ball b : balls) if (b.hasBall()) totalBalls++;
+        for (BallSlot b : ballSlots) if (b.hasBall()) totalBalls++;
 
         for (int i = 0; i < totalBalls; i++) {
-            robot.spindexerServo.setPosition(balls.get(i).getSlotAngle());
+            robot.spindexerServo.setPosition(ballSlots.get(i).getSlotAngle());
             sleep(300);
         }
 
