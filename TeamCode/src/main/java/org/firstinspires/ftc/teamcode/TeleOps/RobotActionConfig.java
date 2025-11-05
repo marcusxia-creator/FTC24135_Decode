@@ -42,4 +42,6 @@ public class RobotActionConfig {
 
     public static int[] purpleRangeLow                  = {115, 118};
     public static int[] purpleRangeHigh                 = {180, 230};
+
+    public static double BALL_PRESENT_THRESHOLD_MM      = 50;
 }

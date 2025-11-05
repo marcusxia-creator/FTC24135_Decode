@@ -95,6 +95,8 @@ public class RobotHardware {
     public HardwareMap hardwareMap;
     public ArrayList <VoltageSensor> voltageSensors;
 
+    public Servo LED;
+
     private double vEma = 12.0;                 // EMA state
     public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
     public  double vMinAccept = 10.5;            // discard anything below this as junk
@@ -130,6 +132,8 @@ public class RobotHardware {
         //limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+
+        LED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
 
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
         //Reset the drive train motor encoders

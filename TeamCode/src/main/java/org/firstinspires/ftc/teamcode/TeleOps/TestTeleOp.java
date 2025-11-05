@@ -13,6 +13,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
+import android.graphics.Color;
+
 @Config
 @TeleOp (name = "TestTeleOp", group = "org.firstinspires.ftc.teamcode")
 public class TestTeleOp extends OpMode {
@@ -26,6 +28,9 @@ public class TestTeleOp extends OpMode {
     private ShooterPowerCalculator shooterPowerCalculator;
 
     private static double voltage;
+    private BallColor ballColor;
+    private ColorDetection colorDetection;
+
 
     @Override
     public void init() {
@@ -47,6 +52,8 @@ public class TestTeleOp extends OpMode {
         robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerReset);
 
+        colorDetection = new ColorDetection(robot);
+
         //gamepadManager=new GamepadManager(gamepad1,gamepad2);
     }
 
@@ -57,6 +64,8 @@ public class TestTeleOp extends OpMode {
         double power_setpoint = speed*(voltage/12);
 
         robotDrive.DriveLoop();
+        ballColor = BallColor.fromHue(colorDetection.getHue());
+
 
         if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
             //servoposition = robot.pushRampServo.getPosition() + 0.01;
@@ -101,6 +110,20 @@ public class TestTeleOp extends OpMode {
         if (gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER) && isButtonDebounced()){
             robot.intakeMotor.setPower(0);
         }
+
+        if (ballColor.isKnown()) {
+            if (ballColor == BallColor.GREEN) {
+                robot.LED.setPosition(0.5);
+            }
+            if (ballColor == BallColor.PURPLE) {
+                robot.LED.setPosition(0.722);
+            }
+        }
+
+        else {
+           robot.LED.setPosition(1.0);
+        }
+
         telemetry.addData("Ramp Position", robot.pushRampServo.getPosition());
         telemetry.addData("Left Gate Position", robot.leftGateServo.getPosition());
         telemetry.addData("Right Gate Position", robot.rightGateServo.getPosition());

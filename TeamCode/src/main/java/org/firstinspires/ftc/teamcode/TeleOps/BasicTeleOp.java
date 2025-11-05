@@ -30,7 +30,7 @@ public class BasicTeleOp extends OpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         robot = new RobotHardware(hardwareMap);
-        robot.init(hardwareMap);
+        robot.init();
         robot.initIMU();
         robot.initPinpoint();
 
