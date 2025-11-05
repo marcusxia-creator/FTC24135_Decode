@@ -33,14 +33,17 @@ public class OffTakeBall {
 
     // --- Color sequence logic (now enum-based) ---
     private BallColor[] targetSequence = {
-            BallColor.PURPLE,  // adjust depending on your defined colors
-            BallColor.GREEN,
-            BallColor.PURPLE
+            BallColor.UNKNOWN,  // adjust depending on your defined colors
+            BallColor.UNKNOWN,
+            BallColor.UNKNOWN
     };
     private boolean useColorSequence = true;
     private int currentColorTargetIndex = 0;    // for color based sequence indexing
     private int currentCounterIndex = 0;   // for non color based sequence indexing
     private int cycle_no = 0;      // counter for non color based sequence times
+    
+    // --- Pre-computed firing order (slot indices based on color sequence) ---
+    private int[] firingOrder;  // stores slot indices in shooting order
 
     /// --- Shooter power table ---
     ShooterPowerTable shooterPowerTable;
@@ -114,6 +117,12 @@ public class OffTakeBall {
 
             // Determine mode for this cycle
             useColorSequence = !isUnknownSequence(targetSequence);
+            
+            // Pre-compute firing order based on target sequence
+            if (useColorSequence) {
+                firingOrder = computeFiringOrder();
+            }
+            
             state = OFFTAKEBALLSTATE.OFFTAKE_AIMING;
         }
     }
@@ -176,38 +185,58 @@ public class OffTakeBall {
     }
 
     // =============================================================
+    /**
+     * Pre-compute which slot index to fire for each position in sequence
+     * Returns array of slot indices matching the target color sequence
+     */
+    private int[] computeFiringOrder() {
+        int[] order = new int[targetSequence.length];
+        
+        for (int i = 0; i < targetSequence.length; i++) {
+            BallColor targetColor = targetSequence[i];
+            order[i] = findSlotIndexByColor(targetColor);  // -1 if not found
+        }
+        
+        return order;
+    }
+    
+    /**
+     * Find the index of a slot containing the specified color ball
+     * Returns -1 if not found
+     */
+    private int findSlotIndexByColor(BallColor targetColor) {
+        for (int i = 0; i < ballSlots.size(); i++) {
+            BallSlot slot = ballSlots.get(i);
+            if (slot.hasBall() && slot.getColor() == targetColor) {
+                return i;
+            }
+        }
+        return -1;  // not found
+    }
+    
+    // =============================================================
     /** Selects the next target ball based on current mode. */
     private BallSlot getNextTargetBall() {
         if (useColorSequence) {
-            // Tag-guided mode
-            if (currentColorTargetIndex < targetSequence.length) {
-                return findNextTargetBall(currentColorTargetIndex);
+            // Tag-guided mode - use pre-computed firing order
+            if (currentColorTargetIndex < firingOrder.length) {
+                int slotIndex = firingOrder[currentColorTargetIndex];
+                if (slotIndex >= 0) {
+                    return ballSlots.get(slotIndex);
+                }
+                return null;  // color not found
             }
         } else {
             // Sequential (free shooting) mode
             if (currentCounterIndex < cycle_no) {
-                return ballsWithBallSlot.get(cycle_no - currentCounterIndex - 1);
+                return ballsWithBallSlot.get(cycle_no - currentCounterIndex - 1); //reverse order for shooting
             }
         }
         return null;
     }
-    /** --- Find next ball matching target sequence color ---*/
-    private BallSlot findNextTargetBall(int targetIndex) {
-        if (!isUnknownSequence(targetSequence)) {
-            if (targetIndex >= targetSequence.length) {
-                return null; // all done
-            }
-            BallColor targetColor = targetSequence[targetIndex];
-            for (BallSlot b : ballSlots) {
-                if (b.hasBall() && b.getColor() == targetColor) {
-                    return b;
-                }
-            }
-            return null; // none found
-        }
-        return null;
-    }
-
+    
+    // Note: findNextTargetBall() method removed - now using pre-computed firingOrder
+    
     /** --- Eject current ball (mark slot empty) ---*/
     private void ejectCurrentBall(BallSlot b) {
         if (b != null) {

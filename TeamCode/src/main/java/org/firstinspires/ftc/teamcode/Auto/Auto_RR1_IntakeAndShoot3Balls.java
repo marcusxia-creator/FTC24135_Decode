@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.BallColor;
 import org.firstinspires.ftc.teamcode.TeleOps.SlotList;
 import org.firstinspires.ftc.teamcode.TeleOps.BallSlot;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
+import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.SharedColorSequence;
 import org.firstinspires.ftc.teamcode.Vision.AprilTagUpdate;
 
@@ -27,7 +28,15 @@ public class Auto_RR1_IntakeAndShoot3Balls extends LinearOpMode {
         Pose2d initialPose = new Pose2d(64, 8, Math.toRadians(-30));
         // === Hardware & Drive ===
         RobotHardware robot = new RobotHardware(hardwareMap);
+        // set Road Runner params for slow movement
+        MecanumDrive.PARAMS.maxWheelVel = 40;                    // inches/sec
+        MecanumDrive.PARAMS.maxProfileAccel = 30;                 // inches/sec^2
+        MecanumDrive.PARAMS.maxAngVel = Math.toRadians(120);      // rad/sec
+        MecanumDrive.PARAMS.maxAngAccel = Math.toRadians(90);
+        // set MecanumDrive to drive
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+        
+        // Initialize AprilTag detection
         AprilTagUpdate aprilTagUpdate = new AprilTagUpdate(hardwareMap);
 
         // === Spindexer Slots ===
@@ -51,6 +60,14 @@ public class Auto_RR1_IntakeAndShoot3Balls extends LinearOpMode {
 
         // small low-speed 2-inch movements forward (in inches)
         TrajectoryActionBuilder intakeSegment1 = toPickup.fresh()
+                .setVelConstraints(new MinVelConstraint(Arrays.asList(
+                        drive.kinematics.new WheelVelConstraint(40),
+                        new AngularVelConstraint(Math.toRadians(180))
+                )))
+                .setAccelConstraints(new MinAccelConstraint(Arrays.asList(
+                        drive.kinematics.new WheelAccelConstraint(30),
+                        new AngularAccelConstraint(Math.toRadians(90))
+                )))     
                 .lineToY(34);
 
         TrajectoryActionBuilder intakeSegment2 = intakeSegment1.endTrajectory().fresh()
@@ -95,33 +112,17 @@ public class Auto_RR1_IntakeAndShoot3Balls extends LinearOpMode {
                 )
         );
 
-        // Run second 2-inch forward motion while intaking
+        // Move to the Shoot Position
+        telemetry.addLine("Intake complete. Moving to shoot position...");      
+        telemetry.update();
         Actions.runBlocking(moveToShootAction);
 
-        // === Step 4: Shoot balls ===
-        shootBalls(robot, ballSlots);
+        // === Step 4: Shoot balls using AutoShooter ===
+        AutoShooter shooter = new AutoShooter(robot, ballSlots, SharedColorSequence.aprilTagSequence);
+        Actions.runBlocking(shooter.shootAction());
+        
         telemetry.addData("Stored Sequence", Arrays.toString(SharedColorSequence.aprilTagSequence));
         telemetry.addLine("Auto Complete!");
         telemetry.update();
     }
-
-
-    /**
-     * Shoots all stored balls sequentially.
-     */
-    private void shootBalls(RobotHardware robot, List<BallSlot> ballSlots) {
-        robot.shooterMotor.setPower(1.0);
-
-        int totalBalls = 0;
-        for (BallSlot b : ballSlots) if (b.hasBall()) totalBalls++;
-
-        for (int i = 0; i < totalBalls; i++) {
-            robot.spindexerServo.setPosition(ballSlots.get(i).getSlotAngle());
-            sleep(300);
-        }
-
-        robot.shooterMotor.setPower(0.0);
-    }
-
-
 }
