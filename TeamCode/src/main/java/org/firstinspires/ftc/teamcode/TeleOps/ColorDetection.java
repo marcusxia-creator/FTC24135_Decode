@@ -7,90 +7,149 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+/**
+ * Manages the detection and stabilization of ball colors.
+ * This class uses a stability counter and timeout to provide reliable, debounced color readings.
+ * It requires being called repeatedly in a loop via the updateDetection() method.
+ */
 public class ColorDetection {
-    private RobotHardware robot;
-    // For state tracking
-    private BallColor lastColor = BallColor.UNKNOWN;
+    // Public-facing variable for the final detected color
     private BallColor stableColor = BallColor.UNKNOWN;
+
+    // Internal state variables
+    private BallColor lastReadColor = BallColor.UNKNOWN;
     private int stableCount = 0;
+    private final ElapsedTime timer = new ElapsedTime();
+    private boolean isDetectionRunning = false;
 
-    private ElapsedTime timer = new ElapsedTime();
+    // Hardware and Configuration
+    private final RobotHardware robot;
+    private static final int SENSOR_GAIN = 8;
+    private final int REQUIRED_STABLE_COUNT = 5; // number of consistent readings to lock a color
+    private final double TIMEOUT_S = 1.0;        // maximum time to wait before giving up
 
-    // Parameters
-    private final int REQUIRED_STABLE_COUNT = 5; // number of consistent readings (~0.3s if called every 20ms)
-    private final double TIMEOUT_S = 1.0;        // maximum time allowed to detect color
     public ColorDetection(RobotHardware robot) {
         this.robot = robot;
     }
 
+    //================================================================================
+    //                                  Main Methods
+    //================================================================================
+
     /**
-     * Detect the current color based on HSV hue.
-     * Returns "Purple", "Green", or "Unknown".
+     * Resets the detector and starts the detection process.
      */
     public void startDetection() {
-        stableColor = BallColor.UNKNOWN;
-        lastColor = BallColor.UNKNOWN;
-        stableCount = 0;
-        timer.reset();
+        this.isDetectionRunning = true;
+        this.stableColor = BallColor.UNKNOWN;
+        this.lastReadColor = BallColor.UNKNOWN;
+        this.stableCount = 0;
+        this.timer.reset();
     }
 
-    /** call this loop inside color detection place*/
-    public void updateDetection(){
+    /**
+     * Call this method in a loop to run the color detection logic.
+     * It will update the stableColor based on consistent sensor readings.
+     */
+    public void updateDetection() {
+        // Only run the logic if detection has been started
+        if (!isDetectionRunning) {
+            return;
+        }
 
-        float[] hsv = getHsvValues();
-        float hue = hsv[0];
-        float value = hsv[2];
+        // --- Timeout Check ---
+        // If it takes too long to find a stable color, stop the process.
+        if (timer.seconds() > TIMEOUT_S) {
+            this.stableColor = BallColor.UNKNOWN;
+            this.isDetectionRunning = false; // Stop trying
+            return;
+        }
 
-        BallColor currentColor = BallColor.fromHue(hue,value);
+        // --- Ball Presence Check ---
+        // Only proceed if a ball is physically present.
+        if (!isBallPresent()) {
+            // If ball is removed mid-detection, reset the stability counter but keep trying until timeout.
+            this.stableCount = 0;
+            this.lastReadColor = BallColor.UNKNOWN;
+            return;
+        }
 
-        /**Stability Check*/
-        if (currentColor == lastColor && currentColor.isKnown())
-        {
+        // --- Read and Stabilize Color ---
+        BallColor currentColor = getSensorColor();
+
+        if (currentColor == lastReadColor && currentColor.isKnown()) {
+            // If the color reading is the same as the last one and is a known color...
             stableCount++;
-            if(stableCount > REQUIRED_STABLE_COUNT){
-                stableColor = currentColor;
-                timer.reset();
-            }
-        }else {
+        } else {
+            // If the color changes or is UNKNOWN, reset the stability counter.
             stableCount = 0;
         }
 
-        // --- Timeout reset ---
-        if (timer.seconds() > TIMEOUT_S) {
-            stableColor = BallColor.UNKNOWN;
-            timer.reset();
-        }
+        // Update the last seen color for the next loop iteration.
+        this.lastReadColor = currentColor;
 
-        lastColor = currentColor;
+        // --- Lock-in Logic ---
+        if (stableCount >= REQUIRED_STABLE_COUNT) {
+            // We have seen the same color enough times consecutively. Lock it in.
+            this.stableColor = currentColor;
+            this.isDetectionRunning = false; // Detection is complete, stop the process.
+        }
     }
 
-    /** convert color to Hsv*/
+    //================================================================================
+    //                                  Getters & Helpers
+    //================================================================================
+
+    /**
+     * Returns true if a stable color has been successfully locked in.
+     */
+    public boolean isColorStable() {
+        return stableColor.isKnown();
+    }
+
+    /**
+     * Returns the last known stable color.
+     */
+    public BallColor getStableColor() {
+        return stableColor;
+    }
+
+    /**
+     * Checks if a ball is physically present in front of the sensor.
+     */
+    public boolean isBallPresent() {
+        double distance = robot.distanceSensor.getDistance(DistanceUnit.MM);
+        return distance < RobotActionConfig.BALL_PRESENT_THRESHOLD_MM;
+    }
+
+    /**
+     * Reads the RGB values, applies gain, and converts to HSV to determine the color.
+     * @return The immediate BallColor seen by the sensor.
+     */
+    private BallColor getSensorColor() {
+        float[] hsv = getHsvValues();
+        float hue = hsv[0];
+        float value = hsv[2]; // Brightness
+        return BallColor.fromHue(hue, value);
+    }
+
+    /**
+     * Helper method to get the raw HSV values from the sensor.
+     */
     private float[] getHsvValues() {
         float[] hsv = new float[3];
         Color.RGBToHSV(
-                robot.colorSensor.red() * 8,
-                robot.colorSensor.green() * 8,
-                robot.colorSensor.blue() * 8,
+                robot.colorSensor.red() * SENSOR_GAIN,
+                robot.colorSensor.green() * SENSOR_GAIN,
+                robot.colorSensor.blue() * SENSOR_GAIN,
                 hsv
         );
         return hsv;
     }
+
     /** Returns the raw hue value (useful for telemetry or tuning). */
     public float getHue() {
-        float[] hsv = getHsvValues();
-        return hsv[0];
-    }
-
-    /** return is color stable boolean. */
-    public boolean isColorStable(){
-        return stableColor.isKnown();
-    }
-
-    /** check if the ball is present. */
-    public boolean isBallPresent() {
-        // Check if ball is in slot first
-        double distance = robot.distanceSensor.getDistance(DistanceUnit.MM);
-        return distance < RobotActionConfig.BALL_PRESENT_THRESHOLD_MM;
+        return getHsvValues()[0];
     }
 
     /**Returns raw RGB readings for diagnostics.*/
@@ -98,6 +157,8 @@ public class ColorDetection {
         return "R:" + robot.colorSensor.red() + " G:" + robot.colorSensor.green() + " B:" + robot.colorSensor.blue();
     }
 
-    public BallColor getStableColor(){ return stableColor;}
-    public double getDistance(){ return robot.distanceSensor.getDistance(DistanceUnit.MM);}
+    /** Gets the raw distance reading from the sensor. */
+    public double getDistance() {
+        return robot.distanceSensor.getDistance(DistanceUnit.MM);
+    }
 }
