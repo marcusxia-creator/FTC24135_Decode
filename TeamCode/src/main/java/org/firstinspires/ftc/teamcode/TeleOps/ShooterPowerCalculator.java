@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 public class ShooterPowerCalculator {
 
@@ -19,8 +18,8 @@ public class ShooterPowerCalculator {
     }
 
     public double getPower() {
-        robot.odo.update();
-        distance = Math.sqrt(Math.pow(robot.odo.getPosX(DistanceUnit.INCH) - redGoalPose.getX(DistanceUnit.INCH),2) + Math.pow(robot.odo.getPosY(DistanceUnit.INCH) - redGoalPose.getY(DistanceUnit.INCH), 2));
+        robot.pinpoint.update();
+        distance = Math.sqrt(Math.pow(robot.pinpoint.getPosX(DistanceUnit.INCH) - redGoalPose.getX(DistanceUnit.INCH),2) + Math.pow(robot.pinpoint.getPosY(DistanceUnit.INCH) - redGoalPose.getY(DistanceUnit.INCH), 2));
         //return a * Math.pow(distance, exp);
         return 0.9;
     }

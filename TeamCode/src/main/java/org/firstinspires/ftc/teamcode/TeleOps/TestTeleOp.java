@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -10,18 +11,20 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
-
+@Config
 @TeleOp (name = "TestTeleOp", group = "org.firstinspires.ftc.teamcode")
 public class TestTeleOp extends OpMode {
     private RobotHardware robot;
     private GamepadEx gamepad_1;
     private GamepadEx gamepad_2;
     private double servoposition;
-    private double speed;
+    public static double speed;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private RobotDrive robotDrive;
-    private GamepadManager gamepadManager;
+
+    private static double power;
 
     @Override
     public void init() {
@@ -38,19 +41,19 @@ public class TestTeleOp extends OpMode {
         robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerReset);
 
-        gamepadManager=new GamepadManager(gamepad1,gamepad2);
+        //gamepadManager=new GamepadManager(gamepad1,gamepad2);
     }
 
     @Override
     public void loop() {
         if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
-            servoposition = robot.pushRampServo.getPosition() + 0.01;
-            robot.pushRampServo.setPosition(Range.clip(servoposition, 0.0, 1.0
+            //servoposition = robot.pushRampServo.getPosition() + 0.01;
+            robot.pushRampServo.setPosition(Range.clip(rampDownPos, 0.0, 1.0
             ));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
-            servoposition = robot.pushRampServo.getPosition() - 0.01;
-            robot.pushRampServo.setPosition(Range.clip(servoposition, 0, 1));
+            //servoposition = robot.pushRampServo.getPosition() - 0.01;
+            robot.pushRampServo.setPosition(Range.clip(rampDownPos, 0, 1));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
             servoposition = robot.spindexerServo.getPosition() + 0.01;
@@ -70,21 +73,20 @@ public class TestTeleOp extends OpMode {
             robot.leftGateServo.setPosition(Range.clip(servoposition, 0, 1));
             robot.rightGateServo.setPosition(Range.clip(servoposition,0,1));
         }
-        if (gamepad_2.getButton(GamepadKeys.Button.X) && isButtonDebounced()){
+        if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()){
             speed = robot.shooterMotor.getPower() + 0.05;
-            robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            robot.shooterMotor.setPower(Range.clip(speed,0.5,1.0));
+            robot.shooterMotor.setPower(Range.clip(speed,0.3,1.0));
         }
-        if (gamepad_2.getButton(GamepadKeys.Button.Y) && isButtonDebounced()){
+        if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced()){
             robot.shooterMotor.setPower(0);
         }
-        if (gamepad_2.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()){
+        if (gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER) && isButtonDebounced()){
             robot.intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             speed = robot.intakeMotor.getPower() + 0.05;
-            robot.intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            //robot.intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.intakeMotor.setPower(Range.clip(speed,0.5,1.0));
         }
-        if (gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()){
+        if (gamepad_2.getButton(GamepadKeys.Button.RIGHT_BUMPER) && isButtonDebounced()){
             robot.intakeMotor.setPower(0);
         }
         telemetry.addData("Ramp Position", robot.pushRampServo.getPosition());

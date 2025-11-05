@@ -90,7 +90,7 @@ public class RobotHardware {
 
     public IMU imu; //IMU
 
-    public GoBildaPinpointDriver odo;
+    public GoBildaPinpointDriver pinpoint;
 
     public HardwareMap hardwareMap;
     public ArrayList <VoltageSensor> voltageSensors;
@@ -130,7 +130,7 @@ public class RobotHardware {
         //limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
         //limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
-        odo = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
         //Reset the drive train motor encoders
@@ -176,11 +176,11 @@ public class RobotHardware {
         imu.resetYaw();
     }
 
-    public void initOdo() {
-        odo.setOffsets(-149.225, -165.1, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
-        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
-        odo.resetPosAndIMU();
+    public void initPinpoint() {
+        pinpoint.setOffsets(95, -145, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        pinpoint.resetPosAndIMU();
     }
 
     private static double median(List<Double> xs) {
