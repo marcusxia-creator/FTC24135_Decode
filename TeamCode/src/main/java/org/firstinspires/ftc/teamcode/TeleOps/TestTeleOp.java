@@ -38,8 +38,12 @@ public class TestTeleOp extends OpMode {
         gamepad_2 = new GamepadEx(gamepad2);
         robot = new RobotHardware(hardwareMap);
         robot.init();
+        robot.initIMU();
+        robot.initPinpoint();
 
+        robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
         robotDrive.Init();
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         servoposition = 0.0;
         speed = 0.0;
@@ -48,8 +52,8 @@ public class TestTeleOp extends OpMode {
         robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
 
         robot.pushRampServo.setPosition(RobotActionConfig.rampDownPos);
-        robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
-        robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
+        robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
+        robot.rightGateServo.setPosition(RobotActionConfig.gateUp);
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerReset);
 
         colorDetection = new ColorDetection(robot);
@@ -61,7 +65,7 @@ public class TestTeleOp extends OpMode {
     public void loop() {
         robot.pinpoint.update();
         voltage = robot.getBatteryVoltageRobust();
-        double power_setpoint = speed*(voltage/12);
+        double power_setpoint = speed*12.0/voltage;
 
         robotDrive.DriveLoop();
         ballColor = BallColor.fromHue(colorDetection.getHue());
@@ -74,7 +78,7 @@ public class TestTeleOp extends OpMode {
         }
         if (gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
             //servoposition = robot.pushRampServo.getPosition() - 0.01;
-            robot.pushRampServo.setPosition(Range.clip(rampDownPos, 0, 1));
+            robot.pushRampServo.setPosition(Range.clip(rampUpPos, 0, 1));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
             servoposition = robot.spindexerServo.getPosition() + 0.01;
@@ -137,6 +141,8 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("Shooter Power Setpoint", speed);
         telemetry.addData("Shooter Actual Power Setpoint", power_setpoint);
         telemetry.addData("Shooter Motor Power Reading", robot.shooterMotor.getPower());
+        telemetry.addLine("----------------------------------------------------");
+        telemetry.addData("Color", ballColor);
 
         telemetry.update();
     }
