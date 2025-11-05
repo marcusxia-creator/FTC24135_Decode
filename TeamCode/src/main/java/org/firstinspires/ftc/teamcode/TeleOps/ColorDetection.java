@@ -37,13 +37,7 @@ public class ColorDetection {
     /** call this loop inside color detection place*/
     public void updateDetection(){
 
-        float[] hsv = new float[3];
-        Color.RGBToHSV(
-                robot.colorSensor.red() * 8,
-                robot.colorSensor.green() * 8,
-                robot.colorSensor.blue() * 8,
-                hsv
-        );
+        float[] hsv = getHsvValues();
         float hue = hsv[0];
         float value = hsv[2];
 
@@ -70,6 +64,23 @@ public class ColorDetection {
         lastColor = currentColor;
     }
 
+    /** convert color to Hsv*/
+    private float[] getHsvValues() {
+        float[] hsv = new float[3];
+        Color.RGBToHSV(
+                robot.colorSensor.red() * 8,
+                robot.colorSensor.green() * 8,
+                robot.colorSensor.blue() * 8,
+                hsv
+        );
+        return hsv;
+    }
+    /** Returns the raw hue value (useful for telemetry or tuning). */
+    public float getHue() {
+        float[] hsv = getHsvValues();
+        return hsv[0];
+    }
+
     /** return is color stable boolean. */
     public boolean isColorStable(){
         return stableColor.isKnown();
@@ -80,18 +91,6 @@ public class ColorDetection {
         // Check if ball is in slot first
         double distance = robot.distanceSensor.getDistance(DistanceUnit.MM);
         return distance < RobotActionConfig.BALL_PRESENT_THRESHOLD_MM;
-    }
-
-    /** Returns the raw hue value (useful for telemetry or tuning). */
-    public float getHue() {
-        float hsv[] = new float[3];
-        Color.RGBToHSV(
-                robot.colorSensor.red() * 8,
-                robot.colorSensor.green() * 8,
-                robot.colorSensor.blue() * 8,
-                hsv
-        );
-        return hsv[0];
     }
 
     /**Returns raw RGB readings for diagnostics.*/
