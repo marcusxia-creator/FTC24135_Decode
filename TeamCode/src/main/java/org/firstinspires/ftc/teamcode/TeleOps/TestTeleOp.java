@@ -23,18 +23,24 @@ public class TestTeleOp extends OpMode {
     public static double speed;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private RobotDrive robotDrive;
+    private ShooterPowerCalculator shooterPowerCalculator;
 
-    private static double power;
+    private static double voltage;
 
     @Override
     public void init() {
         gamepad_1 = new GamepadEx(gamepad1);
         gamepad_2 = new GamepadEx(gamepad2);
         robot = new RobotHardware(hardwareMap);
-        robot.init(hardwareMap);
+        robot.init();
+
+        robotDrive.Init();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         servoposition = 0.0;
         speed = 0.0;
+
+        shooterPowerCalculator = new ShooterPowerCalculator(robot);
+        robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
 
         robot.pushRampServo.setPosition(RobotActionConfig.rampDownPos);
         robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
@@ -46,6 +52,12 @@ public class TestTeleOp extends OpMode {
 
     @Override
     public void loop() {
+        robot.pinpoint.update();
+        voltage = robot.getBatteryVoltageRobust();
+        double power_setpoint = speed*(voltage/12);
+
+        robotDrive.DriveLoop();
+
         if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
             //servoposition = robot.pushRampServo.getPosition() + 0.01;
             robot.pushRampServo.setPosition(Range.clip(rampDownPos, 0.0, 1.0
@@ -74,8 +86,8 @@ public class TestTeleOp extends OpMode {
             robot.rightGateServo.setPosition(Range.clip(servoposition,0,1));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()){
-            speed = robot.shooterMotor.getPower() + 0.05;
-            robot.shooterMotor.setPower(Range.clip(speed,0.3,1.0));
+            //speed = robot.shooterMotor.getPower() + 0.05;
+            robot.shooterMotor.setPower(Range.clip(power_setpoint,0.3,1.0));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced()){
             robot.shooterMotor.setPower(0);
@@ -86,7 +98,7 @@ public class TestTeleOp extends OpMode {
             //robot.intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.intakeMotor.setPower(Range.clip(speed,0.5,1.0));
         }
-        if (gamepad_2.getButton(GamepadKeys.Button.RIGHT_BUMPER) && isButtonDebounced()){
+        if (gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER) && isButtonDebounced()){
             robot.intakeMotor.setPower(0);
         }
         telemetry.addData("Ramp Position", robot.pushRampServo.getPosition());
@@ -95,6 +107,13 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("Spindexer Position", robot.spindexerServo.getPosition());
         telemetry.addData("Shooter Speed", robot.shooterMotor.getPower());
         telemetry.addData("Intake Speed", robot.intakeMotor.getPower());
+        telemetry.addLine("----------------------------------------------------");
+        telemetry.addData("Pose 2D", robot.pinpoint.getPosition());
+        telemetry.addData("Distance To Goal", shooterPowerCalculator.getDistance());
+        telemetry.addData("Robot Voltage", robot.getBatteryVoltageRobust());
+        telemetry.addData("Shooter Power Setpoint", speed);
+        telemetry.addData("Shooter Actual Power Setpoint", power_setpoint);
+        telemetry.addData("Shooter Motor Power Reading", robot.shooterMotor.getPower());
 
         telemetry.update();
     }

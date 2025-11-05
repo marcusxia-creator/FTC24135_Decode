@@ -17,6 +17,11 @@ public class ShooterPowerCalculator {
         this.robot = robot;
     }
 
+    public double getDistance() {
+        distance = Math.sqrt(Math.pow(robot.pinpoint.getPosX(DistanceUnit.INCH) - redGoalPose.getX(DistanceUnit.INCH),2) + Math.pow(robot.pinpoint.getPosY(DistanceUnit.INCH) - redGoalPose.getY(DistanceUnit.INCH), 2));
+        return distance;
+    }
+
     public double getPower() {
         robot.pinpoint.update();
         distance = Math.sqrt(Math.pow(robot.pinpoint.getPosX(DistanceUnit.INCH) - redGoalPose.getX(DistanceUnit.INCH),2) + Math.pow(robot.pinpoint.getPosY(DistanceUnit.INCH) - redGoalPose.getY(DistanceUnit.INCH), 2));

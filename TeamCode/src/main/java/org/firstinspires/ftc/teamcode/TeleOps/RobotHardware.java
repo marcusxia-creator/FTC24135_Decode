@@ -101,13 +101,12 @@ public class RobotHardware {
     public  double vDefault   = 12.0;           // fallback
 
     public RobotHardware(HardwareMap hardwareMap) {
+        this.hardwareMap = hardwareMap; // store the hardwareMap reference
+        /**Set up motors**/
     }
 
 
-    public void init(HardwareMap hardwareMap) {
-
-        this.hardwareMap = hardwareMap; // store the hardwareMap reference
-        /**Set up motors**/
+    public void init() {
         //Drive train motors
         frontLeftMotor = hardwareMap.get(DcMotorEx.class, "FL_Motor");
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "BL_Motor");
