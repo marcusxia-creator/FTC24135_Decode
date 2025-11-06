@@ -60,8 +60,6 @@ public class OffTakeBall {
 
     // --- Main update loop ---
     public void update() {
-        /// get distanceToGoal
-        calculatedShootPower = shooterPowerTable.getPower(currentDistanceToGoal);
 
         switch (state) {
 
@@ -98,7 +96,7 @@ public class OffTakeBall {
     }
 
     // ===============================================================
-    // === Helper methods ===
+    // === FSM Helper methods ===
     // ===============================================================
     private void handleOfftakeIdleState() {
         if (gamepad2.getButton(GamepadKeys.Button.Y)) {
@@ -134,6 +132,10 @@ public class OffTakeBall {
     }
     private void handleShootingState() {
         double startTime;
+        /// Method 1 get calculated shoot power from look up table.
+        calculatedShootPower = shooterPowerTable.getPower(currentDistanceToGoal);
+
+        /// Method 2 get calculated shoot power based on power curve fitting formula.
         //calculatedShootPower = -14.88+0.7736667*distance-0.01416667*Math.pow(distance,2)+0.000113333*Math.pow(distance,3)-3.33333e-7*Math.pow(distance,4);
 
         if (currentCounterIndex == 0){
@@ -196,7 +198,6 @@ public class OffTakeBall {
             BallColor targetColor = targetSequence[i];
             order[i] = findSlotIndexByColor(targetColor);  // -1 if not found
         }
-        
         return order;
     }
     
