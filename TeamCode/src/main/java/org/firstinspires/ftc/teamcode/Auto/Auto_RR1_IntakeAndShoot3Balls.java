@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.AngularVelConstraint;
+import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -60,14 +62,6 @@ public class Auto_RR1_IntakeAndShoot3Balls extends LinearOpMode {
 
         // small low-speed 2-inch movements forward (in inches)
         TrajectoryActionBuilder intakeSegment1 = toPickup.fresh()
-                .setVelConstraints(new MinVelConstraint(Arrays.asList(
-                        drive.kinematics.new WheelVelConstraint(40),
-                        new AngularVelConstraint(Math.toRadians(180))
-                )))
-                .setAccelConstraints(new MinAccelConstraint(Arrays.asList(
-                        drive.kinematics.new WheelAccelConstraint(30),
-                        new AngularAccelConstraint(Math.toRadians(90))
-                )))     
                 .lineToY(34);
 
         TrajectoryActionBuilder intakeSegment2 = intakeSegment1.endTrajectory().fresh()
@@ -116,10 +110,6 @@ public class Auto_RR1_IntakeAndShoot3Balls extends LinearOpMode {
         telemetry.addLine("Intake complete. Moving to shoot position...");      
         telemetry.update();
         Actions.runBlocking(moveToShootAction);
-
-        // === Step 4: Shoot balls using AutoShooter ===
-        AutoShooter shooter = new AutoShooter(robot, ballSlots, SharedColorSequence.aprilTagSequence);
-        Actions.runBlocking(shooter.shootAction());
         
         telemetry.addData("Stored Sequence", Arrays.toString(SharedColorSequence.aprilTagSequence));
         telemetry.addLine("Auto Complete!");
