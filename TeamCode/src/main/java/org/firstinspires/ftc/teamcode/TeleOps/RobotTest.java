@@ -120,14 +120,14 @@ public class RobotTest extends OpMode {
          */
 
         if (gamepad_2.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
-            //servoposition = robot.pushRampServo.getPosition() + 0.01;
-            //robot.pushRampServo.setPosition(Range.clip(servoposition, 0.0, 1.0));
-            robot.pushRampServo.setPosition(RAMP_UP);
+            servoposition = robot.pushRampServo.getPosition() + 0.01;
+            robot.pushRampServo.setPosition(Range.clip(servoposition, 0.0, 1.0));
+            robot.pushRampServo.setPosition(servoposition);
         }
         if (gamepad_2.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
-            //servoposition = robot.pushRampServo.getPosition() - 0.01;
-            //robot.pushRampServo.setPosition(Range.clip(servoposition, 0, 1));
-            robot.pushRampServo.setPosition(RAMP_RESET_POSITION);
+            servoposition = robot.pushRampServo.getPosition() - 0.01;
+            robot.pushRampServo.setPosition(Range.clip(servoposition, 0, 1));
+            robot.pushRampServo.setPosition(servoposition);
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
             double i = 0.01;
