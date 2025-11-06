@@ -27,7 +27,7 @@ public class RobotActionConfig {
     public static final double RAMP_UP_TIME_1st = 1.25;
     public static final double RAMP_UP_TIME     = 0.75;
     public static final double FIRE_TIME        = 1.25;
-    public static final double EJECT_TIME       = 0.25;
+    public static final double EJECT_TIME       = 0.1;
 
     //Drive Train
     public static double POWERFACTOR            = 0.9;
