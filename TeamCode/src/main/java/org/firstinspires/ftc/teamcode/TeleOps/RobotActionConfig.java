@@ -13,8 +13,8 @@ public class RobotActionConfig {
     public static double spindexerSlot1                  = 0.02;
     public static double spindexerSlot2                  = 0.5;
     public static double spindexerSlot3                  = 0.97;
-    public static double RAMP_RESET_POSITION            = 0.455; //change to 0.45
-    public static double RAMP_UP                        = 0.19;
+    public static double RAMP_RESET_POSITION            = 0.40; //change to 0.45
+    public static double RAMP_UP                        = 0.20;
     //Intake Speed
     public static double INTAKE_POWER                   = 0.6;
     public static double INTAKE_REVERSE_POWER           = -0.2;
