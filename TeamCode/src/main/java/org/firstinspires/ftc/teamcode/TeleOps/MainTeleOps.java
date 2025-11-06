@@ -59,6 +59,8 @@ public class MainTeleOps extends OpMode {
     //======================= Timers & Helpers ================================
     private ElapsedTime debounceTimer = new ElapsedTime();
     private ElapsedTime runTime = new ElapsedTime();
+
+    private ElapsedTime ledFlashTimer = new ElapsedTime();
     private boolean lBstartPressed = false;
 
     //======================= Overridden OpMode Methods =======================
@@ -90,10 +92,6 @@ public class MainTeleOps extends OpMode {
         // Vision
         aprilTagUpdate = new AprilTagUpdate(hardwareMap);
 
-        //Color Detection
-        //colorDetection = new ColorDetection(robot);
-
-
         // Initial States
         initializeServos();
         initializeAprilTagDefaults();
@@ -115,7 +113,7 @@ public class MainTeleOps extends OpMode {
     public void start() {
         debounceTimer.reset();
         runTime.reset();
-
+        ledFlashTimer.reset();
     }
 
     @Override
@@ -126,18 +124,8 @@ public class MainTeleOps extends OpMode {
         double distanceToGoal = getTargetGoalDist(targetGoalPos);
         offTakeBall.setDistanceToGoal(distanceToGoal);
 
-        if( distanceToGoal < 50){
-            robot.rgbLED.setPosition(0.277);
-        }
-        else if (intakeBall.getDetectedColor() == BallColor.GREEN){
-            robot.rgbLED.setPosition(0.5);
-        }
-        else if(intakeBall.getDetectedColor()  == BallColor.PURPLE){
-            robot.rgbLED.setPosition(0.722);}
-        else{
-            robot.rgbLED.setPosition(0.388);
-        }
-
+        //--- handle led indicator ---
+        handleLedIndicator(distanceToGoal);
 
         //--- Input Handling ---
         handleDriverInputs();
@@ -268,6 +256,33 @@ public class MainTeleOps extends OpMode {
         if (runTime.seconds() > 100.0 && !useAprilTagSequence) {
             useAprilTagSequence = true;
             offTakeBall.setSequence(SharedColorSequence.aprilTagSequence);
+        }
+    }
+
+    /// Handel led
+    private void handleLedIndicator(double distanceToGoal) {
+        // Condition to start flashing (e.g., close to the goal)
+        if (distanceToGoal < 50) {
+            // Check the timer to toggle the LED on and off
+            // This creates a 1-second cycle (500ms on, 500ms off)
+            if (ledFlashTimer.milliseconds() < 500) {
+                robot.rgbLED.setPosition(0.277); // "On" state (e.g., Red)
+            } else if (ledFlashTimer.milliseconds() < 1000) {
+                robot.rgbLED.setPosition(0.9); // "Off" state (or a dim color)
+            } else {
+                ledFlashTimer.reset(); // Reset the timer to repeat the flash cycle
+            }
+        } else {
+            // If not in flashing mode, use the solid color logic
+            if (intakeBall.getDetectedColor() == BallColor.GREEN) {
+                robot.rgbLED.setPosition(0.5); // Solid Green
+            } else if (intakeBall.getDetectedColor() == BallColor.PURPLE) {
+                robot.rgbLED.setPosition(0.722); // Solid Purple
+            } else if (intakeBall.getDetectedColor() == BallColor.UNKNOWN){
+                robot.rgbLED.setPosition(0.388); // Default solid color (e.g., Orange)
+            } else if (intakeBall.isFull()) {
+                robot.rgbLED.setPosition(1.0); // Solid White
+            }
         }
     }
 
