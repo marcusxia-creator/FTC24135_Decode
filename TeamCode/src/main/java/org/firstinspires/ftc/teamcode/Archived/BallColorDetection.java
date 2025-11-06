@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOps;
+package org.firstinspires.ftc.teamcode.Archived;
 
 import android.graphics.Color;
 
@@ -8,27 +8,23 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-public class ColourCriterion {
-    Range[] ranges = {};
-
+public class BallColorDetection {
+    Range[] ranges ={};
     public enum RangeType{
         hue,
         value,
         prox
     }
-
     public Boolean met;
     public ElapsedTime timer;
-
     ColorSensor colorSensor;
     DistanceSensor distanceSensor;
 
-    ColourCriterion(ColorSensor colorSensor, DistanceSensor distanceSensor, Range... ranges) {
+    BallColorDetection(ColorSensor colorSensor, DistanceSensor distanceSensor, Range... ranges){
         this.colorSensor = colorSensor;
         this.distanceSensor = distanceSensor;
 
         this.ranges = ranges;
-
         timer = new ElapsedTime();
         met = false;
     }
@@ -46,36 +42,32 @@ public class ColourCriterion {
     }
 
     class Range{
-
         RangeType type;
-
         double lower;
         double higher;
 
-        Range(RangeType type, double lower, double higher) {
+        Range( RangeType type, double lower, double higher){
             this.type = type;
             this.lower = lower;
             this.higher = higher;
         }
 
-        boolean check(ColorSensor colorSensor, DistanceSensor distanceSensor) {
+        boolean check(ColorSensor colorSensor, DistanceSensor distanceSensor){
             double x = 0;
+            float [] hsv = new float[3];
+            Color.RGBToHSV(colorSensor.red(), colorSensor.green(),colorSensor.blue(),hsv);
 
-            float[] hsv = new float[3];
-            Color.RGBToHSV(colorSensor.red(), colorSensor.green(), colorSensor.blue(), hsv);
-
-            switch (type) {
+            switch (type){
                 case hue:
-                    x = hsv[0];
+                    x =hsv[0];
                     break;
                 case value:
-                    x = hsv[2];
+                        x =hsv[2];
                     break;
                 case prox:
                     x = distanceSensor.getDistance(DistanceUnit.CM);
                     break;
             }
-
             return lower < x && x < higher;
         }
     }
