@@ -38,7 +38,7 @@ public class BallColorDetection {
                 break;
             }
         }
-        return false;
+        return met;
     }
 
     class Range{
