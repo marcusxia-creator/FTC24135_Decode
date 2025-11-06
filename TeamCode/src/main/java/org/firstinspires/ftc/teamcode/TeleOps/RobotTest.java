@@ -216,6 +216,7 @@ public class RobotTest extends OpMode {
         telemetry.addData("Distance", robot.distanceSensor.getDistance(DistanceUnit.MM));
         telemetry.addData("Hue", colorDetection.getHue());
         telemetry.addData("Color", colorDetection.getStableColor());
+        telemetry.addData("BallColor known", BallColor.fromHue(colorDetection.getHue()));
         telemetry.addLine("----Spindexer----");
         telemetry.addData("Spindexer Position", robot.spindexerServo.getPosition());
         telemetry.addLine("----Shooter----");

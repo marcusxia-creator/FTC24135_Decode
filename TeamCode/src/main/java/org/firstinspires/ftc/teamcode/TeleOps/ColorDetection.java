@@ -52,18 +52,20 @@ public class ColorDetection {
      * It will update the stableColor based on consistent sensor readings.
      */
     public void updateDetection() {
-        // Only run the logic if detection has been started
+        /** Only run the logic if detection has been started
         if (!isDetectionRunning) {
             return;
         }
+        */
 
-        // --- Timeout Check ---
+        /** --- Timeout Check ---
         // If it takes too long to find a stable color, stop the process.
         if (timer.seconds() > TIMEOUT_S) {
             this.stableColor = BallColor.UNKNOWN;
             this.isDetectionRunning = false; // Stop trying
             return;
         }
+         */
 
         // --- Ball Presence Check ---
         // Only proceed if a ball is physically present.
@@ -75,7 +77,7 @@ public class ColorDetection {
         }
 
         // --- Read and Stabilize Color ---
-        BallColor currentColor = getSensorColor();
+        BallColor currentColor = BallColor.fromHue(getHue());
 
         if (currentColor == lastReadColor && currentColor.isKnown()) {
             // If the color reading is the same as the last one and is a known color...
@@ -92,7 +94,7 @@ public class ColorDetection {
         if (stableCount >= REQUIRED_STABLE_COUNT) {
             // We have seen the same color enough times consecutively. Lock it in.
             this.stableColor = currentColor;
-            this.isDetectionRunning = false; // Detection is complete, stop the process.
+            //this.isDetectionRunning = false; // Detection is complete, stop the process.
         }
     }
 

@@ -191,7 +191,7 @@ public class RobotHardware {
     public void initPinPoint() {
         pinPoint.setOffsets(95, -145,DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
         pinPoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        pinPoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        pinPoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
         pinPoint.resetPosAndIMU();
     }
 

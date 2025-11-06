@@ -41,6 +41,8 @@ public class MainTeleOps extends OpMode {
     private RobotDrive robotDrive;
     private IntakeBall intakeBall;
     private OffTakeBall offTakeBall;
+
+    private ColorDetection colorDetection;
     private SlotList slotList;
     private AprilTagUpdate aprilTagUpdate;
     private ShooterPowerTable powerTable;
@@ -88,6 +90,10 @@ public class MainTeleOps extends OpMode {
         // Vision
         aprilTagUpdate = new AprilTagUpdate(hardwareMap);
 
+        //Color Detection
+        //colorDetection = new ColorDetection(robot);
+
+
         // Initial States
         initializeServos();
         initializeAprilTagDefaults();
@@ -109,6 +115,7 @@ public class MainTeleOps extends OpMode {
     public void start() {
         debounceTimer.reset();
         runTime.reset();
+
     }
 
     @Override
@@ -118,6 +125,19 @@ public class MainTeleOps extends OpMode {
         robot.pinPoint.update();
         double distanceToGoal = getTargetGoalDist(targetGoalPos);
         offTakeBall.setDistanceToGoal(distanceToGoal);
+
+        if( distanceToGoal < 50){
+            robot.rgbLED.setPosition(0.277);
+        }
+        else if (intakeBall.getDetectedColor() == BallColor.GREEN){
+            robot.rgbLED.setPosition(0.5);
+        }
+        else if(intakeBall.getDetectedColor()  == BallColor.PURPLE){
+            robot.rgbLED.setPosition(0.722);}
+        else{
+            robot.rgbLED.setPosition(0.388);
+        }
+
 
         //--- Input Handling ---
         handleDriverInputs();
@@ -345,6 +365,7 @@ public class MainTeleOps extends OpMode {
         telemetry.addData("State", intakeBall.getState());
         telemetry.addData("Ball Count", intakeBall.getNumberOfBalls());
         telemetry.addData("Detected Color", intakeBall.getDetectedColor().name());
+
 
         telemetry.addLine("--- Offtake ---");
         telemetry.addData("State", offTakeBall.getState());

@@ -10,9 +10,9 @@ public class RobotActionConfig {
     public static double GATEUP                          = 0.29;
     public static double DEBOUNCE_THRESHOLD              = 0.25;
     //Sorter
-    public static double spindexerSlot1                  = 0.02;
-    public static double spindexerSlot2                  = 0.5;
-    public static double spindexerSlot3                  = 0.97;
+    public static double spindexerSlot1                  = 0.00;
+    public static double spindexerSlot2                  = 0.45;
+    public static double spindexerSlot3                  = 0.92;
     public static double RAMP_RESET_POSITION            = 0.40; //change to 0.45
     public static double RAMP_UP                        = 0.20;
     //Intake Speed
