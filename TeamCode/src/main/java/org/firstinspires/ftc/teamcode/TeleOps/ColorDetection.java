@@ -130,7 +130,7 @@ public class ColorDetection {
         float[] hsv = getHsvValues();
         float hue = hsv[0];
         float value = hsv[2]; // Brightness
-        return BallColor.fromHue(hue, value);
+        return BallColor.fromHue(hue);
     }
 
     /**

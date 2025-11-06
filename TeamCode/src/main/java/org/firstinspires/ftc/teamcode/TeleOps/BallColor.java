@@ -16,11 +16,11 @@ public enum BallColor {
      * @return The detected BallColor (PURPLE, GREEN, or UNKNOWN).
      */
 
-    public static BallColor fromHue(float hue, float value) {
-        if (value > 0.1){
-            if (hue >= 170 && hue <= 230) return PURPLE;
-            if (hue >= 135 && hue <= 160) return GREEN;
-        }
+    public static BallColor fromHue(float hue) {
+        //if (value > 0.1){
+        if (hue >= 170 && hue <= 230) return PURPLE;
+        if (hue >= 135 && hue <= 160) return GREEN;
+        //}
         return UNKNOWN;
     }
 
