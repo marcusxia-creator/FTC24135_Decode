@@ -16,7 +16,7 @@ public class RobotActionConfig {
     public static double spindexerSlot2                 = 0.92;
     public static double spindexerReset                 = 0.0;
     public static double rampDownPos                    = 0.4; //changed from 0.45
-    public static double rampUpPos                      = 0.2;
+    public static double rampUpPos                      = 0.18;
     public static double angleResetPos                  = 0.0;
     //Speed
     public static double intakeSpeed                    = 0.6;
