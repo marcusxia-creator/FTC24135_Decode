@@ -110,10 +110,11 @@ public class RobotDrive {
             rotate = deadband(gamepad_2.getLeftX(),0.1) * rotate_Slowness;
         }
 
-        //Autoheading
+        //Autoheading, currently disabled
+        /*
         if(Math.abs(gamepad_1.getLeftY())>0.5||Math.abs(gamepad_1.getLeftY())>0.5){
             rotate = Range.clip(RobotActionConfig.rotPK*(robot.pinpoint.getHeading(AngleUnit.RADIANS)-shooterPowerCalculator.getAngle()),-1,1);
-        }
+        }*/
 
         // Get robot's current heading
         double currentHeading = getRobotHeading();

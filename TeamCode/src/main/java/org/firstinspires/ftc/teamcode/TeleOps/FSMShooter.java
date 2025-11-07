@@ -109,7 +109,7 @@ public class FSMShooter {
             case FLYWHEEL_RUNNING:
                 // Give the flywheel time ProcessBuilder.Redirect.to get ProcessBuilder.Redirect.to speed (Log.e.g., 1 second)
                 // Press 'Y' to toggle ramp up/down]
-                if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced() && (robot.shooterMotor.getPower() >= (power_setpoint - 0.008) && robot.shooterMotor.getPower() <= (power_setpoint + 0.01)) /*&& shooterVel*shooterFactorThreshold<=robot.shooterMotor.getVelocity()*/) {
+                if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced())/*&& shooterVel*shooterFactorThreshold<=robot.shooterMotor.getVelocity()*//*(robot.shooterMotor.getPower() >= (power_setpoint - 0.008) && robot.shooterMotor.getPower() <= (power_setpoint + 0.01)*/ {
                     shooterState = SHOOTERSTATE.SHOOTING;
                     rampstate = RAMPSTATE.UP;
                     updateServoState();
@@ -124,25 +124,31 @@ public class FSMShooter {
                     robot.shooterMotor.setPower(0);
                 }
 
-                if (gamepadManager.autoMotif.ToggleState && spindexer.checkMotif(motif)){
+                if (gamepadManager.autoMotif.ToggleState && spindexer.checkMotif(motif) && spindexer.count(Spindexer.SLOT.Empty)<3){
                     targetColour=spindexer.motifColour(motif);
                 }
-                else {
-                    //Launch Colour
-                    if ((gamepadManager.Purple.PressState) || !spindexer.checkFor(Spindexer.SLOT.Green) && spindexer.checkFor(Spindexer.SLOT.Purple)) {
-                        targetColour = Spindexer.SLOT.Purple;
-                    }
-                    if ((gamepadManager.Green.PressState) || !spindexer.checkFor(Spindexer.SLOT.Purple) && spindexer.checkFor(Spindexer.SLOT.Green)) {
-                        targetColour = Spindexer.SLOT.Green;
-                    }
+
+                //Launch Colour
+                if ((gamepadManager.Purple.PressState) || !spindexer.checkFor(Spindexer.SLOT.Green) && spindexer.checkFor(Spindexer.SLOT.Purple)) {
+                    targetColour = Spindexer.SLOT.Purple;
+                    gamepadManager.autoMotif.ToggleState=false; //disable auto motif
+                }
+                if ((gamepadManager.Green.PressState) || !spindexer.checkFor(Spindexer.SLOT.Purple) && spindexer.checkFor(Spindexer.SLOT.Green)) {
+                    targetColour = Spindexer.SLOT.Green;
+                    gamepadManager.autoMotif.ToggleState=false; //disable auto motif
                 }
 
                 if (spindexer.slotColour()!=targetColour){
                     if(spindexer.checkFor(targetColour)) {
                         spindexer.runToSlot(targetColour);
+                        shootTimer.reset();
                         shooterState = SHOOTERSTATE.SPINDEXER_ROTATE;
                     }
                     else{
+                        rampstate = RAMPSTATE.DOWN;
+                        updateServoState();
+                        robot.leftGateServo.setPosition(gateDown);
+                        robot.rightGateServo.setPosition(gateDown);
                         shooterState = SHOOTERSTATE.IDLE;
                         robot.shooterMotor.setPower(0);
                     }
@@ -195,6 +201,10 @@ public class FSMShooter {
             default:
                 robot.shooterMotor.setPower(0);
                 shooterState = SHOOTERSTATE.IDLE;
+                rampstate = RAMPSTATE.DOWN;
+                updateServoState();
+                robot.leftGateServo.setPosition(gateDown);
+                robot.rightGateServo.setPosition(gateDown);
         }
     }
 

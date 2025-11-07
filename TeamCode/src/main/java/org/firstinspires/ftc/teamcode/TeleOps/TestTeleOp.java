@@ -41,7 +41,7 @@ public class TestTeleOp extends OpMode {
         robot.initIMU();
         robot.initPinpoint();
 
-        robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
+        robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2, shooterPowerCalculator);
         robotDrive.Init();
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -49,7 +49,7 @@ public class TestTeleOp extends OpMode {
         speed = 0.0;
 
         shooterPowerCalculator = new ShooterPowerCalculator(robot);
-        robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
+        robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2, shooterPowerCalculator);
 
         robot.pushRampServo.setPosition(RobotActionConfig.rampDownPos);
         robot.leftGateServo.setPosition(RobotActionConfig.gateUp);

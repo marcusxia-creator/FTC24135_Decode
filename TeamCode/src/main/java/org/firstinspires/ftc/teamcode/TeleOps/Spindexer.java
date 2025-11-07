@@ -154,7 +154,7 @@ public class Spindexer {
         public int countFrom(SLOT a, int n){
             int counter=0;
             for(int i=n; i<=2; i++){
-                if(slots[n]==a){
+                if(slots[i]==a){
                     counter++;
                 }
             }

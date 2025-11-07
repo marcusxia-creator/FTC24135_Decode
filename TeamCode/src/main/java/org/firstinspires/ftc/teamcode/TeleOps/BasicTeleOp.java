@@ -27,8 +27,6 @@ public class BasicTeleOp extends OpMode {
     private Spindexer spindexer;
     private ShooterPowerCalculator shooterPowerCalculator;
 
-    private ShooterPowerCalculator shooterPowerCalculator;
-
     private static double voltage;
     private BallColor ballColor;
     private ColorDetection colorDetection;
@@ -61,7 +59,7 @@ public class BasicTeleOp extends OpMode {
         spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadManager);
 
         shooterPowerCalculator = new ShooterPowerCalculator(robot);
-        shooterPowerCalculator.setGoal(this.shooterPowerCalculator.redGoalPose);
+        shooterPowerCalculator.setAlliance(true);
 
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2, shooterPowerCalculator);
         robotDrive.Init();
@@ -72,6 +70,8 @@ public class BasicTeleOp extends OpMode {
         intake = new Intake(gamepadCo1, gamepadCo2, robot, spindexer, gamepadManager);
 
         shooterPowerCalculator = new ShooterPowerCalculator(robot);
+
+        colorDetection = new ColorDetection(robot);
     }
 
     @Override
@@ -88,6 +88,8 @@ public class BasicTeleOp extends OpMode {
         spindexerManualControl.loop();
 
         robotDrive.DriveLoop();
+
+        ballColor = BallColor.fromHue(colorDetection.getHue());
 
         if (shooterPowerCalculator.getDistance() <= 54) {
             robot.LED.setPosition(0.28);
@@ -134,6 +136,8 @@ public class BasicTeleOp extends OpMode {
         telemetry.addData("Current Slot", spindexer.currentSlot);
         telemetry.addData("Spindexer Servo Pos", robot.spindexerServo.getPosition());
         telemetry.addData("Shooter Target Colour", shooterManualControl.targetColour.name());
+        telemetry.addData("Motif Green Count", shooterManualControl.motif.countFrom(Spindexer.SLOT.Green, spindexer.count(Spindexer.SLOT.Empty)));
+        telemetry.addData("Motif Purple Count", shooterManualControl.motif.countFrom(Spindexer.SLOT.Purple, spindexer.count(Spindexer.SLOT.Empty)));
         telemetry.addLine("-----");
         telemetry.addData("Shooter State", shooterManualControl.shooterState);
         telemetry.addData("Shooter Power", robot.shooterMotor.getPower());
@@ -143,8 +147,13 @@ public class BasicTeleOp extends OpMode {
         String MotifEnabled;
         if (gamepadManager.autoMotif.ToggleState) {MotifEnabled = "Enabled";} else {MotifEnabled = "Disabled";}
         String MotifAvailable;
-        if (gamepadManager.autoMotif.ToggleState) {MotifAvailable = "Available";} else {MotifAvailable = "Not Available";}
+        if (spindexer.checkMotif(shooterManualControl.motif)) {MotifAvailable = "Available";} else {MotifAvailable = "Not Available";}
         telemetry.addData("Auto Motif",String.join(", ",MotifEnabled, MotifAvailable));
+        telemetry.addData("Auto Motif Running",gamepadManager.autoMotif.ToggleState && spindexer.checkMotif(shooterManualControl.motif) && spindexer.count(Spindexer.SLOT.Empty)<3);
+        telemetry.addLine("-----");
+        telemetry.addData("Distance From Goal", shooterPowerCalculator.getDistance());
+        telemetry.addData("Goal Angle", shooterPowerCalculator.getAngle());
+        telemetry.addData("Robot Angle", robot.pinpoint.getHeading(AngleUnit.RADIANS));
         telemetry.update();
     }
 
