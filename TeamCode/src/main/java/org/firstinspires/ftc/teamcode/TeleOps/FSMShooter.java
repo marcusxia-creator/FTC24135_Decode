@@ -76,6 +76,7 @@ public class FSMShooter {
         double voltage = robot.getBatteryVoltageRobust();
         double speed = shooterPowerCalculator.getPower();
         double power_setpoint = speed*12.0/ voltage;
+        robot.pinpoint.update();
         // --- Global Controls (can be triggered from any state) ---
         // 'A' button is an emergency stop or reset.
         switch (shooterState) {
