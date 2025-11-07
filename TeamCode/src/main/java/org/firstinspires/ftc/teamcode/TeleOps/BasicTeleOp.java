@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp (name = "Basic TeleOp", group = "org.firstinspires.ftc.teamcode")
@@ -32,9 +30,9 @@ public class BasicTeleOp extends OpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         robot = new RobotHardware(hardwareMap);
-        robot.init(hardwareMap);
+        robot.init();
         robot.initIMU();
-        robot.initOdo();
+        robot.initPinpoint();
 
         gamepadManager= new GamepadManager(gamepad1,gamepad2);
         spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
