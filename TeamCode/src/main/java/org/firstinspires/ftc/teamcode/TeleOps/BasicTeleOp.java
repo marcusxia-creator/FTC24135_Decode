@@ -21,6 +21,7 @@ public class BasicTeleOp extends OpMode {
 
     private GamepadManager gamepadManager;
     private Spindexer spindexer;
+    private ShooterPowerCalculator shooterPowerCalculator;
 
 
     @Override
@@ -39,10 +40,13 @@ public class BasicTeleOp extends OpMode {
         spindexer.runToSlot(0);
         spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadManager);
 
-        robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
+        shooterPowerCalculator = new ShooterPowerCalculator(robot);
+        shooterPowerCalculator.setGoal(this.shooterPowerCalculator.redGoalPose);
+
+        robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2, shooterPowerCalculator);
         robotDrive.Init();
 
-        shooterManualControl = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, gamepadManager);
+        shooterManualControl = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, gamepadManager, shooterPowerCalculator);
         shooterManualControl.Init();
 
         intake = new Intake(gamepadCo1, gamepadCo2, robot, spindexer, gamepadManager);

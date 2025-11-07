@@ -49,12 +49,12 @@ public class FSMShooter {
 
     GamepadManager gamepadManager;
 
-    public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, Spindexer spindexer, GamepadManager gamepadManager) {
+    public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, Spindexer spindexer, GamepadManager gamepadManager, ShooterPowerCalculator shooterPowerCalculator) {
         this.gamepad_1 = gamepad_1;
         this.robot = robot;
         this.spindexer = spindexer;
         this.gamepadManager = gamepadManager;
-        this.shooterPowerCalculator = new ShooterPowerCalculator(robot);
+        this.shooterPowerCalculator = shooterPowerCalculator;
     }
 
     public void Init() {

@@ -34,7 +34,7 @@ public class RobotActionConfig {
     public static double exp                            = 1;
 
     //Colour Profiles
-    public static double distanceThreshold              = 100;
+    public static double distanceThreshold              = 50;
     public static int[] none                            = {105, 110};
 
     public static int[] greenRangeLow                   = {120, 130};
@@ -44,4 +44,7 @@ public class RobotActionConfig {
     public static int[] purpleRangeHigh                 = {180, 230};
 
     public static double BALL_PRESENT_THRESHOLD_MM      = 50;
+
+    //Auto Rotate
+    public static double rotPK                          = 0.5;
 }
