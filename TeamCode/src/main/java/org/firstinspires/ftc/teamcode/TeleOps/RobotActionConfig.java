@@ -2,17 +2,21 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
 @Config
 public class RobotActionConfig {
     public static double gateDown                       = 0.12;
     public static double gateUp                         = 0.30;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
-    public static double spindexerSlot0                 = 0.02;
-    public static double spindexerSlot1                 = 0.53;
-    public static double spindexerSlot2                 = 0.95;
+    public static double spindexerSlot0                 = 0.0;
+    public static double spindexerSlot1                 = 0.45;
+    public static double spindexerSlot2                 = 0.92;
     public static double spindexerReset                 = 0.0;
-    public static double rampDownPos                    = 0.42; //changed from 0.45
-    public static double rampUpPos                      = 0.12;
+    public static double rampDownPos                    = 0.4; //changed from 0.45
+    public static double rampUpPos                      = 0.2;
     public static double angleResetPos                  = 0.0;
     //Speed
     public static double intakeSpeed                    = 0.6;
@@ -30,8 +34,9 @@ public class RobotActionConfig {
     public static double SpindexerStartTime             = 0.7;
     public static double SpindexerMoveTime              = 1.0;
 
-    public static double a                              = 0;
-    public static double exp                            = 1;
+    public static double a                              = 0.0001320186;
+    public static double b                              = -0.01961813;
+    public static double c                              = 1.431126;
 
     //Colour Profiles
     public static double distanceThreshold              = 50;
@@ -44,6 +49,9 @@ public class RobotActionConfig {
     public static int[] purpleRangeHigh                 = {180, 230};
 
     public static double BALL_PRESENT_THRESHOLD_MM      = 50;
+
+    public Pose2D blueAllianceResetPose                 = new Pose2D(DistanceUnit.INCH, 72, 72, AngleUnit.DEGREES, 0);
+    public Pose2D redAllianceResetPose                  = new Pose2D(DistanceUnit.INCH, 72, -72, AngleUnit.DEGREES, 0);
 
     //Auto Rotate
     public static double rotPK                          = 0.5;

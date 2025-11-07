@@ -65,6 +65,7 @@ public class TestTeleOp extends OpMode {
     public void loop() {
         robot.pinpoint.update();
         voltage = robot.getBatteryVoltageRobust();
+        speed = shooterPowerCalculator.getPower();
         double power_setpoint = speed*12.0/voltage;
 
         robotDrive.DriveLoop();
@@ -115,7 +116,10 @@ public class TestTeleOp extends OpMode {
             robot.intakeMotor.setPower(0);
         }
 
-        if (ballColor.isKnown()) {
+        if (shooterPowerCalculator.getDistance() <= 54) {
+            robot.LED.setPosition(0.28);
+        }
+        else if (ballColor.isKnown()) {
             if (ballColor == BallColor.GREEN) {
                 robot.LED.setPosition(0.5);
             }
@@ -123,7 +127,6 @@ public class TestTeleOp extends OpMode {
                 robot.LED.setPosition(0.722);
             }
         }
-
         else {
            robot.LED.setPosition(1.0);
         }
@@ -141,6 +144,7 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("Shooter Power Setpoint", speed);
         telemetry.addData("Shooter Actual Power Setpoint", power_setpoint);
         telemetry.addData("Shooter Motor Power Reading", robot.shooterMotor.getPower());
+        telemetry.addData("Shooter Motor Power Calculator", shooterPowerCalculator.getPower());
         telemetry.addLine("----------------------------------------------------");
         telemetry.addData("Color", ballColor);
 
