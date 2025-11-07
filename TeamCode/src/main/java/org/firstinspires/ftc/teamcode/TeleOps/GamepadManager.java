@@ -29,6 +29,7 @@ public class GamepadManager {
     public Control spinPrev;
     public Control spinNext;
     public Control reDetc;
+    public Control autoMotif;
 
     public GamepadManager(Gamepad gamepad1, Gamepad gamepad2){
         gamepad_1 = new GamepadEx(gamepad1);
@@ -43,7 +44,8 @@ public class GamepadManager {
         Unjam = new Control(GamepadKeys.Button.BACK, false);
         spinPrev = new Control(GamepadKeys.Button.LEFT_BUMPER, false);
         spinNext = new Control(GamepadKeys.Button.RIGHT_BUMPER, false);
-        reDetc = new Control(GamepadKeys.Button.START, false);
+        reDetc = new Control(GamepadKeys.Button.DPAD_UP, false);
+        autoMotif = new Control(GamepadKeys.Button.START, false);
     }
 
     public void loop(){
@@ -56,6 +58,7 @@ public class GamepadManager {
         spinPrev.Update();
         spinNext.Update();
         reDetc.Update();
+        autoMotif.Update();
     }
 
     public class Control{

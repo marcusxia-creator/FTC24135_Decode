@@ -71,13 +71,18 @@ public class BasicTeleOp extends OpMode {
         telemetry.addData("Slot 2", spindexer.slots[2]);
         telemetry.addData("Current Slot", spindexer.currentSlot);
         telemetry.addData("Spindexer Servo Pos", robot.spindexerServo.getPosition());
-        telemetry.addData("Target Colour", shooterManualControl.targetColour.name());
+        telemetry.addData("Shooter Target Colour", shooterManualControl.targetColour.name());
         telemetry.addLine("-----");
         telemetry.addData("Shooter State", shooterManualControl.shooterState);
         telemetry.addData("Shooter Power", robot.shooterMotor.getPower());
         telemetry.addData("Shooter Velocity", robot.shooterMotor.getVelocity());
         telemetry.addData("Shooter Motor Mode", robot.shooterMotor.getMode());
-        telemetry.addData("Shooter dI", shooterManualControl.dt);
+        telemetry.addLine("-----");
+        String MotifEnabled;
+        if (gamepadManager.autoMotif.ToggleState) {MotifEnabled = "Enabled";} else {MotifEnabled = "Disabled";}
+        String MotifAvailable;
+        if (gamepadManager.autoMotif.ToggleState) {MotifAvailable = "Available";} else {MotifAvailable = "Not Available";}
+        telemetry.addData("Auto Motif",String.join(", ",MotifEnabled, MotifAvailable));
         telemetry.update();
     }
 
