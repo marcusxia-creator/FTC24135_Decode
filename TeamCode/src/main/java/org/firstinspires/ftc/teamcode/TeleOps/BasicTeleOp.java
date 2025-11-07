@@ -36,7 +36,7 @@ public class BasicTeleOp extends OpMode {
         BLUE_ALLIANCE
     }
 
-    public static Alliance alliance;
+    public static Alliance alliance = Alliance.RED_ALLIANCE;
 
     private final Pose2D blueAllianceResetPose = new Pose2D(DistanceUnit.INCH, -72, -72, AngleUnit.DEGREES, 0);
     private final Pose2D redAllianceResetPose = new Pose2D(DistanceUnit.INCH, 72, -72, AngleUnit.DEGREES, 0);
@@ -72,13 +72,14 @@ public class BasicTeleOp extends OpMode {
         shooterPowerCalculator = new ShooterPowerCalculator(robot);
 
         colorDetection = new ColorDetection(robot);
+
+        alliance = Alliance.RED_ALLIANCE;
     }
 
     @Override
     public void loop() {
         robot.pinpoint.update();
 
-        //robotDrive.DriveLoop();
         gamepadManager.loop();
 
         shooterManualControl.ShooterLoop();
