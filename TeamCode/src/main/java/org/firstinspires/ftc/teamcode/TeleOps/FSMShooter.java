@@ -24,15 +24,8 @@ public class FSMShooter {
     Spindexer spindexer;
     Spindexer.SLOT targetColour = Spindexer.SLOT.Purple;
 
-    //Amp draw conditions
-    public double dt;
-    private double lastI;
-    public double I;
-
     /**
      * BUTTON FOR SHOOTING
-     * * Button A is global KEY, --- Global Controls (can be triggered from any state) ---
-     *   cancel the actionS & Exit the loop for this cycle
      * * Button X/Square is local key, --- IDLE STATE---
      *   Press 'X/Square' to start spinning the flywheel
      * * Button X/Square is local key, --- FLYWHEEL STATE---
@@ -53,6 +46,7 @@ public class FSMShooter {
         DOWN
     }
 
+    public Spindexer.Motif motif;
 
     GamepadManager gamepadManager;
 
@@ -75,6 +69,7 @@ public class FSMShooter {
         robot.shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         //shooterPowerCalculator = new ShooterPowerCalculator();
         //shooterPowerCalculator.init(robot);
+        motif = spindexer.GPP;//Temporary
     }
 
     public void ShooterLoop() {
@@ -88,6 +83,7 @@ public class FSMShooter {
                 robot.shooterMotor.setPower(0);
                 robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 robot.shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
                 /**
                 // Find dI
                 I=robot.shooterMotor.getCurrent(CurrentUnit.AMPS);
@@ -128,15 +124,20 @@ public class FSMShooter {
                     robot.shooterMotor.setPower(0);
                 }
 
-                //Launch Colour
-                if ((gamepadManager.Purple.PressState)||!spindexer.checkFor(Spindexer.SLOT.Green)&&spindexer.checkFor(Spindexer.SLOT.Purple)) {
-                    targetColour = Spindexer.SLOT.Purple;
+                if (gamepadManager.autoMotif.ToggleState && spindexer.checkMotif(motif)){
+                    targetColour=spindexer.motifColour(motif);
                 }
-                if ((gamepadManager.Green.PressState)||!spindexer.checkFor(Spindexer.SLOT.Purple)&&spindexer.checkFor(Spindexer.SLOT.Green)) {
-                    targetColour = Spindexer.SLOT.Green;
+                else {
+                    //Launch Colour
+                    if ((gamepadManager.Purple.PressState) || !spindexer.checkFor(Spindexer.SLOT.Green) && spindexer.checkFor(Spindexer.SLOT.Purple)) {
+                        targetColour = Spindexer.SLOT.Purple;
+                    }
+                    if ((gamepadManager.Green.PressState) || !spindexer.checkFor(Spindexer.SLOT.Purple) && spindexer.checkFor(Spindexer.SLOT.Green)) {
+                        targetColour = Spindexer.SLOT.Green;
+                    }
                 }
 
-                if (spindexer.slots[spindexer.currentSlot]!=targetColour){
+                if (spindexer.slotColour()!=targetColour){
                     if(spindexer.checkFor(targetColour)) {
                         spindexer.runToSlot(targetColour);
                         shooterState = SHOOTERSTATE.SPINDEXER_ROTATE;

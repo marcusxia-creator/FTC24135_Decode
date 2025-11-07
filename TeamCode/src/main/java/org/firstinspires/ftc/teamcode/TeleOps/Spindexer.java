@@ -26,6 +26,11 @@ public class Spindexer {
     //For jams
     public int prevSlot;
 
+    //Motif constants
+    public final Motif GPP = new Motif(SLOT.Green,SLOT.Purple,SLOT.Purple);
+    public final Motif PGP = new Motif(SLOT.Purple,SLOT.Green,SLOT.Purple);
+    public final Motif PPG = new Motif(SLOT.Purple,SLOT.Purple,SLOT.Green);
+
     Spindexer(RobotHardware robot, SLOT slot0,SLOT slot1,SLOT slot2, int currentSlot){
         this.robot = robot;
         slots = new SLOT[]{slot0, slot1, slot2};
@@ -59,6 +64,14 @@ public class Spindexer {
 
     public void writeToCurrent(ColourCriterion[] criteria){
         //not yet implimented
+    }
+
+    public SLOT slotColour(int n){
+        return slots[n];
+    }
+
+    public SLOT slotColour(){
+        return slotColour(currentSlot);
     }
 
     public int count(SLOT a){
@@ -114,7 +127,42 @@ public class Spindexer {
         }
     }
 
+    public Boolean checkMotif(Motif motif){
+        int n = count(SLOT.Empty);
+        return motif.countFrom(SLOT.Green,n)==count(SLOT.Green)&&motif.countFrom(SLOT.Purple,n)==count(SLOT.Purple);
+    }
+
+    public SLOT motifColour(Motif motif){
+        return motif.getColour(count(SLOT.Empty));
+    }
+
+    public void runToMotif(Motif motif){
+        runToSlot(motifColour(motif));
+    }
+
     public void unJam(){
         runToSlot(prevSlot);
+    }
+
+    public class Motif{
+        public SLOT[] slots;
+
+        public Motif(SLOT slot0,SLOT slot1,SLOT slot2){
+            slots = new SLOT[]{slot0, slot1, slot2};
+        }
+
+        public int countFrom(SLOT a, int n){
+            int counter=0;
+            for(int i=n; i<=2; i++){
+                if(slots[n]==a){
+                    counter++;
+                }
+            }
+            return counter;
+        }
+
+        public SLOT getColour(int n){
+            return slots[n];
+        }
     }
 }
