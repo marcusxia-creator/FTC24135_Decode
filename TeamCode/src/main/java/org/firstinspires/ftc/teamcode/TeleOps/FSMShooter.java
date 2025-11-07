@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -77,6 +78,9 @@ public class FSMShooter {
     }
 
     public void ShooterLoop() {
+        double voltage = robot.getBatteryVoltageRobust();
+        double speed = shooterPowerCalculator.getPower();
+        double power_setpoint = speed*12.0/ voltage;
         // --- Global Controls (can be triggered from any state) ---
         // 'A' button is an emergency stop or reset.
         switch (shooterState) {
@@ -84,16 +88,18 @@ public class FSMShooter {
                 robot.shooterMotor.setPower(0);
                 robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 robot.shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                /**
                 // Find dI
                 I=robot.shooterMotor.getCurrent(CurrentUnit.AMPS);
                 dt=(I-lastI)/0.00091;
                 lastI=I;
+                 **/
                 // Press 'X' to start spinning the flywheel
                 if (gamepadManager.Flywheel.PressState) {
-                    robot.shooterMotor.setVelocity(shooterVel);
+                    //robot.shooterMotor.setVelocity(shooterVel);
+                    robot.shooterMotor.setPower(Range.clip(power_setpoint,0.3,1.0));
 
-                    //robot.shooterMotor.setPower(shooterPowerCalculator.getPower());
-                    robot.shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    //robot.shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                 }
@@ -107,7 +113,7 @@ public class FSMShooter {
             case FLYWHEEL_RUNNING:
                 // Give the flywheel time ProcessBuilder.Redirect.to get ProcessBuilder.Redirect.to speed (Log.e.g., 1 second)
                 // Press 'Y' to toggle ramp up/down]
-                if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced() && shooterVel*shooterFactorThreshold<=robot.shooterMotor.getVelocity()) {
+                if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced() && (robot.shooterMotor.getPower() >= (power_setpoint - 0.008) && robot.shooterMotor.getPower() <= (power_setpoint + 0.01)) /*&& shooterVel*shooterFactorThreshold<=robot.shooterMotor.getVelocity()*/) {
                     shooterState = SHOOTERSTATE.SHOOTING;
                     rampstate = RAMPSTATE.UP;
                     updateServoState();
