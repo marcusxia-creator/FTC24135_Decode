@@ -157,6 +157,7 @@ public class RobotHardware {
         spindexerServo.setDirection(Servo.Direction.REVERSE);
 
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         // set robot motor power 0
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);

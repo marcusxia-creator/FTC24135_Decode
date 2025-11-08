@@ -7,13 +7,10 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
-
-import android.graphics.Color;
 
 @Config
 @TeleOp (name = "TestTeleOp", group = "org.firstinspires.ftc.teamcode")
@@ -22,10 +19,10 @@ public class TestTeleOp extends OpMode {
     private GamepadEx gamepad_1;
     private GamepadEx gamepad_2;
     private double servoposition;
-    public static double speed;
+    private static double speed;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private RobotDrive robotDrive;
-    private ShooterPowerCalculator shooterPowerCalculator;
+    private ShooterPowerAngleCalculator shooterPowerAngleCalculator;
 
     private static double voltage;
     private BallColor ballColor;
@@ -48,7 +45,7 @@ public class TestTeleOp extends OpMode {
         servoposition = 0.0;
         speed = 0.0;
 
-        shooterPowerCalculator = new ShooterPowerCalculator(robot);
+        shooterPowerAngleCalculator = new ShooterPowerAngleCalculator(robot);
         robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
 
         robot.pushRampServo.setPosition(RobotActionConfig.rampDownPos);
@@ -65,7 +62,7 @@ public class TestTeleOp extends OpMode {
     public void loop() {
         robot.pinpoint.update();
         voltage = robot.getBatteryVoltageRobust();
-        speed = shooterPowerCalculator.getPower();
+        speed = shooterPowerAngleCalculator.getPower();
         double power_setpoint = speed*12.0/voltage;
 
         robotDrive.DriveLoop();
@@ -116,7 +113,7 @@ public class TestTeleOp extends OpMode {
             robot.intakeMotor.setPower(0);
         }
 
-        if (shooterPowerCalculator.getDistance() <= 54) {
+        if (shooterPowerAngleCalculator.getDistance() <= 54) {
             robot.LED.setPosition(0.28);
         }
         else if (ballColor.isKnown()) {
@@ -139,12 +136,12 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("Intake Speed", robot.intakeMotor.getPower());
         telemetry.addLine("----------------------------------------------------");
         telemetry.addData("Pose 2D", robot.pinpoint.getPosition());
-        telemetry.addData("Distance To Goal", shooterPowerCalculator.getDistance());
+        telemetry.addData("Distance To Goal", shooterPowerAngleCalculator.getDistance());
         telemetry.addData("Robot Voltage", robot.getBatteryVoltageRobust());
         telemetry.addData("Shooter Power Setpoint", speed);
         telemetry.addData("Shooter Actual Power Setpoint", power_setpoint);
         telemetry.addData("Shooter Motor Power Reading", robot.shooterMotor.getPower());
-        telemetry.addData("Shooter Motor Power Calculator", shooterPowerCalculator.getPower());
+        telemetry.addData("Shooter Motor Power Calculator", shooterPowerAngleCalculator.getPower());
         telemetry.addLine("----------------------------------------------------");
         telemetry.addData("Color", ballColor);
 

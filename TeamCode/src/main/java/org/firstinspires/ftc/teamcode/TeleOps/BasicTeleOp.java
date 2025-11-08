@@ -6,12 +6,11 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 @TeleOp (name = "Basic TeleOp", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOp extends OpMode {
@@ -26,7 +25,7 @@ public class BasicTeleOp extends OpMode {
     private GamepadManager gamepadManager;
     private Spindexer spindexer;
 
-    private ShooterPowerCalculator shooterPowerCalculator;
+    private ShooterPowerAngleCalculator shooterPowerAngleCalculator;
 
     private static double voltage;
     private BallColor ballColor;
@@ -38,9 +37,6 @@ public class BasicTeleOp extends OpMode {
     }
 
     public static Alliance alliance;
-
-    private final Pose2D blueAllianceResetPose = new Pose2D(DistanceUnit.INCH, -72, -72, AngleUnit.DEGREES, 0);
-    private final Pose2D redAllianceResetPose = new Pose2D(DistanceUnit.INCH, 72, -72, AngleUnit.DEGREES, 0);
 
 
     @Override
@@ -62,33 +58,62 @@ public class BasicTeleOp extends OpMode {
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
-        shooterManualControl = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, gamepadManager);
+        shooterPowerAngleCalculator = new ShooterPowerAngleCalculator(robot);
+        colorDetection = new ColorDetection(robot);
+
+        alliance = Alliance.RED_ALLIANCE;
+        shooterPowerAngleCalculator.setAlliance(true);
+
+        shooterManualControl = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, gamepadManager, shooterPowerAngleCalculator);
         shooterManualControl.Init();
 
         intake = new Intake(gamepadCo1, gamepadCo2, robot, spindexer, gamepadManager);
-
-        shooterPowerCalculator = new ShooterPowerCalculator(robot);
     }
 
     @Override
     public void loop() {
         robot.pinpoint.update();
-
-        //robotDrive.DriveLoop();
+        ballColor = BallColor.fromHue(colorDetection.getHue());
         gamepadManager.loop();
-
         shooterManualControl.ShooterLoop();
         intake.loop();
-
+        //?? need comments
         spindexer.runToSlot();
         spindexerManualControl.loop();
-
         robotDrive.DriveLoop();
 
-        if (shooterPowerCalculator.getDistance() <= 54) {
+        if (gamepadCo1.getButton(GamepadKeys.Button.BACK) || gamepadCo2.getButton(GamepadKeys.Button.BACK) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
+            debounceTimer.reset();
+            if (alliance == Alliance.BLUE_ALLIANCE) {
+                alliance = Alliance.RED_ALLIANCE;
+                shooterPowerAngleCalculator.setAlliance(true);
+                //robot.LED.setPosition(0.28);
+            }
+            if (alliance == Alliance.RED_ALLIANCE) {
+                alliance = Alliance.BLUE_ALLIANCE;
+                shooterPowerAngleCalculator.setAlliance(false);
+                //robot.LED.setPosition(0.611);
+            }
+        }
+
+        if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+            //Reset robot red alliance pose
+            if (alliance == Alliance.RED_ALLIANCE) {
+                robot.pinpoint.setPosition(redAllianceResetPose);
+                robot.LED.setPosition(0.28);
+            }
+            //Reset robot blue alliance pose
+            if (alliance == Alliance.BLUE_ALLIANCE) {
+                robot.pinpoint.setPosition(blueAllianceResetPose);
+                robot.LED.setPosition(0.611);
+            }
+        }
+        //LED alarm light
+        if (shooterPowerAngleCalculator.getDistance() <= 54) {
+            //Distance less than 54 inches, red alert
             robot.LED.setPosition(0.28);
         }
-        else if (ballColor.isKnown()) {
+        else if (ballColor.isKnown()) { //Show green and purple colour
             if (ballColor == BallColor.GREEN) {
                 robot.LED.setPosition(0.5);
             }
@@ -96,31 +121,8 @@ public class BasicTeleOp extends OpMode {
                 robot.LED.setPosition(0.722);
             }
         }
-        else {
+        else { //Default white
             robot.LED.setPosition(1.0);
-        }
-
-        if ((gamepadCo1.getButton(GamepadKeys.Button.START) && gamepadCo1.getButton(GamepadKeys.Button.LEFT_BUMPER)) || (gamepadCo2.getButton(GamepadKeys.Button.START) && gamepadCo2.getButton(GamepadKeys.Button.LEFT_BUMPER))) {
-            alliance = Alliance.RED_ALLIANCE;
-            shooterPowerCalculator.setAlliance(true);
-            robot.LED.setPosition(0.28);
-        }
-        if ((gamepadCo1.getButton(GamepadKeys.Button.START) && gamepadCo1.getButton(GamepadKeys.Button.RIGHT_BUMPER)) || (gamepadCo2.getButton(GamepadKeys.Button.START) && gamepadCo2.getButton(GamepadKeys.Button.RIGHT_BUMPER))) {
-            alliance = Alliance.BLUE_ALLIANCE;
-            shooterPowerCalculator.setAlliance(false);
-            robot.LED.setPosition(0.611);
-        }
-
-        if (gamepadCo1.getButton(GamepadKeys.Button.BACK) || gamepadCo2.getButton(GamepadKeys.Button.BACK)) {
-            if (alliance == Alliance.RED_ALLIANCE) {
-                robot.pinpoint.setPosition(redAllianceResetPose);
-                robot.LED.setPosition(0.28);
-            }
-
-            if (alliance == Alliance.BLUE_ALLIANCE) {
-                robot.pinpoint.setPosition(blueAllianceResetPose);
-                robot.LED.setPosition(0.611);
-            }
         }
         telemetry.addData("Intake State", intake.intakeStates);
         telemetry.addData("Sensor Distance", robot.distanceSensor.getDistance(DistanceUnit.CM));
@@ -132,6 +134,11 @@ public class BasicTeleOp extends OpMode {
         telemetry.addData("Shooter Target Colour", shooterManualControl.targetColour.name());
         telemetry.addLine("-----");
         telemetry.addData("Shooter State", shooterManualControl.shooterState);
+        telemetry.addData("shooter power calculator", shooterPowerAngleCalculator.getPower());
+        telemetry.addData("shooter speed from FSM Shooter", shooterManualControl.getSpeed());
+        telemetry.addData("voltage from Shooter", shooterManualControl.getVoltage());
+        telemetry.addData("voltage from robot", robot.getBatteryVoltageRobust());
+        telemetry.addData("power set point", shooterManualControl.getPower_setpoint());
         telemetry.addData("Shooter Power", robot.shooterMotor.getPower());
         telemetry.addData("Shooter Velocity", robot.shooterMotor.getVelocity());
         telemetry.addData("Shooter Motor Mode", robot.shooterMotor.getMode());
@@ -141,6 +148,13 @@ public class BasicTeleOp extends OpMode {
         String MotifAvailable;
         if (gamepadManager.autoMotif.ToggleState) {MotifAvailable = "Available";} else {MotifAvailable = "Not Available";}
         telemetry.addData("Auto Motif",String.join(", ",MotifEnabled, MotifAvailable));
+        telemetry.addData("desired angle", shooterPowerAngleCalculator.getAngle());
+        telemetry.addData("desired robot angle", 90 + shooterPowerAngleCalculator.getAngle()); //If the desired robot angle equal to the current angle, then the robot is on course
+        telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));
+
+        telemetry.addData("Alliance", alliance);
+        telemetry.addData("Pose2D", robot.pinpoint.getPosition());
+        telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
         telemetry.update();
     }
 
