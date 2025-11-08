@@ -11,9 +11,9 @@ public class RobotActionConfig {
     public static double gateDown                       = 0.12;
     public static double gateUp                         = 0.30;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
-    public static double spindexerSlot0                 = 0.05;
-    public static double spindexerSlot1                 = 0.5;
-    public static double spindexerSlot2                 = 0.99;
+    public static double spindexerSlot0                 = 0.04;
+    public static double spindexerSlot1                 = 0.49;
+    public static double spindexerSlot2                 = 0.97;
     public static double spindexerReset                 = 0.0;
     public static double rampDownPos                    = 0.58; //0.40 12Kg servo, 0.385 for axon micro
     public static double rampUpPos                      = 0.34; //0.18 12Kg servo, 0.215 for axon micro
