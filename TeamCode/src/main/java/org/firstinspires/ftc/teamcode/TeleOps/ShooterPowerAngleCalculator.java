@@ -36,10 +36,6 @@ public class ShooterPowerAngleCalculator {
         return distance;
     }
 
-    public double getAngle(){
-        return Math.atan2(robot.pinpoint.getPosY(DistanceUnit.METER)-actualGoalPose.getY(DistanceUnit.METER),robot.pinpoint.getPosX(DistanceUnit.METER)-actualGoalPose.getX(DistanceUnit.METER));
-    }
-
     public double getPower() {
         distance = Math.sqrt(Math.pow(robot.pinpoint.getPosX(DistanceUnit.INCH) - actualGoalPose.getX(DistanceUnit.INCH),2) + Math.pow(robot.pinpoint.getPosY(DistanceUnit.INCH) - actualGoalPose.getY(DistanceUnit.INCH), 2));
         return a*Math.pow(distance, 2) + b*distance + c;

@@ -42,14 +42,10 @@ public class RobotDrive {
 
     private double rotate_Slowness = 0.75;
 
-    private ShooterPowerCalculator shooterPowerCalculator;
-
-
-    public RobotDrive(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2, ShooterPowerCalculator shooterPowerCalculator) {
+    public RobotDrive(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2) {
         this.robot = robot;
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
-        this.shooterPowerCalculator = shooterPowerCalculator;
     }
 
     public void Init() {
