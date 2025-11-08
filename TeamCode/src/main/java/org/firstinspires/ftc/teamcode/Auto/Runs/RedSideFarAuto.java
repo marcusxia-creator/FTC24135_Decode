@@ -14,6 +14,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import static org.firstinspires.ftc.teamcode.Auto.Runs.BlueSidePositions.ShootingPosition_Heading;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.BlueSidePositions.ShootingPosition_X;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.BlueSidePositions.ShootingPosition_Y;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import static org.firstinspires.ftc.teamcode.Auto.Runs.RedSidePositions.*;
 
@@ -36,6 +40,10 @@ public class RedSideFarAuto extends LinearOpMode {
         robot.leftGateServo.setPosition(gateDown);
         robot.pushRampServo.setPosition(rampDownPos);
 
+        Action DriveToShoot1 = drive.actionBuilder(initialPose)
+            .strafeToLinearHeading(new Vector2d(PreloadShootingPosition_X,PreloadShootingPosition_Y), Math.toRadians(PreloadShootingPosition_Heading))
+            .build();
+
         Action IntakeSet1Drive1 = drive.actionBuilder(initialPose)
             .strafeToLinearHeading(new Vector2d(IntakeSet1Position1_X, IntakeSet1Position1_Y), Math.toRadians(90))
             .build();
@@ -52,7 +60,7 @@ public class RedSideFarAuto extends LinearOpMode {
             .strafeToLinearHeading(new Vector2d(IntakeSet1Position4_X,IntakeSet1Position4_Y),Math.toRadians(90))
             .build();
 
-        Action DriveToShoot1 = drive.actionBuilder(new Pose2d(IntakeSet1Position4_X,IntakeSet1Position4_Y,Math.toRadians(90)))
+        Action DriveToShoot2 = drive.actionBuilder(new Pose2d(IntakeSet1Position4_X,IntakeSet1Position4_Y,Math.toRadians(90)))
             .strafeToLinearHeading(new Vector2d(TransitionLocation_X,TransitionLocation_Y),Math.toRadians(22.5))
             .strafeToLinearHeading(new Vector2d(ShootingPosition_X,ShootingPosition_Y),Math.toRadians(ShootingPosition_Heading))
             .build();
@@ -73,7 +81,7 @@ public class RedSideFarAuto extends LinearOpMode {
             .strafeToLinearHeading(new Vector2d(IntakeSet2Position4_X,IntakeSet2Position4_Y),Math.toRadians(90))
             .build();
 
-        Action DriveToShoot2 = drive.actionBuilder(new Pose2d(IntakeSet2Position4_X,IntakeSet2Position4_Y,Math.toRadians(90)))
+        Action DriveToShoot3 = drive.actionBuilder(new Pose2d(IntakeSet2Position4_X,IntakeSet2Position4_Y,Math.toRadians(90)))
             .strafeToLinearHeading(new Vector2d(ShootingPosition_X,ShootingPosition_Y),Math.toRadians(ShootingPosition_Heading))
             .build();
 
@@ -84,6 +92,10 @@ public class RedSideFarAuto extends LinearOpMode {
         if (opModeIsActive()) {
             Actions.runBlocking(
                 new SequentialAction(
+                    new ParallelAction(
+                        DriveToShoot1,
+                        ShooterSpeedUp(FarShotPower)
+                    ),
                     ShooterRun(FarShotPower,3),
                     IntakeSet1Drive1,
                     new ParallelAction(
@@ -95,7 +107,7 @@ public class RedSideFarAuto extends LinearOpMode {
                         IntakeRun()
                     ),
                     new ParallelAction(
-                        DriveToShoot1,
+                            DriveToShoot2,
                         ShooterSpeedUp(CloseShotPower)
                     ),
                     ShooterRun(CloseShotPower,0.5),
@@ -109,7 +121,7 @@ public class RedSideFarAuto extends LinearOpMode {
                             IntakeRun()
                     ),
                     new ParallelAction(
-                            DriveToShoot2,
+                            DriveToShoot3,
                             ShooterSpeedUp(CloseShotPower)
                     ),
                     ShooterRun(CloseShotPower, 0.5)

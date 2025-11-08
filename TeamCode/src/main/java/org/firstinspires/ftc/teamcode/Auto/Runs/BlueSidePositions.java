@@ -34,6 +34,9 @@ public class BlueSidePositions {
     public static double TransitionLocation_X = 12;
     public static double TransitionLocation_Y = -12;
 
+    public static double PreloadShootingPosition_X = 58;
+    public static double PreloadShootingPosition_Y = -8;
+    public static double PreloadShootingPosition_Heading = 30;
 
     public static double ShootingPosition_X = -12;
     public static double ShootingPosition_Y = -12;

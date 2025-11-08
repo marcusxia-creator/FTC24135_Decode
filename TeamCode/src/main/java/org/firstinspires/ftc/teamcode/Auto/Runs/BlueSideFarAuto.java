@@ -35,6 +35,10 @@ public class BlueSideFarAuto extends LinearOpMode {
         robot.leftGateServo.setPosition(gateDown);
         robot.pushRampServo.setPosition(rampDownPos);
 
+        Action DriveToShoot1 = drive.actionBuilder(initialPose)
+                .strafeToLinearHeading(new Vector2d(PreloadShootingPosition_X,PreloadShootingPosition_Y), Math.toRadians(PreloadShootingPosition_Heading))
+                .build();
+
         Action IntakeSet1Drive1 = drive.actionBuilder(initialPose)
             .strafeToLinearHeading(new Vector2d(IntakeSet1Position1_X, IntakeSet1Position1_Y), Math.toRadians(-90))
             .build();
@@ -51,7 +55,7 @@ public class BlueSideFarAuto extends LinearOpMode {
             .strafeToLinearHeading(new Vector2d(IntakeSet1Position4_X,IntakeSet1Position4_Y),Math.toRadians(-90))
             .build();
 
-        Action DriveToShoot1 = drive.actionBuilder(new Pose2d(IntakeSet1Position4_X,IntakeSet1Position4_Y,Math.toRadians(-90)))
+        Action DriveToShoot2 = drive.actionBuilder(new Pose2d(IntakeSet1Position4_X,IntakeSet1Position4_Y,Math.toRadians(-90)))
             .strafeToLinearHeading(new Vector2d(TransitionLocation_X,TransitionLocation_Y),Math.toRadians(-22.5))
             .strafeToLinearHeading(new Vector2d(ShootingPosition_X,ShootingPosition_Y),Math.toRadians(ShootingPosition_Heading))
             .build();
@@ -72,7 +76,7 @@ public class BlueSideFarAuto extends LinearOpMode {
             .strafeToLinearHeading(new Vector2d(IntakeSet2Position4_X,IntakeSet2Position4_Y),Math.toRadians(-90))
             .build();
 
-        Action DriveToShoot2 = drive.actionBuilder(new Pose2d(IntakeSet2Position4_X,IntakeSet2Position4_Y,Math.toRadians(-90)))
+        Action DriveToShoot3 = drive.actionBuilder(new Pose2d(IntakeSet2Position4_X,IntakeSet2Position4_Y,Math.toRadians(-90)))
             .strafeToLinearHeading(new Vector2d(ShootingPosition_X,ShootingPosition_Y),Math.toRadians(ShootingPosition_Heading))
             .build();
 
@@ -83,6 +87,10 @@ public class BlueSideFarAuto extends LinearOpMode {
         if (opModeIsActive()) {
             Actions.runBlocking(
                 new SequentialAction(
+                    new ParallelAction(
+                            DriveToShoot3,
+                            ShooterSpeedUp(FarShotPower)
+                    ),
                     ShooterRun(FarShotPower,3),
                     IntakeSet1Drive1,
                     new ParallelAction(
@@ -94,7 +102,7 @@ public class BlueSideFarAuto extends LinearOpMode {
                         IntakeRun()
                     ),
                     new ParallelAction(
-                        DriveToShoot1,
+                            DriveToShoot3,
                         ShooterSpeedUp(CloseShotPower)
                     ),
                     ShooterRun(CloseShotPower,0.5),
@@ -108,7 +116,7 @@ public class BlueSideFarAuto extends LinearOpMode {
                             IntakeRun()
                     ),
                     new ParallelAction(
-                            DriveToShoot2,
+                            DriveToShoot3,
                             ShooterSpeedUp(CloseShotPower)
                     ),
                     ShooterRun(CloseShotPower, 0.5)

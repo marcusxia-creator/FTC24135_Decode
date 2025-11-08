@@ -34,7 +34,7 @@ public class BlueSideCloseAuto extends LinearOpMode {
         robot.pushRampServo.setPosition(rampDownPos);
 
         Action DriveToShoot1 = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(ShootingPosition_X,ShootingPosition_Y), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(ShootingPosition_X,ShootingPosition_Y), Math.toRadians(ShootingPosition_Heading))
             .build();
 
         Action IntakeSet1Drive1 = drive.actionBuilder(new Pose2d(ShootingPosition_X,ShootingPosition_Y,Math.toRadians(ShootingPosition_Heading)))
@@ -99,7 +99,7 @@ public class BlueSideCloseAuto extends LinearOpMode {
                         IntakeRun()
                     ),
                     new ParallelAction(
-                            DriveToShoot3,
+                            DriveToShoot2,
                         ShooterSpeedUp(CloseShotPower)
                     ),
                     ShooterRun(CloseShotPower,0.5),
