@@ -70,13 +70,13 @@ public class TestTeleOp extends OpMode {
 
 
         if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
-            //servoposition = robot.pushRampServo.getPosition() + 0.01;
-            robot.pushRampServo.setPosition(Range.clip(rampDownPos, 0.0, 1.0
+            servoposition = robot.pushRampServo.getPosition() + 0.01;
+            robot.pushRampServo.setPosition(Range.clip(servoposition, 0.0, 1.0
             ));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
-            //servoposition = robot.pushRampServo.getPosition() - 0.01;
-            robot.pushRampServo.setPosition(Range.clip(rampUpPos, 0, 1));
+            servoposition = robot.pushRampServo.getPosition() - 0.01;
+            robot.pushRampServo.setPosition(Range.clip(servoposition, 0, 1));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
             servoposition = robot.spindexerServo.getPosition() + 0.01;

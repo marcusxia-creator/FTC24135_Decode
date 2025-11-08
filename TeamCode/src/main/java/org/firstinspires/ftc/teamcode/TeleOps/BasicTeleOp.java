@@ -89,7 +89,7 @@ public class BasicTeleOp extends OpMode {
                 shooterPowerAngleCalculator.setAlliance(true);
                 //robot.LED.setPosition(0.28);
             }
-            if (alliance == Alliance.RED_ALLIANCE) {
+            else {
                 alliance = Alliance.BLUE_ALLIANCE;
                 shooterPowerAngleCalculator.setAlliance(false);
                 //robot.LED.setPosition(0.611);

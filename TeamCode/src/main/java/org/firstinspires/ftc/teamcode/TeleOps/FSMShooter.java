@@ -98,17 +98,17 @@ public class FSMShooter {
                 // Press 'X' to start spinning the flywheel
                 if (gamepadManager.Flywheel.PressState) {
                     //robot.shooterMotor.setVelocity(shooterVel);
-                    robot.shooterMotor.setPower(Range.clip(power_setpoint,0.3,1.0));
+                    setShooterPower();
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                 }
 
                 break;
             case FLYWHEEL_RUNNING:
-                robot.shooterMotor.setPower(Range.clip(power_setpoint,0.3,1.0));
+                setShooterPower();
                 // Give the flywheel time ProcessBuilder.Redirect.to get ProcessBuilder.Redirect.to speed (Log.e.g., 1 second)
                 // Press 'Y' to toggle ramp up/down]
-                if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced()/*(robot.shooterMotor.getPower() >= (power_setpoint - 0.008) && robot.shooterMotor.getPower() <= (power_setpoint + 0.01)) /*&& shooterVel*shooterFactorThreshold<=robot.shooterMotor.getVelocity()*/) {
+                if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced() /*&& (robot.shooterMotor.getPower() >= (power_setpoint - 0.008) && robot.shooterMotor.getPower() <= (power_setpoint + 0.01)) /*&& shooterVel*shooterFactorThreshold<=robot.shooterMotor.getVelocity()*/) {
                     rampstate = RAMPSTATE.UP;
                     updateServoState();
                     robot.leftGateServo.setPosition(gateUp);
@@ -151,7 +151,7 @@ public class FSMShooter {
                 break;
                 
             case SHOOTING:
-                robot.shooterMotor.setPower(Range.clip(power_setpoint,0.3,1.0));
+                setShooterPower();
                 //Ramp Down
                 if (shootTimer.seconds() > 0.75) {
                     rampstate = RAMPSTATE.DOWN;
@@ -220,6 +220,10 @@ public class FSMShooter {
             return true;
         }
         return false;
+    }
+
+    private void setShooterPower() {
+        robot.shooterMotor.setPower(Range.clip(power_setpoint,0.3,1.0));
     }
 
     public double getPower_setpoint() {
