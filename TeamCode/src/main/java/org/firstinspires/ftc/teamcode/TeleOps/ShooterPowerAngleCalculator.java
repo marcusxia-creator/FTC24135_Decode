@@ -12,7 +12,7 @@ public class ShooterPowerAngleCalculator {
     private double distance;
 
     private final Pose2D redGoalPose = new Pose2D(DistanceUnit.INCH, -70, 70, AngleUnit.DEGREES, -45);
-    private final Pose2D blueGoalPose = new Pose2D(DistanceUnit.INCH, 70, 70, AngleUnit.DEGREES, -45);
+    private final Pose2D blueGoalPose = new Pose2D(DistanceUnit.INCH, -70, -70, AngleUnit.DEGREES, -45);
 
     private Pose2D actualGoalPose = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
 
@@ -38,7 +38,7 @@ public class ShooterPowerAngleCalculator {
 
     public double getPower() {
         distance = Math.sqrt(Math.pow(robot.pinpoint.getPosX(DistanceUnit.INCH) - actualGoalPose.getX(DistanceUnit.INCH),2) + Math.pow(robot.pinpoint.getPosY(DistanceUnit.INCH) - actualGoalPose.getY(DistanceUnit.INCH), 2));
-        return a*Math.pow(distance, 2) + b*distance + c;
+        return a*Math.pow(distance, 2) + b*distance + c + correction;
         //return 0.9;
     }
 
