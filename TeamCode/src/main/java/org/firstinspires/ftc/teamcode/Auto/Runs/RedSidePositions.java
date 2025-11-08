@@ -36,8 +36,8 @@ public class RedSidePositions {
 
 
     public static double PreloadShootingPosition_X = 58;
-    public static double PreloadShootingPosition_Y = 8;
-    public static double PreloadShootingPosition_Heading = -30;
+    public static double PreloadShootingPosition_Y = 10;
+    public static double PreloadShootingPosition_Heading = -20;
 
 
     public static double ShootingPosition_X = -12;

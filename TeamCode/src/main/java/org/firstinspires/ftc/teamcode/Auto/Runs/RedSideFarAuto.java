@@ -302,21 +302,21 @@ public class RedSideFarAuto extends LinearOpMode {
                 case SHOOTER_LAUNCH:
                     robot.leftGateServo.setPosition(gateUp);
                     robot.rightGateServo.setPosition(gateUp);
-                    if (stateTimer2.seconds()>0.4) {
+                    if (stateTimer2.seconds()>0.2) {
                         robot.pushRampServo.setPosition(rampUpPos);
                         stateTimer.reset();
                         currentState = SHOOTERSTATE.SHOOTER_RESET_1;
                     }
                     break;
                 case SHOOTER_RESET_1:
-                    if (stateTimer.seconds()>0.5) {
+                    if (stateTimer.seconds()>0.3) {
                         robot.pushRampServo.setPosition(rampDownPos);
                         stateTimer2.reset();
                         currentState = SHOOTERSTATE.SHOOTER_RESET_2;
                     }
                     break;
                 case SHOOTER_RESET_2:
-                    if (stateTimer2.seconds()>0.3) {
+                    if (stateTimer2.seconds()>0.2) {
                         robot.leftGateServo.setPosition(gateDown);
                         robot.rightGateServo.setPosition(gateDown);
                         targetSlot--;
@@ -364,7 +364,7 @@ public static class ShooterSpeedUp implements Action {
     }
 
     public void StartShooter (){
-        robot.intakeMotor.setPower(TargetSpeed);
+        robot.shooterMotor.setPower(TargetSpeed);
     }
 
     @Override
