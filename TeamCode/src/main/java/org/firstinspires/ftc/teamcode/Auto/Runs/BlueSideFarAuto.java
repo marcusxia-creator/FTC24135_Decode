@@ -88,7 +88,7 @@ public class BlueSideFarAuto extends LinearOpMode {
             Actions.runBlocking(
                 new SequentialAction(
                     new ParallelAction(
-                            DriveToShoot3,
+                            DriveToShoot1,
                             ShooterSpeedUp(FarShotPower)
                     ),
                     ShooterRun(FarShotPower,3),
@@ -102,7 +102,7 @@ public class BlueSideFarAuto extends LinearOpMode {
                         IntakeRun()
                     ),
                     new ParallelAction(
-                            DriveToShoot3,
+                            DriveToShoot1,
                         ShooterSpeedUp(CloseShotPower)
                     ),
                     ShooterRun(CloseShotPower,0.5),
@@ -253,6 +253,7 @@ public class BlueSideFarAuto extends LinearOpMode {
         private final ElapsedTime stateTimer = new ElapsedTime();
         private final ElapsedTime stateTimer2 = new ElapsedTime();
         private final ElapsedTime colorSensorTimer = new ElapsedTime();
+        private final ElapsedTime shooterTimer = new ElapsedTime();
         private int targetSlot = 2;
         private double ShooterWaitTime;
         private double ShotPower;

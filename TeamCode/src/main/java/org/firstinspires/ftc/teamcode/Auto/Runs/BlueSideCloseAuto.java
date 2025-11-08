@@ -21,7 +21,7 @@ import static org.firstinspires.ftc.teamcode.Auto.Runs.BlueSidePositions.*;
 
 @Autonomous(name = "BlueSideCloseAuto", group = "Autonomous")
 public class BlueSideCloseAuto extends LinearOpMode {
-    public static Pose2d initialPose = new Pose2d(-64, 16.25, Math.toRadians(0));
+    public static Pose2d initialPose = new Pose2d(-64, -16.25, Math.toRadians(0));
     public RobotHardware robot;
 
     @Override
