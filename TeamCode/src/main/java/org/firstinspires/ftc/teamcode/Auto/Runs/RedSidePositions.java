@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.Auto.Runs;
 
 public class RedSidePositions {
-    public static double CloseShotPower = 0.78;
-    public static double FarShotPower = 0.95;
+    public static double CloseShotPower = 0.83;
+    public static double FarShotPower = 0.92;
 
     public static double IntakeSet1Position1_X = 34;
     public static double IntakeSet1Position1_Y = 32;
