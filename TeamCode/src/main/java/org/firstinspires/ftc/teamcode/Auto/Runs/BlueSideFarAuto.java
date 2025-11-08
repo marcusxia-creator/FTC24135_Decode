@@ -340,9 +340,13 @@ public class BlueSideFarAuto extends LinearOpMode {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            shooterTimer.reset();
             telemetryPacket.put("FSM Intake State", currentState);
             FSMShooterRun();
-            return currentState != SHOOTERSTATE.SHOOTER_END;
+            if (shooterTimer.seconds()>4||currentState == SHOOTERSTATE.SHOOTER_END) {
+                return false;
+            }
+            return true;
         }
     }
 

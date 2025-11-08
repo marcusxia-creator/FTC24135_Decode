@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.Auto.Runs;
 
 public class BlueSidePositions {
-    public static double CloseShotPower = 0.83;
-    public static double FarShotPower = 0.95;
+    public static double CloseShotPower = 0.81;
+    public static double FarShotPower = 0.93;
 
     public static double IntakeSet1Position1_X = 34;
     public static double IntakeSet1Position1_Y = -32;
@@ -38,9 +38,9 @@ public class BlueSidePositions {
     public static double PreloadShootingPosition_Y = -10;
     public static double PreloadShootingPosition_Heading = 18;
 
-    public static double ShootingPosition_X = -14;
+    public static double ShootingPosition_X = -11;
     public static double ShootingPosition_Y = -9;
-    public static double ShootingPosition_Heading = 45;
+    public static double ShootingPosition_Heading = 47;
 
 
 

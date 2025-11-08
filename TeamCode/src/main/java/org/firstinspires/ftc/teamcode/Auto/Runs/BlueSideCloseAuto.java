@@ -21,7 +21,7 @@ import static org.firstinspires.ftc.teamcode.Auto.Runs.BlueSidePositions.*;
 
 @Autonomous(name = "BlueSideCloseAuto", group = "Autonomous")
 public class BlueSideCloseAuto extends LinearOpMode {
-    public static Pose2d initialPose = new Pose2d(-64, -16.25, Math.toRadians(0));
+    public static Pose2d initialPose = new Pose2d(-59, -51, Math.toRadians(45));
     public RobotHardware robot;
 
     @Override
@@ -140,7 +140,7 @@ public class BlueSideCloseAuto extends LinearOpMode {
         /// Variables
         private final RobotHardware robot;
         private final ElapsedTime stateTimer = new ElapsedTime();
-        private final ElapsedTime colorSensorTimer = new ElapsedTime();
+        private final ElapsedTime intakeTimer = new ElapsedTime();
         private INTAKESTATE currentState = INTAKESTATE.INTAKE_READY;
         private int targetSlot = 0;
 
@@ -224,9 +224,13 @@ public class BlueSideCloseAuto extends LinearOpMode {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            intakeTimer.reset();
             telemetryPacket.put("FSM Intake State", currentState);
             FSMIntakeRun();
-                return currentState != INTAKESTATE.INTAKE_END;
+            if (currentState == INTAKESTATE.INTAKE_END || intakeTimer.seconds()>4) {
+                return false;
+            }
+            return true;
         }
     }
 
@@ -249,7 +253,7 @@ public class BlueSideCloseAuto extends LinearOpMode {
         private final RobotHardware robot;
         private final ElapsedTime stateTimer = new ElapsedTime();
         private final ElapsedTime stateTimer2 = new ElapsedTime();
-        private final ElapsedTime colorSensorTimer = new ElapsedTime();
+        private final ElapsedTime shooterTimer = new ElapsedTime();
         private int targetSlot = 2;
         private double ShooterWaitTime;
         private double ShotPower;
@@ -336,9 +340,13 @@ public class BlueSideCloseAuto extends LinearOpMode {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            shooterTimer.reset();
             telemetryPacket.put("FSM Intake State", currentState);
             FSMShooterRun();
-            return currentState != SHOOTERSTATE.SHOOTER_END;
+            if (shooterTimer.seconds()>4||currentState == SHOOTERSTATE.SHOOTER_END) {
+                return false;
+            }
+            return true;
         }
     }
 
