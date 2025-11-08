@@ -132,6 +132,8 @@ public class BasicTeleOp extends OpMode {
         telemetry.addData("Current Slot", spindexer.currentSlot);
         telemetry.addData("Spindexer Servo Pos", robot.spindexerServo.getPosition());
         telemetry.addData("Shooter Target Colour", shooterManualControl.targetColour.name());
+        telemetry.addData("Motif Green Count", shooterManualControl.motif.countFrom(Spindexer.SLOT.Green, spindexer.count(Spindexer.SLOT.Empty)));
+        telemetry.addData("Motif Purple Count", shooterManualControl.motif.countFrom(Spindexer.SLOT.Purple, spindexer.count(Spindexer.SLOT.Empty)));
         telemetry.addLine("-----");
         telemetry.addData("Shooter State", shooterManualControl.shooterState);
         telemetry.addData("shooter power calculator", shooterPowerAngleCalculator.getPower());
@@ -146,7 +148,7 @@ public class BasicTeleOp extends OpMode {
         String MotifEnabled;
         if (gamepadManager.autoMotif.ToggleState) {MotifEnabled = "Enabled";} else {MotifEnabled = "Disabled";}
         String MotifAvailable;
-        if (gamepadManager.autoMotif.ToggleState) {MotifAvailable = "Available";} else {MotifAvailable = "Not Available";}
+        if (spindexer.checkMotif(shooterManualControl.motif)) {MotifAvailable = "Available";} else {MotifAvailable = "Not Available";}
         telemetry.addData("Auto Motif",String.join(", ",MotifEnabled, MotifAvailable));
         telemetry.addData("desired angle", shooterPowerAngleCalculator.getAngle());
         telemetry.addData("desired robot angle", 90 + shooterPowerAngleCalculator.getAngle()); //If the desired robot angle equal to the current angle, then the robot is on course

@@ -42,12 +42,14 @@ public class RobotDrive {
 
     private double rotate_Slowness = 0.75;
 
-    //public IceWaddler iceWaddler;
+    private ShooterPowerCalculator shooterPowerCalculator;
 
-    public RobotDrive(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2) {
+
+    public RobotDrive(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2, ShooterPowerCalculator shooterPowerCalculator) {
         this.robot = robot;
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
+        this.shooterPowerCalculator = shooterPowerCalculator;
     }
 
     public void Init() {
@@ -107,6 +109,12 @@ public class RobotDrive {
             strafe = deadband(gamepad_2.getRightX(),0.1);
             rotate = deadband(gamepad_2.getLeftX(),0.1) * rotate_Slowness;
         }
+
+        //Autoheading, currently disabled
+        /*
+        if(Math.abs(gamepad_1.getLeftY())>0.5||Math.abs(gamepad_1.getLeftY())>0.5){
+            rotate = Range.clip(RobotActionConfig.rotPK*(robot.pinpoint.getHeading(AngleUnit.RADIANS)-shooterPowerCalculator.getAngle()),-1,1);
+        }*/
 
         // Get robot's current heading
         double currentHeading = getRobotHeading();
