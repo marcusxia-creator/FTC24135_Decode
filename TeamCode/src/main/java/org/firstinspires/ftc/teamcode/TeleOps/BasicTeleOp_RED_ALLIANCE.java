@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.DEBOUNCE_THRESHOLD;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -10,10 +14,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
-@TeleOp (name = "Basic TeleOp", group = "org.firstinspires.ftc.teamcode")
-public class BasicTeleOp extends OpMode {
+@TeleOp (name = "RED_TELEOP", group = "org.firstinspires.ftc.teamcode")
+public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private RobotHardware robot;
     private GamepadEx gamepadCo1, gamepadCo2;
     private RobotDrive robotDrive;
@@ -82,6 +85,8 @@ public class BasicTeleOp extends OpMode {
         spindexerManualControl.loop();
         robotDrive.DriveLoop();
 
+        /**
+
         if (gamepadCo1.getButton(GamepadKeys.Button.BACK) || gamepadCo2.getButton(GamepadKeys.Button.BACK) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             if (alliance == Alliance.BLUE_ALLIANCE) {
@@ -95,6 +100,7 @@ public class BasicTeleOp extends OpMode {
                 //robot.LED.setPosition(0.611);
             }
         }
+         **/
 
         if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
             //Reset robot red alliance pose

@@ -22,7 +22,7 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 @Autonomous(name = "BlueSideFarAuto", group = "Autonomous")
 public class BlueSideFarAuto extends LinearOpMode {
-    public static Pose2d initialPose = new Pose2d(64, 8, Math.toRadians(0));
+    public static Pose2d initialPose = new Pose2d(64, -8, Math.toRadians(0));
     public RobotHardware robot;
 
 
