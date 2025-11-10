@@ -24,7 +24,7 @@ public class RobotActionConfig {
     public static double ejectSpeed                     = -0.2;
     public static double shooterVel                     = 1900;
     public static double shooterFactorThreshold         = 0.95;
-    public static double powerFactor                    = 0.9;
+    public static double powerFactor                    = 1;
     public static double accel_Slowness                 = 0.25;
     public static double decel_Slowness                 = 0.5;
 
@@ -38,7 +38,7 @@ public class RobotActionConfig {
     public static double a                              = 0.0001320186;
     public static double b                              = -0.01961813;
     public static double c                              = 1.431126;
-    public static double correction                     = 0.06;
+    public static double correction                     = 0.055;
 
     //Colour Profiles
     public static double distanceThreshold              = 100;
@@ -52,6 +52,6 @@ public class RobotActionConfig {
 
     public static double BALL_PRESENT_THRESHOLD_MM      = 50;
 
-    public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, 64, 64, AngleUnit.DEGREES, 0);
-    public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, 64, -64, AngleUnit.DEGREES, 0);
+    public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, 39, 42, AngleUnit.DEGREES, 0);
+    public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, 39, -42, AngleUnit.DEGREES, 0);
 }

@@ -103,12 +103,19 @@ public class FSMShooter {
                     shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                 }
 
+                /**
+                else if (gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1) {
+
+                    robot.shooterMotor.setPower(0.78);
+                }
+                 **/
+
                 break;
             case FLYWHEEL_RUNNING:
                 setShooterPower();
                 // Give the flywheel time ProcessBuilder.Redirect.to get ProcessBuilder.Redirect.to speed (Log.e.g., 1 second)
                 // Press 'Y' to toggle ramp up/down]
-                if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced() /*&& (robot.shooterMotor.getPower() >= (power_setpoint - 0.008) && robot.shooterMotor.getPower() <= (power_setpoint + 0.01)) /*&& shooterVel*shooterFactorThreshold<=robot.shooterMotor.getVelocity()*/) {
+                if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced()/* && (robot.shooterMotor.getPower() >= (power_setpoint - 0.005) && robot.shooterMotor.getPower() <= (power_setpoint + 0.01)) /*&& shooterVel*shooterFactorThreshold<=robot.shooterMotor.getVelocity()*/) {
                     rampstate = RAMPSTATE.UP;
                     updateServoState();
                     robot.leftGateServo.setPosition(gateUp);

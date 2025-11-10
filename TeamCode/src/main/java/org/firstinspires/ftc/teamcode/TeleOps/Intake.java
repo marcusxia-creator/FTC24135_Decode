@@ -85,7 +85,8 @@ public class Intake {
                     robot.leftGateServo.setPosition(RobotActionConfig.gateDown);
                     robot.rightGateServo.setPosition(RobotActionConfig.gateDown);
                     //Run intake backward
-                    robot.intakeMotor.setPower(RobotActionConfig.ejectSpeed);
+                    //robot.intakeMotor.setPower(RobotActionConfig.ejectSpeed);
+                    robot.intakeMotor.setPower(RobotActionConfig.intakeSpeed);
                 }
 
                 if (intakeTimer.seconds() > RobotActionConfig.SpindexerStartTime && !recorded) {
