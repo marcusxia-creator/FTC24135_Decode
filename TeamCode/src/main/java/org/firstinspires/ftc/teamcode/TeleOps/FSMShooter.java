@@ -80,13 +80,6 @@ public class FSMShooter {
         // 'A' button is an emergency stop or reset.
         switch (shooterState) {
             case SHOOTER_IDLE:
-                robot.shooterMotor.setPower(0);
-                /**
-                // Find dI
-                I=robot.shooterMotor.getCurrent(CurrentUnit.AMPS);
-                dt=(I-lastI)/0.00091;
-                lastI=I;
-                 **/
                 //Press B for purple ball
                 if (gamepadManager.Purple.PressState) {
                     targetColour = Spindexer.SLOT.Purple;
@@ -103,13 +96,6 @@ public class FSMShooter {
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                 }
-
-                /**
-                else if (gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1) {
-
-                    robot.shooterMotor.setPower(0.78);
-                }
-                 **/
 
                 break;
             case FLYWHEEL_RUNNING:
