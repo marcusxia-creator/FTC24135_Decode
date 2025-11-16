@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 @Config
 public class RobotActionConfig {
     public static double gateDown                       = 0.12;
-    public static double gateUp                         = 0.30;
+    public static double gateUp                         = 0.35;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
     public static double spindexerSlot0                 = 0.04;
     public static double spindexerSlot1                 = 0.49;

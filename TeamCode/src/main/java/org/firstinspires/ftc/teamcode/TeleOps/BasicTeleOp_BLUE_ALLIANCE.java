@@ -18,7 +18,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     private GamepadEx gamepadCo1, gamepadCo2;
     private RobotDrive robotDrive;
     private FSMShooter shooterManualControl;
-    private Intake intake;
+    private FSMIntake FSMIntake;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private SpindexerManualControl spindexerManualControl;
 
@@ -67,7 +67,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         shooterManualControl = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, gamepadManager, shooterPowerAngleCalculator);
         shooterManualControl.Init();
 
-        intake = new Intake(gamepadCo1, gamepadCo2, robot, spindexer, gamepadManager);
+        FSMIntake = new FSMIntake(gamepadCo1, gamepadCo2, robot, spindexer, gamepadManager);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         ballColor = BallColor.fromHue(colorDetection.getHue());
         gamepadManager.loop();
         shooterManualControl.ShooterLoop();
-        intake.loop();
+        FSMIntake.loop();
         //?? need comments
         spindexer.runToSlot();
         spindexerManualControl.loop();
@@ -126,7 +126,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         else { //Default white
             robot.LED.setPosition(1.0);
         }
-        telemetry.addData("Intake State", intake.intakeStates);
+        telemetry.addData("Intake State", FSMIntake.intakeStates);
         telemetry.addData("Sensor Distance", robot.distanceSensor.getDistance(DistanceUnit.CM));
         telemetry.addData("Slot 0", spindexer.slots[0]);
         telemetry.addData("Slot 1", spindexer.slots[1]);
