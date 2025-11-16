@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -29,7 +28,7 @@ public class FSMShooter {
 
     /**
      * BUTTON FOR SHOOTING
-     * * Button X/Square is local key, --- IDLE STATE---
+     * * Button X/Square is local key, --- SHOOTER_IDLE STATE---
      *   Press 'X/Square' to start spinning the flywheel
      * * Button X/Square is local key, --- FLYWHEEL STATE---
      *   Cancle the FLYWHEEL within 1 second
@@ -39,10 +38,12 @@ public class FSMShooter {
 
 
     public enum SHOOTERSTATE {
-        IDLE,
+        SHOOTER_IDLE,
         FLYWHEEL_RUNNING,
         SHOOTING,
+        DETECTING,
         SPINDEXER_ROTATE,
+        SHOOTER_STOP
     }
     public enum RAMPSTATE{
         UP,
@@ -66,7 +67,7 @@ public class FSMShooter {
         robot.pushRampServo.setPosition(rampDownPos);
         robot.leftGateServo.setPosition(gateDown);
         robot.rightGateServo.setPosition(gateDown);
-        shooterState = SHOOTERSTATE.IDLE;
+        shooterState = SHOOTERSTATE.SHOOTER_IDLE;
         robot.shooterMotor.setPower(0);
         motif = spindexer.GPP;//Temporary
     }
@@ -78,7 +79,7 @@ public class FSMShooter {
         // --- Global Controls (can be triggered from any state) ---
         // 'A' button is an emergency stop or reset.
         switch (shooterState) {
-            case IDLE:
+            case SHOOTER_IDLE:
                 robot.shooterMotor.setPower(0);
                 /**
                 // Find dI
@@ -127,7 +128,7 @@ public class FSMShooter {
                 // Allow driver to turn off flywheel if they change their mind with in 1 second
                 if (gamepadManager.Flywheel.PressState) {
                     robot.shooterMotor.setPower(0);
-                    shooterState = SHOOTERSTATE.IDLE;
+                    shooterState = SHOOTERSTATE.SHOOTER_IDLE;
                 }
                 // Press START an check toggle button true or false to determine slot order for motif
                 if (gamepadManager.autoMotif.ToggleState && spindexer.checkMotif(motif)){
@@ -151,7 +152,7 @@ public class FSMShooter {
                     }
                     else{
                         robot.shooterMotor.setPower(0);
-                        shooterState = SHOOTERSTATE.IDLE;
+                        shooterState = SHOOTERSTATE.SHOOTER_IDLE;
                     }
                 }
                 shootTimer.reset();
@@ -185,7 +186,7 @@ public class FSMShooter {
                 }
                 //Cancel
                 if (gamepadManager.Flywheel.PressState) {
-                    shooterState = SHOOTERSTATE.IDLE;
+                    shooterState = SHOOTERSTATE.SHOOTER_IDLE;
                     robot.shooterMotor.setPower(0);
                     rampstate = RAMPSTATE.DOWN;
                     updateServoState();
@@ -202,7 +203,7 @@ public class FSMShooter {
 
             default:
                 robot.shooterMotor.setPower(0);
-                shooterState = SHOOTERSTATE.IDLE;
+                shooterState = SHOOTERSTATE.SHOOTER_IDLE;
         }
     }
 
