@@ -38,7 +38,7 @@ public class RobotActionConfig {
     public static double a                              = 0.0001320186;
     public static double b                              = -0.01961813;
     public static double c                              = 1.431126;
-    public static double correction                     = 0.055;
+    public static double correction                     = 0.053;
 
     //Colour Profiles
     public static double distanceThreshold              = 100;
