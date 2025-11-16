@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOps;
+package org.firstinspires.ftc.teamcode.TeleOps.Tests;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -10,7 +10,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
+
+import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
+import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
+import org.firstinspires.ftc.teamcode.TeleOps.RobotDrive;
+import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
+import org.firstinspires.ftc.teamcode.TeleOps.ShooterPowerAngleCalculator;
 
 @Config
 @TeleOp (name = "TestTeleOp", group = "org.firstinspires.ftc.teamcode")
