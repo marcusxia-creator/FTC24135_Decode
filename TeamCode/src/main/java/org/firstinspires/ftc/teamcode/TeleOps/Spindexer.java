@@ -12,7 +12,6 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColourCriterion;
 
 public class Spindexer {
     public enum SLOT{
@@ -28,21 +27,39 @@ public class Spindexer {
     public int prevSlot;
 
     //Motif constants
+    /**
+     * Constant green-purple-purple motif
+     */
     public final Motif GPP = new Motif(SLOT.Green,SLOT.Purple,SLOT.Purple);
+    /**
+     * Constant purple-green-purple motif
+     */
     public final Motif PGP = new Motif(SLOT.Purple,SLOT.Green,SLOT.Purple);
+    /**
+     * Constant purple-purple-green motif
+     */
     public final Motif PPG = new Motif(SLOT.Purple,SLOT.Purple,SLOT.Green);
 
     Spindexer(RobotHardware robot, SLOT slot0,SLOT slot1,SLOT slot2, int currentSlot){
+        //Constructor
         this.robot = robot;
         slots = new SLOT[]{slot0, slot1, slot2};
         this.currentSlot = currentSlot;
         runToSlot(currentSlot);
     }
-
+    /**
+     * Saves slot value {@code a} into current slot
+     * @param a The slot value to write into the current slot
+     */
     public void writeToCurrent(SLOT a){
         slots[currentSlot]=a;
     }
 
+    /**
+     * Processes colour sensor data, and saves data to current slot (including an empty value)
+     * @param colorSensor The robot's colour sensor object
+     * @param distanceSensor The robot's distance sensor object
+     */
     public void writeToCurrent(ColorSensor colorSensor, DistanceSensor distanceSensor) {
         float[] hsvValues = new float[3];
         Color.RGBToHSV(colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, hsvValues);
@@ -63,18 +80,25 @@ public class Spindexer {
         }
     }
 
-    public void writeToCurrent(ColourCriterion[] criteria){
-        //not yet implimented
-    }
-
+    /**
+     * Returns the colour of a given slot {@code n}
+     * @return spindexer SLOT object
+     */
     public SLOT slotColour(int n){
         return slots[n];
     }
 
+    /**
+     * Returns the colour of the current slot
+     * @return spindexer SLOT object in current slot
+     */
     public SLOT slotColour(){
         return slotColour(currentSlot);
     }
 
+    /**
+     * Counts the instances of SLOT {@code a} currently recorded in the spindexer
+     */
     public int count(SLOT a){
         int counter = 0;
         for(SLOT slot:slots){
@@ -85,10 +109,17 @@ public class Spindexer {
         return counter;
     }
 
+    /**
+     * @return {@code TRUE} if there is at least one instance of the given SLOT object {@code a} in the indexer, else {@code FALSE}
+     */
     public Boolean checkFor(SLOT a){
+        //checks
         return count(a)>0;
     }
 
+    /**
+     * Updates servo position to current slot, usually unused=
+     */
     public void runToSlot(){
         currentSlot = Math.floorMod(currentSlot,3);
         if(currentSlot==0){
@@ -102,12 +133,19 @@ public class Spindexer {
         }
     }
 
+    /**
+     * Runs to slot number {@code n} (0, 1, or 2)
+     */
     public void runToSlot(int n){
         prevSlot = currentSlot;
         currentSlot = n;
         runToSlot();
     }
 
+    /**
+     * Runs to closest SLOT {@code a}, perfers the one on the right if both slots equal {@code a}
+     * @return (@code FALSE} if no instances of SLOT {@code a} are found in the spindexer
+     */
     public Boolean runToSlot(SLOT a){
         if(checkFor(a)){
             int n=0;
@@ -128,23 +166,38 @@ public class Spindexer {
         }
     }
 
+    /**
+     * Returns {@code TRUE} if the spindexer has the necessary balls to run the given motif
+     */
     public Boolean checkMotif(Motif motif){
         int n = count(SLOT.Empty);
         return motif.countFrom(SLOT.Green,n)==count(SLOT.Green)&&motif.countFrom(SLOT.Purple,n)==count(SLOT.Purple);
     }
 
+    /**
+     * @return the next ball to shoot in the given motif
+     */
     public SLOT motifColour(Motif motif){
         return motif.getColour(count(SLOT.Empty));
     }
 
+    /**
+     * Runs spindexer to the next ball in the motif
+     */
     public void runToMotif(Motif motif){
         runToSlot(motifColour(motif));
     }
 
+    /**
+     * Runs spindexer to position before last movement
+     */
     public void unJam(){
         runToSlot(prevSlot);
     }
 
+    /**
+     * A storage object to record a Motif, with a few methods
+     */
     public class Motif{
         public SLOT[] slots;
 
@@ -152,6 +205,9 @@ public class Spindexer {
             slots = new SLOT[]{slot0, slot1, slot2};
         }
 
+        /**
+         * @return the number of instances of SLOT {@code a} starting from position {@code n}
+         */
         public int countFrom(SLOT a, int n){
             int counter=0;
             for(int i=n; i<=2; i++){
@@ -162,6 +218,9 @@ public class Spindexer {
             return counter;
         }
 
+        /**
+         * @return the colour at position {@code n}
+         */
         public SLOT getColour(int n){
             return slots[n];
         }
