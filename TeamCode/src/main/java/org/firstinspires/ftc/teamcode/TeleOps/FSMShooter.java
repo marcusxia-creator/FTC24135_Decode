@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -18,7 +19,6 @@ public class FSMShooter {
     private ElapsedTime shootTimer = new ElapsedTime();
     private ElapsedTime rampTimer = new ElapsedTime();
     SHOOTERSTATE shooterState;
-    public RAMPSTATE rampstate = RAMPSTATE.DOWN;
     Spindexer spindexer;
     Spindexer.SLOT targetColour = Spindexer.SLOT.Purple;
 
@@ -77,7 +77,6 @@ public class FSMShooter {
         speed = shooterPowerAngleCalculator.getPower();
         power_setpoint = (speed*12.0)/voltage;
         // --- Global Controls (can be triggered from any state) ---
-        // 'A' button is an emergency stop or reset.
         switch (shooterState) {
             case SHOOTER_IDLE:
                 //Press B for purple ball
@@ -92,30 +91,14 @@ public class FSMShooter {
                 // Press 'X' to start spinning the flywheel
                 if (gamepadManager.Flywheel.PressState) {
                     //robot.shooterMotor.setVelocity(shooterVel);
-                    setShooterPower();
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                 }
 
                 break;
             case FLYWHEEL_RUNNING:
+                robot.shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 setShooterPower();
-                // Give the flywheel time ProcessBuilder.Redirect.to get ProcessBuilder.Redirect.to speed (Log.e.g., 1 second)
-                // Press 'Y' to toggle ramp up/down]
-                if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced()/* && (robot.shooterMotor.getPower() >= (power_setpoint - 0.005) && robot.shooterMotor.getPower() <= (power_setpoint + 0.01)) /*&& shooterVel*shooterFactorThreshold<=robot.shooterMotor.getVelocity()*/) {
-                    rampstate = RAMPSTATE.UP;
-                    updateServoState();
-                    robot.leftGateServo.setPosition(gateUp);
-                    robot.rightGateServo.setPosition(gateUp);
-                    shootTimer.reset();
-                    shooterState = SHOOTERSTATE.SHOOTING;
-                }
-                // Press 'X' again to stop spinning the flywheel
-                // Allow driver to turn off flywheel if they change their mind with in 1 second
-                if (gamepadManager.Flywheel.PressState) {
-                    robot.shooterMotor.setPower(0);
-                    shooterState = SHOOTERSTATE.SHOOTER_IDLE;
-                }
                 // Press START an check toggle button true or false to determine slot order for motif
                 if (gamepadManager.autoMotif.ToggleState && spindexer.checkMotif(motif)){
                     targetColour=spindexer.motifColour(motif);
@@ -132,79 +115,78 @@ public class FSMShooter {
 
                 if (spindexer.slotColour()!=targetColour){
                     if(spindexer.checkFor(targetColour)) {
-                        spindexer.runToSlot(targetColour);
                         shooterState = SHOOTERSTATE.SPINDEXER_ROTATE;
                         shootTimer.reset();
                     }
                     else{
-                        robot.shooterMotor.setPower(0);
-                        shooterState = SHOOTERSTATE.SHOOTER_IDLE;
+                        shooterState = SHOOTERSTATE.SHOOTER_STOP;
                     }
+                }
+                // Add shoot condition
+                // Press 'Y' to toggle ramp up/down]
+                if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced()/* && (robot.shooterMotor.getPower() >= (power_setpoint - 0.005) && robot.shooterMotor.getPower() <= (power_setpoint + 0.01)) /*&& shooterVel*shooterFactorThreshold<=robot.shooterMotor.getVelocity()*/) {
+                    shootTimer.reset();
+                    shooterState = SHOOTERSTATE.SHOOTING;
                 }
                 shootTimer.reset();
                 break;
                 
             case SHOOTING:
                 setShooterPower();
-                //Ramp Down
+                robot.pushRampServo.setPosition(rampUpPos);
+                robot.leftGateServo.setPosition(gateUp);
+                robot.rightGateServo.setPosition(gateUp);
                 if (shootTimer.seconds() > 0.75) {
-                    rampstate = RAMPSTATE.DOWN;
-                    updateServoState();
-                    robot.leftGateServo.setPosition(gateDown);
-                    robot.rightGateServo.setPosition(gateDown);
+                    shootTimer.reset();
+                    shooterState = SHOOTERSTATE.DETECTING;
                 }
-                //Check Distance
-                if(shootTimer.seconds() > 1.0){
+                break;
+
+            case DETECTING:
+                robot.pushRampServo.setPosition(rampDownPos);
+                robot.leftGateServo.setPosition(gateDown);
+                robot.rightGateServo.setPosition(gateDown);
+                if(shootTimer.seconds() > 0.25){
                     double distance = robot.distanceSensor.getDistance(DistanceUnit.MM);
-                    if (distance < 100) {
-                        //Ramp Up
-                        rampstate = RAMPSTATE.UP;
-                        updateServoState();
-                        robot.leftGateServo.setPosition(gateUp);
-                        robot.rightGateServo.setPosition(gateUp);
+                    if (distance < distanceThreshold) {
                         shootTimer.reset();
+                        shooterState = SHOOTERSTATE.SHOOTING;
                     } else {
-                        //Countinue
-                        spindexer.writeToCurrent(Spindexer.SLOT.Empty);
-                        shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
+                        spindexer.writeToCurrent(Spindexer.SLOT.Empty);;
                         shootTimer.reset();
+                        if(spindexer.count(Spindexer.SLOT.Empty)==3){
+                            shooterState = SHOOTERSTATE.SHOOTER_STOP;
+                        }
+                        else{
+                            shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
+                        }
                     }
-                }
-                //Cancel
-                if (gamepadManager.Flywheel.PressState) {
-                    shooterState = SHOOTERSTATE.SHOOTER_IDLE;
-                    robot.shooterMotor.setPower(0);
-                    rampstate = RAMPSTATE.DOWN;
-                    updateServoState();
-                    robot.leftGateServo.setPosition(gateDown);
-                    robot.rightGateServo.setPosition(gateDown);
                 }
                 break;
 
             case SPINDEXER_ROTATE:
+                spindexer.runToSlot(targetColour);
                 if (shootTimer.seconds() > 0.45) {
                     shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                 }
                 break;
 
+            case SHOOTER_STOP:
+                robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                robot.shooterMotor.setPower(0);
+                robot.leftGateServo.setPosition(gateDown);
+                robot.rightGateServo.setPosition(gateDown);
+                shooterState=SHOOTERSTATE.SHOOTER_IDLE;
+
             default:
                 robot.shooterMotor.setPower(0);
-                shooterState = SHOOTERSTATE.SHOOTER_IDLE;
+                shooterState = SHOOTERSTATE.SHOOTER_STOP;
+                break;
         }
-    }
-
-    private void toggleRamp(){
-        if (rampstate == RAMPSTATE.UP){
-            rampstate = RAMPSTATE.DOWN;
-        }else{
-            rampstate = RAMPSTATE.UP;
-        }
-    }
-    private void updateServoState (){
-        if (rampstate != RAMPSTATE.UP){
-            robot.pushRampServo.setPosition(RobotActionConfig.rampDownPos);
-        } else{
-            robot.pushRampServo.setPosition(RobotActionConfig.rampUpPos);
+        // Press 'X' again to stop spinning the flywheel
+        if (gamepadManager.Flywheel.PressState && shooterState!=SHOOTERSTATE.SHOOTER_IDLE) {
+            robot.shooterMotor.setPower(0);
+            shooterState = SHOOTERSTATE.SHOOTER_STOP;
         }
     }
 
