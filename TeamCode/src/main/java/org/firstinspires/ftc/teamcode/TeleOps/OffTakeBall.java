@@ -43,7 +43,7 @@ public class OffTakeBall {
     private int cycle_no = 0;      // counter for non color based sequence times
     
     // --- Pre-computed firing order (slot indices based on color sequence) ---
-    private int[] firingOrder;  // stores slot indices in shooting order
+    private int[] firingColorOrder;  // stores slot indices in shooting order
 
     /// --- Shooter power table ---
     ShooterPowerTable shooterPowerTable;
@@ -118,7 +118,7 @@ public class OffTakeBall {
             
             // Pre-compute firing order based on target sequence
             if (useColorSequence) {
-                firingOrder = computeFiringOrder();
+                firingColorOrder = computeColorFiringOrder();
             }
             
             state = OFFTAKEBALLSTATE.OFFTAKE_AIMING;
@@ -191,7 +191,7 @@ public class OffTakeBall {
      * Pre-compute which slot index to fire for each position in sequence
      * Returns array of slot indices matching the target color sequence
      */
-    private int[] computeFiringOrder() {
+    private int[] computeColorFiringOrder() {
         int[] order = new int[targetSequence.length];
 
         // 1. Declare and initialize the boolean array here.
@@ -241,8 +241,8 @@ public class OffTakeBall {
     private BallSlot getNextTargetBall() {
         if (useColorSequence) {
             // Tag-guided mode - use pre-computed firing order
-            if (currentColorTargetIndex < firingOrder.length) {
-                int slotIndex = firingOrder[currentColorTargetIndex];
+            if (currentColorTargetIndex < firingColorOrder.length) {
+                int slotIndex = firingColorOrder[currentColorTargetIndex];
                 if (slotIndex >= 0) {
                     return ballSlots.get(slotIndex);
                 }
