@@ -193,10 +193,21 @@ public class OffTakeBall {
      */
     private int[] computeFiringOrder() {
         int[] order = new int[targetSequence.length];
+
+        // 1. Declare and initialize the boolean array here.
+        // It will have the same size as your number of slots (e.g., 3) and be initialized to {false, false, false}.
+        boolean[] slotHasBeenClaimed = new boolean[ballSlots.size()];
         
         for (int i = 0; i < targetSequence.length; i++) {
             BallColor targetColor = targetSequence[i];
-            order[i] = findSlotIndexByColor(targetColor);  // -1 if not found
+            // 2. Declare a variable to hold the result of the search.
+            int foundSlotIndex = findAvailableSlotByColor(targetColor, slotHasBeenClaimed);
+
+            order[i] = foundSlotIndex;  // -1 if not found
+
+            if (foundSlotIndex != -1){
+                slotHasBeenClaimed[foundSlotIndex] = true;
+            }
         }
         return order;
     }
@@ -205,12 +216,22 @@ public class OffTakeBall {
      * Find the index of a slot containing the specified color ball
      * Returns -1 if not found
      */
-    private int findSlotIndexByColor(BallColor targetColor) {
+    private int findAvailableSlotByColor(BallColor targetColor,boolean [] claimedSlots) {
+
         for (int i = 0; i < ballSlots.size(); i++) {
-            BallSlot slot = ballSlots.get(i);
-            if (slot.hasBall() && slot.getColor() == targetColor) {
-                return i;
+            // Check three conditions:
+            // 1. Has this slot already been claimed? (if !false, then proceed)
+            if (!claimedSlots[i]) {
+                // This slot has not been claimed yet, so we can check it.
+                BallSlot slot = ballSlots.get(i);
+                // 2. Does this slot physically contain a ball?
+                // 3. Does the ball in this slot match our target color?
+                if (slot.hasBall() && slot.getColor() == targetColor) {
+                    // It has a ball and it's the right color. This is our match.
+                    return i;
+                }
             }
+            // If claimedSlots[i] is true, the outer 'if' fails and this slot is correctly skipped.
         }
         return -1;  // not found
     }
