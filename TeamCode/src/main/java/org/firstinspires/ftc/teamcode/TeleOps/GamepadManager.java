@@ -30,6 +30,7 @@ public class GamepadManager {
     public Control spinNext;
     public Control reDetc;
     public Control autoMotif;
+    public Control ToggleShooterPower;
 
     public GamepadManager(Gamepad gamepad1, Gamepad gamepad2){
         gamepad_1 = new GamepadEx(gamepad1);
@@ -46,6 +47,7 @@ public class GamepadManager {
         spinNext = new Control(GamepadKeys.Button.RIGHT_BUMPER, false);
         reDetc = new Control(GamepadKeys.Button.DPAD_UP, false);
         autoMotif = new Control(GamepadKeys.Button.START, false);
+        //ToggleShooterPower = new Control(GamepadKeys.Button.LEFT_BUMPER && GamepadKeys.Button.BACK, false);
     }
 
     public void loop(){

@@ -21,12 +21,15 @@ public class FSMIntake {
         INTAKE_START,
         INTAKE_CAPTURE,
 
-        INTAKE_STOP
+        INTAKE_STOP,
+        INTAKE_UNJAM
     }
 
     public IntakeStates intakeStates = IntakeStates.INTAKE_IDLE;
 
     private ElapsedTime debounceTimer = new ElapsedTime();
+    private ElapsedTime unjamTimer = new ElapsedTime();
+    private ElapsedTime jammedTimer = new ElapsedTime();
     private double DEBOUNCE_THRESHOLD = 0.25;
 
     private ElapsedTime intakeTimer = new ElapsedTime();
@@ -34,6 +37,9 @@ public class FSMIntake {
     private final RobotHardware robot;
     private final GamepadEx gamepad_1;
     private final GamepadEx gamepad_2;
+    private double intakeRPM;
+    private boolean reversing = false;
+
 
     Spindexer spindexer;
     GamepadManager gamepadManager;
@@ -53,20 +59,22 @@ public class FSMIntake {
         switch (intakeStates) {
             //start of intake FSM
             case INTAKE_IDLE:
-                if (gamepadManager.IntakeRun.PressState && spindexer.checkFor(Spindexer.SLOT.Empty) && isButtonDebounced()) {
+                if (gamepadManager.IntakeRun.PressState && spindexer.checkFor(Spindexer.SLOT.Empty)) {
                     intakeStates = IntakeStates.INTAKE_START;
                 }
                 break;
             //start intake motor
             case INTAKE_START:
+                boolean jammed = isIntakeJammmed();
                 robot.leftGateServo.setPosition(gateUp);
                 robot.rightGateServo.setPosition(gateUp);
-                robot.intakeMotor.setPower(intakeSpeed);
+                HandleIntaking(jammed);
                 if (robot.distanceSensor.getDistance(DistanceUnit.CM) < 10) {
                     recorded = false;
                     intakeTimer.reset();
                     intakeStates = IntakeStates.INTAKE_CAPTURE;
                 }
+
                 break;
             //ball goes into spindxer
             case INTAKE_CAPTURE:
@@ -99,13 +107,40 @@ public class FSMIntake {
                 robot.pushRampServo.setPosition(rampDownPos);
                 intakeStates = IntakeStates.INTAKE_IDLE;
                 break;
+            /*case INTAKE_UNJAM:
+                if (unjamTimer.seconds() > 0.1) {
+                    robot.intakeMotor.setPower(-0.5);
+                } else if (unjamTimer.seconds() > 0.5) {
+                    robot.intakeMotor.setPower(0);
+                }
+                if (unjamTimer.seconds() >= 0.5 && unjamTimer.seconds() < 0.75){
+                    spindexer.runToSlot(spindexer.prevSlot);
+                }
+                if (unjamTimer.seconds() > 0.75){
+                    robot.intakeMotor.setPower(intakeSpeed);
+                    unjamTimer.reset();
+                    intakeStates = IntakeStates.INTAKE_START;
+                }
+                break;
+
+             */
         }
 
-        if (gamepadManager.IntakeReverse.PressState && isButtonDebounced()){
+        if (gamepadManager.IntakeRun.PressState && isButtonDebounced()) {
+            if (intakeStates == IntakeStates.INTAKE_START || intakeStates == IntakeStates.INTAKE_CAPTURE) {
+                intakeStates = IntakeStates.INTAKE_STOP;
+            }
+        }
+        if (intakeStates == IntakeStates.INTAKE_START && !spindexer.checkFor(Spindexer.SLOT.Empty)){
+            intakeStates = IntakeStates.INTAKE_STOP;
+        }
+
+        if (gamepadManager.IntakeReverse.PressState) {
+            reversing = false;
             robot.intakeMotor.setPower(ejectSpeed);
 
-            if (gamepadManager.IntakeReverse.PressState) {
-                intakeStates=IntakeStates.INTAKE_STOP;
+            if (gamepadManager.IntakeReverse.PressState && isButtonDebounced()) {
+                intakeStates = IntakeStates.INTAKE_STOP;
             }
         }
     }
@@ -116,5 +151,34 @@ public class FSMIntake {
             return true;
         }
         return false;
+    }
+
+    private boolean isIntakeJammmed() {
+        double intakeTicksPerSecond = robot.intakeMotor.getVelocity();
+        intakeRPM = intakeTicksPerSecond * INTAKE_RPM_CONVERSION;
+        if (robot.intakeMotor.getPower() > 0.2 && intakeRPM < 100) {
+            if (jammedTimer.seconds() > 0.2) {
+                return true;
+            }
+        }
+        return false;
+    }
+    private void HandleIntaking (boolean jammed) {
+        if (jammed && !reversing){
+            reversing = true;
+            unjamTimer.reset();
+        }
+        if (reversing){
+            if (unjamTimer.seconds() > 0.25) {
+                robot.intakeMotor.setPower(-0.5);
+            }
+            if (unjamTimer.seconds() > 0.5){
+                robot.intakeMotor.setPower(0.0);
+                reversing = false;
+            }
+        }
+        if (!jammed && !reversing) {
+            robot.intakeMotor.setPower(intakeSpeed);
+        }
     }
 }

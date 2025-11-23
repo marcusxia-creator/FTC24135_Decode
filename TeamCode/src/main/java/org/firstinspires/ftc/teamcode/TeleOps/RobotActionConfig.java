@@ -52,6 +52,8 @@ public class RobotActionConfig {
     public static int[] purpleRangeHigh                 = {180, 230};
 
     public static double BALL_PRESENT_THRESHOLD_MM      = 50;
+    public static final double INTAKE_TICKS_PER_REV = 145.1;
+    public static final double INTAKE_RPM_CONVERSION = 60.0 / INTAKE_TICKS_PER_REV;
 
     //Motif IDs
     public static int GPPid                             = 21;
