@@ -30,7 +30,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private GamepadManager gamepadManager;
     private Spindexer spindexer;
 
-    private ShooterPowerAngleCalculator shooterPowerAngleCalculator;
+    private LUTPowerCalculator shooterPowerAngleCalculator;
 
     private static double voltage;
     private BallColor ballColor;
@@ -63,7 +63,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
-        shooterPowerAngleCalculator = new ShooterPowerAngleCalculator(robot);
+        shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
         colorDetection = new ColorDetection(robot);
 
         alliance = Alliance.RED_ALLIANCE;
