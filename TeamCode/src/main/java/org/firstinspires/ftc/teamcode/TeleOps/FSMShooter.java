@@ -126,7 +126,7 @@ public class FSMShooter {
                 }
                 shootTimer.reset();
                 break;
-                
+
             case SHOOTING:
                 ShooterPowerSwitch();
                 robot.pushRampServo.setPosition(rampUpPos);
@@ -212,8 +212,8 @@ public class FSMShooter {
 
     public void ShooterPowerControl () {
         if (gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER) &&
-            gamepad_2.getButton(GamepadKeys.Button.BACK) &&
-            isButtonDebounced()) {
+                gamepad_2.getButton(GamepadKeys.Button.BACK) &&
+                isButtonDebounced()) {
             ToggleShooterPower();
         }
     }
@@ -243,4 +243,4 @@ public class FSMShooter {
     }
 
 
-    }
+}
