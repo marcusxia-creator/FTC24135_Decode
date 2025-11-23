@@ -53,6 +53,11 @@ public class RobotActionConfig {
 
     public static double BALL_PRESENT_THRESHOLD_MM      = 50;
 
+    //Motif IDs
+    public static int GPPid                             = 21;
+    public static int PGPid                             = 22;
+    public static int PPGid                             = 23;
+
     public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, 39, 42, AngleUnit.DEGREES, 0);
     public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, 39, -42, AngleUnit.DEGREES, 0);
 }

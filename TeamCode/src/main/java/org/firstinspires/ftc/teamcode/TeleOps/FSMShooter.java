@@ -7,6 +7,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.MotifDetector;
+
+import static org.firstinspires.ftc.teamcode.MotifMemorization.motif;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 public class FSMShooter {
@@ -46,8 +49,6 @@ public class FSMShooter {
         SHOOTER_STOP
     }
 
-    public Spindexer.Motif motif;
-
     GamepadManager gamepadManager;
 
     public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, Spindexer spindexer, GamepadManager gamepadManager, ShooterPowerAngleCalculator shooterPowerAngleCalculator) {
@@ -66,7 +67,6 @@ public class FSMShooter {
         robot.rightGateServo.setPosition(gateDown);
         shooterState = SHOOTERSTATE.SHOOTER_IDLE;
         robot.shooterMotor.setPower(0);
-        motif = spindexer.GPP;//Temporary
     }
 
     public void ShooterLoop() {

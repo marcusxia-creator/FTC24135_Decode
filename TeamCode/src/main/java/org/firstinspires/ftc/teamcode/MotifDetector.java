@@ -5,9 +5,6 @@ import org.firstinspires.ftc.teamcode.TeleOps.Spindexer.Motif;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.opencv.core.Mat;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -36,9 +33,5 @@ public class MotifDetector {
                 MotifMemorization.motif=motifMap.get(id);
             }
         }
-    }
-
-    public static class MotifMemorization {
-        public static Motif motif;
     }
 }
