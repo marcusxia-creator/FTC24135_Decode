@@ -52,7 +52,7 @@ public class FSMIntake {
     public void loop() {
         switch (intakeStates) {
             case INTAKE_IDLE:
-                if (gamepadManager.IntakeRun.PressState && spindexer.checkFor(Spindexer.SLOT.Empty)) {
+                if (gamepadManager.IntakeRun.PressState && spindexer.checkFor(Spindexer.SLOT.Empty) && isButtonDebounced()) {
                     intakeStates = IntakeStates.INTAKE_START;
                 }
                 break;
@@ -101,14 +101,10 @@ public class FSMIntake {
                 break;
         }
 
-        if (gamepadManager.IntakeRun.PressState||!spindexer.checkFor(Spindexer.SLOT.Empty)){
-            intakeStates=IntakeStates.INTAKE_STOP;
-        }
-
-        if (gamepadManager.IntakeReverse.PressState){
+        if (gamepadManager.IntakeReverse.PressState && isButtonDebounced()){
             robot.intakeMotor.setPower(ejectSpeed);
 
-            if (gamepadManager.IntakeReverse.PressState && isButtonDebounced()) {
+            if (gamepadManager.IntakeReverse.PressState) {
                 intakeStates=IntakeStates.INTAKE_STOP;
             }
         }
