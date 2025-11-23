@@ -8,12 +8,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 @Config
 public class RobotActionConfig {
-    public static double gateDown                       = 0.12;
-    public static double gateUp                         = 0.35;
+    public static double gateDown                       = 0.15;
+    public static double gateUp                         = 0.32;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
-    public static double spindexerSlot0                 = 0.04;
-    public static double spindexerSlot1                 = 0.49;
-    public static double spindexerSlot2                 = 0.97;
+    public static double spindexerSlot0                 = 0.0;
+    public static double spindexerSlot1                 = 0.52;
+    public static double spindexerSlot2                 = 0.96;
     public static double spindexerReset                 = 0.0;
     public static double rampDownPos                    = 0.58; //0.40 12Kg servo, 0.385 for axon micro
     public static double rampUpPos                      = 0.34; //0.18 12Kg servo, 0.215 for axon micro
@@ -23,6 +23,7 @@ public class RobotActionConfig {
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.2;
     public static double shooterVel                     = 1900;
+    public static double shooterPower                   = 0.78;
     public static double shooterFactorThreshold         = 0.95;
     public static double powerFactor                    = 1;
     public static double accel_Slowness                 = 0.25;
@@ -51,6 +52,11 @@ public class RobotActionConfig {
     public static int[] purpleRangeHigh                 = {180, 230};
 
     public static double BALL_PRESENT_THRESHOLD_MM      = 50;
+
+    //Motif IDs
+    public static int GPPid                             = 21;
+    public static int PGPid                             = 22;
+    public static int PPGid                             = 23;
 
     public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, 39, 42, AngleUnit.DEGREES, 0);
     public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, 39, -42, AngleUnit.DEGREES, 0);

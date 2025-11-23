@@ -26,20 +26,6 @@ public class Spindexer {
     //For jams
     public int prevSlot;
 
-    //Motif constants
-    /**
-     * Constant green-purple-purple motif
-     */
-    public final Motif GPP = new Motif(SLOT.Green,SLOT.Purple,SLOT.Purple);
-    /**
-     * Constant purple-green-purple motif
-     */
-    public final Motif PGP = new Motif(SLOT.Purple,SLOT.Green,SLOT.Purple);
-    /**
-     * Constant purple-purple-green motif
-     */
-    public final Motif PPG = new Motif(SLOT.Purple,SLOT.Purple,SLOT.Green);
-
     Spindexer(RobotHardware robot, SLOT slot0,SLOT slot1,SLOT slot2, int currentSlot){
         //Constructor
         this.robot = robot;
@@ -198,11 +184,57 @@ public class Spindexer {
     /**
      * A storage object to record a Motif, with a few methods
      */
-    public class Motif{
+    public static class Motif{
+        //Motif constants
+        /**
+         * Constant green-purple-purple motif
+         */
+        public static Motif GPP = new Motif("GPP");
+        /**
+         * Constant purple-green-purple motif
+         */
+        public static Motif PGP = new Motif("PGP");
+        /**
+         * Constant purple-purple-green motif
+         */
+        public static Motif PPG = new Motif("PPG");
+
         public SLOT[] slots;
+        public String name;
 
         public Motif(SLOT slot0,SLOT slot1,SLOT slot2){
             slots = new SLOT[]{slot0, slot1, slot2};
+            name="";
+            for(SLOT slot:slots){
+                if(slot==SLOT.Green){
+                    name+="G";
+                }
+                else{
+                    name+="P";
+                }
+            }
+        }
+
+        public Motif(String name){
+            this.name=name;
+            slots = new SLOT[3];
+            for(int i=0; i<3; i++){
+                if(this.name.charAt(i)=='G'){
+                    slots[i]=SLOT.Green;
+                }
+                else{
+                    slots[i]=SLOT.Purple;
+                }
+            }
+            name="";
+            for(SLOT slot:slots){
+                if(slot==SLOT.Green){
+                    name+="G";
+                }
+                else{
+                    name+="P";
+                }
+            }
         }
 
         /**
