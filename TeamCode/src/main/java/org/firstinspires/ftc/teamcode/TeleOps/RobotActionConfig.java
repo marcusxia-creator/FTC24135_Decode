@@ -23,6 +23,7 @@ public class RobotActionConfig {
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.2;
     public static double shooterVel                     = 1900;
+    public static double shooterPower                   = 0.78;
     public static double shooterFactorThreshold         = 0.95;
     public static double powerFactor                    = 1;
     public static double accel_Slowness                 = 0.25;

@@ -51,12 +51,13 @@ public class FSMIntake {
 
     public void loop() {
         switch (intakeStates) {
+            //start of intake FSM
             case INTAKE_IDLE:
                 if (gamepadManager.IntakeRun.PressState && spindexer.checkFor(Spindexer.SLOT.Empty)) {
                     intakeStates = IntakeStates.INTAKE_START;
                 }
                 break;
-
+            //start intake motor
             case INTAKE_START:
                 robot.leftGateServo.setPosition(gateUp);
                 robot.rightGateServo.setPosition(gateUp);
@@ -67,9 +68,8 @@ public class FSMIntake {
                     intakeStates = IntakeStates.INTAKE_CAPTURE;
                 }
                 break;
-
+            //ball goes into spindxer
             case INTAKE_CAPTURE:
-
                 robot.intakeMotor.setPower(intakeSpeed);
                 //Put gates down
                 robot.leftGateServo.setPosition(gateDown);

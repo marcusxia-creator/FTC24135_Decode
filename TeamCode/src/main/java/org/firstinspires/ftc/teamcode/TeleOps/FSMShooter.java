@@ -9,15 +9,15 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
-
-
 public class FSMShooter {
     private ShooterPowerAngleCalculator shooterPowerAngleCalculator;
     private final GamepadEx gamepad_1;
+    private final GamepadEx gamepad_2;
     private final RobotHardware robot;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private ElapsedTime shootTimer = new ElapsedTime();
     private ElapsedTime rampTimer = new ElapsedTime();
+    SHOOTERPOWERSTATE shooterpowerstate = SHOOTERPOWERSTATE.AUTO_POWER;
     SHOOTERSTATE shooterState;
     Spindexer spindexer;
     Spindexer.SLOT targetColour = Spindexer.SLOT.Purple;
@@ -45,10 +45,6 @@ public class FSMShooter {
         SPINDEXER_ROTATE,
         SHOOTER_STOP
     }
-    public enum RAMPSTATE{
-        UP,
-        DOWN
-    }
 
     public Spindexer.Motif motif;
 
@@ -56,6 +52,7 @@ public class FSMShooter {
 
     public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, Spindexer spindexer, GamepadManager gamepadManager, ShooterPowerAngleCalculator shooterPowerAngleCalculator) {
         this.gamepad_1 = gamepad_1;
+        this.gamepad_2 = gamepad_2;
         this.robot = robot;
         this.spindexer = spindexer;
         this.gamepadManager = gamepadManager;
@@ -97,8 +94,7 @@ public class FSMShooter {
 
                 break;
             case FLYWHEEL_RUNNING:
-                robot.shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                setShooterPower();
+                ShooterPowerSwitch();
                 // Press START an check toggle button true or false to determine slot order for motif
                 if (gamepadManager.autoMotif.ToggleState && spindexer.checkMotif(motif)){
                     targetColour=spindexer.motifColour(motif);
@@ -132,7 +128,7 @@ public class FSMShooter {
                 break;
                 
             case SHOOTING:
-                setShooterPower();
+                ShooterPowerSwitch();
                 robot.pushRampServo.setPosition(rampUpPos);
                 robot.leftGateServo.setPosition(gateUp);
                 robot.rightGateServo.setPosition(gateUp);
@@ -188,6 +184,42 @@ public class FSMShooter {
             robot.shooterMotor.setPower(0);
             shooterState = SHOOTERSTATE.SHOOTER_STOP;
         }
+
+        ShooterPowerControl();
+        ShooterPowerSwitch();
+    }
+
+    public enum SHOOTERPOWERSTATE {
+        AUTO_POWER,
+        MANUAL_POWER
+    }
+
+    public void ToggleShooterPower (){
+        if (shooterpowerstate == SHOOTERPOWERSTATE.AUTO_POWER){
+            shooterpowerstate = SHOOTERPOWERSTATE.MANUAL_POWER;
+        } else {
+            shooterpowerstate = SHOOTERPOWERSTATE.AUTO_POWER;
+        }
+    }
+
+    public void ShooterPowerSwitch () {
+        if (shooterpowerstate != SHOOTERPOWERSTATE.AUTO_POWER) {
+            robot.shooterMotor.setPower(shooterPower);
+        } else {
+            robot.shooterMotor.setPower(Range.clip(power_setpoint,0.3,1.0));
+        }
+    }
+
+    public void ShooterPowerControl () {
+        if (gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER) &&
+            gamepad_2.getButton(GamepadKeys.Button.BACK) &&
+            isButtonDebounced()) {
+            ToggleShooterPower();
+        }
+    }
+
+    public void SetShooterPowerState (SHOOTERPOWERSTATE state) {
+        this.shooterpowerstate = state;
     }
 
     private boolean isButtonDebounced() {
@@ -198,20 +230,17 @@ public class FSMShooter {
         return false;
     }
 
-    private void setShooterPower() {
-        robot.shooterMotor.setPower(Range.clip(power_setpoint,0.3,1.0));
-    }
-
-    public double getPower_setpoint() {
+    public double getPower_setpoint () {
         return power_setpoint;
     }
 
-    public double getVoltage() {
+    public double getVoltage () {
         return voltage;
     }
 
-    public double getSpeed() {
+    public double getSpeed () {
         return speed;
     }
 
-}
+
+    }
