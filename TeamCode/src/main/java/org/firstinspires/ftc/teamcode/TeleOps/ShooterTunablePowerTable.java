@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 
 import java.util.TreeMap;
 @Config
-public class ShooterPowerTable {
+public class ShooterTunablePowerTable {
     // These static variables are tunable via FTC Dashboard
     public static double DIST1 = 60.0;
     public static double POWER1 = 0.70;
@@ -19,7 +19,7 @@ public class ShooterPowerTable {
      * Constructor for the power table.
      * The table will be dynamically updated from the Dashboard values.
      */
-    public ShooterPowerTable() {
+    public ShooterTunablePowerTable() {
         // The constructor can be empty, as the update() method will handle populating the table.
     }
 

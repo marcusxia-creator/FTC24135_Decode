@@ -45,7 +45,7 @@ public class MainTeleOps extends OpMode {
     private ColorDetection colorDetection;
     private SlotList slotList;
     private AprilTagUpdate aprilTagUpdate;
-    private ShooterPowerTable powerTable;
+    private ShooterDiscreteZonePowerTable powerTable;
 
     //======================= Controllers & State =============================
     private GamepadEx gamepadCo1, gamepadCo2;
@@ -81,8 +81,7 @@ public class MainTeleOps extends OpMode {
         // Drivetrain
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
-        powerTable = new ShooterPowerTable();
-        powerTable.update();
+        powerTable = new ShooterDiscreteZonePowerTable();
 
         // Ball Handling Subsystems
         slotList = new SlotList(spindexerSlotAngles);

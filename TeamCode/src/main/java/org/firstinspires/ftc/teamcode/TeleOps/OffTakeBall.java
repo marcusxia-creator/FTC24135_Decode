@@ -19,8 +19,14 @@ public class OffTakeBall {
         OFFTAKE_EJECTING,
         OFFTAKE_DONE
     }
+    public enum SHOOTERSTATE{
+        ON,
+        OFF
+    }
 
     private OFFTAKEBALLSTATE state = OFFTAKEBALLSTATE.OFFTAKE_IDLE;
+    private SHOOTERSTATE shooterState = SHOOTERSTATE.OFF;
+
     private final ElapsedTime timer = new ElapsedTime();
 
     private final RobotHardware robot;
@@ -46,20 +52,23 @@ public class OffTakeBall {
     private int[] firingColorOrder;  // stores slot indices in shooting order
 
     /// --- Shooter power table ---
-    ShooterPowerTable shooterPowerTable;
+    ShooterDiscreteZonePowerTable shooterDiscreteZonePowerTable;
     private double calculatedShootPower = 0;
     private double currentDistanceToGoal;
 
     // --- Constructor ---
-    public OffTakeBall(RobotHardware robot, GamepadEx gamepad2, List<BallSlot> ballSlots, ShooterPowerTable shooterPowerTable) {
+    public OffTakeBall(RobotHardware robot, GamepadEx gamepad2, List<BallSlot> ballSlots, ShooterDiscreteZonePowerTable shooterTunablePowerTable) {
         this.robot = robot;
         this.gamepad2 = gamepad2;
         this.ballSlots = ballSlots;
-        this.shooterPowerTable = shooterPowerTable;
+        this.shooterDiscreteZonePowerTable = shooterTunablePowerTable;
     }
 
     // --- Main update loop ---
     public void update() {
+        /// Method 1 get calculated shoot power from look up table.
+        calculatedShootPower = shooterDiscreteZonePowerTable.getPower(currentDistanceToGoal);
+        setShooterPower(calculatedShootPower);
 
         switch (state) {
 
@@ -74,7 +83,8 @@ public class OffTakeBall {
                     robot.spindexerServo.setPosition(targetBallSlot.getSlotAngle());
                     state = OFFTAKEBALLSTATE.OFFTAKE_SHOOTING;
                     timer.reset();
-                } else {
+                }
+                else {
                     state = OFFTAKEBALLSTATE.OFFTAKE_DONE;
                 }
                 break;
@@ -120,7 +130,6 @@ public class OffTakeBall {
             if (useColorSequence) {
                 firingColorOrder = computeColorFiringOrder();
             }
-            
             state = OFFTAKEBALLSTATE.OFFTAKE_AIMING;
         }
     }
@@ -132,11 +141,6 @@ public class OffTakeBall {
     }
     private void handleShootingState() {
         double startTime;
-        /// Method 1 get calculated shoot power from look up table.
-        calculatedShootPower = shooterPowerTable.getPower(currentDistanceToGoal);
-
-        /// Method 2 get calculated shoot power based on power curve fitting formula.
-        //calculatedShootPower = -14.88+0.7736667*distance-0.01416667*Math.pow(distance,2)+0.000113333*Math.pow(distance,3)-3.33333e-7*Math.pow(distance,4);
 
         if (currentCounterIndex == 0){
             startTime = RAMP_UP_TIME_1st;
@@ -145,7 +149,7 @@ public class OffTakeBall {
         else{
             startTime = RAMP_UP_TIME;
         }
-        robot.shooterMotor.setPower(calculatedShootPower);
+
         if (timer.seconds() > startTime-0.2) {
             robot.leftGateServo.setPosition(GATEUP);
             robot.rightGateServo.setPosition(GATEUP);
@@ -193,12 +197,19 @@ public class OffTakeBall {
      */
     private int[] computeColorFiringOrder() {
         int[] order = new int[targetSequence.length];
+        //int[] order = new int[cycle_no];
 
         // 1. Declare and initialize the boolean array here.
         // It will have the same size as your number of slots (e.g., 3) and be initialized to {false, false, false}.
         boolean[] slotHasBeenClaimed = new boolean[ballSlots.size()];
+        //boolean [] = new boolean[cycle_no];
         
         for (int i = 0; i < targetSequence.length; i++) {
+            /** Alternative way to get targetsequence in a %3 remaining loop for the
+             * n ++
+             * sequence_index = n%%3
+             * BallColor targetColor = targetSequence[sequence_index];
+            */
             BallColor targetColor = targetSequence[i];
             // 2. Declare a variable to hold the result of the search.
             int foundSlotIndex = findAvailableSlotByColor(targetColor, slotHasBeenClaimed);
@@ -276,7 +287,14 @@ public class OffTakeBall {
         state = OFFTAKEBALLSTATE.OFFTAKE_IDLE;
         robot.shooterMotor.setPower(0.0);
     }
-
+    // --- Set Shooter Power ---
+    public void setShooterPower(double power) {
+        if (shooterState == SHOOTERSTATE.ON) {
+            robot.shooterMotor.setPower(power);
+        } else {
+            robot.shooterMotor.setPower(0.0);
+        }
+    }
     // --- Public API ---
     public boolean isSortingComplete() {
         return state == OFFTAKEBALLSTATE.OFFTAKE_DONE;
