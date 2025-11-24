@@ -12,6 +12,8 @@ import org.firstinspires.ftc.teamcode.MotifDetector;
 import static org.firstinspires.ftc.teamcode.MotifMemorization.motif;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
+import java.util.Map;
+
 public class FSMShooter {
     private LUTPowerCalculator shooterPowerAngleCalculator;
     private final GamepadEx gamepad_1;
@@ -28,6 +30,8 @@ public class FSMShooter {
     private double voltage;
     private double speed;
     private double power_setpoint;
+
+    public MotifDetector motifDetector;
 
     /**
      * BUTTON FOR SHOOTING
@@ -67,6 +71,8 @@ public class FSMShooter {
         robot.rightGateServo.setPosition(gateDown);
         shooterState = SHOOTERSTATE.SHOOTER_IDLE;
         robot.shooterMotor.setPower(0);
+        motifDetector = new MotifDetector(Map.of(GPPid, Spindexer.Motif.GPP, PGPid, Spindexer.Motif.PGP, PPGid, Spindexer.Motif.PPG), robot.camera);
+
     }
 
     public void ShooterLoop() {
@@ -187,6 +193,11 @@ public class FSMShooter {
 
         ShooterPowerControl();
         ShooterPowerSwitch();
+
+        //Constantly look for motif if motif is null
+        if(motif==null){
+            motifDetector.detectMotif();
+        }
     }
 
     public enum SHOOTERPOWERSTATE {

@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.MotifMemorization;
 import org.firstinspires.ftc.teamcode.TeleOps.Tests.BallColor;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 
+import static org.firstinspires.ftc.teamcode.MotifMemorization.motif;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 @TeleOp (name = "BLUE_TELEOP", group = "org.firstinspires.ftc.teamcode")
@@ -138,8 +139,10 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         telemetry.addData("Current Slot", spindexer.currentSlot);
         telemetry.addData("Spindexer Servo Pos", robot.spindexerServo.getPosition());
         telemetry.addData("Shooter Target Colour", shooterManualControl.targetColour.name());
-        telemetry.addData("Motif Green Count", MotifMemorization.motif.countFrom(Spindexer.SLOT.Green, spindexer.count(Spindexer.SLOT.Empty)));
-        telemetry.addData("Motif Purple Count", MotifMemorization.motif.countFrom(Spindexer.SLOT.Purple, spindexer.count(Spindexer.SLOT.Empty)));
+        if(motif!=null) {
+            telemetry.addData("Motif Green Count", motif.countFrom(Spindexer.SLOT.Green, spindexer.count(Spindexer.SLOT.Empty)));
+            telemetry.addData("Motif Purple Count", motif.countFrom(Spindexer.SLOT.Purple, spindexer.count(Spindexer.SLOT.Empty)));
+        }
         telemetry.addLine("-----");
         telemetry.addData("Shooter State", shooterManualControl.shooterState);
         telemetry.addData("shooter power calculator", shooterPowerAngleCalculator.getPower());
@@ -154,8 +157,14 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         String MotifEnabled;
         if (gamepadManager.autoMotif.ToggleState) {MotifEnabled = "Enabled";} else {MotifEnabled = "Disabled";}
         String MotifAvailable;
-        if (spindexer.checkMotif(MotifMemorization.motif)) {MotifAvailable = "Available";} else {MotifAvailable = "Not Available";}
+        if (spindexer.checkMotif(motif)) {MotifAvailable = "Available";} else {MotifAvailable = "Not Available";}
         telemetry.addData("Auto Motif",String.join(", ",MotifEnabled, MotifAvailable));
+        if(motif==null){
+            telemetry.addData("Motif","null");
+        }
+        else{
+            telemetry.addData("Motif",motif.name);
+        }
         telemetry.addData("desired angle", shooterPowerAngleCalculator.getAngle());
         telemetry.addData("desired robot angle", 90 + shooterPowerAngleCalculator.getAngle()); //If the desired robot angle equal to the current angle, then the robot is on course
         telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));

@@ -13,8 +13,10 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -86,6 +88,8 @@ public class RobotHardware {
     public ColorSensor colorSensor;
     public DistanceSensor distanceSensor;
 
+    public CameraName camera;
+
     ///public DigitalChannel limitSwitch;// Limit Switch
 
     public IMU imu; //IMU
@@ -136,6 +140,8 @@ public class RobotHardware {
         LED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
 
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
+
+        camera = hardwareMap.get(CameraName.class, "Webcam1");
         //Reset the drive train motor encoders
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
