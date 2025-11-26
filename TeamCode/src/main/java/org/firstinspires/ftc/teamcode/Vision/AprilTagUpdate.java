@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Vision;
 import android.util.Size;
 import androidx.annotation.NonNull;
 
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
@@ -46,7 +47,7 @@ public class AprilTagUpdate {
 
         visionPortal = new VisionPortal.Builder()
                 .addProcessor(tagProcessor)
-                .setCamera(hardwareMap.get(WebcamName.class, "Web_Cam"))
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam1"))
                 .setCameraResolution(new Size(640, 480))
                 .build();
 

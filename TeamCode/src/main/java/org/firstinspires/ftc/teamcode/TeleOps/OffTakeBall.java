@@ -67,13 +67,13 @@ public class OffTakeBall {
     // --- Main update loop ---
     public void update() {
         /// Method 1 get calculated shoot power from look up table.
-        calculatedShootPower = shooterDiscreteZonePowerTable.getPower(currentDistanceToGoal);
-        setShooterPower(calculatedShootPower);
+        //calculatedShootPower = shooterDiscreteZonePowerTable.getPower(currentDistanceToGoal);
+        //setShooterPower(calculatedShootPower);
 
         switch (state) {
 
             case OFFTAKE_IDLE:
-                robot.shooterMotor.setPower(0.0);
+                robot.shooterMotor.setPower(0.8);
                 handleOfftakeIdleState();
                 break;
 
@@ -98,6 +98,8 @@ public class OffTakeBall {
                 break;
 
             case OFFTAKE_DONE:
+                setShooterState(SHOOTERSTATE.OFF);
+                robot.shooterMotor.setPower(0.0);
                 if (gamepad2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
                     resetCycle();
                 }
@@ -295,6 +297,11 @@ public class OffTakeBall {
             robot.shooterMotor.setPower(0.0);
         }
     }
+    // --- Set Shooter State ---
+    public void setShooterState(SHOOTERSTATE newState) {
+        this.shooterState = newState;
+    }
+
     // --- Public API ---
     public boolean isSortingComplete() {
         return state == OFFTAKEBALLSTATE.OFFTAKE_DONE;
