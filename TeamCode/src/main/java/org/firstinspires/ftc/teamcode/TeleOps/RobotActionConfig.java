@@ -6,8 +6,8 @@ import com.acmerobotics.dashboard.config.Config;
 public class RobotActionConfig {
     public static double gateInitDown                    = 0.0;
 
-    public static double GATEDOWN                        = 0.15;
-    public static double GATEUP                          = 0.32;
+    public static double GATEDOWN                        = 0.17;
+    public static double GATEUP                          = 0.4;
     public static double DEBOUNCE_THRESHOLD              = 0.25;
     //Sorter
     public static double spindexerSlot1                  = 0.00;
