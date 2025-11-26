@@ -158,7 +158,12 @@ public class Spindexer {
 
     public Boolean checkMotif(Motif motif){
         int n = count(SLOT.Empty);
-        return motif.countFrom(SLOT.Green,n)==count(SLOT.Green)&&motif.countFrom(SLOT.Purple,n)==count(SLOT.Purple);
+        if(motif==null){
+            return false;
+        }
+        else{
+            return motif.countFrom(SLOT.Green, n) == count(SLOT.Green) && motif.countFrom(SLOT.Purple, n) == count(SLOT.Purple);
+        }
     }
 
     /**
