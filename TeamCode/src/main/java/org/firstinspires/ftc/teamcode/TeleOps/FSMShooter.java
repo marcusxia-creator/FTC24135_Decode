@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.MotifDetector;
+import org.firstinspires.ftc.teamcode.MotifMemorization;
 
 import static org.firstinspires.ftc.teamcode.MotifMemorization.motif;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
@@ -20,7 +21,7 @@ public class FSMShooter {
     private ElapsedTime debounceTimer = new ElapsedTime();
     private ElapsedTime shootTimer = new ElapsedTime();
     private ElapsedTime rampTimer = new ElapsedTime();
-    SHOOTERPOWERSTATE shooterpowerstate = SHOOTERPOWERSTATE.AUTO_POWER;
+    SHOOTERPOWERSTATE shooterpowerstate;
     SHOOTERSTATE shooterState;
     Spindexer spindexer;
     Spindexer.SLOT targetColour = Spindexer.SLOT.Purple;
@@ -58,6 +59,8 @@ public class FSMShooter {
         this.spindexer = spindexer;
         this.gamepadManager = gamepadManager;
         this.shooterPowerAngleCalculator = shooterPowerAngleCalculator;
+
+        motif=Spindexer.Motif.GPP; //Temp
     }
 
     public void Init() {
@@ -66,7 +69,6 @@ public class FSMShooter {
         robot.leftGateServo.setPosition(gateDown);
         robot.rightGateServo.setPosition(gateDown);
         shooterState = SHOOTERSTATE.SHOOTER_IDLE;
-        robot.shooterMotor.setPower(0);
     }
 
     public void ShooterLoop() {
@@ -186,7 +188,6 @@ public class FSMShooter {
         }
 
         ShooterPowerControl();
-        ShooterPowerSwitch();
     }
 
     public enum SHOOTERPOWERSTATE {

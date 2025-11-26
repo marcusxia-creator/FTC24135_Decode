@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
@@ -59,17 +61,19 @@ public class FSMIntake {
         switch (intakeStates) {
             //start of intake FSM
             case INTAKE_IDLE:
-                if (gamepadManager.IntakeRun.PressState && spindexer.checkFor(Spindexer.SLOT.Empty)) {
-                    intakeStates = IntakeStates.INTAKE_START;
-                }
+            if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
+                intakeStates = IntakeStates.INTAKE_START;
+            }
                 break;
             //start intake motor
             case INTAKE_START:
                 boolean jammed = isIntakeJammmed();
+                robot.intakeMotor.setPower(intakeSpeed);
                 robot.leftGateServo.setPosition(gateUp);
                 robot.rightGateServo.setPosition(gateUp);
                 HandleIntaking(jammed);
-                if (robot.distanceSensor.getDistance(DistanceUnit.CM) < 10) {
+
+                if (robot.distanceSensor.getDistance(DistanceUnit.CM) < 8) {
                     recorded = false;
                     intakeTimer.reset();
                     intakeStates = IntakeStates.INTAKE_CAPTURE;
@@ -82,8 +86,6 @@ public class FSMIntake {
                 //Put gates down
                 robot.leftGateServo.setPosition(gateDown);
                 robot.rightGateServo.setPosition(gateDown);
-                robot.intakeMotor.setPower(intakeSpeed);
-
                 if (intakeTimer.seconds() > gateDownTime && !recorded) {
                     spindexer.writeToCurrent(robot.colorSensor, robot.distanceSensor);
                     spindexer.runToSlot(Spindexer.SLOT.Empty);
@@ -131,18 +133,18 @@ public class FSMIntake {
                 intakeStates = IntakeStates.INTAKE_STOP;
             }
         }
-        if (intakeStates == IntakeStates.INTAKE_START && !spindexer.checkFor(Spindexer.SLOT.Empty)){
-            intakeStates = IntakeStates.INTAKE_STOP;
-        }
-
-        if (gamepadManager.IntakeReverse.PressState) {
-            reversing = false;
-            robot.intakeMotor.setPower(ejectSpeed);
-
-            if (gamepadManager.IntakeReverse.PressState && isButtonDebounced()) {
-                intakeStates = IntakeStates.INTAKE_STOP;
-            }
-        }
+//        if (intakeStates == IntakeStates.INTAKE_START && !spindexer.checkFor(Spindexer.SLOT.Empty)){
+//            intakeStates = IntakeStates.INTAKE_STOP;
+//        }
+//
+//        if (gamepadManager.IntakeReverse.PressState) {
+//            reversing = false;
+//            robot.intakeMotor.setPower(ejectSpeed);
+//
+//            if (gamepadManager.IntakeReverse.PressState && isButtonDebounced()) {
+//                intakeStates = IntakeStates.INTAKE_STOP;
+//            }
+//        }
     }
 
     private boolean isButtonDebounced() {

@@ -155,6 +155,7 @@ public class Spindexer {
     /**
      * Returns {@code TRUE} if the spindexer has the necessary balls to run the given motif
      */
+
     public Boolean checkMotif(Motif motif){
         int n = count(SLOT.Empty);
         return motif.countFrom(SLOT.Green,n)==count(SLOT.Green)&&motif.countFrom(SLOT.Purple,n)==count(SLOT.Purple);

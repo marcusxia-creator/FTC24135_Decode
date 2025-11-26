@@ -140,8 +140,10 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Current Slot", spindexer.currentSlot);
         telemetry.addData("Spindexer Servo Pos", robot.spindexerServo.getPosition());
         telemetry.addData("Shooter Target Colour", shooterManualControl.targetColour.name());
+        /*
         telemetry.addData("Motif Green Count", MotifMemorization.motif.countFrom(Spindexer.SLOT.Green, spindexer.count(Spindexer.SLOT.Empty)));
         telemetry.addData("Motif Purple Count", MotifMemorization.motif.countFrom(Spindexer.SLOT.Purple, spindexer.count(Spindexer.SLOT.Empty)));
+         */
         telemetry.addLine("-----");
         telemetry.addData("Shooter State", shooterManualControl.shooterState);
         telemetry.addData("shooter power calculator", shooterPowerAngleCalculator.getPower());
@@ -152,6 +154,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Shooter Power", robot.shooterMotor.getPower());
         telemetry.addData("Shooter Velocity", robot.shooterMotor.getVelocity());
         telemetry.addData("Shooter Motor Mode", robot.shooterMotor.getMode());
+        telemetry.addData("Shooter Power Mode", shooterManualControl.shooterpowerstate);
         telemetry.addLine("-----");
         String MotifEnabled;
         if (gamepadManager.autoMotif.ToggleState) {MotifEnabled = "Enabled";} else {MotifEnabled = "Disabled";}

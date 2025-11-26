@@ -138,8 +138,10 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         telemetry.addData("Current Slot", spindexer.currentSlot);
         telemetry.addData("Spindexer Servo Pos", robot.spindexerServo.getPosition());
         telemetry.addData("Shooter Target Colour", shooterManualControl.targetColour.name());
+        /**
         telemetry.addData("Motif Green Count", MotifMemorization.motif.countFrom(Spindexer.SLOT.Green, spindexer.count(Spindexer.SLOT.Empty)));
         telemetry.addData("Motif Purple Count", MotifMemorization.motif.countFrom(Spindexer.SLOT.Purple, spindexer.count(Spindexer.SLOT.Empty)));
+         */
         telemetry.addLine("-----");
         telemetry.addData("Shooter State", shooterManualControl.shooterState);
         telemetry.addData("shooter power calculator", shooterPowerAngleCalculator.getPower());

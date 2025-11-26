@@ -8,15 +8,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 @Config
 public class RobotActionConfig {
-    public static double gateDown                       = 0.15;
-    public static double gateUp                         = 0.32;
+    public static double gateDown                       = 0.13;
+    public static double gateUp                         = 0.39;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
     public static double spindexerSlot0                 = 0.0;
     public static double spindexerSlot1                 = 0.52;
     public static double spindexerSlot2                 = 0.96;
     public static double spindexerReset                 = 0.0;
-    public static double rampDownPos                    = 0.58; //0.40 12Kg servo, 0.385 for axon micro
-    public static double rampUpPos                      = 0.34; //0.18 12Kg servo, 0.215 for axon micro
+    public static double rampDownPos                    = 0.51; //0.40 12Kg servo, 0.385 for axon micro
+    public static double rampUpPos                      = 0.28; //0.18 12Kg servo, 0.215 for axon micro
     public static double angleResetPos                  = 0.0;
     //Speed
     public static double intakeSpeed                    = 0.6;
