@@ -38,6 +38,17 @@ public class RobotActionConfig {
     //Distance to goal
     public static double DISTANCETOGOAL         = 0.0;
 
+    public static final double farEdge                  = 100.0;
+    public static final double far                      = 80.0;
+    public static final double mid                      = 70.0;
+    public static final double close                    = 55.0;
+    public static final double closeEdge                = 50.0;
+
+    public static final double farPower                 = 0.78;
+    public static final double midPower                 = 0.73;
+    public static final double closePower               = 0.75;
+    public static final double ozPower                  = 0.5;
+
 
 }
 

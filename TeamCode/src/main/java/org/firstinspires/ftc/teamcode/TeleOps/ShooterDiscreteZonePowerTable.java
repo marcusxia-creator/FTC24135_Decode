@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import java.util.EnumMap;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 public class ShooterDiscreteZonePowerTable {
 
@@ -13,24 +14,24 @@ public class ShooterDiscreteZonePowerTable {
     private final EnumMap<SHOOTRANGE, Double> powerTable = new EnumMap<>(SHOOTRANGE.class);
 
     public ShooterDiscreteZonePowerTable() {
-        powerTable.put(SHOOTRANGE.NEAR, 0.75);
-        powerTable.put(SHOOTRANGE.MIDDLE, 0.73);
-        powerTable.put(SHOOTRANGE.FAR, 0.80);
+        powerTable.put(SHOOTRANGE.NEAR, closePower);
+        powerTable.put(SHOOTRANGE.MIDDLE, midPower);
+        powerTable.put(SHOOTRANGE.FAR, farPower);
     }
 
 
     public double getPower(double distance) {
-        if (distance < 100 && distance > 80) {
+        if (distance < farEdge && distance > far) {
             return powerTable.get(SHOOTRANGE.FAR);
         }
-        else if (distance < 80 && distance > 70) {
+        else if (distance < far && distance > mid) {
             return powerTable.get(SHOOTRANGE.MIDDLE);
         }
-        else if (distance < 70 && distance > 50){
+        else if (distance < mid && distance > close){
             return powerTable.get(SHOOTRANGE.NEAR);
         }
         else {
-            return 0.0;
+            return ozPower;
         }
     }
 }
