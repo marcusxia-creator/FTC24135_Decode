@@ -42,9 +42,9 @@ public class GamepadManager {
         Launch = new Control(GamepadKeys.Button.Y, false);
         Green = new Control(GamepadKeys.Button.A, false);
         Purple = new Control(GamepadKeys.Button.B, false);
-        Unjam = new Control(GamepadKeys.Button.BACK, false);
-        spinPrev = new Control(GamepadKeys.Button.LEFT_BUMPER, false);
-        spinNext = new Control(GamepadKeys.Button.RIGHT_BUMPER, false);
+        //Unjam = new Control(GamepadKeys.Button.BACK, false);
+        //spinPrev = new Control(GamepadKeys.Button.LEFT_BUMPER, false);
+        //spinNext = new Control(GamepadKeys.Button.RIGHT_BUMPER, false);
         reDetc = new Control(GamepadKeys.Button.DPAD_UP, false);
         autoMotif = new Control(GamepadKeys.Button.START, false);
         //ToggleShooterPower = new Control(GamepadKeys.Button.LEFT_BUMPER && GamepadKeys.Button.BACK, false);
@@ -56,9 +56,9 @@ public class GamepadManager {
         Flywheel.Update();
         Green.Update();
         Purple.Update();
-        Unjam.Update();
-        spinPrev.Update();
-        spinNext.Update();
+        //Unjam.Update();
+        //spinPrev.Update();
+        //spinNext.Update();
         reDetc.Update();
         autoMotif.Update();
     }

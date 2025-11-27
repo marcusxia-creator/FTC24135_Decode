@@ -32,9 +32,9 @@ public class RobotActionConfig {
     public static double getDistanceThreshold           =0.02;
 
     //Intake capture timing
-    public static double gateDownTime                   = 0.1;
+    public static double gateDownTime                   = 0.15;
     public static double SpindexerStartTime             = 0.7;
-    public static double SpindexerMoveTime              = 1.0;
+    public static double SpindexerMoveTime              = 0.5;
 
     public static double a                              = 0.0001320186;
     public static double b                              = -0.01961813;
@@ -42,7 +42,7 @@ public class RobotActionConfig {
     public static double correction                     = 0.053;
 
     //Colour Profiles
-    public static double distanceThreshold              = 100;
+    public static double distanceThreshold              = 85;
     public static int[] none                            = {105, 110};
 
     public static int[] greenRangeLow                   = {120, 130};
@@ -62,4 +62,10 @@ public class RobotActionConfig {
 
     public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, 39, 42, AngleUnit.DEGREES, 0);
     public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, 39, -42, AngleUnit.DEGREES, 0);
+
+    public static final double farEdge                  = 100.0;
+    public static final double far                      = 80.0;
+    public static final double mid                      = 70.0;
+    public static final double close                    = 55.0;
+    public static final double closeEdge                = 50.0;
 }

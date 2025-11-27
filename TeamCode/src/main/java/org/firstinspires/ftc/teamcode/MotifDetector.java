@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class MotifDetector {
+    //Apriltag ID and sequence map
     Map<Integer, Motif> motifMap;
     AprilTagProcessor processor;
     VisionPortal portal;
@@ -34,10 +35,12 @@ public class MotifDetector {
                 MotifMemorization.motif=motifMap.get(id);
             }
         }
+        /**
         if(MotifMemorization.motif!=null){
             portal.setProcessorEnabled(processor,false);
             portal = null;
         }
+         */
     }
 
     public void resetMotif(){

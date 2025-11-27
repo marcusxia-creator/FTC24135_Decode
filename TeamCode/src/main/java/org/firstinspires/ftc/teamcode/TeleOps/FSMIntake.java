@@ -73,7 +73,7 @@ public class FSMIntake {
                 robot.rightGateServo.setPosition(gateUp);
                 HandleIntaking(jammed);
 
-                if (robot.distanceSensor.getDistance(DistanceUnit.CM) < 8) {
+                if (robot.distanceSensor.getDistance(DistanceUnit.MM) < distanceThreshold) {
                     recorded = false;
                     intakeTimer.reset();
                     intakeStates = IntakeStates.INTAKE_CAPTURE;
