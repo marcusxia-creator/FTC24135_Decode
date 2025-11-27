@@ -51,7 +51,7 @@ public class Spindexer {
         Color.RGBToHSV(colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, hsvValues);
 
         if (distanceSensor.getDistance(DistanceUnit.MM)<distanceThreshold) {
-            if ((greenRangeHigh[0] < hsvValues[0] && hsvValues[0] < greenRangeLow[1]) ||
+            if ((greenRangeLow[0] < hsvValues[0] && hsvValues[0] < greenRangeLow[1]) ||
                     greenRangeHigh[0] < hsvValues[0] && hsvValues[0] < greenRangeHigh[1]) {
                 //Green
                 writeToCurrent(Spindexer.SLOT.Green);
