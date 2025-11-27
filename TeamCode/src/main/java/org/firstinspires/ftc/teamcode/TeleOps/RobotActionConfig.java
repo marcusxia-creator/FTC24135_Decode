@@ -21,7 +21,7 @@ public class RobotActionConfig {
     public static double INTAKE_REVERSE_POWER           = -0.2;
     public static double INTAKE_HEAVYJAM_REVERSE_SPEED  = -0.8;
     public static double intakeRPM_THRESHOLD            = 100.0;
-    public static double BALL_PRESENT_THRESHOLD_MM = 55.0; // adjust per sensor mounting
+    public static double BALL_PRESENT_THRESHOLD_MM      = 55.0; // adjust per sensor mounting
 
     //Offtake speed
     public static final double SHOOTER_POWER    = 0.85;
