@@ -67,13 +67,11 @@ public class OffTakeBall {
     // --- Main update loop ---
     public void update() {
         /// Method 1 get calculated shoot power from look up table.
-        //calculatedShootPower = shooterDiscreteZonePowerTable.getPower(currentDistanceToGoal);
-        //setShooterPower(calculatedShootPower);
+        calculatedShootPower = shooterDiscreteZonePowerTable.getPower(currentDistanceToGoal);
+        setShooterPower(calculatedShootPower);
 
         switch (state) {
-
             case OFFTAKE_IDLE:
-                robot.shooterMotor.setPower(0.8);
                 handleOfftakeIdleState();
                 break;
 
@@ -98,11 +96,7 @@ public class OffTakeBall {
                 break;
 
             case OFFTAKE_DONE:
-                setShooterState(SHOOTERSTATE.OFF);
-                robot.shooterMotor.setPower(0.0);
-                if (gamepad2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
-                    resetCycle();
-                }
+                resetCycle();
                 break;
         }
     }
@@ -112,6 +106,8 @@ public class OffTakeBall {
     // ===============================================================
     private void handleOfftakeIdleState() {
         if (gamepad2.getButton(GamepadKeys.Button.Y)) {
+            // start the shooter power
+            setShooterState(SHOOTERSTATE.ON);
             //Close the gate
             robot.leftGateServo.setPosition(GATEDOWN);
             robot.rightGateServo.setPosition(GATEDOWN);
@@ -132,6 +128,7 @@ public class OffTakeBall {
             if (useColorSequence) {
                 firingColorOrder = computeColorFiringOrder();
             }
+
             state = OFFTAKEBALLSTATE.OFFTAKE_AIMING;
         }
     }
@@ -287,7 +284,7 @@ public class OffTakeBall {
         cycle_no = 0;
         useColorSequence = false;
         state = OFFTAKEBALLSTATE.OFFTAKE_IDLE;
-        robot.shooterMotor.setPower(0.0);
+        setShooterState(SHOOTERSTATE.OFF);
     }
     // --- Set Shooter Power ---
     public void setShooterPower(double power) {

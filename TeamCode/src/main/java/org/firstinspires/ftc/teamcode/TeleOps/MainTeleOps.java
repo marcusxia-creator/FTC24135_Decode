@@ -163,6 +163,7 @@ public class MainTeleOps extends OpMode {
         switch (ballHandlingState) {
             case INTAKING:
                 intakeBall.IntakeBallUpdate();
+                intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
                 offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.OFFTAKE_DONE);
                 if (intakeBall.isFull()) {
                     ballHandlingState = BallHandlingState.IDLE;
@@ -179,6 +180,7 @@ public class MainTeleOps extends OpMode {
                 intakeBall.stopIntake();
                 intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
                 offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.OFFTAKE_DONE);
+                offTakeBall.update();
                 break;
         }
     }
@@ -201,12 +203,10 @@ public class MainTeleOps extends OpMode {
     private void handleBallHandlingInputs() {
         if (gamepadCo2.getButton(A) && isDebounced()) {
             ballHandlingState = BallHandlingState.INTAKING;
-            intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
         }
 
         if (gamepadCo2.getButton(X) && isDebounced()) {
             ballHandlingState = BallHandlingState.OFFTAKING;
-            offTakeBall.setShooterState(OffTakeBall.SHOOTERSTATE.ON);
             intakeBall.stopIntake();
         }
 
