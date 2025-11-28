@@ -60,8 +60,8 @@ public class RobotActionConfig {
     public static int PGPid                             = 22;
     public static int PPGid                             = 23;
 
-    public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, 39, 42, AngleUnit.DEGREES, 0);
-    public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, 39, -42, AngleUnit.DEGREES, 0);
+    public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, -64, 8, AngleUnit.DEGREES, 0);
+    public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, -64, 8, AngleUnit.DEGREES, 0);
 
     public static final double farEdge                  = 100.0;
     public static final double far                      = 80.0;

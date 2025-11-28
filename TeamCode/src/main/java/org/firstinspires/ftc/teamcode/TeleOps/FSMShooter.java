@@ -73,7 +73,7 @@ public class FSMShooter {
         robot.leftGateServo.setPosition(gateDown);
         robot.rightGateServo.setPosition(gateDown);
         shooterState = SHOOTERSTATE.SHOOTER_IDLE;
-        shooterpowerstate = SHOOTERPOWERSTATE.MANUAL_POWER;
+        shooterpowerstate = SHOOTERPOWERSTATE.AUTO_POWER;
         robot.shooterMotor.setPower(0);
         motifDetector = new MotifDetector(Map.of(GPPid, Spindexer.Motif.GPP, PGPid, Spindexer.Motif.PGP, PPGid, Spindexer.Motif.PPG), robot.camera);
 
@@ -89,16 +89,18 @@ public class FSMShooter {
         switch (shooterState) {
             case SHOOTER_IDLE:
                 //Press B for purple ball
-                if (gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
+                if (gamepad_2.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
                     targetColour = Spindexer.SLOT.Purple;
+                    shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                 }
                 //Press A for green ball
-                if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
+                if (gamepad_2.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
                     targetColour = Spindexer.SLOT.Green;
+                    shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                 }
 
                 // Press 'X' to start spinning the flywheel
-                if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
+                if (gamepad_2.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
                     shootTimer.reset();
                     ShooterPowerSwitch();//Run shooter motor and motor power depends on MANUAL or AUTO
                     shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
@@ -106,53 +108,22 @@ public class FSMShooter {
                 break;
             case FLYWHEEL_RUNNING:
                 ShooterPowerSwitch();
-                /**
+
                 // Press START an check toggle button true or false to determine slot order for motif
                 if (gamepadManager.autoMotif.ToggleState && spindexer.checkMotif(motif)){
                     targetColour=spindexer.motifColour(motif);
                 }
-                else {
-                    //Launch Colour
-                    if ((gamepadManager.Purple.PressState) || !spindexer.checkFor(Spindexer.SLOT.Green) && spindexer.checkFor(Spindexer.SLOT.Purple)) {
-                        targetColour = Spindexer.SLOT.Purple;
-                    }
-                    if ((gamepadManager.Green.PressState) || !spindexer.checkFor(Spindexer.SLOT.Purple) && spindexer.checkFor(Spindexer.SLOT.Green)) {
-                        targetColour = Spindexer.SLOT.Green;
-                    }
-                }
-
-                if (spindexer.slotColour()!=targetColour){
-                    if(spindexer.checkFor(targetColour)) {
-                        shooterState = SHOOTERSTATE.SPINDEXER_ROTATE;
-                        shootTimer.reset();
-                    }
-                    else{
-                        shooterState = SHOOTERSTATE.SHOOTER_STOP;
-                    }
-                }
-                 */
-                /**
-                if ((gamepadManager.Purple.PressState) || !spindexer.checkFor(Spindexer.SLOT.Green) && spindexer.checkFor(Spindexer.SLOT.Purple)) {
-                    targetColour = Spindexer.SLOT.Purple;*/
+                // check for targetColor
                 if(spindexer.checkFor(targetColour)) {
-                        shooterState = SHOOTERSTATE.SPINDEXER_ROTATE;
-                        shootTimer.reset();
+                    shootTimer.reset();
+                    shooterState = SHOOTERSTATE.SPINDEXER_ROTATE;
                     }
-
-                /**
-                if ((gamepadManager.Green.PressState) || !spindexer.checkFor(Spindexer.SLOT.Purple) && spindexer.checkFor(Spindexer.SLOT.Green)) {
-                    targetColour = Spindexer.SLOT.Green;
-                    if(spindexer.checkFor(targetColour)) {
-                        shooterState = SHOOTERSTATE.SPINDEXER_ROTATE;
-                        shootTimer.reset();
-                    }
-                }
-                 */
                 break;
 
             case SPINDEXER_ROTATE:
                 spindexer.runToSlot(targetColour);
                 if (shootTimer.seconds() > 0.5) {
+                    shootTimer.reset();
                     shooterState = SHOOTERSTATE.SHOOTING;
                 }
                 break;
@@ -161,36 +132,28 @@ public class FSMShooter {
                 ShooterPowerSwitch();
                 // Add shoot condition
                 // Press 'Y' to toggle ramp up/down]
-                if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced()){
-                 shootTimer.reset();
+                if (gamepad_2.getButton(GamepadKeys.Button.Y) && isButtonDebounced()){
                     robot.pushRampServo.setPosition(rampUpPos);
                     robot.leftGateServo.setPosition(gateUp);
                     robot.rightGateServo.setPosition(gateUp);
+                    shootTimer.reset();
                     shooterState = SHOOTERSTATE.DETECTING;
                 }
                 break;
 
             case DETECTING:
-                if (shootTimer.seconds() > 0.5) {
-                robot.pushRampServo.setPosition(rampDownPos);
-                robot.leftGateServo.setPosition(gateDown);
-                robot.rightGateServo.setPosition(gateDown);
-                /** It's not necessary base on field experience
-                if(shootTimer.seconds() > 0.25){
-                    double distance = robot.distanceSensor.getDistance(DistanceUnit.MM);
-                    if (distance < distanceThreshold) {
-                        shootTimer.reset();
-                        shooterState = SHOOTERSTATE.SHOOTING;
-                    } else {
-                 */
-                spindexer.writeToCurrent(Spindexer.SLOT.Empty);
-                shootTimer.reset();
-                if(spindexer.count(Spindexer.SLOT.Empty)==3){
-                    shooterState = SHOOTERSTATE.SHOOTER_STOP;
-                }
-                else{
-                    shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
-                }
+                if (shootTimer.seconds() > 0.25) {
+                    robot.pushRampServo.setPosition(rampDownPos);
+                    robot.leftGateServo.setPosition(gateDown);
+                    robot.rightGateServo.setPosition(gateDown);
+                    spindexer.writeToCurrent(Spindexer.SLOT.Empty);
+                    if(spindexer.count(Spindexer.SLOT.Empty)==3){
+                        shooterState = SHOOTERSTATE.SHOOTER_STOP;
+                    }
+                    else{
+                        shooterState = SHOOTERSTATE.SHOOTER_IDLE;
+                    }
+                    shootTimer.reset();
                 }
                 break;
 
@@ -206,19 +169,11 @@ public class FSMShooter {
                 shooterState = SHOOTERSTATE.SHOOTER_STOP;
                 break;
         }
-        /**
-        // Press 'X' again to stop spinning the flywheel
-        if (gamepadManager.Flywheel.PressState && shooterState!=SHOOTERSTATE.SHOOTER_IDLE) {
-            //robot.shooterMotor.setPower(0);
+
+        // Press 'Left Trigger' to stop spinning the flywheel
+        if (gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.5 && shooterState!=SHOOTERSTATE.SHOOTER_IDLE) {
             shooterState = SHOOTERSTATE.SHOOTER_STOP;
         }
-         */
-        /**
-        //Constantly look for motif if motif is null
-        if(motif==null){
-            motifDetector.detectMotif();
-        }
-         */
     }
 
     public enum SHOOTERPOWERSTATE {

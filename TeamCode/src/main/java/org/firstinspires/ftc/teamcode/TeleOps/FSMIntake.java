@@ -22,8 +22,8 @@ public class FSMIntake {
 
         INTAKE_START,
         INTAKE_CAPTURE,
-
         INTAKE_STOP,
+        INTAKE_REVERSE,
         INTAKE_UNJAM
     }
 
@@ -63,6 +63,8 @@ public class FSMIntake {
             case INTAKE_IDLE:
             if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
                 intakeStates = IntakeStates.INTAKE_START;
+                reversing = false;
+                intakeTimer.reset();
             }
                 break;
             //start intake motor
@@ -109,6 +111,7 @@ public class FSMIntake {
                 robot.pushRampServo.setPosition(rampDownPos);
                 intakeStates = IntakeStates.INTAKE_IDLE;
                 break;
+
             /*case INTAKE_UNJAM:
                 if (unjamTimer.seconds() > 0.1) {
                     robot.intakeMotor.setPower(-0.5);
@@ -124,27 +127,33 @@ public class FSMIntake {
                     intakeStates = IntakeStates.INTAKE_START;
                 }
                 break;
-
              */
+
+            case INTAKE_REVERSE:
+                if (intakeTimer.seconds()>0.5){
+                /// stop intake motor for reverse
+                robot.intakeMotor.setPower(0);
+                intakeStates = IntakeStates.INTAKE_IDLE;
+                }
+                break;
         }
 
-        if (gamepadManager.IntakeRun.PressState && isButtonDebounced()) {
-            if (intakeStates == IntakeStates.INTAKE_START || intakeStates == IntakeStates.INTAKE_CAPTURE) {
+        if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
+                intakeTimer.reset();
+                robot.intakeMotor.setPower(-ejectSpeed);
+                intakeStates = IntakeStates.INTAKE_REVERSE;
+        }
+
+        /**
+        if (gamepad_1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)&& isButtonDebounced() && !reversing) {
+            reversing = true;
+            robot.intakeMotor.setPower(ejectSpeed);
+        }
+        else {
+                reversing = false;
                 intakeStates = IntakeStates.INTAKE_STOP;
             }
-        }
-//        if (intakeStates == IntakeStates.INTAKE_START && !spindexer.checkFor(Spindexer.SLOT.Empty)){
-//            intakeStates = IntakeStates.INTAKE_STOP;
-//        }
-//
-//        if (gamepadManager.IntakeReverse.PressState) {
-//            reversing = false;
-//            robot.intakeMotor.setPower(ejectSpeed);
-//
-//            if (gamepadManager.IntakeReverse.PressState && isButtonDebounced()) {
-//                intakeStates = IntakeStates.INTAKE_STOP;
-//            }
-//        }
+         */
     }
 
     private boolean isButtonDebounced() {
