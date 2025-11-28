@@ -7,29 +7,23 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class SpindexerManualControl {
     RobotHardware robot;
     Spindexer spindexer;
-    GamepadEx gamepad_1;
+    GamepadInput gamepadInput;
     GamepadManager gamepadManager;
     ElapsedTime debounceTimer = new ElapsedTime();
-    public SpindexerManualControl(RobotHardware robot, Spindexer spindexer, GamepadManager gamepadManager, GamepadEx gamepad_1){
+    public SpindexerManualControl(RobotHardware robot, Spindexer spindexer, GamepadManager gamepadManager, GamepadInput gamepadInput){
         this.robot=robot;
         this.spindexer=spindexer;
         this.gamepadManager=gamepadManager;
-        this.gamepad_1 = gamepad_1;
+        this.gamepadInput=gamepadInput;
     }
     public void loop() {
-        if(/**gamepadManager.Unjam.PressState*/(!gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER) &&
-                gamepad_1.getButton(GamepadKeys.Button.BACK) &&
-                isButtonDebounced())){
+        if(/**gamepadManager.Unjam.PressState*/gamepadInput.getDriverBackSinglePressed()) {
             spindexer.unJam();
         }
-        if(/**gamepadManager.spinPrev.PressState*/(gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER) &&
-                !gamepad_1.getButton(GamepadKeys.Button.BACK) &&
-                isButtonDebounced())){
+        if(/**gamepadManager.spinPrev.PressState*/gamepadInput.getDriverLbSinglePressed()|| gamepadInput.getOperatorLbSinglePressed()){
             spindexer.runToSlot(spindexer.currentSlot-1);
         }
-        if(/**gamepadManager.spinNext.PressState*/(gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER) &&
-                !gamepad_1.getButton(GamepadKeys.Button.BACK) &&
-                isButtonDebounced())){
+        if(/**gamepadManager.spinNext.PressState*/(gamepadInput.getDriverRbSinglePressed() || gamepadInput.getOperatorRbSinglePressed())){
             spindexer.runToSlot(spindexer.currentSlot+1);
         }
 

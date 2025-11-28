@@ -112,23 +112,6 @@ public class FSMIntake {
                 intakeStates = IntakeStates.INTAKE_IDLE;
                 break;
 
-            /*case INTAKE_UNJAM:
-                if (unjamTimer.seconds() > 0.1) {
-                    robot.intakeMotor.setPower(-0.5);
-                } else if (unjamTimer.seconds() > 0.5) {
-                    robot.intakeMotor.setPower(0);
-                }
-                if (unjamTimer.seconds() >= 0.5 && unjamTimer.seconds() < 0.75){
-                    spindexer.runToSlot(spindexer.prevSlot);
-                }
-                if (unjamTimer.seconds() > 0.75){
-                    robot.intakeMotor.setPower(intakeSpeed);
-                    unjamTimer.reset();
-                    intakeStates = IntakeStates.INTAKE_START;
-                }
-                break;
-             */
-
             case INTAKE_REVERSE:
                 if (intakeTimer.seconds()>0.5){
                 /// stop intake motor for reverse
@@ -143,17 +126,6 @@ public class FSMIntake {
                 robot.intakeMotor.setPower(ejectSpeed);
                 intakeStates = IntakeStates.INTAKE_REVERSE;
         }
-
-        /**
-        if (gamepad_1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)&& isButtonDebounced() && !reversing) {
-            reversing = true;
-            robot.intakeMotor.setPower(ejectSpeed);
-        }
-        else {
-                reversing = false;
-                intakeStates = IntakeStates.INTAKE_STOP;
-            }
-         */
     }
 
     private boolean isButtonDebounced() {

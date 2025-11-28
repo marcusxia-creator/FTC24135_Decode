@@ -15,10 +15,12 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import java.util.Map;
 
 public class FSMShooter {
+    private final RobotHardware robot;
+    private final GamepadInput gamepadInput;
     private LUTPowerCalculator shooterPowerLUT;
     private final GamepadEx gamepad_1;
     private final GamepadEx gamepad_2;
-    private final RobotHardware robot;
+    GamepadManager gamepadManager;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private ElapsedTime shootTimer = new ElapsedTime();
     private ElapsedTime rampTimer = new ElapsedTime();
@@ -53,16 +55,17 @@ public class FSMShooter {
         SHOOTER_STOP
     }
 
-    GamepadManager gamepadManager;
-
     //Constructor
-    public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, Spindexer spindexer, GamepadManager gamepadManager, LUTPowerCalculator shooterPowerLUT) {
+    public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, Spindexer spindexer, GamepadManager gamepadManager, LUTPowerCalculator shooterPowerLUT,GamepadInput gamepadInput) {
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
         this.robot = robot;
         this.spindexer = spindexer;
         this.gamepadManager = gamepadManager;
         this.shooterPowerLUT = shooterPowerLUT;
+        this.gamepadInput = gamepadInput;
+        //
+        //
         //
         motif=Spindexer.Motif.GPP; //Temp
     }
@@ -110,9 +113,11 @@ public class FSMShooter {
                 ShooterPowerSwitch();
 
                 // Press START an check toggle button true or false to determine slot order for motif
+                /**
                 if (gamepadManager.autoMotif.ToggleState && spindexer.checkMotif(motif)){
                     targetColour=spindexer.motifColour(motif);
                 }
+                 */
                 // check for targetColor
                 if(spindexer.checkFor(targetColour)) {
                     shootTimer.reset();
@@ -198,9 +203,9 @@ public class FSMShooter {
     }
 
     public void ShooterPowerControl () {
-        if (gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER) &&
+        if (/**gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER) &&
                 gamepad_2.getButton(GamepadKeys.Button.BACK) &&
-                isButtonDebounced()) {
+                isButtonDebounced()*/gamepadInput.getOperatorLbBComboPressed()|| gamepadInput.getDriverLbBComboPressed()) {
             ToggleShooterPower();
         }
     }

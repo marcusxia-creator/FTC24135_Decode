@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private RobotHardware robot;
     private GamepadEx gamepadCo1, gamepadCo2;
+    private GamepadInput gamepadInput;
     private RobotDrive robotDrive;
     private FSMShooter FSMShooter;
     private FSMIntake FSMIntake;
@@ -58,10 +59,11 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.initIMU();
         robot.initPinpoint();
 
-        gamepadManager= new GamepadManager(gamepad1,gamepad2);
+        gamepadManager = new GamepadManager(gamepad1,gamepad2);
+        gamepadInput = new GamepadInput(gamepadCo1,gamepadCo2);
         spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
         spindexer.runToSlot(0);
-        spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadManager, gamepadCo2);
+        spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadManager, gamepadInput);
 
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
@@ -72,7 +74,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         alliance = Alliance.RED_ALLIANCE;
         shooterPowerAngleCalculator.setAlliance(true);
 
-        FSMShooter = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, gamepadManager, shooterPowerAngleCalculator);
+        FSMShooter = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, gamepadManager, shooterPowerAngleCalculator,gamepadInput);
         FSMShooter.Init();
 
         FSMIntake = new FSMIntake(gamepadCo1, gamepadCo2, robot, spindexer, gamepadManager);
