@@ -140,7 +140,7 @@ public class FSMIntake {
 
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
                 intakeTimer.reset();
-                robot.intakeMotor.setPower(-ejectSpeed);
+                robot.intakeMotor.setPower(ejectSpeed);
                 intakeStates = IntakeStates.INTAKE_REVERSE;
         }
 
