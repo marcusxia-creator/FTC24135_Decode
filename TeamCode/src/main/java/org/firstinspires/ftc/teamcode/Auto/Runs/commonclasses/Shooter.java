@@ -97,6 +97,7 @@ public class Shooter {
                     robot.pushRampServo.setPosition(rampDownPos);
                     robot.leftGateServo.setPosition(gateDown);
                     robot.rightGateServo.setPosition(gateDown);
+                    shooterTimer.reset();
                     stateTimer.reset();
                     currentState = SHOOTERSTATE.SHOOTER_RUN;
                     break;
@@ -115,6 +116,8 @@ public class Shooter {
                         robot.pushRampServo.setPosition(rampUpPos);
                         stateTimer.reset();
                         currentState = SHOOTERSTATE.SHOOTER_RESET_1;
+                    } else if (shooterTimer.seconds()>(5+ShooterWaitTime)) {
+                        currentState = SHOOTERSTATE.SHOOTER_END;
                     }
                     break;
                 case SHOOTER_RESET_1:
@@ -155,13 +158,8 @@ public class Shooter {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             telemetryPacket.put("FSM Intake State", currentState);
-            shooterTimer.reset();
-            if (shooterTimer.seconds() < 5) {
-                FSMShooterRun();
-                return currentState != SHOOTERSTATE.SHOOTER_END;
-            } else {
-                return  false;
-            }
+            FSMShooterRun();
+            return currentState != SHOOTERSTATE.SHOOTER_END;
         }
     }
 

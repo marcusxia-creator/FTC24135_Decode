@@ -61,6 +61,7 @@ public class IntakeRunMode implements Action {
     public void FSMIntakeRun() {
         switch (currentState) {
             case INTAKE_INIT:
+                intakeTimer.reset();
                 SpindexerRunTo(0);
                 robot.leftGateServo.setPosition(gateUp);
                 robot.rightGateServo.setPosition(gateUp);
@@ -73,7 +74,6 @@ public class IntakeRunMode implements Action {
                 break;
             case INTAKE_RUN:
                 robot.intakeMotor.setPower(0.8);
-                intakeTimer.reset();
                 currentState = INTAKESTATE.INTAKE_DETECT;
                 break;
             case INTAKE_DETECT:
