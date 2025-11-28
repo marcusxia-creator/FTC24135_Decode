@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.MotifMemorization.motif;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.close;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.closeEdge;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.farEdge;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -89,22 +90,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         spindexerManualControl.loop();
         robotDrive.DriveLoop();
 
-        /**
-
-        if (gamepadCo1.getButton(GamepadKeys.Button.BACK) || gamepadCo2.getButton(GamepadKeys.Button.BACK) && debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
-            debounceTimer.reset();
-            if (alliance == Alliance.BLUE_ALLIANCE) {
-                alliance = Alliance.RED_ALLIANCE;
-                shooterPowerAngleCalculator.setAlliance(true);
-                //robot.LED.setPosition(0.28);
-            }
-            else {
-                alliance = Alliance.BLUE_ALLIANCE;
-                shooterPowerAngleCalculator.setAlliance(false);
-                //robot.LED.setPosition(0.611);
-            }
-        }
-         **/
 
         if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
             //Reset robot red alliance pose
@@ -119,7 +104,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             }
         }
         //LED alarm light
-        if (shooterPowerAngleCalculator.getDistance() <= close) {
+        if (shooterPowerAngleCalculator.getDistance() <= close||shooterPowerAngleCalculator.getDistance() >= farEdge) {
             //Distance less than 54 inches, red alert
             robot.LED.setPosition(0.28);
         }
@@ -135,7 +120,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             robot.LED.setPosition(1.0);
         }
         telemetry.addData("Intake State", FSMIntake.intakeStates);
-        telemetry.addData("Sensor Distance", robot.distanceSensor.getDistance(DistanceUnit.CM));
+        telemetry.addData("Sensor Distance", robot.distanceSensor.getDistance(DistanceUnit.MM));
         telemetry.addData("Slot 0", spindexer.slots[0]);
         telemetry.addData("Slot 1", spindexer.slots[1]);
         telemetry.addData("Slot 2", spindexer.slots[2]);
