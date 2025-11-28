@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.Auto.Runs;
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -11,9 +8,6 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.*;
@@ -21,8 +15,6 @@ import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePosi
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.IntakeRunMode;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.Shooter;
-import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.ShooterRunMode;
-import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 @Autonomous(name = "RedSideFarAuto", group = "Autonomous")
@@ -65,27 +57,27 @@ public class RedSideFarAuto extends LinearOpMode {
             .build();
 
         Action DriveToShoot2 = drive.actionBuilder(new Pose2d(IntakeSet1Position4_X,IntakeSet1Position4_Y,Math.toRadians(90)))
-            .strafeToLinearHeading(new Vector2d(TransitionLocation_X,TransitionLocation_Y),Math.toRadians(22.5))
+            .strafeToLinearHeading(new Vector2d(TransitionLocation_X,TransitionLocation_Y),Math.toRadians(ShootingPosition_Heading))
             .strafeToLinearHeading(new Vector2d(ShootingPosition_X,ShootingPosition_Y),Math.toRadians(ShootingPosition_Heading))
             .build();
 
         Action IntakeSet2Drive1 = drive.actionBuilder(new Pose2d(ShootingPosition_X,ShootingPosition_Y,Math.toRadians(ShootingPosition_Heading)))
-            .strafeToLinearHeading(new Vector2d(IntakeSet2Position1_X, IntakeSet2Position1_Y), Math.toRadians(90))
+            .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position1_X, Far_IntakeSet2Position1_Y), Math.toRadians(90))
             .build();
 
-        Action IntakeSet2Drive2_1 = drive.actionBuilder(new Pose2d(IntakeSet1Position2_X, IntakeSet2Position1_Y,Math.toRadians(90)))
-            .strafeToLinearHeading(new Vector2d(IntakeSet2Position2_X,IntakeSet2Position2_Y),Math.toRadians(90))
+        Action IntakeSet2Drive2_1 = drive.actionBuilder(new Pose2d(Far_IntakeSet2Position1_X, Far_IntakeSet2Position1_Y,Math.toRadians(90)))
+            .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position2_X, Far_IntakeSet2Position2_Y),Math.toRadians(90))
             .build();
 
-        Action IntakeSet2Drive2_2 = drive.actionBuilder(new Pose2d(IntakeSet2Position2_X,IntakeSet2Position2_Y,Math.toRadians(90)))
-            .strafeToLinearHeading(new Vector2d(IntakeSet2Position3_X,IntakeSet2Position3_Y),Math.toRadians(90))
+        Action IntakeSet2Drive2_2 = drive.actionBuilder(new Pose2d(Far_IntakeSet2Position2_X, Far_IntakeSet2Position2_Y,Math.toRadians(90)))
+            .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position3_X, Far_IntakeSet2Position3_Y),Math.toRadians(90))
             .build();
 
-        Action IntakeSet2Drive2_3 = drive.actionBuilder(new Pose2d(IntakeSet1Position3_X,IntakeSet1Position3_Y,Math.toRadians(90)))
-            .strafeToLinearHeading(new Vector2d(IntakeSet2Position4_X,IntakeSet2Position4_Y),Math.toRadians(90))
+        Action IntakeSet2Drive2_3 = drive.actionBuilder(new Pose2d(Far_IntakeSet2Position3_X, Far_IntakeSet2Position3_Y,Math.toRadians(90)))
+            .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position4_X, Far_IntakeSet2Position4_Y),Math.toRadians(90))
             .build();
 
-        Action DriveToShoot3 = drive.actionBuilder(new Pose2d(IntakeSet2Position4_X,IntakeSet2Position4_Y,Math.toRadians(90)))
+        Action DriveToShoot3 = drive.actionBuilder(new Pose2d(Far_IntakeSet2Position4_X, Far_IntakeSet2Position4_Y,Math.toRadians(90)))
             .strafeToLinearHeading(new Vector2d(ShootingPosition_X,ShootingPosition_Y),Math.toRadians(ShootingPosition_Heading))
             .build();
 
@@ -114,7 +106,7 @@ public class RedSideFarAuto extends LinearOpMode {
                         shooter.ShooterOn(CloseShotPower),
                         DriveToShoot2
                     ),
-                    shooter.ShooterRun(CloseShotPower,1),
+                    shooter.ShooterRun(CloseShotPower,0.5),
                     shooter.ShooterOff(),
                     IntakeSet2Drive1,
                     new ParallelAction(
@@ -129,7 +121,7 @@ public class RedSideFarAuto extends LinearOpMode {
                             shooter.ShooterOn(CloseShotPower),
                             DriveToShoot3
                     ),
-                    shooter.ShooterRun(CloseShotPower,1),
+                    shooter.ShooterRun(CloseShotPower,0.5),
                     shooter.ShooterOff()
                 )
             );
@@ -139,37 +131,5 @@ public class RedSideFarAuto extends LinearOpMode {
     public Action IntakeRun(){
         return new IntakeRunMode(robot);
     }
-
-    /*
-    public Action ShooterRun(double ShotPower, double ShooterWaitTime){
-        return new ShooterRunMode(robot, ShotPower, ShooterWaitTime);
-    }
-
-
-    public static class ShooterSpeedUp implements Action {
-        private double TargetSpeed;
-        private final RobotHardware robot;
-
-        public ShooterSpeedUp (RobotHardware robot, double TargetSpeed){
-            this.robot = robot;
-            this.TargetSpeed = TargetSpeed;
-        }
-
-        public void StartShooter (){
-            robot.shooterMotor.setPower(TargetSpeed);
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            StartShooter();
-            return false;
-        }
-    }
-
-    public Action ShooterSpeedUp (double TargetShotPower){
-        return new ShooterSpeedUp(robot,TargetShotPower);
-    }
-
-     */
 
 }

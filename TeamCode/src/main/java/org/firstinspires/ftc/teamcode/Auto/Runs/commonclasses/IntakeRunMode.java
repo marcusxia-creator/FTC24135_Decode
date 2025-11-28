@@ -73,13 +73,15 @@ public class IntakeRunMode implements Action {
                 break;
             case INTAKE_RUN:
                 robot.intakeMotor.setPower(0.8);
+                intakeTimer.reset();
                 currentState = INTAKESTATE.INTAKE_DETECT;
                 break;
             case INTAKE_DETECT:
-                //if (targetSlot >= 3){currentState = INTAKESTATE.INTAKE_END;}
-                if (/**robot.intakeMotor.getVelocity()<=intakeRPM_THRESHOLD||*/robot.distanceSensor.getDistance(DistanceUnit.MM) < 50) {
+                if (robot.distanceSensor.getDistance(DistanceUnit.MM) < 50) {
                     stateTimer.reset();
                     currentState = INTAKESTATE.INTAKE_PAUSE;
+                } else if (intakeTimer.seconds()>4) {
+                    currentState = INTAKESTATE.INTAKE_END;
                 } else {
                     currentState = INTAKESTATE.INTAKE_RUN;
                 }
@@ -121,12 +123,7 @@ public class IntakeRunMode implements Action {
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
         telemetryPacket.put("FSM Intake State", currentState);
-        intakeTimer.reset();
-        if(intakeTimer.seconds()<5){
-            FSMIntakeRun();
-            return currentState != INTAKESTATE.INTAKE_END;
-        } else {
-            return false;
-        }
+        FSMIntakeRun();
+        return currentState != INTAKESTATE.INTAKE_END;
     }
 }

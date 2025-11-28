@@ -111,7 +111,7 @@ public class Shooter {
                 case SHOOTER_LAUNCH:
                     robot.leftGateServo.setPosition(gateUp);
                     robot.rightGateServo.setPosition(gateUp);
-                    if (stateTimer2.seconds() > 0.5) {
+                    if (stateTimer2.seconds() > 0.3) {
                         robot.pushRampServo.setPosition(rampUpPos);
                         stateTimer.reset();
                         currentState = SHOOTERSTATE.SHOOTER_RESET_1;
@@ -137,7 +137,7 @@ public class Shooter {
                     if (targetSlot >= 0) {
                         //need to set spindexer to spin here.
                         SpindexerRunTo(targetSlot);
-                        if (stateTimer.seconds() > 0.7) {
+                        if (stateTimer.seconds() > 0.4) {
                             stateTimer2.reset();
                             currentState = SHOOTERSTATE.SHOOTER_LAUNCH;
                         }
