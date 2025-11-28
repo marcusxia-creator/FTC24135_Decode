@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
-import static org.firstinspires.ftc.teamcode.Auto.Runs.RedSidePositions.*;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.*;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 
@@ -36,90 +36,89 @@ public class RedSideCloseAuto extends LinearOpMode {
         robot.pushRampServo.setPosition(rampDownPos);
 
         Action DriveToShoot1 = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(ShootingPosition_X,ShootingPosition_Y), Math.toRadians(90))
-            .build();
+                .strafeToLinearHeading(new Vector2d(ShootingPosition_X, ShootingPosition_Y), Math.toRadians(90))
+                .build();
 
-        Action IntakeSet1Drive1 = drive.actionBuilder(new Pose2d(ShootingPosition_X,ShootingPosition_Y,Math.toRadians(ShootingPosition_Heading)))
-            .strafeToLinearHeading(new Vector2d(IntakeSet3Position1_X, IntakeSet1Position1_Y), Math.toRadians(90))
-            .build();
+        Action IntakeSet1Drive1 = drive.actionBuilder(new Pose2d(ShootingPosition_X, ShootingPosition_Y, Math.toRadians(ShootingPosition_Heading)))
+                .strafeToLinearHeading(new Vector2d(IntakeSet3Position1_X, IntakeSet1Position1_Y), Math.toRadians(90))
+                .build();
 
-        Action IntakeSet1Drive2_1 = drive.actionBuilder(new Pose2d(IntakeSet3Position1_X, IntakeSet3Position1_Y,Math.toRadians(90)))
-            .strafeToLinearHeading(new Vector2d(IntakeSet3Position2_X,IntakeSet3Position2_Y),Math.toRadians(90))
-            .build();
+        Action IntakeSet1Drive2_1 = drive.actionBuilder(new Pose2d(IntakeSet3Position1_X, IntakeSet3Position1_Y, Math.toRadians(90)))
+                .strafeToLinearHeading(new Vector2d(IntakeSet3Position2_X, IntakeSet3Position2_Y), Math.toRadians(90))
+                .build();
 
-        Action IntakeSet1Drive2_2 = drive.actionBuilder(new Pose2d(IntakeSet3Position2_X,IntakeSet3Position2_Y,Math.toRadians(90)))
-            .strafeToLinearHeading(new Vector2d(IntakeSet3Position3_X,IntakeSet3Position3_Y),Math.toRadians(90))
-            .build();
+        Action IntakeSet1Drive2_2 = drive.actionBuilder(new Pose2d(IntakeSet3Position2_X, IntakeSet3Position2_Y, Math.toRadians(90)))
+                .strafeToLinearHeading(new Vector2d(IntakeSet3Position3_X, IntakeSet3Position3_Y), Math.toRadians(90))
+                .build();
 
-        Action IntakeSet1Drive2_3 = drive.actionBuilder(new Pose2d(IntakeSet3Position3_X,IntakeSet3Position3_Y,Math.toRadians(90)))
-            .strafeToLinearHeading(new Vector2d(IntakeSet3Position4_X,IntakeSet3Position4_Y),Math.toRadians(90))
-            .build();
+        Action IntakeSet1Drive2_3 = drive.actionBuilder(new Pose2d(IntakeSet3Position3_X, IntakeSet3Position3_Y, Math.toRadians(90)))
+                .strafeToLinearHeading(new Vector2d(IntakeSet3Position4_X, IntakeSet3Position4_Y), Math.toRadians(90))
+                .build();
 
-        Action DriveToShoot2 = drive.actionBuilder(new Pose2d(IntakeSet3Position4_X,IntakeSet3Position4_Y,Math.toRadians(90)))
-            .strafeToLinearHeading(new Vector2d(ShootingPosition_X,ShootingPosition_Y),Math.toRadians(ShootingPosition_Heading))
-            .build();
+        Action DriveToShoot2 = drive.actionBuilder(new Pose2d(IntakeSet3Position4_X, IntakeSet3Position4_Y, Math.toRadians(90)))
+                .strafeToLinearHeading(new Vector2d(ShootingPosition_X, ShootingPosition_Y), Math.toRadians(ShootingPosition_Heading))
+                .build();
 
-        Action IntakeSet2Drive1 = drive.actionBuilder(new Pose2d(ShootingPosition_X,ShootingPosition_Y,Math.toRadians(ShootingPosition_Heading)))
-            .strafeToLinearHeading(new Vector2d(IntakeSet2Position1_X, IntakeSet2Position1_Y), Math.toRadians(90))
-            .build();
+        Action IntakeSet2Drive1 = drive.actionBuilder(new Pose2d(ShootingPosition_X, ShootingPosition_Y, Math.toRadians(ShootingPosition_Heading)))
+                .strafeToLinearHeading(new Vector2d(IntakeSet2Position1_X, IntakeSet2Position1_Y), Math.toRadians(90))
+                .build();
 
-        Action IntakeSet2Drive2_1 = drive.actionBuilder(new Pose2d(IntakeSet1Position2_X, IntakeSet2Position1_Y,Math.toRadians(90)))
-            .strafeToLinearHeading(new Vector2d(IntakeSet2Position2_X,IntakeSet2Position2_Y),Math.toRadians(90))
-            .build();
+        Action IntakeSet2Drive2_1 = drive.actionBuilder(new Pose2d(IntakeSet1Position2_X, IntakeSet2Position1_Y, Math.toRadians(90)))
+                .strafeToLinearHeading(new Vector2d(IntakeSet2Position2_X, IntakeSet2Position2_Y), Math.toRadians(90))
+                .build();
 
-        Action IntakeSet2Drive2_2 = drive.actionBuilder(new Pose2d(IntakeSet2Position2_X,IntakeSet2Position2_Y,Math.toRadians(90)))
-            .strafeToLinearHeading(new Vector2d(IntakeSet2Position3_X,IntakeSet2Position3_Y),Math.toRadians(90))
-            .build();
+        Action IntakeSet2Drive2_2 = drive.actionBuilder(new Pose2d(IntakeSet2Position2_X, IntakeSet2Position2_Y, Math.toRadians(90)))
+                .strafeToLinearHeading(new Vector2d(IntakeSet2Position3_X, IntakeSet2Position3_Y), Math.toRadians(90))
+                .build();
 
-        Action IntakeSet2Drive2_3 = drive.actionBuilder(new Pose2d(IntakeSet1Position3_X,IntakeSet1Position3_Y,Math.toRadians(90)))
-            .strafeToLinearHeading(new Vector2d(IntakeSet2Position4_X,IntakeSet2Position4_Y),Math.toRadians(90))
-            .build();
+        Action IntakeSet2Drive2_3 = drive.actionBuilder(new Pose2d(IntakeSet1Position3_X, IntakeSet1Position3_Y, Math.toRadians(90)))
+                .strafeToLinearHeading(new Vector2d(IntakeSet2Position4_X, IntakeSet2Position4_Y), Math.toRadians(90))
+                .build();
 
-        Action DriveToShoot3 = drive.actionBuilder(new Pose2d(IntakeSet2Position4_X,IntakeSet2Position4_Y,Math.toRadians(90)))
-            .strafeToLinearHeading(new Vector2d(ShootingPosition_X,ShootingPosition_Y),Math.toRadians(ShootingPosition_Heading))
-            .build();
-
+        Action DriveToShoot3 = drive.actionBuilder(new Pose2d(IntakeSet2Position4_X, IntakeSet2Position4_Y, Math.toRadians(90)))
+                .strafeToLinearHeading(new Vector2d(ShootingPosition_X, ShootingPosition_Y), Math.toRadians(ShootingPosition_Heading))
+                .build();
 
 
         waitForStart();
 
         if (opModeIsActive()) {
             Actions.runBlocking(
-                new SequentialAction(
-                    new ParallelAction(
-                        DriveToShoot1,
-                        ShooterSpeedUp(CloseShotPower)
-                    ),
-                    ShooterRun(CloseShotPower,1),
-                    IntakeSet1Drive1,
-                    new ParallelAction(
-                        new SequentialAction(
-                            IntakeSet1Drive2_1,
-                            IntakeSet1Drive2_2,
-                            IntakeSet1Drive2_3
-                        ),
-                        IntakeRun()
-                    ),
-                    new ParallelAction(
-                            DriveToShoot3,
-                        ShooterSpeedUp(CloseShotPower)
-                    ),
-                    ShooterRun(CloseShotPower,0.5),
-                    IntakeSet2Drive1,
-                    new ParallelAction(
-                            new SequentialAction(
-                                    IntakeSet2Drive2_1,
-                                    IntakeSet2Drive2_2,
-                                    IntakeSet2Drive2_3
+                    new SequentialAction(
+                            new ParallelAction(
+                                    DriveToShoot1,
+                                    ShooterSpeedUp(CloseShotPower)
                             ),
-                            IntakeRun()
-                    ),
-                    new ParallelAction(
-                            DriveToShoot3,
-                            ShooterSpeedUp(CloseShotPower)
-                    ),
-                    ShooterRun(CloseShotPower, 0.5)
-                )
+                            ShooterRun(CloseShotPower, 1),
+                            IntakeSet1Drive1,
+                            new ParallelAction(
+                                    new SequentialAction(
+                                            IntakeSet1Drive2_1,
+                                            IntakeSet1Drive2_2,
+                                            IntakeSet1Drive2_3
+                                    ),
+                                    IntakeRun()
+                            ),
+                            new ParallelAction(
+                                    DriveToShoot3,
+                                    ShooterSpeedUp(CloseShotPower)
+                            ),
+                            ShooterRun(CloseShotPower, 0.5),
+                            IntakeSet2Drive1,
+                            new ParallelAction(
+                                    new SequentialAction(
+                                            IntakeSet2Drive2_1,
+                                            IntakeSet2Drive2_2,
+                                            IntakeSet2Drive2_3
+                                    ),
+                                    IntakeRun()
+                            ),
+                            new ParallelAction(
+                                    DriveToShoot3,
+                                    ShooterSpeedUp(CloseShotPower)
+                            ),
+                            ShooterRun(CloseShotPower, 0.5)
+                    )
             );
         }
     }
@@ -152,14 +151,14 @@ public class RedSideCloseAuto extends LinearOpMode {
             this.currentState = INTAKESTATE.INTAKE_READY;
         }
 
-        public void SpindexerRunTo(int slot){
-            if(slot==0){
+        public void SpindexerRunTo(int slot) {
+            if (slot == 0) {
                 robot.spindexerServo.setPosition(spindexerSlot0);
             }
-            if(slot==1){
+            if (slot == 1) {
                 robot.spindexerServo.setPosition(spindexerSlot1);
             }
-            if(slot==2){
+            if (slot == 2) {
                 robot.spindexerServo.setPosition(spindexerSlot2);
             }
         }
@@ -194,23 +193,23 @@ public class RedSideCloseAuto extends LinearOpMode {
                     robot.intakeMotor.setPower(intakeStop);
                     robot.leftGateServo.setPosition(gateDown);
                     robot.rightGateServo.setPosition(gateDown);
-                    if (stateTimer.seconds()>0.2) {
+                    if (stateTimer.seconds() > 0.2) {
                         targetSlot++;
                         currentState = INTAKESTATE.INTAKE_INDEX;
                     }
                     break;
                 case INTAKE_INDEX:
-                    if (targetSlot <= 2){
+                    if (targetSlot <= 2) {
                         //need to set spindexer to spin here.
                         SpindexerRunTo(targetSlot);
                         stateTimer.reset();
                         currentState = INTAKESTATE.INTAKE_SPIN;
-                    }else if(targetSlot >= 3){
+                    } else if (targetSlot >= 3) {
                         currentState = INTAKESTATE.INTAKE_END;
                     }
                     break;
                 case INTAKE_SPIN:
-                    if (stateTimer.seconds()>0.2){
+                    if (stateTimer.seconds() > 0.2) {
                         currentState = INTAKESTATE.INTAKE_READY;
                     }
                     break;
@@ -228,11 +227,11 @@ public class RedSideCloseAuto extends LinearOpMode {
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             telemetryPacket.put("FSM Intake State", currentState);
             FSMIntakeRun();
-                return currentState != INTAKESTATE.INTAKE_END;
+            return currentState != INTAKESTATE.INTAKE_END;
         }
     }
 
-    public Action IntakeRun(){
+    public Action IntakeRun() {
         return new IntakeRunMode(robot);
     }
 
@@ -247,7 +246,7 @@ public class RedSideCloseAuto extends LinearOpMode {
             SHOOTER_END
         }
 
-        ///Variables
+        /// Variables
         private final RobotHardware robot;
         private final ElapsedTime stateTimer = new ElapsedTime();
         private final ElapsedTime stateTimer2 = new ElapsedTime();
@@ -257,21 +256,21 @@ public class RedSideCloseAuto extends LinearOpMode {
         private double ShotPower;
         private SHOOTERSTATE currentState;
 
-        public ShooterRunMode (RobotHardware robot, double ShotPower, double ShooterWaitTime){
+        public ShooterRunMode(RobotHardware robot, double ShotPower, double ShooterWaitTime) {
             this.robot = robot;
             this.ShotPower = ShotPower;
             this.ShooterWaitTime = ShooterWaitTime;
             this.currentState = SHOOTERSTATE.SHOOTER_INIT;
         }
 
-        public void SpindexerRunTo(int slot){
-            if(slot==0){
+        public void SpindexerRunTo(int slot) {
+            if (slot == 0) {
                 robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
             }
-            if(slot==1){
+            if (slot == 1) {
                 robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
             }
-            if(slot==2){
+            if (slot == 2) {
                 robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot2);
             }
         }
@@ -288,7 +287,7 @@ public class RedSideCloseAuto extends LinearOpMode {
                 case SHOOTER_RUN:
                     SpindexerRunTo(targetSlot);
                     robot.shooterMotor.setPower(ShotPower);
-                    if (stateTimer.seconds()>ShooterWaitTime){
+                    if (stateTimer.seconds() > ShooterWaitTime) {
                         stateTimer2.reset();
                         currentState = SHOOTERSTATE.SHOOTER_LAUNCH;
                     }
@@ -296,21 +295,21 @@ public class RedSideCloseAuto extends LinearOpMode {
                 case SHOOTER_LAUNCH:
                     robot.leftGateServo.setPosition(gateUp);
                     robot.rightGateServo.setPosition(gateUp);
-                    if (stateTimer2.seconds()>0.2) {
+                    if (stateTimer2.seconds() > 0.2) {
                         robot.pushRampServo.setPosition(rampUpPos);
                         stateTimer.reset();
                         currentState = SHOOTERSTATE.SHOOTER_RESET_1;
                     }
                     break;
                 case SHOOTER_RESET_1:
-                    if (stateTimer.seconds()>0.3) {
+                    if (stateTimer.seconds() > 0.3) {
                         robot.pushRampServo.setPosition(rampDownPos);
                         stateTimer2.reset();
                         currentState = SHOOTERSTATE.SHOOTER_RESET_2;
                     }
                     break;
                 case SHOOTER_RESET_2:
-                    if (stateTimer2.seconds()>0.2) {
+                    if (stateTimer2.seconds() > 0.2) {
                         robot.leftGateServo.setPosition(gateDown);
                         robot.rightGateServo.setPosition(gateDown);
                         targetSlot--;
@@ -319,14 +318,14 @@ public class RedSideCloseAuto extends LinearOpMode {
                     }
                     break;
                 case SHOOTER_SWITCH:
-                    if (targetSlot >=0){
+                    if (targetSlot >= 0) {
                         //need to set spindexer to spin here.
                         SpindexerRunTo(targetSlot);
-                        if (stateTimer.seconds()>0.7) {
+                        if (stateTimer.seconds() > 0.7) {
                             stateTimer2.reset();
                             currentState = SHOOTERSTATE.SHOOTER_LAUNCH;
                         }
-                    }else if(targetSlot <0){
+                    } else if (targetSlot < 0) {
                         currentState = SHOOTERSTATE.SHOOTER_END;
                     }
                     break;
@@ -344,32 +343,33 @@ public class RedSideCloseAuto extends LinearOpMode {
         }
     }
 
-    public Action ShooterRun(double ShotPower, double ShooterWaitTime){
+    public Action ShooterRun(double ShotPower, double ShooterWaitTime) {
         return new ShooterRunMode(robot, ShotPower, ShooterWaitTime);
     }
 
-public static class ShooterSpeedUp implements Action {
-    private double TargetSpeed;
-    private final RobotHardware robot;
+    public static class ShooterSpeedUp implements Action {
+        private double TargetSpeed;
+        private final RobotHardware robot;
 
-    public ShooterSpeedUp (RobotHardware robot, double TargetSpeed){
-        this.robot = robot;
-        this.TargetSpeed = TargetSpeed;
+        public ShooterSpeedUp(RobotHardware robot, double TargetSpeed) {
+            this.robot = robot;
+            this.TargetSpeed = TargetSpeed;
+        }
+
+        public void StartShooter() {
+            robot.shooterMotor.setPower(TargetSpeed);
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            StartShooter();
+            return false;
+        }
     }
 
-    public void StartShooter (){
-        robot.shooterMotor.setPower(TargetSpeed);
-    }
+    public Action ShooterSpeedUp(double TargetShotPower) {
+        return new ShooterSpeedUp(robot, TargetShotPower);
 
-    @Override
-    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-        StartShooter();
-        return false;
-    }
-}
 
-    public Action ShooterSpeedUp (double TargetShotPower){
-        return new ShooterSpeedUp(robot,TargetShotPower);
     }
-
 }

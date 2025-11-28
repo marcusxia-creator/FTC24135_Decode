@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto.Runs;
+package org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses;
 
 public class BlueSidePositions {
     public static double CloseShotPower = 0.81;
