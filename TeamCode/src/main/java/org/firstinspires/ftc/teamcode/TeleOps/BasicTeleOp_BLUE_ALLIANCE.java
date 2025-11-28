@@ -119,6 +119,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         }
         telemetry.addData("Intake State", FSMIntake.intakeStates);
         telemetry.addData("Sensor Distance", robot.distanceSensor.getDistance(DistanceUnit.MM));
+        telemetry.addData("Sensor Color", colorDetection.getStableColor());
         telemetry.addData("Slot 0", spindexer.slots[0]);
         telemetry.addData("Slot 1", spindexer.slots[1]);
         telemetry.addData("Slot 2", spindexer.slots[2]);
