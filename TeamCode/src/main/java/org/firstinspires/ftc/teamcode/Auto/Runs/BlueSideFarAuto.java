@@ -38,108 +38,49 @@ public class BlueSideFarAuto extends LinearOpMode {
         robot.leftGateServo.setPosition(gateDown);
         robot.pushRampServo.setPosition(rampDownPos);
 
-        // Start a single builder at the initial pose
-        TrajectoryActionBuilder tab = drive.actionBuilder(initialPose);
-
-        Action DriveToShoot1 = tab
-                .strafeToLinearHeading(
-                        new Vector2d(PreloadShootingPosition_X, PreloadShootingPosition_Y),
-                        Math.toRadians(PreloadShootingPosition_Heading)
-                )
+        Action DriveToShoot1 = drive.actionBuilder(initialPose)
+                .strafeToLinearHeading(new Vector2d(PreloadShootingPosition_X,PreloadShootingPosition_Y), Math.toRadians(PreloadShootingPosition_Heading))
                 .build();
 
-        tab = tab.fresh();
-
-        Action IntakeSet1Drive1 = tab
-                .strafeToLinearHeading(
-                        new Vector2d(IntakeSet1Position1_X, IntakeSet1Position1_Y),
-                        Math.toRadians(-90)
-                )
+        Action IntakeSet1Drive1 = drive.actionBuilder(initialPose)
+                .strafeToLinearHeading(new Vector2d(IntakeSet1Position1_X, IntakeSet1Position1_Y), Math.toRadians(-90))
                 .build();
 
-        tab = tab.fresh();
-
-        Action IntakeSet1Drive2_1 = tab
-                .strafeToLinearHeading(
-                        new Vector2d(IntakeSet1Position2_X, IntakeSet1Position2_Y),
-                        Math.toRadians(-90)
-                )
+        Action IntakeSet1Drive2_1 = drive.actionBuilder(new Pose2d(IntakeSet1Position1_X, IntakeSet1Position1_Y,Math.toRadians(-90)))
+                .strafeToLinearHeading(new Vector2d(IntakeSet1Position2_X,IntakeSet1Position2_Y),Math.toRadians(-90))
                 .build();
 
-        tab = tab.fresh();
-
-        Action IntakeSet1Drive2_2 = tab
-                .strafeToLinearHeading(
-                        new Vector2d(IntakeSet1Position3_X, IntakeSet1Position3_Y),
-                        Math.toRadians(-90)
-                )
+        Action IntakeSet1Drive2_2 = drive.actionBuilder(new Pose2d(IntakeSet1Position2_X,IntakeSet1Position2_Y,Math.toRadians(-90)))
+                .strafeToLinearHeading(new Vector2d(IntakeSet1Position3_X,IntakeSet1Position3_Y),Math.toRadians(-90))
                 .build();
 
-        tab = tab.fresh();
-
-        Action IntakeSet1Drive2_3 = tab
-                .strafeToLinearHeading(
-                        new Vector2d(IntakeSet1Position4_X, IntakeSet1Position4_Y),
-                        Math.toRadians(-90)
-                )
+        Action IntakeSet1Drive2_3 = drive.actionBuilder(new Pose2d(IntakeSet1Position3_X,IntakeSet1Position3_Y,Math.toRadians(-90)))
+                .strafeToLinearHeading(new Vector2d(IntakeSet1Position4_X,IntakeSet1Position4_Y),Math.toRadians(-90))
                 .build();
 
-        tab = tab.fresh();
-
-        Action DriveToShoot2 = tab
-                .strafeToLinearHeading(
-                        new Vector2d(TransitionLocation_X, TransitionLocation_Y),
-                        Math.toRadians(ShootingPosition_Heading)
-                )
-                .strafeToLinearHeading(
-                        new Vector2d(ShootingPosition_X, ShootingPosition_Y),
-                        Math.toRadians(ShootingPosition_Heading)
-                )
+        Action DriveToShoot2 = drive.actionBuilder(new Pose2d(IntakeSet1Position4_X,IntakeSet1Position4_Y,Math.toRadians(-90)))
+                .strafeToLinearHeading(new Vector2d(TransitionLocation_X,TransitionLocation_Y),Math.toRadians(ShootingPosition_Heading))
+                .strafeToLinearHeading(new Vector2d(ShootingPosition_X,ShootingPosition_Y),Math.toRadians(ShootingPosition_Heading))
                 .build();
 
-        tab = tab.fresh();
-
-        Action IntakeSet2Drive1 = tab
-                .strafeToLinearHeading(
-                        new Vector2d(Far_IntakeSet2Position1_X, Far_IntakeSet2Position1_Y),
-                        Math.toRadians(-90)
-                )
+        Action IntakeSet2Drive1 = drive.actionBuilder(new Pose2d(ShootingPosition_X,ShootingPosition_Y,Math.toRadians(ShootingPosition_Heading)))
+                .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position1_X, Far_IntakeSet2Position1_Y), Math.toRadians(-90))
                 .build();
 
-        tab = tab.fresh();
-
-        Action IntakeSet2Drive2_1 = tab
-                .strafeToLinearHeading(
-                        new Vector2d(Far_IntakeSet2Position2_X, Far_IntakeSet2Position2_Y),
-                        Math.toRadians(-90)
-                )
+        Action IntakeSet2Drive2_1 = drive.actionBuilder(new Pose2d(Far_IntakeSet2Position1_X, Far_IntakeSet2Position1_Y,Math.toRadians(-90)))
+                .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position2_X,Far_IntakeSet2Position2_Y),Math.toRadians(-90))
                 .build();
 
-        tab = tab.fresh();
-
-        Action IntakeSet2Drive2_2 = tab
-                .strafeToLinearHeading(
-                        new Vector2d(Far_IntakeSet2Position3_X, Far_IntakeSet2Position3_Y),
-                        Math.toRadians(-90)
-                )
+        Action IntakeSet2Drive2_2 = drive.actionBuilder(new Pose2d(Far_IntakeSet2Position2_X,Far_IntakeSet2Position2_Y,Math.toRadians(-90)))
+                .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position3_X,Far_IntakeSet2Position3_Y),Math.toRadians(-90))
                 .build();
 
-        tab = tab.fresh();
-
-        Action IntakeSet2Drive2_3 = tab
-                .strafeToLinearHeading(
-                        new Vector2d(Far_IntakeSet2Position4_X, Far_IntakeSet2Position4_Y),
-                        Math.toRadians(-90)
-                )
+        Action IntakeSet2Drive2_3 = drive.actionBuilder(new Pose2d(Far_IntakeSet2Position3_X,Far_IntakeSet2Position3_Y,Math.toRadians(-90)))
+                .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position4_X,Far_IntakeSet2Position4_Y),Math.toRadians(-90))
                 .build();
 
-        tab = tab.fresh();
-
-        Action DriveToShoot3 = tab
-                .strafeToLinearHeading(
-                        new Vector2d(ShootingPosition_X, ShootingPosition_Y),
-                        Math.toRadians(ShootingPosition_Heading)
-                )
+        Action DriveToShoot3 = drive.actionBuilder(new Pose2d(Far_IntakeSet2Position4_X,Far_IntakeSet2Position4_Y,Math.toRadians(-90)))
+                .strafeToLinearHeading(new Vector2d(ShootingPosition_X,ShootingPosition_Y),Math.toRadians(ShootingPosition_Heading))
                 .build();
 
         waitForStart();

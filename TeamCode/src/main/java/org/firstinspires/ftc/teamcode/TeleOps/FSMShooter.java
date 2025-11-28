@@ -142,8 +142,7 @@ public class FSMShooter {
                 ShooterPowerSwitch();
                 // Add shoot condition
                 // Press 'Y' to toggle ramp up/down]
-                if (gamepad_2.getButton(GamepadKeys.Button.Y) && isButtonDebounced() &&
-                        shootTimer.seconds()>0.1){
+                if (gamepad_2.getButton(GamepadKeys.Button.Y) && isButtonDebounced()){
                     robot.pushRampServo.setPosition(rampUpPos);
                     robot.leftGateServo.setPosition(gateUp);
                     robot.rightGateServo.setPosition(gateUp);
@@ -154,7 +153,7 @@ public class FSMShooter {
                 break;
 
             case DETECTING:
-                if (shootTimer.seconds() > 0.2) {
+                if (shootTimer.seconds() > 0.5) {
                     robot.pushRampServo.setPosition(rampDownPos);
                     robot.leftGateServo.setPosition(gateDown);
                     robot.rightGateServo.setPosition(gateDown);
