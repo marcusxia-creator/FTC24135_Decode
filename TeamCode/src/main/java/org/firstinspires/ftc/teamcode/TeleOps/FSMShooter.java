@@ -126,10 +126,15 @@ public class FSMShooter {
                 break;
 
             case SPINDEXER_ROTATE:
-                spindexer.runToSlot(targetColour);
-                if (shootTimer.seconds() > 0.5) {
-                    shootTimer.reset();
+                if (spindexer.slotColour() == targetColour){
                     shooterState = SHOOTERSTATE.SHOOTING;
+                }
+                else{
+                    spindexer.runToSlot(targetColour);
+                    if (shootTimer.seconds() > 0.5) {
+                        shootTimer.reset();
+                        shooterState = SHOOTERSTATE.SHOOTING;
+                    }
                 }
                 break;
 
@@ -137,7 +142,8 @@ public class FSMShooter {
                 ShooterPowerSwitch();
                 // Add shoot condition
                 // Press 'Y' to toggle ramp up/down]
-                if (gamepad_2.getButton(GamepadKeys.Button.Y) && isButtonDebounced()){
+                if (/**gamepad_2.getButton(GamepadKeys.Button.Y) && isButtonDebounced()*/
+                        shootTimer.seconds()>0.1){
                     robot.pushRampServo.setPosition(rampUpPos);
                     robot.leftGateServo.setPosition(gateUp);
                     robot.rightGateServo.setPosition(gateUp);
@@ -147,7 +153,7 @@ public class FSMShooter {
                 break;
 
             case DETECTING:
-                if (shootTimer.seconds() > 0.25) {
+                if (shootTimer.seconds() > 0.2) {
                     robot.pushRampServo.setPosition(rampDownPos);
                     robot.leftGateServo.setPosition(gateDown);
                     robot.rightGateServo.setPosition(gateDown);
@@ -205,7 +211,8 @@ public class FSMShooter {
     public void ShooterPowerControl () {
         if (/**gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER) &&
                 gamepad_2.getButton(GamepadKeys.Button.BACK) &&
-                isButtonDebounced()*/gamepadInput.getOperatorLbBComboPressed()|| gamepadInput.getDriverLbBComboPressed()) {
+                isButtonDebounced()*/
+        gamepadInput.getOperatorLbBComboPressed()|| gamepadInput.getDriverLbBComboPressed()) {
             ToggleShooterPower();
         }
     }
