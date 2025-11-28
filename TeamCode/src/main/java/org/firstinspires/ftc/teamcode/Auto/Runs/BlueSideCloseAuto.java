@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
-import static org.firstinspires.ftc.teamcode.Auto.Runs.BlueSidePositions.*;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.BlueSidePositions.*;
 
 @Autonomous(name = "BlueSideCloseAuto", group = "Autonomous")
 public class BlueSideCloseAuto extends LinearOpMode {
