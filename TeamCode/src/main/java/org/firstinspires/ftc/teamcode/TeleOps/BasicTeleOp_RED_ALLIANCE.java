@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import static org.firstinspires.ftc.teamcode.MotifMemorization.motif;
+import static org.firstinspires.ftc.teamcode.AprilTagMotif.MotifMemorization.motif;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
 
@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.MotifMemorization;
 import org.firstinspires.ftc.teamcode.TeleOps.Tests.BallColor;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 

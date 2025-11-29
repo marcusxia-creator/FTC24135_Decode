@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.MotifDetector;
+import org.firstinspires.ftc.teamcode.AprilTagMotif.MotifDetector;
 
-import static org.firstinspires.ftc.teamcode.MotifMemorization.motif;
+import static org.firstinspires.ftc.teamcode.AprilTagMotif.MotifMemorization.motif;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 import java.util.Map;
@@ -71,7 +71,7 @@ public class FSMShooter {
         robot.rightGateServo.setPosition(gateDown);
         shooterState = SHOOTERSTATE.SHOOTER_IDLE;
         robot.shooterMotor.setPower(0);
-        motifDetector = new MotifDetector(Map.of(GPPid, Spindexer.Motif.GPP, PGPid, Spindexer.Motif.PGP, PPGid, Spindexer.Motif.PPG), robot.camera);
+        motifDetector = new MotifDetector(Map.of(GPPid, Spindexer.Motif.GPP, PGPid, Spindexer.Motif.PGP, PPGid, Spindexer.Motif.PPG), robot);
 
     }
 

@@ -1,6 +1,7 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.AprilTagMotif;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
+import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 import org.firstinspires.ftc.teamcode.TeleOps.Spindexer.Motif;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -15,7 +16,7 @@ public class MotifDetector {
     VisionPortal portal;
     CameraName camera;
 
-    public MotifDetector(Map<Integer, Motif> motifMap, CameraName camera){
+    public MotifDetector(Map<Integer, Motif> motifMap, RobotHardware robot){
         this.motifMap = motifMap;
         processor = new AprilTagProcessor.Builder().build();
         portal = new VisionPortal.Builder()
@@ -23,7 +24,7 @@ public class MotifDetector {
                 .setCamera(camera)
                 .build();
         portal.setProcessorEnabled(processor,true);
-        this.camera = camera;
+        this.camera = robot.camera;
     }
 
     public void detectMotif(){
@@ -38,13 +39,5 @@ public class MotifDetector {
             portal.setProcessorEnabled(processor,false);
             portal = null;
         }
-    }
-
-    public void resetMotif(){
-        MotifMemorization.motif=null;
-        portal = new VisionPortal.Builder()
-                .addProcessor(processor)
-                .setCamera(camera)
-                .build();
     }
 }
