@@ -61,7 +61,6 @@ public class IntakeRunMode implements Action {
     public void FSMIntakeRun() {
         switch (currentState) {
             case INTAKE_INIT:
-                intakeTimer.reset();
                 SpindexerRunTo(0);
                 robot.leftGateServo.setPosition(gateUp);
                 robot.rightGateServo.setPosition(gateUp);
@@ -80,8 +79,6 @@ public class IntakeRunMode implements Action {
                 if (robot.distanceSensor.getDistance(DistanceUnit.MM) < 50) {
                     stateTimer.reset();
                     currentState = INTAKESTATE.INTAKE_PAUSE;
-                } else if (intakeTimer.seconds()>4) {
-                    currentState = INTAKESTATE.INTAKE_END;
                 } else {
                     currentState = INTAKESTATE.INTAKE_RUN;
                 }
