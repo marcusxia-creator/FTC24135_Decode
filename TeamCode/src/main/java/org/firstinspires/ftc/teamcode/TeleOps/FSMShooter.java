@@ -107,18 +107,18 @@ public class FSMShooter {
                 ShooterPowerSwitch();
                 // Press START an check toggle button true or false to determine slot order for motif
                 // check for targetColor
-                if (gamepad_2.getButton(GamepadKeys.Button.B)&&isButtonDebounced()){
+                if (gamepad_2.getButton(GamepadKeys.Button.B)){
                     gamepadManager.autoMotif.ToggleState=Boolean.TRUE;
                 }
                 if (gamepadManager.autoMotif.ToggleState && spindexer.checkMotif(motif)){
                     targetColour=spindexer.motifColour(motif);
                 }
 
-                if((!spindexer.checkFor(Spindexer.SLOT.Green)||(gamepad_2.getButton(GamepadKeys.Button.A)&&isButtonDebounced()))&& spindexer.checkFor(Spindexer.SLOT.Purple)){
+                if(!spindexer.checkFor(Spindexer.SLOT.Green)||gamepad_2.getButton(GamepadKeys.Button.B)){
                     targetColour = Spindexer.SLOT.Purple;
                     gamepadManager.autoMotif.ToggleState=Boolean.FALSE;
                 }
-                if((!spindexer.checkFor(Spindexer.SLOT.Purple)||(gamepad_2.getButton(GamepadKeys.Button.B)&&isButtonDebounced()))&& spindexer.checkFor(Spindexer.SLOT.Green)){
+                if(!spindexer.checkFor(Spindexer.SLOT.Purple)||gamepad_2.getButton(GamepadKeys.Button.A)){
                     targetColour = Spindexer.SLOT.Green;
                     gamepadManager.autoMotif.ToggleState=Boolean.FALSE;
                 }
