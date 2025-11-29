@@ -21,7 +21,7 @@ public class RobotActionConfig {
     //Speed
     public static double intakeSpeed                    = 0.6;
     public static double intakeStop                     = 0;
-    public static double ejectSpeed                     = 0.4;
+    public static double ejectSpeed                     = -0.4;
     public static double shooterVel                     = 1900;
     public static double shooterPower                   = 0.78;
     public static double shooterFactorThreshold         = 0.95;
@@ -32,7 +32,7 @@ public class RobotActionConfig {
     public static double getDistanceThreshold           =0.02;
 
     //Intake capture timing
-    public static double gateDownTime                   = 0.15;
+    public static double gateDownTime                   = 0.25;
     public static double SpindexerStartTime             = 0.7;
     public static double SpindexerMoveTime              = 0.5;
 

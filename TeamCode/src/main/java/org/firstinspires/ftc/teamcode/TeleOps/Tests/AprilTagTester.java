@@ -21,12 +21,13 @@ import java.util.Map;
 @TeleOp (name = "AprilTag Test", group = "org.firstinspires.ftc.teamcode")
 @Config
 public class AprilTagTester extends OpMode {
-    CameraName camera;
     MotifDetector motifDetector;
+    RobotHardware robot;
 
     public void init(){
-        camera = hardwareMap.get(CameraName.class, "Webcam1");
-        motifDetector = new MotifDetector(Map.of(GPPid, Motif.GPP, PGPid, Motif.PGP, PPGid, Motif.PPG), new RobotHardware(hardwareMap));//prob won't work
+        robot=new RobotHardware(hardwareMap);
+        robot.init();
+        motifDetector = new MotifDetector(Map.of(GPPid, Motif.GPP, PGPid, Motif.PGP, PPGid, Motif.PPG),robot);
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
     }
     public void start(){

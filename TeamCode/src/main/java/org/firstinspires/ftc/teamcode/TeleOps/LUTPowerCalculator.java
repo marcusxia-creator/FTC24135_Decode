@@ -24,7 +24,7 @@ public class LUTPowerCalculator {
         add(3, 0.78);//far zone
         add(2, 0.73); //mid zone
         add(1, 0.75); //near zone
-        add(0, 0.5);
+        add(0, 0.7);
 
     }};
 
