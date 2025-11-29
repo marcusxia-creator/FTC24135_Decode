@@ -91,7 +91,7 @@ public class RedSideFarAuto extends LinearOpMode {
                         shooter.ShooterOn(FarShotPower),
                         DriveToShoot1
                     ),
-                    shooter.ShooterRun(FarShotPower, 2),
+                    shooter.ShooterRun(FarShotPower, 1.8),
                     shooter.ShooterOff(),
                     IntakeSet1Drive1,
                     new ParallelAction(
@@ -106,7 +106,7 @@ public class RedSideFarAuto extends LinearOpMode {
                         shooter.ShooterOn(CloseShotPower),
                         DriveToShoot2
                     ),
-                    shooter.ShooterRun(CloseShotPower,0.3),
+                    shooter.ShooterRun(CloseShotPower,0.2),
                     shooter.ShooterOff(),
                     IntakeSet2Drive1,
                     new ParallelAction(
