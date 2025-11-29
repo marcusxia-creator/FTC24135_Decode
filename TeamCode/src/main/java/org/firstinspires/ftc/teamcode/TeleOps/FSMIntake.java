@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
@@ -20,8 +22,8 @@ public class FSMIntake {
 
         INTAKE_START,
         INTAKE_CAPTURE,
-
         INTAKE_STOP,
+        INTAKE_REVERSE,
         INTAKE_UNJAM
     }
 
@@ -59,17 +61,21 @@ public class FSMIntake {
         switch (intakeStates) {
             //start of intake FSM
             case INTAKE_IDLE:
-                if (gamepadManager.IntakeRun.PressState && spindexer.checkFor(Spindexer.SLOT.Empty)) {
-                    intakeStates = IntakeStates.INTAKE_START;
-                }
+            if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
+                intakeStates = IntakeStates.INTAKE_START;
+                reversing = false;
+                intakeTimer.reset();
+            }
                 break;
             //start intake motor
             case INTAKE_START:
                 boolean jammed = isIntakeJammmed();
+                robot.intakeMotor.setPower(intakeSpeed);
                 robot.leftGateServo.setPosition(gateUp);
                 robot.rightGateServo.setPosition(gateUp);
                 HandleIntaking(jammed);
-                if (robot.distanceSensor.getDistance(DistanceUnit.CM) < 10) {
+
+                if (robot.distanceSensor.getDistance(DistanceUnit.MM) < distanceThreshold) {
                     recorded = false;
                     intakeTimer.reset();
                     intakeStates = IntakeStates.INTAKE_CAPTURE;
@@ -82,8 +88,6 @@ public class FSMIntake {
                 //Put gates down
                 robot.leftGateServo.setPosition(gateDown);
                 robot.rightGateServo.setPosition(gateDown);
-                robot.intakeMotor.setPower(intakeSpeed);
-
                 if (intakeTimer.seconds() > gateDownTime && !recorded) {
                     spindexer.writeToCurrent(robot.colorSensor, robot.distanceSensor);
                     spindexer.runToSlot(Spindexer.SLOT.Empty);
@@ -107,41 +111,20 @@ public class FSMIntake {
                 robot.pushRampServo.setPosition(rampDownPos);
                 intakeStates = IntakeStates.INTAKE_IDLE;
                 break;
-            /*case INTAKE_UNJAM:
-                if (unjamTimer.seconds() > 0.1) {
-                    robot.intakeMotor.setPower(-0.5);
-                } else if (unjamTimer.seconds() > 0.5) {
-                    robot.intakeMotor.setPower(0);
-                }
-                if (unjamTimer.seconds() >= 0.5 && unjamTimer.seconds() < 0.75){
-                    spindexer.runToSlot(spindexer.prevSlot);
-                }
-                if (unjamTimer.seconds() > 0.75){
-                    robot.intakeMotor.setPower(intakeSpeed);
-                    unjamTimer.reset();
-                    intakeStates = IntakeStates.INTAKE_START;
+
+            case INTAKE_REVERSE:
+                if (intakeTimer.seconds()>0.5){
+                /// stop intake motor for reverse
+                robot.intakeMotor.setPower(0);
+                intakeStates = IntakeStates.INTAKE_IDLE;
                 }
                 break;
-
-             */
         }
 
-        if (gamepadManager.IntakeRun.PressState && isButtonDebounced()) {
-            if (intakeStates == IntakeStates.INTAKE_START || intakeStates == IntakeStates.INTAKE_CAPTURE) {
-                intakeStates = IntakeStates.INTAKE_STOP;
-            }
-        }
-        if (intakeStates == IntakeStates.INTAKE_START && !spindexer.checkFor(Spindexer.SLOT.Empty)){
-            intakeStates = IntakeStates.INTAKE_STOP;
-        }
-
-        if (gamepadManager.IntakeReverse.PressState) {
-            reversing = false;
-            robot.intakeMotor.setPower(ejectSpeed);
-
-            if (gamepadManager.IntakeReverse.PressState && isButtonDebounced()) {
-                intakeStates = IntakeStates.INTAKE_STOP;
-            }
+        if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
+                intakeTimer.reset();
+                robot.intakeMotor.setPower(ejectSpeed);
+                intakeStates = IntakeStates.INTAKE_REVERSE;
         }
     }
 

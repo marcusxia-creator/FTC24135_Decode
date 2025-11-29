@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -32,6 +33,9 @@ public class TestTeleOp extends OpMode {
     private static double voltage;
     private BallColor ballColor;
     private ColorDetection colorDetection;
+
+    double intakeSpeed = 0.5;
+    double depositSpeed = 0.7;
 
 
     @Override
@@ -103,16 +107,22 @@ public class TestTeleOp extends OpMode {
         }
         if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()){
             //speed = robot.shooterMotor.getPower() + 0.05;
-            robot.shooterMotor.setPower(Range.clip(power_setpoint,0.3,1.0));
+            //robot.shooterMotor.setPower(Range.clip(/*power_setpoint*/ 0.7,0.3,1.0));
+            robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            //robot.shooterMotor.setPower(Range.clip(depositSpeed, 0.3, 1.0));\
+            robot.shooterMotor.setPower(0.7);
+            depositSpeed += 0.05;
         }
         if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced()){
             robot.shooterMotor.setPower(0);
         }
-        if (gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER) && isButtonDebounced()){
+        if (gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER) && isButtonDebounced()) {
             robot.intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             speed = robot.intakeMotor.getPower() + 0.05;
             //robot.intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            robot.intakeMotor.setPower(Range.clip(speed,0.5,1.0));
+            //robot.intakeMotor.setPower(Range.clip(speed,0.5,1.0));
+            robot.intakeMotor.setPower(Range.clip(intakeSpeed, 0.5, 1.0));
+            intakeSpeed += 0.05;
         }
         if (gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER) && isButtonDebounced()){
             robot.intakeMotor.setPower(0);
