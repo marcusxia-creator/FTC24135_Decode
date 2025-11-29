@@ -107,7 +107,7 @@ public class BlueSideFarAuto extends LinearOpMode {
                         DriveToShoot2,
                         shooter.ShooterOn(CloseShotPower)
                     ),
-                    shooter.ShooterRun(CloseShotPower,0.3),
+                    shooter.ShooterRun(CloseShotPower,0.4),
                     shooter.ShooterOff(),
                     IntakeSet2Drive1,
                     new ParallelAction(
@@ -122,7 +122,7 @@ public class BlueSideFarAuto extends LinearOpMode {
                             DriveToShoot3,
                             shooter.ShooterOn(CloseShotPower)
                     ),
-                    shooter.ShooterRun(CloseShotPower, 0.5),
+                    shooter.ShooterRun(CloseShotPower, 0.4),
                     shooter.ShooterOff()
                 )
             );

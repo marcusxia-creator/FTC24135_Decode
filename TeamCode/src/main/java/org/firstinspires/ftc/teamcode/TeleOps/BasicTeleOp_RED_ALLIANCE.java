@@ -121,6 +121,25 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         else { //Default white
             robot.LED.setPosition(1.0);
         }
+        telemetryManagerSimplified();
+    }
+
+    @Override
+    public void stop() {
+        robot.frontLeftMotor.setPower(0);
+        robot.frontRightMotor.setPower(0);
+        robot.backLeftMotor.setPower(0);
+        robot.backRightMotor.setPower(0);
+    }
+    public boolean isButtonDebounced() {
+        if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+            debounceTimer.reset();
+            return true;
+        }
+        return false;
+    }
+
+    public void telemetryManager(){
         telemetry.addData("Intake State", FSMIntake.intakeStates);
         telemetry.addData("Sensor Distance", robot.distanceSensor.getDistance(DistanceUnit.MM));
         telemetry.addData("Sensor Color", colorDetection.getStableColor());
@@ -166,19 +185,39 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
         telemetry.update();
     }
-
-    @Override
-    public void stop() {
-        robot.frontLeftMotor.setPower(0);
-        robot.frontRightMotor.setPower(0);
-        robot.backLeftMotor.setPower(0);
-        robot.backRightMotor.setPower(0);
-    }
-    public boolean isButtonDebounced() {
-        if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
-            debounceTimer.reset();
-            return true;
+    public void telemetryManagerSimplified() {
+        telemetry.addLine("-----SPINDEXER-----");
+        telemetry.addData("Slot 0", spindexer.slots[0]);
+        telemetry.addData("Slot 1", spindexer.slots[1]);
+        telemetry.addData("Slot 2", spindexer.slots[2]);
+        telemetry.addData("Current Slot", spindexer.currentSlot);
+        telemetry.addLine("-----SHOOTER-----");
+        telemetry.addData("Shooter State", FSMShooter.shooterState);
+        String MotifEnabled;
+        if (gamepadManager.autoMotif.ToggleState) {
+            MotifEnabled = "Enabled";
+        } else {
+            MotifEnabled = "Disabled";
         }
-        return false;
+        String MotifAvailable;
+        if (spindexer.checkMotif(motif)) {
+            MotifAvailable = "Available";
+        } else {
+            MotifAvailable = "Not Available";
+        }
+        telemetry.addData("Auto Motif", String.join(", ", MotifEnabled, MotifAvailable));
+        if (motif == null) {
+            telemetry.addData("Motif", "null");
+        } else {
+            telemetry.addData("Motif", motif.name);
+        }
+        telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
+        telemetry.addData("power set point", FSMShooter.getPower_setpoint());
+        telemetry.addData("Shooter Power", robot.shooterMotor.getPower());
+        telemetry.addData("Shooter Power Mode", FSMShooter.shooterpowerstate);
+        telemetry.addLine("-----ROBOT-----");
+        telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
+        telemetry.addLine("-----INTAKE-----");
+        telemetry.addData("Intake State", FSMIntake.intakeStates);
     }
 }
