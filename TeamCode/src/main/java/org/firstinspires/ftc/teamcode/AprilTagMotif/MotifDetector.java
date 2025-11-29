@@ -15,17 +15,15 @@ public class MotifDetector {
     Map<Integer, Motif> motifMap;
     AprilTagProcessor processor;
     VisionPortal portal;
-    CameraName camera;
 
     public MotifDetector(Map<Integer, Motif> motifMap, RobotHardware robot){
         this.motifMap = motifMap;
         processor = new AprilTagProcessor.Builder().build();
         portal = new VisionPortal.Builder()
                 .addProcessor(processor)
-                .setCamera(camera)
+                .setCamera(robot.camera)
                 .build();
         portal.setProcessorEnabled(processor,true);
-        this.camera = robot.camera;
     }
 
     public void detectMotif(){
