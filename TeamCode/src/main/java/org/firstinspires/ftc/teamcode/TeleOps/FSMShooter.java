@@ -99,8 +99,8 @@ public class FSMShooter {
                 // Press 'X' to start spinning the flywheel
                 if (gamepad_2.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
                     shootTimer.reset();
-                    shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                     gamepadManager.autoMotif.ToggleState=Boolean.TRUE;
+                    shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                 }
                 break;
             case FLYWHEEL_RUNNING:
