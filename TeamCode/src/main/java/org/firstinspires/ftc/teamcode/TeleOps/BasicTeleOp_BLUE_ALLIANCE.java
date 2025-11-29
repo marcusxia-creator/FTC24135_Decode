@@ -87,6 +87,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         spindexer.runToSlot();
         spindexerManualControl.loop();
         robotDrive.DriveLoop();
+        gamepadInput.update();
 
         //reset pinpoint and alliance color
         if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN)) {

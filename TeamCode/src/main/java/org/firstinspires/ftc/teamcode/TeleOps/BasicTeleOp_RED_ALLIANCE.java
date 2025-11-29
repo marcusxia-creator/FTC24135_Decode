@@ -91,6 +91,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         spindexer.runToSlot();
         spindexerManualControl.loop();
         robotDrive.DriveLoop();
+        gamepadInput.update();
 
 
         if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
