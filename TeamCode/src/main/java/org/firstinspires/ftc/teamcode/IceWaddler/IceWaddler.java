@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.IceWaddler;
 
+import static org.firstinspires.ftc.teamcode.IceWaddler.IceWaddlerConfig.*;
+
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
@@ -44,6 +46,7 @@ public class IceWaddler {
 
     //Position to Power PID Controllers
     public PIDController pController;
+    public PIDController pLatController;
     public PIDController pRotController;
 
     //Position Pose2D object
@@ -94,11 +97,13 @@ public class IceWaddler {
         frontRightMotor = robot.frontRightMotor;
         backRightMotor  = robot.backRightMotor;
 
-        vController = fromCoeffs(IceWaddlerConfig.vController);
-        vRotController = fromCoeffs(IceWaddlerConfig.vRotController);
+        vController = fromCoeffs(vControllerCoeff);
+        vRotController = fromCoeffs(vRotControllerCoeff);
 
-        pController = fromCoeffs(IceWaddlerConfig.pController);
-        pRotController = fromCoeffs(IceWaddlerConfig.pRotController);
+        pController = fromCoeffs(pControllerCoeff);
+
+        pLatController = fromCoeffs(pLatControllerCoeff);
+        pRotController = fromCoeffs(pRotControllerCoeff);
 
         InitOdo(initPose);
         updateOdo();
@@ -109,9 +114,9 @@ public class IceWaddler {
     public void InitOdo(Pose2D initPose){
         odo = robot.odo;
 
-        odo.setOffsets(IceWaddlerConfig.odoXOffset, IceWaddlerConfig.odoYOffset); //these are tuned for 3110-0002-0001 Product Insight #1
-        odo.setEncoderResolution(IceWaddlerConfig.odoEncoderResolution);
-        odo.setEncoderDirections(IceWaddlerConfig.xEncoderDirection, IceWaddlerConfig.yEncoderDirection);
+        odo.setOffsets(odoXOffset, odoYOffset); //these are tuned for 3110-0002-0001 Product Insight #1
+        odo.setEncoderResolution(odoEncoderResolution);
+        odo.setEncoderDirections(xEncoderDirection, yEncoderDirection);
         //Set to start counting at initPose parameter
         odo.resetPosAndIMU();
         odo.setPosition(initPose);
@@ -148,13 +153,14 @@ public class IceWaddler {
         double x = robotCentricPower.getX(DistanceUnit.METER);
         double y = robotCentricPower.getY(DistanceUnit.METER);
         double rot = targetRotPower;
+        double fac = Math.min(1/(Math.abs(rot)+Math.abs(x)+Math.abs(y)),1);
 
         //Write to Mecanum drive
 
-        frontLeftMotor.setPower(x+y+rot);
-        backLeftMotor.setPower(x-y+rot); 
-        frontRightMotor.setPower(x-y-rot);
-        backRightMotor.setPower(x+y-rot);
+        frontLeftMotor.setPower((x+y+rot)*fac);
+        backLeftMotor.setPower((x-y+rot)*fac);
+        frontRightMotor.setPower((x-y-rot)*fac);
+        backRightMotor.setPower((x+y-rot)*fac);
     }
 
     public void zeroPower(){
@@ -204,7 +210,7 @@ public class IceWaddler {
         //Lateral PID correction
         double latDistance = (A*currentPos.getX(DistanceUnit.METER)+B*currentPos.getY(DistanceUnit.METER)+C)/
                 Math.sqrt(Math.pow(A,2)+Math.pow(B,2)); //From Desmos graph https://www.desmos.com/calculator/uw6fymsdjv
-        latCorrection = -pController.calculate(latDistance);
+        latCorrection = Range.clip(pLatController.calculate(latDistance), -Math.PI/2, Math.PI/2);
 
         //Action triggers
         distanceTraveled = Math.sqrt(Math.pow(distanceBetween(startingPos, currentPos, DistanceUnit.METER),2)-Math.pow(latDistance,2));
@@ -214,11 +220,11 @@ public class IceWaddler {
 
         //Deceleration if enabled
         if(decelerate) {
-            lonCorrection = Range.clip(Math.sqrt(Math.pow(IceWaddlerConfig.minSpeed, 2) + 2 * IceWaddlerConfig.maxDecel * distanceRemaining),
-                    IceWaddlerConfig.minSpeed, IceWaddlerConfig.maxSpeed); //From Desmos graph https://www.desmos.com/calculator/e7plnhpxva
+            lonCorrection = Range.clip(Math.sqrt(Math.pow(minSpeed, 2) + 2 * maxDecel * distanceRemaining),
+                    minSpeed, maxSpeed); //From Desmos graph https://www.desmos.com/calculator/e7plnhpxva
         }
         else {
-            lonCorrection = IceWaddlerConfig.maxSpeed;
+            lonCorrection = maxSpeed;
         }
         //PID will handle acceleration
 
@@ -235,12 +241,12 @@ public class IceWaddler {
 
         rotCorrection = pRotController.calculate(((currentPos.getHeading(AngleUnit.RADIANS)-rotSetpoint+Math.PI)%(2*Math.PI))-Math.PI);
 
-        Pose2D OrientedVel = new Pose2D(DistanceUnit.METER,lonCorrection , latCorrection, AngleUnit.RADIANS, 0);
+        Pose2D OrientedVel = new Pose2D(DistanceUnit.METER,lonCorrection, 0, AngleUnit.RADIANS, 0);
 
         //Align movement to line
         lineAngle = -Math.atan2(targetPos.getY(DistanceUnit.METER)-startingPos.getY(DistanceUnit.METER),targetPos.getX(DistanceUnit.METER)-startingPos.getX(DistanceUnit.METER));
 
-        targetVel = rotatePose(OrientedVel, AngleUnit.RADIANS, lineAngle);
+        targetVel = rotatePose(OrientedVel, AngleUnit.RADIANS, lineAngle + latCorrection);
         targetRotVel = rotCorrection;
         
         writeVel();
@@ -250,8 +256,8 @@ public class IceWaddler {
         targetRotVel = pRotController.calculate(currentPos.getHeading(AngleUnit.RADIANS),targetPos.getHeading(AngleUnit.RADIANS));
 
         targetVel = new Pose2D(DistanceUnit.METER,
-                Range.clip(-pController.calculate(currentPos.getX(DistanceUnit.METER),targetPos.getX(DistanceUnit.METER)),-IceWaddlerConfig.minSpeed,IceWaddlerConfig.minSpeed),
-                Range.clip(-pController.calculate(currentPos.getY(DistanceUnit.METER),targetPos.getY(DistanceUnit.METER)),-IceWaddlerConfig.minSpeed,IceWaddlerConfig.minSpeed),
+                Range.clip(-pController.calculate(currentPos.getX(DistanceUnit.METER),targetPos.getX(DistanceUnit.METER)),-minSpeed, minSpeed),
+                Range.clip(-pController.calculate(currentPos.getY(DistanceUnit.METER),targetPos.getY(DistanceUnit.METER)),-minSpeed, minSpeed),
                 AngleUnit.RADIANS, 0);
 
         writeVel();
@@ -375,7 +381,7 @@ public class IceWaddler {
             case RUN:
                 targetVel = new Pose2D(DistanceUnit.METER, 0, 0, AngleUnit.DEGREES, 0);
                 writePos();
-                if (distanceRemaining <= IceWaddlerConfig.tolerance || actionCompletion >= 1 || distanceBetween(startingPos,currentPos,DistanceUnit.METER)>distanceBetween(startingPos,targetPos,DistanceUnit.METER)) {
+                if (distanceRemaining <= tolerance || actionCompletion >= 1 || distanceBetween(startingPos,currentPos,DistanceUnit.METER)>distanceBetween(startingPos,targetPos,DistanceUnit.METER)) {
                     actionCompleted = true;
                     if (decelerate) {
                         zeroPower();

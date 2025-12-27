@@ -13,11 +13,12 @@ public class IceWaddlerConfig {
     public static GoBildaPinpointDriver.EncoderDirection xEncoderDirection      = GoBildaPinpointDriver.EncoderDirection.FORWARD;
     public static GoBildaPinpointDriver.EncoderDirection yEncoderDirection      = GoBildaPinpointDriver.EncoderDirection.REVERSED;
 
-    public static PIDCoefficients vController = new PIDCoefficients(0.6, 0, 0);
-    public static PIDCoefficients vRotController = new PIDCoefficients(0.08, 0, 0);
+    public static PIDCoefficients vControllerCoeff = new PIDCoefficients(0.6, 0, 0);
+    public static PIDCoefficients vRotControllerCoeff = new PIDCoefficients(0.08, 0, 0);
 
-    public static PIDCoefficients pController = new PIDCoefficients(10, 0, 0);
-    public static PIDCoefficients pRotController = new PIDCoefficients(10, 0, 0);
+    public static PIDCoefficients pControllerCoeff = new PIDCoefficients(10, 0, 0);
+    public static PIDCoefficients pRotControllerCoeff = new PIDCoefficients(10, 0, 0);
+    public static PIDCoefficients pLatControllerCoeff = new PIDCoefficients(0.4, 0, 0);
 
     //Positional control parameters
     public static double maxSpeed = 2;
