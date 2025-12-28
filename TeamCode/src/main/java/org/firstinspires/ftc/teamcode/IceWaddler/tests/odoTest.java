@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.IceWaddler.tests;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.INCH;
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.METER;
@@ -59,6 +60,7 @@ public class odoTest extends OpMode {
     }
 
     public void loop(){
+        iceWaddler.runByPower(new Pose2D(METER, gamepad1.right_stick_y, gamepad1.right_stick_x, DEGREES,0), gamepad1.left_stick_x);
         iceWaddler.loop();
         telemetry.addData("Current Pose",iceWaddler.currentPos);
 

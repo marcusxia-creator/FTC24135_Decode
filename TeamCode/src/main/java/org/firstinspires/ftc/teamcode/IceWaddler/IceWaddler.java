@@ -535,6 +535,7 @@ public class IceWaddler {
                     otos.begin();
                     break;
                 }
+                this.update();
             }
 
 

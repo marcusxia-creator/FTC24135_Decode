@@ -49,7 +49,7 @@ public class ColourTester extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        FtcDashboard dashboard = FtcDashboard.getInstance()
+        FtcDashboard dashboard = FtcDashboard.getInstance();
 
         telemetry=new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
@@ -57,7 +57,6 @@ public class ColourTester extends LinearOpMode {
         telemetry.update();
 
         while(opModeInInit()||opModeIsActive()){
-            telemetry.addData();
         }
     }
 }

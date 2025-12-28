@@ -59,7 +59,7 @@ class Range{
     }
 
     boolean check(ColorSensor colorSensor, DistanceSensor distanceSensor){
-        double x;
+        double x=0;
 
         float[] hsv=new float[3];
         Color.RGBToHSV(colorSensor.red(),colorSensor.green(), colorSensor.blue(), hsv);
