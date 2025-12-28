@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.IceWaddler;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
+import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.METER;
 import static org.firstinspires.ftc.teamcode.IceWaddler.IceWaddlerConfig.*;
 
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -25,7 +28,7 @@ public class IceWaddler {
     public DcMotorEx frontRightMotor;
     public DcMotorEx backRightMotor;
 
-    public GoBildaPinpointDriver odo;
+    public IWLocalizer odo;
 
     //global odo data
     public Pose2D currentPos;
@@ -63,7 +66,7 @@ public class IceWaddler {
     public double lonCorrection;
     public double rotCorrection;
     public double lineAngle;
-    
+
     //Path Variables
     public Action currentAction;
     public int currentActionIndex;
@@ -105,23 +108,11 @@ public class IceWaddler {
         pLatController = fromCoeffs(pLatControllerCoeff);
         pRotController = fromCoeffs(pRotControllerCoeff);
 
-        InitOdo(initPose);
+        odo=robot.IWodo;
+        this.odo.init(initPose);
         updateOdo();
 
         targetPos = initPose;
-    }
-
-    public void InitOdo(Pose2D initPose){
-        odo = robot.odo;
-
-        odo.setOffsets(odoXOffset, odoYOffset); //these are tuned for 3110-0002-0001 Product Insight #1
-        odo.setEncoderResolution(odoEncoderResolution);
-        odo.setEncoderDirections(xEncoderDirection, yEncoderDirection);
-        //Set to start counting at initPose parameter
-        odo.resetPosAndIMU();
-        odo.setPosition(initPose);
-
-        updateOdo();
     }
 
     public void updateOdo(){
@@ -148,10 +139,10 @@ public class IceWaddler {
 
     private void writePower(){
 
-        Pose2D robotCentricPower = rotatePose(targetPower, AngleUnit.RADIANS, currentPos.getHeading(AngleUnit.RADIANS));
+        Pose2D robotCentricPower = rotatePose(targetPower, RADIANS, currentPos.getHeading(RADIANS));
 
-        double x = robotCentricPower.getX(DistanceUnit.METER);
-        double y = robotCentricPower.getY(DistanceUnit.METER);
+        double x = robotCentricPower.getX(METER);
+        double y = robotCentricPower.getY(METER);
         double rot = targetRotPower;
         double fac = Math.min(1/(Math.abs(rot)+Math.abs(x)+Math.abs(y)),1);
 
@@ -164,7 +155,7 @@ public class IceWaddler {
     }
 
     public void zeroPower(){
-        targetPower = new Pose2D(DistanceUnit.METER, 0, 0, AngleUnit.DEGREES, 0);
+        targetPower = new Pose2D(METER, 0, 0, AngleUnit.DEGREES, 0);
         targetRotPower = 0;
         writePower();
     }
@@ -180,17 +171,17 @@ public class IceWaddler {
         targetRotPower = -vRotController.calculate(currentRotVel, targetRotVel);
 
         targetPower = new Pose2D(
-                DistanceUnit.METER,
-                vController.calculate(currentVel.getX(DistanceUnit.METER), targetVel.getX(DistanceUnit.METER)),
-                vController.calculate(-currentVel.getY(DistanceUnit.METER), targetVel.getY(DistanceUnit.METER)),
-                AngleUnit.RADIANS,
+                METER,
+                vController.calculate(currentVel.getX(METER), targetVel.getX(METER)),
+                vController.calculate(-currentVel.getY(METER), targetVel.getY(METER)),
+                RADIANS,
                 0);
         writePower();
     }
 
     public void brake(){
         targetRotVel = 0;
-        targetVel = new Pose2D(DistanceUnit.METER, 0, 0, AngleUnit.DEGREES, 0);
+        targetVel = new Pose2D(METER, 0, 0, AngleUnit.DEGREES, 0);
         writeVel();
     }
 
@@ -203,19 +194,19 @@ public class IceWaddler {
 
     private void writePos(){
         //Line Constants
-        double A = startingPos.getY(DistanceUnit.METER)-targetPos.getY(DistanceUnit.METER);
-        double B = targetPos.getX(DistanceUnit.METER)-startingPos.getX(DistanceUnit.METER);
-        double C = startingPos.getX(DistanceUnit.METER)*targetPos.getY(DistanceUnit.METER)-targetPos.getX(DistanceUnit.METER)*startingPos.getY(DistanceUnit.METER);
+        double A = startingPos.getY(METER)-targetPos.getY(METER);
+        double B = targetPos.getX(METER)-startingPos.getX(METER);
+        double C = startingPos.getX(METER)*targetPos.getY(METER)-targetPos.getX(METER)*startingPos.getY(METER);
         //Target line can be graphed as Ax+By+C=0
         //Lateral PID correction
-        double latDistance = (A*currentPos.getX(DistanceUnit.METER)+B*currentPos.getY(DistanceUnit.METER)+C)/
+        double latDistance = (A*currentPos.getX(METER)+B*currentPos.getY(METER)+C)/
                 Math.sqrt(Math.pow(A,2)+Math.pow(B,2)); //From Desmos graph https://www.desmos.com/calculator/uw6fymsdjv
         latCorrection = Range.clip(pLatController.calculate(latDistance), -Math.PI/2, Math.PI/2);
 
         //Action triggers
-        distanceTraveled = Math.sqrt(Math.pow(distanceBetween(startingPos, currentPos, DistanceUnit.METER),2)-Math.pow(latDistance,2));
-        distanceRemaining = Math.sqrt(Math.pow(distanceBetween(currentPos, targetPos, DistanceUnit.METER),2)-Math.pow(latDistance,2));
-        double totalDistance = distanceBetween(startingPos, targetPos, DistanceUnit.METER);
+        distanceTraveled = Math.sqrt(Math.pow(distanceBetween(startingPos, currentPos, METER),2)-Math.pow(latDistance,2));
+        distanceRemaining = Math.sqrt(Math.pow(distanceBetween(currentPos, targetPos, METER),2)-Math.pow(latDistance,2));
+        double totalDistance = distanceBetween(startingPos, targetPos, METER);
         actionCompletion = distanceTraveled/totalDistance;
 
         //Deceleration if enabled
@@ -237,32 +228,32 @@ public class IceWaddler {
             modOffset = -2*Math.PI;
         }
 
-        double rotSetpoint = startingPos.getHeading(AngleUnit.RADIANS)+actionCompletion*(targetPos.getHeading(AngleUnit.RADIANS)-startingPos.getHeading(AngleUnit.RADIANS)+modOffset);
+        double rotSetpoint = startingPos.getHeading(RADIANS)+actionCompletion*(targetPos.getHeading(RADIANS)-startingPos.getHeading(RADIANS)+modOffset);
 
-        rotCorrection = pRotController.calculate(((currentPos.getHeading(AngleUnit.RADIANS)-rotSetpoint+Math.PI)%(2*Math.PI))-Math.PI);
+        rotCorrection = pRotController.calculate(((currentPos.getHeading(RADIANS)-rotSetpoint+Math.PI)%(2*Math.PI))-Math.PI);
 
-        Pose2D OrientedVel = new Pose2D(DistanceUnit.METER,lonCorrection, 0, AngleUnit.RADIANS, 0);
+        Pose2D OrientedVel = new Pose2D(METER,lonCorrection, 0, RADIANS, 0);
 
         //Align movement to line
-        lineAngle = -Math.atan2(targetPos.getY(DistanceUnit.METER)-startingPos.getY(DistanceUnit.METER),targetPos.getX(DistanceUnit.METER)-startingPos.getX(DistanceUnit.METER));
+        lineAngle = -Math.atan2(targetPos.getY(METER)-startingPos.getY(METER),targetPos.getX(METER)-startingPos.getX(METER));
 
-        targetVel = rotatePose(OrientedVel, AngleUnit.RADIANS, lineAngle + latCorrection);
+        targetVel = rotatePose(OrientedVel, RADIANS, lineAngle + latCorrection);
         targetRotVel = rotCorrection;
-        
+
         writeVel();
     }
 
     private void holdPos(){
-        targetRotVel = pRotController.calculate(currentPos.getHeading(AngleUnit.RADIANS),targetPos.getHeading(AngleUnit.RADIANS));
+        targetRotVel = pRotController.calculate(currentPos.getHeading(RADIANS),targetPos.getHeading(RADIANS));
 
-        targetVel = new Pose2D(DistanceUnit.METER,
-                Range.clip(-pController.calculate(currentPos.getX(DistanceUnit.METER),targetPos.getX(DistanceUnit.METER)),-minSpeed, minSpeed),
-                Range.clip(-pController.calculate(currentPos.getY(DistanceUnit.METER),targetPos.getY(DistanceUnit.METER)),-minSpeed, minSpeed),
-                AngleUnit.RADIANS, 0);
+        targetVel = new Pose2D(METER,
+                Range.clip(-pController.calculate(currentPos.getX(METER),targetPos.getX(METER)),-minSpeed, minSpeed),
+                Range.clip(-pController.calculate(currentPos.getY(METER),targetPos.getY(METER)),-minSpeed, minSpeed),
+                RADIANS, 0);
 
         writeVel();
     }
-    
+
     public void runPath(List<Action> path){
         controlMode=CONTROLMODE.PATH;
         this.path=path;
@@ -295,7 +286,7 @@ public class IceWaddler {
             case POWER:
                 //Apply robot centric with fresh odo data
                 if(!fieldCentric){
-                    targetPower=rotatePose(targetPower, AngleUnit.RADIANS, -currentPos.getHeading(AngleUnit.RADIANS));
+                    targetPower=rotatePose(targetPower, RADIANS, -currentPos.getHeading(RADIANS));
                 }
                 writePower();
                 break;
@@ -303,7 +294,7 @@ public class IceWaddler {
             case VELOCITY:
                 //Apply robot centric with fresh odo data
                 if(!fieldCentric){
-                    targetVel=rotatePose(targetVel, AngleUnit.RADIANS, -currentPos.getHeading(AngleUnit.RADIANS));
+                    targetVel=rotatePose(targetVel, RADIANS, -currentPos.getHeading(RADIANS));
                 }
                 writeVel();
                 break;
@@ -311,7 +302,7 @@ public class IceWaddler {
             case POSITION:
                 writePos();
                 break;
-                
+
             case PATH:
                 writePath();
                 break;
@@ -325,14 +316,14 @@ public class IceWaddler {
     //Helper Functions
     private Pose2D rotatePose(Pose2D pose, AngleUnit angleUnit, double angle){
 
-        angle=AngleUnit.RADIANS.fromUnit(angleUnit,angle);
+        angle= RADIANS.fromUnit(angleUnit,angle);
 
         return new Pose2D(
-                DistanceUnit.METER,
-                pose.getX(DistanceUnit.METER)*Math.cos(angle)-pose.getY(DistanceUnit.METER)*Math.sin(angle),
-                pose.getX(DistanceUnit.METER)*Math.sin(angle)+pose.getY(DistanceUnit.METER)*Math.cos(angle),
-                AngleUnit.RADIANS,
-                pose.getHeading(AngleUnit.RADIANS)
+                METER,
+                pose.getX(METER)*Math.cos(angle)-pose.getY(METER)*Math.sin(angle),
+                pose.getX(METER)*Math.sin(angle)+pose.getY(METER)*Math.cos(angle),
+                RADIANS,
+                pose.getHeading(RADIANS)
         );
     }
 
@@ -379,9 +370,9 @@ public class IceWaddler {
 
         switch(currentAction.actionType){
             case RUN:
-                targetVel = new Pose2D(DistanceUnit.METER, 0, 0, AngleUnit.DEGREES, 0);
+                targetVel = new Pose2D(METER, 0, 0, AngleUnit.DEGREES, 0);
                 writePos();
-                if (distanceRemaining <= tolerance || actionCompletion >= 1 || distanceBetween(startingPos,currentPos,DistanceUnit.METER)>distanceBetween(startingPos,targetPos,DistanceUnit.METER)) {
+                if (distanceRemaining <= tolerance || actionCompletion >= 1 || distanceBetween(startingPos,currentPos, METER)>distanceBetween(startingPos,targetPos, METER)) {
                     actionCompleted = true;
                     if (decelerate) {
                         zeroPower();
@@ -417,7 +408,7 @@ public class IceWaddler {
                         break;
 
                     case POS:
-                        if (Math.abs(currentPos.getX(DistanceUnit.CM)-targetPos.getX(DistanceUnit.CM))<=currentAction.pTolorance &&
+                        if (Math.abs(currentPos.getX(METER)-targetPos.getX(METER))<=currentAction.pTolorance &&
                                 Math.abs(currentPos.getHeading(AngleUnit.DEGREES)-targetPos.getHeading(AngleUnit.DEGREES))<=currentAction.hTolorance){
                             actionCompleted = true;
                         }
@@ -495,6 +486,107 @@ public class IceWaddler {
             this.terminationtype = TERMINATIONTYPE.POS;
             this.pTolorance = pTolorance;
             this.hTolorance = hTolorance;
+        }
+    }
+
+    public static class IWLocalizer{
+        public enum ODOType{
+            goBildaPinpoint,
+            OTOS
+        }
+        ODOType odoType;
+        GoBildaPinpointDriver goBildaPinpointDriver;
+        SparkFunOTOS otos;
+
+        public IWLocalizer(GoBildaPinpointDriver goBildaPinpointDriver){
+            this.goBildaPinpointDriver = goBildaPinpointDriver;
+            odoType=ODOType.goBildaPinpoint;
+        }
+
+        public IWLocalizer(SparkFunOTOS otos){
+            this.otos = otos;
+            odoType=ODOType.OTOS;
+        }
+
+        public void init(Pose2D initPose){
+            switch(odoType){
+                case goBildaPinpoint:
+                    goBildaPinpointDriver.setOffsets(odoXOffset, odoYOffset);
+                    goBildaPinpointDriver.setEncoderResolution(odoEncoderResolution);
+                    goBildaPinpointDriver.setEncoderDirections(xEncoderDirection, yEncoderDirection);
+                    //Set to start counting at initPose parameter
+                    goBildaPinpointDriver.resetPosAndIMU();
+                    goBildaPinpointDriver.setPosition(initPose);
+                    break;
+
+                case OTOS:
+                    otos.setLinearUnit(METER);
+                    otos.setAngularUnit(RADIANS);
+
+                    otos.setLinearScalar(1.0);
+                    otos.setAngularScalar(1.0);
+
+                    otos.setOffset(new SparkFunOTOS.Pose2D(OTOSOffset.getX(METER),OTOSOffset.getY(METER),OTOSOffset.getHeading(RADIANS)));
+
+                    otos.calibrateImu();
+                    otos.resetTracking();
+                    otos.setPosition(new SparkFunOTOS.Pose2D(initPose.getX(METER),initPose.getY(METER),initPose.getHeading(RADIANS)));
+
+                    otos.begin();
+                    break;
+                }
+            }
+
+
+        public void update() {
+            switch(odoType){
+                case goBildaPinpoint:
+                    goBildaPinpointDriver.update();
+                    break;
+                case OTOS:
+                    break;
+            }
+        }
+
+        public Pose2D getPosition(){
+            Pose2D output=null;
+            switch(odoType) {
+                case goBildaPinpoint:
+                    output=goBildaPinpointDriver.getPosition();
+                break;
+                case OTOS:
+                    SparkFunOTOS.Pose2D input = otos.getPosition();
+                    output=new Pose2D(METER, input.x, input.y, RADIANS, input.h);
+                break;
+            }
+            return output;
+        }
+
+        public Pose2D getVelocity(){
+            Pose2D output=null;
+            switch(odoType) {
+                case goBildaPinpoint:
+                    output=goBildaPinpointDriver.getVelocity();
+                    break;
+                case OTOS:
+                    SparkFunOTOS.Pose2D input = otos.getVelocity();
+                    output=new Pose2D(METER, input.x, input.y, RADIANS, input.h);
+                    break;
+            }
+            return output;
+        }
+
+        public double getHeadingVelocity(){
+            double output=0;
+            switch(odoType) {
+                case goBildaPinpoint:
+                    output=goBildaPinpointDriver.getHeadingVelocity();
+                    break;
+                case OTOS:
+                    output=otos.getVelocity().h;
+                    break;
+            }
+            return output;
         }
     }
 }

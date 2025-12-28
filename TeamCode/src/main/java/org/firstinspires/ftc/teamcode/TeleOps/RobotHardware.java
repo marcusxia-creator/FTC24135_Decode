@@ -2,27 +2,22 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.qualcomm.robotcore.hardware.configuration.WebcamConfiguration;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Auto.drive.GoBildaPinpointDriver;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler;
 
 import java.util.List;
 import java.util.ArrayList;
 
 
-import java.util.ArrayList;
 import java.util.Collections;
 
 /*
@@ -91,6 +86,7 @@ public class RobotHardware {
     public HardwareMap hardwareMap;
     public ArrayList <VoltageSensor> voltageSensors;
     public GoBildaPinpointDriver odo;
+    public IceWaddler.IWLocalizer IWodo;
 
     private double vEma = 12.0;                 // EMA state
     public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
@@ -146,6 +142,8 @@ public class RobotHardware {
         backRightMotor.setPower(0);
 
         odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
+
+        IWodo = new IceWaddler.IWLocalizer(odo);
 
 
 
