@@ -39,14 +39,21 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private static double voltage;
     private BallColor ballColor;
     private ColorDetection colorDetection;
+    public RobotActionState actionStates;
 
     public enum Alliance {
         RED_ALLIANCE,
         BLUE_ALLIANCE
     }
 
-    public static Alliance alliance;
+    public enum RobotActionState {
+        Sequence_Shooting,
+        Sort_Shooting,
+        Intaking,
+        Idle
 
+    }
+    public static Alliance alliance;
 
     @Override
     public void init() {
@@ -87,12 +94,16 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         gamepadManager.loop();
         FSMShooter.ShooterLoop();
         FSMIntake.loop();
-        //?? need comments
-        spindexer.runToSlot();
         spindexerManualControl.loop();
         robotDrive.DriveLoop();
         gamepadInput.update();
 
+        switch (actionStates){
+            case Sequence_Shooting:
+            case Sort_Shooting:
+            case Intaking:
+            case Idle:
+        }
 
 
         if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
