@@ -56,6 +56,7 @@ public class IceWaddler {
     public Pose2D startingPos;
     public Pose2D targetPos;
     public boolean decelerate;
+    public double tolorance=stopTolerance;
 
     //Publicly referencable variables for actions
     public double distanceTraveled;
@@ -230,7 +231,7 @@ public class IceWaddler {
 
         double rotSetpoint = startingPos.getHeading(RADIANS)+actionCompletion*(targetPos.getHeading(RADIANS)-startingPos.getHeading(RADIANS)+modOffset);
 
-        rotCorrection = pRotController.calculate(((currentPos.getHeading(RADIANS)-rotSetpoint+Math.PI)%(2*Math.PI))-Math.PI);
+        rotCorrection = -pRotController.calculate(floorMod((currentPos.getHeading(RADIANS)-rotSetpoint+Math.PI),(2*Math.PI))-Math.PI);
 
         Pose2D OrientedVel = new Pose2D(METER,lonCorrection, 0, RADIANS, 0);
 
@@ -244,7 +245,7 @@ public class IceWaddler {
     }
 
     private void holdPos(){
-        targetRotVel = pRotController.calculate(currentPos.getHeading(RADIANS),targetPos.getHeading(RADIANS));
+        targetRotVel = -pRotController.calculate(floorMod((currentPos.getHeading(RADIANS)-targetPos.getHeading(RADIANS)+21*Math.PI),(2*Math.PI))-Math.PI);;
 
         targetVel = new Pose2D(METER,
                 Range.clip(-pController.calculate(currentPos.getX(METER),targetPos.getX(METER)),-minSpeed, minSpeed),
@@ -338,6 +339,9 @@ public class IceWaddler {
         return new PIDController(Coeffs.p, Coeffs.i, Coeffs.d);
     }
 
+    private double floorMod(double x, double y){
+        return x-(Math.floor(x/y)*y);
+    }
 
     //Action Managers
     private void actionInit(){
@@ -348,7 +352,9 @@ public class IceWaddler {
             case RUN:
                 startingPos = currentAction.startingPos;
                 targetPos = currentAction.targetPos;
+                tolorance = currentAction.threshold;
                 decelerate = currentAction.decelerate;
+                maxDecel = currentAction.speed;
                 break;
 
             case HOLD:
@@ -372,7 +378,7 @@ public class IceWaddler {
             case RUN:
                 targetVel = new Pose2D(METER, 0, 0, AngleUnit.DEGREES, 0);
                 writePos();
-                if (distanceRemaining <= tolerance || actionCompletion >= 1 || distanceBetween(startingPos,currentPos, METER)>distanceBetween(startingPos,targetPos, METER)) {
+                if (distanceRemaining <= tolorance || actionCompletion >= 1 || distanceBetween(startingPos,currentPos, METER)>distanceBetween(startingPos,targetPos, METER)) {
                     actionCompleted = true;
                     if (decelerate) {
                         zeroPower();
@@ -444,6 +450,8 @@ public class IceWaddler {
             POS
         }
 
+        public String[] IDs;
+
         //Delay Termination Variables
         public double delayLength;
 
@@ -454,38 +462,46 @@ public class IceWaddler {
         //Run variables
         public Pose2D startingPos;
         public Pose2D targetPos;
+        public double speed;
         public boolean decelerate;
+        public double threshold; //For transitions
 
         //Run Action
-        public Action(Pose2D startingPos, Pose2D targetPos, boolean decelerate){
+        public Action(Pose2D startingPos, Pose2D targetPos, double speed, boolean decelerate, double threshold, String[] IDs){
             this.actionType = ACTIONTYPE.RUN;
             this.startingPos = startingPos;
+            this.speed = speed;
             this.targetPos = targetPos;
             this.decelerate = decelerate;
+            this.threshold = threshold;
+            this.IDs = IDs;
         }
 
         //No Termination
-        public Action(HOLDTYPE holdtype) {
+        public Action(HOLDTYPE holdtype, String[] IDs) {
             this.actionType = ACTIONTYPE.HOLD;
             this.holdtype = holdtype;
             this.terminationtype= TERMINATIONTYPE.NONE;
+            this.IDs = IDs;
         }
 
         //Time Termination
-        public Action(HOLDTYPE holdtype, double delayLength) {
+        public Action(HOLDTYPE holdtype, double delayLength, String[] IDs) {
             this.actionType = ACTIONTYPE.HOLD;
             this.holdtype = holdtype;
             this.terminationtype = TERMINATIONTYPE.TIME;
             this.delayLength = delayLength;
+            this.IDs = IDs;
         }
 
         //Position Termination; All units are CM and DEG
-        public Action(double pTolorance, double hTolorance) {
+        public Action(double pTolorance, double hTolorance, String[] IDs) {
             this.actionType = ACTIONTYPE.HOLD;
             this.holdtype = HOLDTYPE.POS;
             this.terminationtype = TERMINATIONTYPE.POS;
             this.pTolorance = pTolorance;
             this.hTolorance = hTolorance;
+            this.IDs = IDs;
         }
     }
 

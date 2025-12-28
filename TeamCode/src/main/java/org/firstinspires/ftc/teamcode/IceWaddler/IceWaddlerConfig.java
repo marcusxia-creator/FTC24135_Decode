@@ -17,9 +17,9 @@ public class IceWaddlerConfig {
     public static GoBildaPinpointDriver.EncoderDirection yEncoderDirection      = GoBildaPinpointDriver.EncoderDirection.REVERSED;
 
     //Otos Settings
-    public static Pose2D OTOSOffset = new Pose2D(DistanceUnit.INCH, 10, 0, AngleUnit.DEGREES, 90); //Sample
+    public static Pose2D OTOSOffset = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, -90); //Sample
 
-    public static PIDCoefficients vControllerCoeff    = new PIDCoefficients(0.6, 0, 0);
+    public static PIDCoefficients vControllerCoeff    = new PIDCoefficients(0.5, 0, 0);
     public static PIDCoefficients vRotControllerCoeff = new PIDCoefficients(0.08, 0, 0);
 
     public static PIDCoefficients pControllerCoeff    = new PIDCoefficients(10, 0, 0);
@@ -29,6 +29,6 @@ public class IceWaddlerConfig {
     //Positional control parameters
     public static double maxSpeed = 2;
     public static double minSpeed = 0.1;
-    public static double maxDecel = 1.3;
-    public static double tolerance = 0.005;
+    public static double maxDecel = 0.7;
+    public static double stopTolerance = 0.005;
 }

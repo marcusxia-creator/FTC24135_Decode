@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -77,7 +78,7 @@ public class RobotHardware {
 
     //public ColorSensor colorSensor;// Color Sensor
     ///for debug colorSensor
-    ColorSensor colorSensor;
+    //ColorSensor colorSensor;
     DistanceSensor distanceSensor;
 
     ///public DigitalChannel limitSwitch;// Limit Switch
@@ -85,7 +86,7 @@ public class RobotHardware {
     public IMU imu; //IMU
     public HardwareMap hardwareMap;
     public ArrayList <VoltageSensor> voltageSensors;
-    public GoBildaPinpointDriver odo;
+    public SparkFunOTOS odo; //Gobilda Pinpoint if needed
     public IceWaddler.IWLocalizer IWodo;
 
     private double vEma = 12.0;                 // EMA state
@@ -109,8 +110,8 @@ public class RobotHardware {
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
 
-        colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "colorSensor");
+        //colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
+        //distanceSensor = hardwareMap.get(DistanceSensor.class, "colorSensor");
 
 
         frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -141,7 +142,8 @@ public class RobotHardware {
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
 
-        odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
+        // odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo"); with pinpoint computer
+        odo = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
 
         IWodo = new IceWaddler.IWLocalizer(odo);
 
