@@ -44,7 +44,7 @@ public class odoTest extends OpMode {
         robot.init(hardwareMap);
 
         iceWaddler=new IceWaddler(robot);
-        iceWaddler.Init(CONTROLMODE.POWER,initPose,true);
+        iceWaddler.Init(CONTROLMODE.POWER,initPose,false);
 
         dashboard=FtcDashboard.getInstance();
         telemetry=new MultipleTelemetry(telemetry,dashboard.getTelemetry());
@@ -62,13 +62,13 @@ public class odoTest extends OpMode {
     }
 
     public void loop(){
-        iceWaddler.runByPower(new Pose2D(METER, 0.5*gamepad1.right_stick_x, 0.5*gamepad1.right_stick_y, DEGREES,0), 0.3*gamepad1.left_stick_x);
+        iceWaddler.runByPower(new Pose2D(METER, 0.5*gamepad1.right_stick_y, 0.5*gamepad1.right_stick_x, DEGREES,0), 0.3*gamepad1.left_stick_x);
         iceWaddler.loop();
         telemetry.addData("Current Pose",iceWaddler.currentPos);
 
         double x=iceWaddler.currentPos.getX(INCH);
         double y=iceWaddler.currentPos.getY(INCH);
-        double h=-iceWaddler.currentPos.getHeading(RADIANS);
+        double h=-iceWaddler.currentPos.getHeading(RADIANS)-PI/2;
         TelemetryPacket packet=new TelemetryPacket(true);
         packet.fieldOverlay()
                 .setAlpha(0.25)

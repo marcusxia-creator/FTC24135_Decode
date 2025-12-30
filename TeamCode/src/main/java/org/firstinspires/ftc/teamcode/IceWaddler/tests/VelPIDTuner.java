@@ -42,7 +42,7 @@ public class VelPIDTuner extends OpMode {
         robot.init(hardwareMap);
 
         iceWaddler = new IceWaddler(robot);
-        iceWaddler.Init(IceWaddler.CONTROLMODE.POWER, initPose, true);
+        iceWaddler.Init(IceWaddler.CONTROLMODE.POWER, initPose, false);
 
         dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
@@ -52,10 +52,9 @@ public class VelPIDTuner extends OpMode {
     }
 
     public void loop(){
-        iceWaddler.runByVel(new Pose2D(METER, 2*gamepad1.right_stick_x, 2*gamepad1.right_stick_y, DEGREES,0), 30*gamepad1.left_stick_x);
+        iceWaddler.runByVel(new Pose2D(METER, 4*gamepad1.right_stick_y, 4*gamepad1.right_stick_x, DEGREES,0), 20*gamepad1.left_stick_x);
         iceWaddler.loop();
         telemetry.addData("Current Pose",iceWaddler.currentPos);
-
         telemetry.addData("xVel",iceWaddler.currentVel.getX(METER));
         telemetry.addData("TxVel",iceWaddler.targetVel.getX(METER));
         telemetry.addData("xPow",iceWaddler.targetPower.getX(METER));

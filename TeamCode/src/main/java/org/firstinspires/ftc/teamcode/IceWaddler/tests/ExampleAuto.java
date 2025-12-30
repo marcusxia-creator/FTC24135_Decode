@@ -41,7 +41,7 @@ public class ExampleAuto extends OpMode {
     }
 
     public void start(){
-        iceWaddler.runPath(ExamplePath.path);
+        iceWaddler.runPath(ExamplePath.ShootPath);
     }
 
     public void loop(){
@@ -53,17 +53,17 @@ public class ExampleAuto extends OpMode {
         TelemetryPacket packet = new TelemetryPacket();
         double x=iceWaddler.currentPos.getX(INCH);
         double y=iceWaddler.currentPos.getY(INCH);
-        double h=-iceWaddler.currentPos.getHeading(RADIANS);
+        double h=-iceWaddler.currentPos.getHeading(RADIANS)-PI/2;
         packet.fieldOverlay()
                 .setAlpha(0.25)
                 .setFill("white")
                 .fillPolygon(   new double[]{x, x+9*sin(h), x+sqrt(162)*sin(h+PI/4),    x+sqrt(162)*sin(h+3*PI/4),  x+sqrt(162)*sin(h-3*PI/4),  x+sqrt(162)*sin(h-PI/4),    x+9*sin(h)},
-                        new double[]{y, y+9*cos(h), y+sqrt(162)*cos(h+PI/4),    y+sqrt(162)*cos(h+3*PI/4),  y+sqrt(162)*cos(h-3*PI/4),  y+sqrt(162)*cos(h-PI/4),    y+9*cos(h)})
+                                new double[]{y, y+9*cos(h), y+sqrt(162)*cos(h+PI/4),    y+sqrt(162)*cos(h+3*PI/4),  y+sqrt(162)*cos(h-3*PI/4),  y+sqrt(162)*cos(h-PI/4),    y+9*cos(h)})
                 .setAlpha(1)
                 .setStroke("white")
                 .setStrokeWidth(2)
                 .strokePolygon( new double[]{x, x+9*sin(h), x+sqrt(162)*sin(h+PI/4),    x+sqrt(162)*sin(h+3*PI/4),  x+sqrt(162)*sin(h-3*PI/4),  x+sqrt(162)*sin(h-PI/4),    x+9*sin(h)},
-                        new double[]{y, y+9*cos(h), y+sqrt(162)*cos(h+PI/4),    y+sqrt(162)*cos(h+3*PI/4),  y+sqrt(162)*cos(h-3*PI/4),  y+sqrt(162)*cos(h-PI/4),    y+9*cos(h)})
+                                new double[]{y, y+9*cos(h), y+sqrt(162)*cos(h+PI/4),    y+sqrt(162)*cos(h+3*PI/4),  y+sqrt(162)*cos(h-3*PI/4),  y+sqrt(162)*cos(h-PI/4),    y+9*cos(h)})
                 .setStroke("green")
                 .setStrokeWidth(1);
 
@@ -75,6 +75,15 @@ public class ExampleAuto extends OpMode {
             telemetry.addData("rot Correction", iceWaddler.rotCorrection);
             telemetry.addData("Distance Remaining", iceWaddler.distanceRemaining);
             telemetry.addData("Completion", iceWaddler.actionCompletion);
+
+            double modOffset = 0; //To minimize required movement, see Desmos graph https://www.desmos.com/calculator/zbjvqscngx
+            if(iceWaddler.startingPos.getHeading(AngleUnit.DEGREES)-iceWaddler.targetPos.getHeading(AngleUnit.DEGREES)<-180){
+                modOffset = 2*Math.PI;
+            }
+            else if(iceWaddler.startingPos.getHeading(AngleUnit.DEGREES)-iceWaddler.targetPos.getHeading(AngleUnit.DEGREES)>180){
+                modOffset = -2*Math.PI;
+            }
+            telemetry.addData("RotSetpoint", iceWaddler.startingPos.getHeading(RADIANS)+iceWaddler.actionCompletion*(iceWaddler.targetPos.getHeading(RADIANS)-iceWaddler.startingPos.getHeading(RADIANS)+modOffset));
         }
 
         if(iceWaddler.currentAction.actionType == ACTIONTYPE.HOLD){

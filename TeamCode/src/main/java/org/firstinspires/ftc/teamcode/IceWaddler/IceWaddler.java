@@ -145,7 +145,7 @@ public class IceWaddler {
         double x = robotCentricPower.getX(METER);
         double y = robotCentricPower.getY(METER);
         double rot = targetRotPower;
-        double fac = Math.min(1/(Math.abs(rot)+Math.abs(x)+Math.abs(y)),1);
+        double fac = Math.min(1/(Math.abs(rot)+Math.abs(x)+Math.abs(y)),1.5);
 
         //Write to Mecanum drive
 
@@ -202,7 +202,7 @@ public class IceWaddler {
         //Lateral PID correction
         double latDistance = (A*currentPos.getX(METER)+B*currentPos.getY(METER)+C)/
                 Math.sqrt(Math.pow(A,2)+Math.pow(B,2)); //From Desmos graph https://www.desmos.com/calculator/uw6fymsdjv
-        latCorrection = Range.clip(pLatController.calculate(latDistance), -Math.PI/2, Math.PI/2);
+        latCorrection = Range.clip(-pLatController.calculate(latDistance), -Math.PI/2, Math.PI/2);
 
         //Action triggers
         distanceTraveled = Math.sqrt(Math.pow(distanceBetween(startingPos, currentPos, METER),2)-Math.pow(latDistance,2));
@@ -229,7 +229,7 @@ public class IceWaddler {
             modOffset = -2*Math.PI;
         }
 
-        double rotSetpoint = startingPos.getHeading(RADIANS)+actionCompletion*(targetPos.getHeading(RADIANS)-startingPos.getHeading(RADIANS)+modOffset);
+        double rotSetpoint = floorMod(startingPos.getHeading(RADIANS)+actionCompletion*(targetPos.getHeading(RADIANS)-startingPos.getHeading(RADIANS)+modOffset),2*Math.PI);
 
         rotCorrection = -pRotController.calculate(floorMod((currentPos.getHeading(RADIANS)-rotSetpoint+Math.PI),(2*Math.PI))-Math.PI);
 
