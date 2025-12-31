@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.util.LUT;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -10,26 +11,34 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 public class LUTPowerCalculator {
 
     private RobotHardware robot;
+    private PIDController pidController;
 
     private double distance;
     private int zone = 0;
+
+    private double tickToRPM = (double) 60 / 28;
+
+    private int maxVelocity = 4500;
 
     private final Pose2D redGoalPose = new Pose2D(DistanceUnit.INCH, -70, 70, AngleUnit.DEGREES, -45);
     private final Pose2D blueGoalPose = new Pose2D(DistanceUnit.INCH, -70, -70, AngleUnit.DEGREES, 45);
 
     private Pose2D actualGoalPose = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
 
-    LUT<Integer, Double> power = new LUT<Integer, Double>()
+    private final double p = 5, i = 0, d = 0;
+
+    LUT<Integer, Integer> targetRPM = new LUT<Integer, Integer>()
     {{
-        add(3, 0.78);//far zone
-        add(2, 0.73); //mid zone
-        add(1, 0.75); //near zone
-        add(0, 0.7);
+        add(3, 3000);//far zone
+        add(2, 2500); //mid zone
+        add(1, 2000); //near zone
+        add(0, 1500); //Not in shooting zone
 
     }};
 
     public LUTPowerCalculator(RobotHardware robot) {
         this.robot = robot;
+        pidController = new PIDController(p, i, d);
     }
 
     public void setAlliance (boolean isRedAlliance) {
@@ -61,7 +70,11 @@ public class LUTPowerCalculator {
         else {
             zone = 0;
         }
-        return power.get(zone);
+
+        double current = (robot.shooterMotor.getVelocity() * tickToRPM) / maxVelocity;
+        double target = targetRPM.get(zone) / maxVelocity;
+
+        return pidController.calculate(current, target);
     }
 
     public double getAngle() {
