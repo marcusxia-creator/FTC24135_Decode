@@ -8,12 +8,10 @@ public class SpindexerManualControl {
     RobotHardware robot;
     Spindexer spindexer;
     GamepadInput gamepadInput;
-    GamepadManager gamepadManager;
     ElapsedTime debounceTimer = new ElapsedTime();
-    public SpindexerManualControl(RobotHardware robot, Spindexer spindexer, GamepadManager gamepadManager, GamepadInput gamepadInput){
+    public SpindexerManualControl(RobotHardware robot, Spindexer spindexer, GamepadInput gamepadInput){
         this.robot=robot;
         this.spindexer=spindexer;
-        this.gamepadManager=gamepadManager;
         this.gamepadInput=gamepadInput;
     }
     public void loop() {
@@ -27,9 +25,6 @@ public class SpindexerManualControl {
             spindexer.runToSlot(spindexer.currentSlot+1);
         }
 
-        if(gamepadManager.reDetc.PressState){
-            spindexer.writeToCurrent(robot.colorSensor, robot.distanceSensor);
-        }
     }
 
     private boolean isButtonDebounced() {

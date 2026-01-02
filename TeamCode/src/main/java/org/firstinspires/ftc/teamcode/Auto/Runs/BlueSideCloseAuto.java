@@ -36,7 +36,7 @@ public class BlueSideCloseAuto extends LinearOpMode {
         robot.init();
         Shooter shooter = new Shooter(robot);
 
-        robot.spindexerServo.setPosition(spindexerSlot2);
+        robot.leftSpindexerServo.setPosition(spindexerSlot2);
         robot.rightGateServo.setPosition(gateDown);
         robot.leftGateServo.setPosition(gateDown);
         robot.pushRampServo.setPosition(rampDownPos);
