@@ -109,13 +109,16 @@ public class Spindexer {
     public void runToSlot(){
         currentSlot = Math.floorMod(currentSlot,3);
         if(currentSlot==0){
-            robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
+            robot.leftSpindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
+            robot.rightSpindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
         }
         if(currentSlot==1){
-            robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
+            robot.leftSpindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
+            robot.rightSpindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
         }
         if(currentSlot==2){
-            robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot2);
+            robot.leftSpindexerServo.setPosition(RobotActionConfig.spindexerSlot2);
+            robot.rightSpindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
         }
     }
 

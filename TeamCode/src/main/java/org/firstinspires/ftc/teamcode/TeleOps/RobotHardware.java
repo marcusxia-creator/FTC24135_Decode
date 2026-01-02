@@ -77,10 +77,9 @@ public class RobotHardware {
     public DcMotorEx backLeftMotor;
     public DcMotorEx frontRightMotor;
     public DcMotorEx backRightMotor;
-    public Servo pushRampServo;
-    public Servo spindexerServo;
-    public Servo leftGateServo;
-    public Servo rightGateServo;
+    public Servo kickerServo;
+    public Servo leftSpindexerServo;
+    public Servo rightSpindexerServo;
     public DcMotorEx shooterMotor;
     public DcMotorEx intakeMotor;
     public DcMotorEx turretMotor;
@@ -126,11 +125,9 @@ public class RobotHardware {
         turretMotor = hardwareMap.get(DcMotorEx.class, "Turret_Motor");
         //Servos
         //angleServo = hardwareMap.get(Servo.class, "Angle_Servo");
-        pushRampServo = hardwareMap.get(Servo.class, "Ramp_Servo");
-        spindexerServo = hardwareMap.get(Servo.class, "Spindexer_Servo");
-        leftGateServo = hardwareMap.get(Servo.class, "Left_Gate_Servo");
-        leftGateServo.setDirection(Servo.Direction.REVERSE);
-        rightGateServo = hardwareMap.get(Servo.class, "Right_Gate_Servo");
+        kickerServo = hardwareMap.get(Servo.class, "Kicker_Servo");
+        leftSpindexerServo = hardwareMap.get(Servo.class, "Left_Spindexer_Servo");
+        rightSpindexerServo = hardwareMap.get(Servo.class, "Right_Spindexer_Servo");
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         imu = hardwareMap.get(IMU.class, "imu");

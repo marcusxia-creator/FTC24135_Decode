@@ -17,7 +17,7 @@ public class FSMIntake {
      * Green: 120 - 130, 145 - 160
      */
 
-    private enum IntakeStates {
+    public enum IntakeStates {
         INTAKE_IDLE,
 
         INTAKE_START,
@@ -28,9 +28,9 @@ public class FSMIntake {
 
     public IntakeStates intakeStates = IntakeStates.INTAKE_IDLE;
 
-    private ElapsedTime debounceTimer = new ElapsedTime();
     private ElapsedTime unjamTimer = new ElapsedTime();
     private ElapsedTime jammedTimer = new ElapsedTime();
+    private ElapsedTime reverseTimer = new ElapsedTime();
     private double DEBOUNCE_THRESHOLD = 0.25;
 
     private ElapsedTime intakeTimer = new ElapsedTime();
@@ -43,41 +43,33 @@ public class FSMIntake {
 
 
     Spindexer spindexer;
-    GamepadManager gamepadManager;
 
     boolean recorded;
 
-    public FSMIntake(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, Spindexer spindexer, GamepadManager gamepadManager) {
+    public FSMIntake(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, Spindexer spindexer) {
         this.robot = robot;
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
 
         this.spindexer = spindexer;
-        this.gamepadManager = gamepadManager;
     }
-
     public void loop() {
         switch (intakeStates) {
             //start of intake FSM
             case INTAKE_IDLE:
-            if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
                 reversing = false;
                 intakeTimer.reset();
-                intakeStates = IntakeStates.INTAKE_START;
-            }
                 break;
             //start intake motor
             case INTAKE_START:
                 boolean jammed = isIntakeJammmed();
                 robot.intakeMotor.setPower(intakeSpeed);
                 HandleIntaking(jammed);
-
                 if (robot.distanceSensor.getDistance(DistanceUnit.MM) < distanceThreshold) {
                     recorded = false;
                     intakeTimer.reset();
                     intakeStates = IntakeStates.INTAKE_CAPTURE;
                 }
-
                 break;
             //ball goes into spindxer
             case INTAKE_CAPTURE:
@@ -88,7 +80,6 @@ public class FSMIntake {
                     spindexer.runToSlot(Spindexer.SLOT.Empty);
                     recorded = true;
                 }
-
                 if (intakeTimer.seconds() > SpindexerMoveTime) {
                     if (spindexer.checkFor(Spindexer.SLOT.Empty)) {
                         intakeStates = IntakeStates.INTAKE_START;
@@ -101,9 +92,6 @@ public class FSMIntake {
             case INTAKE_STOP:
                 robot.intakeMotor.setPower(0);
                 robot.shooterMotor.setPower(0);
-                robot.leftGateServo.setPosition(gateDown);
-                robot.rightGateServo.setPosition(gateDown);
-                robot.pushRampServo.setPosition(rampDownPos);
                 intakeStates = IntakeStates.INTAKE_IDLE;
                 break;
 
@@ -115,21 +103,8 @@ public class FSMIntake {
                 }
                 break;
         }
-
-        if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
-                intakeTimer.reset();
-                robot.intakeMotor.setPower(ejectSpeed);
-                intakeStates = IntakeStates.INTAKE_REVERSE;
-        }
     }
 
-    private boolean isButtonDebounced() {
-        if (debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
-            debounceTimer.reset();
-            return true;
-        }
-        return false;
-    }
 
     private boolean isIntakeJammmed() {
         double intakeTicksPerSecond = robot.intakeMotor.getVelocity();
@@ -140,6 +115,9 @@ public class FSMIntake {
             }
         }
         return false;
+    }
+    public void Reversing (){
+        reversing = true;
     }
     private void HandleIntaking (boolean jammed) {
         if (jammed && !reversing){

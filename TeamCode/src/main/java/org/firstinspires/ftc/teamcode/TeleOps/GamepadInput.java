@@ -102,7 +102,6 @@ public class GamepadInput {
 
     public boolean getDriverBackSinglePressed() {
         if (dBackSingleConsumed || dComboConsumed) return false;
-
         boolean result = !dLb.isDown() && dB.wasJustPressed();
         if (result) dBackSingleConsumed = true;
         return result;
