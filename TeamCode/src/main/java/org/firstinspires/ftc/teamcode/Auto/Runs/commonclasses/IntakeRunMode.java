@@ -48,13 +48,13 @@ public class IntakeRunMode implements Action {
 
     public void SpindexerRunTo(int slot){
         if(slot==0){
-            robot.spindexerServo.setPosition(spindexerSlot0);
+            robot.leftSpindexerServo.setPosition(spindexerSlot0);
         }
         if(slot==1){
-            robot.spindexerServo.setPosition(spindexerSlot1);
+            robot.leftSpindexerServo.setPosition(spindexerSlot1);
         }
         if(slot==2){
-            robot.spindexerServo.setPosition(spindexerSlot2);
+            robot.leftSpindexerServo.setPosition(spindexerSlot2);
         }
     }
 
@@ -62,13 +62,9 @@ public class IntakeRunMode implements Action {
         switch (currentState) {
             case INTAKE_INIT:
                 SpindexerRunTo(0);
-                robot.leftGateServo.setPosition(gateUp);
-                robot.rightGateServo.setPosition(gateUp);
                 currentState = INTAKESTATE.INTAKE_READY;
                 break;
             case INTAKE_READY:
-                robot.leftGateServo.setPosition(gateUp);
-                robot.rightGateServo.setPosition(gateUp);
                 currentState = INTAKESTATE.INTAKE_RUN;
                 break;
             case INTAKE_RUN:
@@ -85,8 +81,6 @@ public class IntakeRunMode implements Action {
                 break;
             case INTAKE_PAUSE:
                 robot.intakeMotor.setPower(intakeStop);
-                robot.leftGateServo.setPosition(gateDown);
-                robot.rightGateServo.setPosition(gateDown);
                 if (stateTimer.seconds()>0.2) {
                     targetSlot++;
                     currentState = INTAKESTATE.INTAKE_INDEX;

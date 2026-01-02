@@ -20,12 +20,12 @@ public class Limelight {
 
     public void init(int apriltagID) {
         if (apriltagID == 24) {
-            robot.limelight3A.pipelineSwitch(0);
+            robot.limelight.pipelineSwitch(0);
         }
     }
 
     public void start() {
-        robot.limelight3A.start();
+        robot.limelight.start();
     }
 
     public Pose2D updateTagMT2(DistanceUnit distanceUnit) {
@@ -36,8 +36,8 @@ public class Limelight {
             conversionFactor = 1000;
         }
         double yaw = robot.external_imu.getAngularOrientation().firstAngle;
-        robot.limelight3A.updateRobotOrientation(yaw);
-        LLResult llResult = robot.limelight3A.getLatestResult();
+        robot.limelight.updateRobotOrientation(yaw);
+        LLResult llResult = robot.limelight.getLatestResult();
         if (llResult != null && llResult.isValid()) {
             Pose3D robotPose3D = llResult.getBotpose_MT2();
             return new Pose2D(distanceUnit, robotPose3D.getPosition().x * conversionFactor, robotPose3D.getPosition().y * conversionFactor, AngleUnit.DEGREES, robotPose3D.getOrientation().getYaw());

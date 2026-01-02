@@ -57,10 +57,7 @@ public class TestTeleOp extends OpMode {
         shooterPowerAngleCalculator = new ShooterPowerAngleCalculator(robot);
         robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
 
-        robot.pushRampServo.setPosition(RobotActionConfig.rampDownPos);
-        robot.leftGateServo.setPosition(RobotActionConfig.gateUp);
-        robot.rightGateServo.setPosition(RobotActionConfig.gateUp);
-        robot.spindexerServo.setPosition(RobotActionConfig.spindexerReset);
+        robot.leftSpindexerServo.setPosition(RobotActionConfig.spindexerReset);
 
         colorDetection = new ColorDetection(robot);
 
@@ -78,43 +75,27 @@ public class TestTeleOp extends OpMode {
         ballColor = BallColor.fromHue(colorDetection.getHue());
 
 
-        if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
-            servoposition = robot.pushRampServo.getPosition() + 0.01;
-            robot.pushRampServo.setPosition(Range.clip(servoposition, 0.0, 1.0
-            ));
-        }
-        if (gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
-            servoposition = robot.pushRampServo.getPosition() - 0.01;
-            robot.pushRampServo.setPosition(Range.clip(servoposition, 0, 1));
-        }
+
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
-            servoposition = robot.spindexerServo.getPosition() + 0.01;
-            robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
+            servoposition = robot.leftSpindexerServo.getPosition() + 0.01;
+            robot.leftSpindexerServo.setPosition(Range.clip(servoposition, 0, 1));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
-            servoposition = robot.spindexerServo.getPosition() - 0.01;
-            robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
+            servoposition = robot.leftSpindexerServo.getPosition() - 0.01;
+            robot.leftSpindexerServo.setPosition(Range.clip(servoposition, 0, 1));
+
         }
-        if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && isButtonDebounced()) {
-            servoposition = robot.leftGateServo.getPosition() + 0.01;
-            robot.leftGateServo.setPosition(Range.clip(servoposition, 0, 1));
-            robot.rightGateServo.setPosition(Range.clip(servoposition,0,1));
-        }
-        if (gamepad_1.getButton(GamepadKeys.Button.DPAD_DOWN) && isButtonDebounced()) {
-            servoposition = robot.leftGateServo.getPosition() - 0.01;
-            robot.leftGateServo.setPosition(Range.clip(servoposition, 0, 1));
-            robot.rightGateServo.setPosition(Range.clip(servoposition,0,1));
-        }
+
         if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()){
             //speed = robot.shooterMotor.getPower() + 0.05;
             //robot.shooterMotor.setPower(Range.clip(/*power_setpoint*/ 0.7,0.3,1.0));
-            robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.topShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             //robot.shooterMotor.setPower(Range.clip(depositSpeed, 0.3, 1.0));\
-            robot.shooterMotor.setPower(0.7);
+            robot.topShooterMotor.setPower(0.7);
             depositSpeed += 0.05;
         }
         if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced()){
-            robot.shooterMotor.setPower(0);
+            robot.topShooterMotor.setPower(0);
         }
         if (gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER) && isButtonDebounced()) {
             robot.intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -142,12 +123,9 @@ public class TestTeleOp extends OpMode {
         else {
            robot.LED.setPosition(1.0);
         }
-
-        telemetry.addData("Ramp Position", robot.pushRampServo.getPosition());
-        telemetry.addData("Left Gate Position", robot.leftGateServo.getPosition());
-        telemetry.addData("Right Gate Position", robot.rightGateServo.getPosition());
-        telemetry.addData("Spindexer Position", robot.spindexerServo.getPosition());
-        telemetry.addData("Shooter Speed", robot.shooterMotor.getPower());
+        telemetry.addLine("----------------------------------------------------");
+        telemetry.addData("Spindexer Position", robot.leftSpindexerServo.getPosition());
+        telemetry.addData("Shooter Speed", robot.topShooterMotor.getPower());
         telemetry.addData("Intake Speed", robot.intakeMotor.getPower());
         telemetry.addLine("----------------------------------------------------");
         telemetry.addData("Pose 2D", robot.pinpoint.getPosition());
@@ -155,7 +133,7 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("Robot Voltage", robot.getBatteryVoltageRobust());
         telemetry.addData("Shooter Power Setpoint", speed);
         telemetry.addData("Shooter Actual Power Setpoint", power_setpoint);
-        telemetry.addData("Shooter Motor Power Reading", robot.shooterMotor.getPower());
+        telemetry.addData("Shooter Motor Power Reading", robot.topShooterMotor.getPower());
         telemetry.addData("Shooter Motor Power Calculator", shooterPowerAngleCalculator.getPower());
         telemetry.addLine("----------------------------------------------------");
         telemetry.addData("Color", ballColor);

@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.BNO055IMUNew;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -16,11 +16,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -77,31 +73,39 @@ public class RobotHardware {
     public DcMotorEx backLeftMotor;
     public DcMotorEx frontRightMotor;
     public DcMotorEx backRightMotor;
+    public DcMotorEx topShooterMotor;
+    public DcMotorEx bottomShooterMotor;
+    public DcMotorEx intakeMotor;
+    //servos
+    //public Servo angleServo;
     public Servo kickerServo;
     public Servo leftSpindexerServo;
     public Servo rightSpindexerServo;
-    public DcMotorEx shooterMotor;
-    public DcMotorEx intakeMotor;
-    public DcMotorEx turretMotor;
-    private RevHubOrientationOnRobot revHubOrientationOnRobot;
+    public Servo shooterAdjusterServo;
+    //
+    //public Servo leftGateServo;
+    //public Servo rightGateServo;
+    //limit switch
+    public DigitalChannel limitSwitch;
 
     //public ColorSensor colorSensor;// Color Sensor
     ///for debug colorSensor
     public ColorSensor colorSensor;
     public DistanceSensor distanceSensor;
 
+
     ///public DigitalChannel limitSwitch;// Limit Switch
 
     public IMU imu; //IMU
-    public BNO055IMU external_imu;
+    public Limelight3A limelight;
+
     public GoBildaPinpointDriver pinpoint;
 
     public HardwareMap hardwareMap;
     public ArrayList <VoltageSensor> voltageSensors;
 
     public Servo LED;
-
-    public Limelight3A limelight3A;
+    public BNO055IMU external_imu;
 
     private double vEma = 12.0;                 // EMA state
     public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
@@ -120,29 +124,36 @@ public class RobotHardware {
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "BL_Motor");
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
-        shooterMotor = hardwareMap.get(DcMotorEx.class, "Shooter_Motor");
+        /** shooter Motors*/
+        topShooterMotor = hardwareMap.get(DcMotorEx.class, "Top_Shooter_Motor");
+        bottomShooterMotor = hardwareMap.get(DcMotorEx.class, "Bottom_Shooter_Motor");
+        /** Intake Motor*/
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
-        turretMotor = hardwareMap.get(DcMotorEx.class, "Turret_Motor");
         //Servos
         //angleServo = hardwareMap.get(Servo.class, "Angle_Servo");
         kickerServo = hardwareMap.get(Servo.class, "Kicker_Servo");
         leftSpindexerServo = hardwareMap.get(Servo.class, "Left_Spindexer_Servo");
         rightSpindexerServo = hardwareMap.get(Servo.class, "Right_Spindexer_Servo");
+        shooterAdjusterServo = hardwareMap.get(Servo.class, "Shooter_Adjuster_Servo");
+        //leftGateServo = hardwareMap.get(Servo.class, "Left_Gate_Servo");
+        //leftGateServo.setDirection(Servo.Direction.REVERSE);
+        //rightGateServo = hardwareMap.get(Servo.class, "Right_Gate_Servo");
+        //color sensor
+        colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "Color_Sensor"); // same device
+        //limit switch
+        //limitSwitch = hardwareMap.get(DigitalChannel.class, "LimitSwitch");
+        //limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        imu = hardwareMap.get(IMU.class, "imu");
-
-        revHubOrientationOnRobot = new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.LEFT);
-
-        imu.initialize(new IMU.Parameters(revHubOrientationOnRobot));
 
         LED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
 
-        limelight3A = hardwareMap.get(Limelight3A.class, "LimeLight3A");
-
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
+
+        limelight = hardwareMap.get(Limelight3A.class, "LimeLight3A");
+
+
         //Reset the drive train motor encoders
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -157,17 +168,21 @@ public class RobotHardware {
 
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        // set robot motor power 0
+        /**Set run mode of intake motors*/
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        /**set run mode of shooter Motor*/
+        topShooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        bottomShooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        topShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        bottomShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        topShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        spindexerServo.setDirection(Servo.Direction.REVERSE);
+        /** set spindexservo direction*/
+        leftSpindexerServo.setDirection(Servo.Direction.REVERSE);
 
-        shooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        // set robot motor power 0
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
@@ -188,7 +203,6 @@ public class RobotHardware {
         imu.initialize(myIMUparameters);
         imu.resetYaw();
     }
-
     public void initExternalIMU(){
         external_imu = hardwareMap.get(BNO055IMU.class, "external_imu");
         BNO055IMU.Parameters myBNOIMUparameters = new BNO055IMU.Parameters();
@@ -200,6 +214,7 @@ public class RobotHardware {
         myBNOIMUparameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         external_imu.initialize(myBNOIMUparameters);
     }
+
     public void initPinpoint() {
         pinpoint.setOffsets(92.4, -143, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);

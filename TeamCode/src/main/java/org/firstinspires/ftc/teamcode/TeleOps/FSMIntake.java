@@ -91,7 +91,8 @@ public class FSMIntake {
 
             case INTAKE_STOP:
                 robot.intakeMotor.setPower(0);
-                robot.shooterMotor.setPower(0);
+                robot.topShooterMotor.setPower(0);
+                robot.bottomShooterMotor.setPower(0);
                 intakeStates = IntakeStates.INTAKE_IDLE;
                 break;
 
@@ -118,6 +119,7 @@ public class FSMIntake {
     }
     public void Reversing (){
         reversing = true;
+        unjamTimer.reset();
     }
     private void HandleIntaking (boolean jammed) {
         if (jammed && !reversing){

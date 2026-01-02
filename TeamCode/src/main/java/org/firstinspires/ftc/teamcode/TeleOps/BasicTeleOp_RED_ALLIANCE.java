@@ -40,8 +40,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private GamepadEx gamepadCo1, gamepadCo2;
     private GamepadInput gamepadInput;
     private RobotDrive robotDrive;
-    private FSMShooter FSMShooter;
-    private FSMIntake FSMIntake;
+    FSMShooter FSMShooter;
+    FSMIntake FSMIntake;
     private ElapsedTime debounceTimer = new ElapsedTime();
     /// ----------------------------------------------------------------
     /**
@@ -199,9 +199,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("voltage from Shooter", FSMShooter.getVoltage());
         telemetry.addData("voltage from robot", robot.getBatteryVoltageRobust());
         telemetry.addData("power set point", FSMShooter.getPower_setpoint());
-        telemetry.addData("Shooter Power", robot.shooterMotor.getPower());
-        telemetry.addData("Shooter Velocity", robot.shooterMotor.getVelocity());
-        telemetry.addData("Shooter Motor Mode", robot.shooterMotor.getMode());
+        telemetry.addData("Shooter Power", robot.topShooterMotor.getPower());
+        telemetry.addData("Shooter Velocity", robot.topShooterMotor.getVelocity());
+        telemetry.addData("Shooter Motor Mode", robot.topShooterMotor.getMode());
         telemetry.addLine("-----");
         String MotifAvailable;
         if (spindexer.checkMotif(motif)) {MotifAvailable = "Available";} else {MotifAvailable = "Not Available";}
@@ -238,7 +238,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
         telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
         telemetry.addData("power set point", FSMShooter.getPower_setpoint());
-        telemetry.addData("Shooter Power", robot.shooterMotor.getPower());
+        telemetry.addData("Shooter Power", robot.topShooterMotor.getPower());
         telemetry.addLine("-----ROBOT-----");
         telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
         telemetry.addLine("-----INTAKE-----");

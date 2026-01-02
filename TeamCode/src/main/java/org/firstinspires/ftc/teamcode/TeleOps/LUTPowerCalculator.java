@@ -94,7 +94,7 @@ public class LUTPowerCalculator {
         }
 
         //Normalize target and current values
-        double current = (robot.shooterMotor.getVelocity() * tickToRPM) / maxVelocity;
+        double current = (robot.topShooterMotor.getVelocity() * tickToRPM) / maxVelocity;
         double target = targetRPM.get(zone) / maxVelocity; //Uses zone to get target rpm
 
         //Returns the power for the motor base on PID controller
