@@ -24,7 +24,6 @@ public class FSMIntake {
         INTAKE_CAPTURE,
         INTAKE_STOP,
         INTAKE_REVERSE,
-        INTAKE_UNJAM
     }
 
     public IntakeStates intakeStates = IntakeStates.INTAKE_IDLE;
@@ -62,17 +61,15 @@ public class FSMIntake {
             //start of intake FSM
             case INTAKE_IDLE:
             if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
-                intakeStates = IntakeStates.INTAKE_START;
                 reversing = false;
                 intakeTimer.reset();
+                intakeStates = IntakeStates.INTAKE_START;
             }
                 break;
             //start intake motor
             case INTAKE_START:
                 boolean jammed = isIntakeJammmed();
                 robot.intakeMotor.setPower(intakeSpeed);
-                robot.leftGateServo.setPosition(gateUp);
-                robot.rightGateServo.setPosition(gateUp);
                 HandleIntaking(jammed);
 
                 if (robot.distanceSensor.getDistance(DistanceUnit.MM) < distanceThreshold) {
@@ -86,8 +83,6 @@ public class FSMIntake {
             case INTAKE_CAPTURE:
                 robot.intakeMotor.setPower(intakeSpeed);
                 //Put gates down
-                robot.leftGateServo.setPosition(gateDown);
-                robot.rightGateServo.setPosition(gateDown);
                 if (intakeTimer.seconds() > gateDownTime && !recorded) {
                     spindexer.writeToCurrent(robot.colorSensor, robot.distanceSensor);
                     spindexer.runToSlot(Spindexer.SLOT.Empty);
