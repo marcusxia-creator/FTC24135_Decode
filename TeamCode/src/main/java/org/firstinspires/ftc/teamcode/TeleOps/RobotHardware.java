@@ -83,6 +83,7 @@ public class RobotHardware {
     public Servo rightGateServo;
     public DcMotorEx shooterMotor;
     public DcMotorEx intakeMotor;
+    public DcMotorEx turretMotor;
     private RevHubOrientationOnRobot revHubOrientationOnRobot;
 
     //public ColorSensor colorSensor;// Color Sensor
@@ -122,6 +123,7 @@ public class RobotHardware {
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
         shooterMotor = hardwareMap.get(DcMotorEx.class, "Shooter_Motor");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
+        turretMotor = hardwareMap.get(DcMotorEx.class, "Turret_Motor");
         //Servos
         //angleServo = hardwareMap.get(Servo.class, "Angle_Servo");
         pushRampServo = hardwareMap.get(Servo.class, "Ramp_Servo");
@@ -161,6 +163,9 @@ public class RobotHardware {
         // set robot motor power 0
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         spindexerServo.setDirection(Servo.Direction.REVERSE);
 
