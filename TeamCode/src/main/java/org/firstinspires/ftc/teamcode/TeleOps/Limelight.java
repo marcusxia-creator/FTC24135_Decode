@@ -18,7 +18,7 @@ public class Limelight {
         this.robot = robot;
     }
 
-    public void init(int apriltagID) {
+    public void initLimelight(int apriltagID) {
         if (apriltagID == 24) {
             robot.limelight.pipelineSwitch(0);
         }
@@ -34,6 +34,9 @@ public class Limelight {
         }
         if (distanceUnit == DistanceUnit.MM) {
             conversionFactor = 1000;
+        }
+        else {
+            throw new IllegalArgumentException("Distance Unit can only be in INCH or MM");
         }
         double yaw = robot.external_imu.getAngularOrientation().firstAngle;
         robot.limelight.updateRobotOrientation(yaw);
