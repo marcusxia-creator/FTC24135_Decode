@@ -22,11 +22,11 @@ public class VelTuner extends OpMode {
         robot.init();
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        robot.shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.topShooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void loop(){
-        robot.shooterMotor.setPower(power);
-        telemetry.addData("Vel", robot.shooterMotor.getVelocity());
+        robot.topShooterMotor.setPower(power);
+        telemetry.addData("Vel", robot.topShooterMotor.getVelocity());
     }
 }

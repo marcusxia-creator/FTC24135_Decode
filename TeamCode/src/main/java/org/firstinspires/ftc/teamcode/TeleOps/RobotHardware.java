@@ -179,9 +179,6 @@ public class RobotHardware {
         bottomShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         topShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        /** set spindexservo direction*/
-        leftSpindexerServo.setDirection(Servo.Direction.REVERSE);
-
         // set robot motor power 0
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);

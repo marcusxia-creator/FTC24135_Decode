@@ -74,15 +74,18 @@ public class TestTeleOp extends OpMode {
         robotDrive.DriveLoop();
         ballColor = BallColor.fromHue(colorDetection.getHue());
 
-
-
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
             servoposition = robot.leftSpindexerServo.getPosition() + 0.01;
+            servoposition = robot.rightSpindexerServo.getPosition() + 0.01;
             robot.leftSpindexerServo.setPosition(Range.clip(servoposition, 0, 1));
+            robot.rightSpindexerServo.setPosition(Range.clip(servoposition, 0, 1));
+
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
             servoposition = robot.leftSpindexerServo.getPosition() - 0.01;
+            servoposition = robot.rightSpindexerServo.getPosition() - 0.01;
             robot.leftSpindexerServo.setPosition(Range.clip(servoposition, 0, 1));
+            robot.rightSpindexerServo.setPosition(Range.clip(servoposition, 0, 1));
 
         }
 
@@ -124,7 +127,8 @@ public class TestTeleOp extends OpMode {
            robot.LED.setPosition(1.0);
         }
         telemetry.addLine("----------------------------------------------------");
-        telemetry.addData("Spindexer Position", robot.leftSpindexerServo.getPosition());
+        telemetry.addData("Left Spindexer Position", robot.leftSpindexerServo.getPosition());
+        telemetry.addData("Right Spindexer Position", robot.rightSpindexerServo.getPosition());
         telemetry.addData("Shooter Speed", robot.topShooterMotor.getPower());
         telemetry.addData("Intake Speed", robot.intakeMotor.getPower());
         telemetry.addLine("----------------------------------------------------");
