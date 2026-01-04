@@ -18,7 +18,7 @@ public class Turret {
     }
 
     public int motorDriveTick() {
-        return (int) Math.round(getTurretDriveAngle() / angleToTick);
+        return (int) Math.round(getTurretDriveAngle() * angleToTick);
     }
 
     public double getTurretDriveAngle () {
@@ -33,11 +33,11 @@ public class Turret {
     }
 
     public double getTurretMotorAngle(){
-        return (robot.turretMotor.getCurrentPosition() / tickToAngle);
+        return (robot.turretMotor.getCurrentPosition() * tickToAngle);
     }
 
     public double getTargetAngle () {
-        return (180 - Math.toDegrees(Math.atan(robot.pinpoint.getPosY(DistanceUnit.INCH) / robot.pinpoint.getPosX(DistanceUnit.INCH))));
+        return Math.toDegrees(Math.atan(robot.pinpoint.getPosY(DistanceUnit.INCH) / robot.pinpoint.getPosX(DistanceUnit.INCH)));
     }
 
 }

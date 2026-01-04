@@ -172,6 +172,7 @@ public class RobotHardware {
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
