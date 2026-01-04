@@ -63,10 +63,12 @@ public class FSMShooter {
     }
 
     public void Init() {
-        robot.shooterMotor.setPower(0);
+        robot.topShooterMotor.setPower(0);
+        robot.bottomShooterMotor.setPower(0);
         shooterState = SHOOTERSTATE.SHOOTER_IDLE;
         //shooterpowerstate = SHOOTERPOWERSTATE.AUTO_POWER;
-        robot.shooterMotor.setPower(0);
+        robot.topShooterMotor.setPower(0);
+        robot.bottomShooterMotor.setPower(0);
 
         if(motif==null){
             motif=Spindexer.Motif.GPP;
@@ -83,7 +85,7 @@ public class FSMShooter {
         switch (shooterState) {
             case SHOOTER_IDLE:
                //Idle state for shooter
-                robot.shooterMotor.setPower(0);
+                robot.topShooterMotor.setPower(0);
                 shootTimer.reset();
                 break;
             case FLYWHEEL_RUNNING:
@@ -94,7 +96,7 @@ public class FSMShooter {
                 break;
 
             case SEQUENCE_SHOOTING:
-                robot.shooterMotor.setPower(speed);
+                robot.topShooterMotor.setPower(speed);
                 //Rotate spindexer all the way to shoot
                 //Need to replace with spindexer logic
                 if (shootTimer.seconds() > 0.1) {
@@ -117,12 +119,12 @@ public class FSMShooter {
 
             case SHOOTER_STOP:
                 //stop flywheel
-                robot.shooterMotor.setPower(0);
+                robot.topShooterMotor.setPower(0);
                 shooterState=SHOOTERSTATE.SHOOTER_IDLE;
                 break;
 
             default:
-                robot.shooterMotor.setPower(0);
+                robot.topShooterMotor.setPower(0);
                 shooterState = SHOOTERSTATE.SHOOTER_STOP;
                 break;
         }
@@ -137,7 +139,7 @@ public class FSMShooter {
         switch(sortShooterState) {
             case SHOOTER_IDLE:
                 //Idle state for shooter
-                robot.shooterMotor.setPower(0);
+                robot.topShooterMotor.setPower(0);
                 shootTimer.reset();
                 break;
             case FLYWHEEL_RUNNING:
@@ -154,7 +156,7 @@ public class FSMShooter {
                 break;
             case SHOOTER_STOP:
                 //stop flywheel
-                robot.shooterMotor.setPower(0);
+                robot.topShooterMotor.setPower(0);
                 shooterState=SHOOTERSTATE.SHOOTER_IDLE;
                 break;
         }

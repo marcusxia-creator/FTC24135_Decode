@@ -4,7 +4,6 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -30,10 +29,7 @@ public class RedSideCloseAuto extends LinearOpMode {
         robot.init();
         Shooter shooter = new Shooter(robot);
 
-        robot.spindexerServo.setPosition(spindexerSlot2);
-        robot.rightGateServo.setPosition(gateDown);
-        robot.leftGateServo.setPosition(gateDown);
-        robot.pushRampServo.setPosition(rampDownPos);
+        robot.leftSpindexerServo.setPosition(spindexerSlot2);
 
         Action DriveToShoot1 = drive.actionBuilder(initialPose)
                 .strafeToLinearHeading(new Vector2d(ShootingPosition_X, ShootingPosition_Y), Math.toRadians(ShootingPosition_Heading))

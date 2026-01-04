@@ -21,7 +21,6 @@ public class MotifDetector {
         processor = new AprilTagProcessor.Builder().build();
         portal = new VisionPortal.Builder()
                 .addProcessor(processor)
-                .setCamera(robot.camera)
                 .build();
         portal.setProcessorEnabled(processor,true);
     }
