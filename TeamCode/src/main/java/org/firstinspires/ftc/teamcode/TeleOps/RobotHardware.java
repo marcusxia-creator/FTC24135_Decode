@@ -80,9 +80,17 @@ public class RobotHardware {
     public Servo kickerServo;
     public Servo leftSpindexerServo;
     public Servo rightSpindexerServo;
+    public Servo spindexerServo;
+    public Servo shooterAdjusterServo;
+    public Servo leftGateServo;
+    public Servo rightGateServo;
     public DcMotorEx shooterMotor;
     public DcMotorEx intakeMotor;
     public DcMotorEx turretMotor;
+
+    public DcMotorEx topShooterMotor;
+    public DcMotorEx bottomShooterMotor;
+
     private RevHubOrientationOnRobot revHubOrientationOnRobot;
 
     //public ColorSensor colorSensor;// Color Sensor
@@ -128,6 +136,10 @@ public class RobotHardware {
         kickerServo = hardwareMap.get(Servo.class, "Kicker_Servo");
         leftSpindexerServo = hardwareMap.get(Servo.class, "Left_Spindexer_Servo");
         rightSpindexerServo = hardwareMap.get(Servo.class, "Right_Spindexer_Servo");
+        shooterAdjusterServo = hardwareMap.get(Servo.class, "Shooter_Adjuster_Servo");
+
+        topShooterMotor = hardwareMap.get(DcMotorEx.class, "Top_Shooter_Motor");
+        bottomShooterMotor = hardwareMap.get(DcMotorEx.class, "Bottom_Shooter_Motor");
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         imu = hardwareMap.get(IMU.class, "imu");
@@ -164,10 +176,18 @@ public class RobotHardware {
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        spindexerServo.setDirection(Servo.Direction.REVERSE);
+        //spindexerServo.setDirection(Servo.Direction.REVERSE);
 
         shooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        /**set run mode of shooter Motor*/
+        topShooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        bottomShooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        topShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        bottomShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        topShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
