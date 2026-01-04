@@ -76,6 +76,7 @@ public class RobotHardware {
     public DcMotorEx topShooterMotor;
     public DcMotorEx bottomShooterMotor;
     public DcMotorEx intakeMotor;
+    public DcMotorEx turretMotor;
     //servos
     //public Servo angleServo;
     public Servo kickerServo;
@@ -129,6 +130,8 @@ public class RobotHardware {
         bottomShooterMotor = hardwareMap.get(DcMotorEx.class, "Bottom_Shooter_Motor");
         /** Intake Motor*/
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
+        /**Turret Motor*/
+        turretMotor = hardwareMap.get(DcMotorEx.class, "Turret_Motor");
         //Servos
         //angleServo = hardwareMap.get(Servo.class, "Angle_Servo");
         kickerServo = hardwareMap.get(Servo.class, "Kicker_Servo");
