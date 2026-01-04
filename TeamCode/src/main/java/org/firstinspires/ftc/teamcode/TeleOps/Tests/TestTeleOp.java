@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotDrive;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 import org.firstinspires.ftc.teamcode.TeleOps.ShooterPowerAngleCalculator;
+import org.firstinspires.ftc.teamcode.TeleOps.Turret;
 
 @Config
 @TeleOp (name = "TestTeleOp", group = "org.firstinspires.ftc.teamcode")
@@ -30,6 +31,7 @@ public class TestTeleOp extends OpMode {
     private ElapsedTime debounceTimer = new ElapsedTime();
     private RobotDrive robotDrive;
     private ShooterPowerAngleCalculator shooterPowerAngleCalculator;
+    private Turret turret;
 
     private static double voltage;
     private BallColor ballColor;
@@ -60,6 +62,8 @@ public class TestTeleOp extends OpMode {
 
         shooterPowerAngleCalculator = new ShooterPowerAngleCalculator(robot);
         robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
+
+        turret = new Turret(robot);
 
         /**
          robot.pushRampServo.setPosition(RobotActionConfig.rampDownPos);
@@ -111,12 +115,12 @@ public class TestTeleOp extends OpMode {
         }
         //run to position - forward
         if (gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
-            servoposition = robot.leftSpindexerServo.getPosition() + 0.45;
+            servoposition = robot.leftSpindexerServo.getPosition() + 0.33;
             robot.leftSpindexerServo.setPosition(Range.clip(servoposition, 0, 1));
         }
         //run to position- reverse
         if (gamepad_2.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
-            servoposition = robot.leftSpindexerServo.getPosition() - 0.45;
+            servoposition = robot.leftSpindexerServo.getPosition() - 0.33;
             robot.leftSpindexerServo.setPosition(Range.clip(servoposition, 0, 1));
         }
 
@@ -177,7 +181,11 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("Shooter Motor Power Calculator", shooterPowerAngleCalculator.getPower());
         telemetry.addLine("----------------------------------------------------");
         telemetry.addData("Color", ballColor);
-
+        telemetry.addLine("----------------------------------------------------");
+        telemetry.addData("turret target angle - atan", turret.getTargetAngle());
+        telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
+        telemetry.addData("turret motor drive angle", turret.getTurretDriveAngle());
+        telemetry.addData("turret motor drive tick", turret.motorDriveTick());
         telemetry.update();
     }
 

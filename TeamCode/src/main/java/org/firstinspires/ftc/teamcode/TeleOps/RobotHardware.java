@@ -84,7 +84,6 @@ public class RobotHardware {
     public Servo shooterAdjusterServo;
     public Servo leftGateServo;
     public Servo rightGateServo;
-    public DcMotorEx shooterMotor;
     public DcMotorEx intakeMotor;
     public DcMotorEx turretMotor;
 
@@ -128,7 +127,6 @@ public class RobotHardware {
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "BL_Motor");
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
-        shooterMotor = hardwareMap.get(DcMotorEx.class, "Shooter_Motor");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
         turretMotor = hardwareMap.get(DcMotorEx.class, "Turret_Motor");
         //Servos
@@ -151,8 +149,9 @@ public class RobotHardware {
         imu.initialize(new IMU.Parameters(revHubOrientationOnRobot));
 
         LED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
+        colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
 
-        limelight3A = hardwareMap.get(Limelight3A.class, "LimeLight3A");
+        //limelight3A = hardwareMap.get(Limelight3A.class, "LimeLight3A");
 
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
         //Reset the drive train motor encoders
@@ -177,9 +176,6 @@ public class RobotHardware {
         turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //spindexerServo.setDirection(Servo.Direction.REVERSE);
-
-        shooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         /**set run mode of shooter Motor*/
         topShooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);

@@ -10,7 +10,7 @@ public class Turret {
 
     private final RobotHardware robot;
 
-    private final double tickToAngle = 145.1 * 0.16867469879518 * 360;
+    private final double tickToAngle = ((0.16867469879518 * 360) / 145.1);
     private final double angleToTick = 1 / tickToAngle;
 
     public Turret (RobotHardware robot) {
@@ -32,16 +32,12 @@ public class Turret {
         return 90 + getTargetAngle();
     }
 
-    public double getTurretAngle() {
-        return (robot.pinpoint.getHeading(AngleUnit.DEGREES) + getTurretMotorAngle());
-    }
-
     public double getTurretMotorAngle(){
         return (robot.turretMotor.getCurrentPosition() / tickToAngle);
     }
 
     public double getTargetAngle () {
-        return (180 - Math.atan(robot.pinpoint.getPosY(DistanceUnit.INCH) / robot.pinpoint.getPosX(DistanceUnit.INCH)));
+        return (180 - Math.toDegrees(Math.atan(robot.pinpoint.getPosY(DistanceUnit.INCH) / robot.pinpoint.getPosX(DistanceUnit.INCH))));
     }
 
 }
