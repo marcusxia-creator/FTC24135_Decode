@@ -112,10 +112,10 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.pinpoint.update();
         ballColor = BallColor.fromHue(colorDetection.getHue());
 
-        //Always allow manual control and driving
         spindexerManualControl.loop();
+        //Continuous driving
         robotDrive.DriveLoop();
-
+        turret.driveTurretMotor();
         switch (actionStates){
             case Sequence_Shooting:
                 FSMShooter.SequenceShooterLoop();
@@ -191,10 +191,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Slot 2", spindexer.slots[2]);
         telemetry.addData("Current Slot", spindexer.currentSlot);
         telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
-        if(motif!=null) {
-            telemetry.addData("Motif Green Count", motif.countFrom(Spindexer.SLOT.Green, spindexer.count(Spindexer.SLOT.Empty)));
-            telemetry.addData("Motif Purple Count", motif.countFrom(Spindexer.SLOT.Purple, spindexer.count(Spindexer.SLOT.Empty)));
-        }
         telemetry.addLine("-----");
         telemetry.addData("Shooter State", FSMShooter.shooterState);
         telemetry.addData("shooter power calculator", shooterPowerAngleCalculator.getPower());
@@ -207,7 +203,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Shooter Motor Mode", robot.topShooterMotor.getMode());
         telemetry.addLine("-----");
         String MotifAvailable;
-        if (spindexer.checkMotif(motif)) {MotifAvailable = "Available";} else {MotifAvailable = "Not Available";}
         if(motif==null){
             telemetry.addData("Motif","null");
         }
@@ -235,11 +230,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Shooter State", FSMShooter.shooterState);
         String MotifEnabled;
         String MotifAvailable;
-        if (spindexer.checkMotif(motif)) {
-            MotifAvailable = "Available";
-        } else {
-            MotifAvailable = "Not Available";
-        }
 
         telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
         telemetry.addData("power set point", FSMShooter.getPower_setpoint());

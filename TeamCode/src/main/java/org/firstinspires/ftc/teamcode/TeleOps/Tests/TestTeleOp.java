@@ -80,6 +80,7 @@ public class TestTeleOp extends OpMode {
 
     @Override
     public void loop() {
+
         robot.pinpoint.update();
         voltage = robot.getBatteryVoltageRobust();
         //speed = shooterPowerAngleCalculator.getPower();

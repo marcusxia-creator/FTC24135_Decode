@@ -42,12 +42,14 @@ public class FSMShooter {
     public enum SHOOTERSTATE {
         SHOOTER_IDLE,
         FLYWHEEL_RUNNING,
+        KICKER_OUT,
         SEQUENCE_SHOOTING,
         SHOOTER_STOP
     }
     public enum SORTSHOOTERSTATE {
         SHOOTER_IDLE,
         FLYWHEEL_RUNNING,
+        KICKER_OUT,
         SORT_SHOOTING,
         SHOOTER_STOP
     }
@@ -70,9 +72,6 @@ public class FSMShooter {
         robot.topShooterMotor.setPower(0);
         robot.bottomShooterMotor.setPower(0);
 
-        if(motif==null){
-            motif=Spindexer.Motif.GPP;
-        }
     }
 
     public void SequenceShooterLoop() {
@@ -90,30 +89,19 @@ public class FSMShooter {
                 break;
             case FLYWHEEL_RUNNING:
                 if (shootTimer.seconds() > 0.5){ //wait for flywheel to spool up; needs testing
-                    shooterState = SHOOTERSTATE.SEQUENCE_SHOOTING;
+                    shooterState = SHOOTERSTATE.KICKER_OUT;
                 }
                 shootTimer.reset();
                 break;
-
+            case KICKER_OUT:
+                robot.kickerServo.setPosition(kickerOut);
+                if (shootTimer.seconds() > 0.1) {
+                    shooterState = SHOOTERSTATE.SEQUENCE_SHOOTING;
+                }
+                break;
             case SEQUENCE_SHOOTING:
                 robot.topShooterMotor.setPower(speed);
-                //Rotate spindexer all the way to shoot
-                //Need to replace with spindexer logic
-                if (shootTimer.seconds() > 0.1) {
-                    robot.leftSpindexerServo.setPosition(spindexerSlot2); //shoot out ball from slot 2
-                    robot.rightSpindexerServo.setPosition(spindexerSlot2);
-                }
-                if (shootTimer.seconds() > 0.3) {
-                    robot.leftSpindexerServo.setPosition(spindexerSlot1); //shoot out ball from slot 1
-                    robot.rightSpindexerServo.setPosition(spindexerSlot1);
-                }
-                if (shootTimer.seconds() > 0.5) {
-                    robot.leftSpindexerServo.setPosition(spindexerSlot0); //shoot out ball from slot 0
-                    robot.rightSpindexerServo.setPosition(spindexerSlot0);
-                }
-                if (shootTimer.seconds() > 0.7 && robot.distanceSensor.getDistance(DistanceUnit.CM) > 5){
-                    shooterState = SHOOTERSTATE.SHOOTER_STOP;
-                }
+                spindexer.sequenceShoot();
                 shootTimer.reset();
                 break;
 
