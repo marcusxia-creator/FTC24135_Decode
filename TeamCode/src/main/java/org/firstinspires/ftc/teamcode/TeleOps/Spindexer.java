@@ -5,6 +5,9 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.greenRang
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.greenRangeLow;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.purpleRangeHigh;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.purpleRangeLow;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.spindexerSlot0;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.spindexerSlot1;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.spindexerSlot2;
 
 import android.graphics.Color;
 
@@ -25,6 +28,8 @@ public class Spindexer {
     public int currentSlot;
     //For jams
     public int prevSlot;
+
+
 
     Spindexer(RobotHardware robot, SLOT slot0,SLOT slot1,SLOT slot2, int currentSlot){
         //Constructor
@@ -155,40 +160,10 @@ public class Spindexer {
         }
     }
 
-    /**
-     * Returns {@code TRUE} if the spindexer has the necessary balls to run the given motif
-     */
-
-    public Boolean checkMotif(Motif motif){
-        int n = count(SLOT.Empty);
-        if(motif==null){
-            return false;
-        }
-        else{
-            return motif.countFrom(SLOT.Green, n) == count(SLOT.Green) && motif.countFrom(SLOT.Purple, n) == count(SLOT.Purple);
-        }
+    public void sequenceShoot (){
+        runToSlot(Math.floorMod(currentSlot-1,3));
     }
 
-    /**
-     * @return the next ball to shoot in the given motif
-     */
-    public SLOT motifColour(Motif motif){
-        return motif.getColour(count(SLOT.Empty));
-    }
-
-    /**
-     * Runs spindexer to the next ball in the motif
-     */
-    public void runToMotif(Motif motif){
-        runToSlot(motifColour(motif));
-    }
-
-    /**
-     * Runs spindexer to position before last movement
-     */
-    public void unJam(){
-        runToSlot(prevSlot);
-    }
 
     /**
      * A storage object to record a Motif, with a few methods
@@ -211,18 +186,6 @@ public class Spindexer {
         public SLOT[] slots;
         public String name;
 
-        public Motif(SLOT slot0,SLOT slot1,SLOT slot2){
-            slots = new SLOT[]{slot0, slot1, slot2};
-            name="";
-            for(SLOT slot:slots){
-                if(slot==SLOT.Green){
-                    name+="G";
-                }
-                else{
-                    name+="P";
-                }
-            }
-        }
 
         public Motif(String name){
             this.name=name;
@@ -244,26 +207,6 @@ public class Spindexer {
                     name+="P";
                 }
             }
-        }
-
-        /**
-         * @return the number of instances of SLOT {@code a} starting from position {@code n}
-         */
-        public int countFrom(SLOT a, int n){
-            int counter=0;
-            for(int i=n; i<=2; i++){
-                if(slots[i]==a){
-                    counter++;
-                }
-            }
-            return counter;
-        }
-
-        /**
-         * @return the colour at position {@code n}
-         */
-        public SLOT getColour(int n){
-            return slots[n];
         }
     }
 }

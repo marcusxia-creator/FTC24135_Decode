@@ -175,6 +175,7 @@ public class RobotHardware {
         turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //spindexerServo.setDirection(Servo.Direction.REVERSE);
 

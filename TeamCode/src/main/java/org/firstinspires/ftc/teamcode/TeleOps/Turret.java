@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.Range;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -12,6 +15,7 @@ public class Turret {
 
     private final double tickToAngle = ((0.16867469879518 * 360) / 145.1);
     private final double angleToTick = 1 / tickToAngle;
+    public int ticks;
 
     public Turret (RobotHardware robot) {
         this.robot = robot;
@@ -22,22 +26,39 @@ public class Turret {
     }
 
     public double getTurretDriveAngle () {
-        if (robot.pinpoint.getHeading(AngleUnit.DEGREES) > 0) {
+        /*if (robot.pinpoint.getHeading(AngleUnit.DEGREES) > 0) {
+            floorMod(getTargetAngle()-robot.pinpoint.getHeading(AngleUnit.DEGREES), 360);
             return 90 - robot.pinpoint.getHeading(AngleUnit.DEGREES)  + getTargetAngle();
         }
         if (robot.pinpoint.getHeading(AngleUnit.DEGREES) < 0) {
+            floorMod(getTargetAngle()-robot.pinpoint.getHeading(AngleUnit.DEGREES), 360);
             return 180 + robot.pinpoint.getHeading(AngleUnit.DEGREES) + getTargetAngle();
         }
-
-        return 90 + getTargetAngle();
+        return 90 + getTargetAngle();*/
+        return -(floorMod(robot.pinpoint.getHeading(AngleUnit.DEGREES) - getTargetAngle()+180, 360)-180);
     }
 
     public double getTurretMotorAngle(){
         return (robot.turretMotor.getCurrentPosition() * tickToAngle);
     }
-
-    public double getTargetAngle () {
-        return Math.toDegrees(Math.atan(robot.pinpoint.getPosY(DistanceUnit.INCH) / robot.pinpoint.getPosX(DistanceUnit.INCH)));
+    public void driveTurretMotor(){
+        ticks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
+        robot.turretMotor.setTargetPosition(ticks);
+        robot.turretMotor.setPower(0.3);
     }
-
+    /*public boolean isTurretAtPosition (){
+        if (Math.floor(angle) == Math.floor(getTurretMotorAngle())){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+     */
+    public double getTargetAngle () {
+        return Math.toDegrees(Math.atan2((72-robot.pinpoint.getPosY(DistanceUnit.INCH)), (-72-robot.pinpoint.getPosX(DistanceUnit.INCH))));
+    }
+    private double floorMod(double x, double y){
+        return x-(Math.floor(x/y) * y);
+    }
 }
