@@ -69,7 +69,7 @@ public class TestTeleOp extends OpMode {
 
         turret = new Turret(robot);
 
-        limelight = new Limelight(robot);
+        limelight = new Limelight(robot, turret);
         limelight.initLimelight(24);
         limelight.start();
 
@@ -83,6 +83,8 @@ public class TestTeleOp extends OpMode {
         pidController = new PIDController(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
         tickToRPM = -(60/28); // for (tick/s) * 60 (s/min) /28 (tick per rotation)
         targetShooterRPM = 0;
+
+        limelight.start();
 
     }
 

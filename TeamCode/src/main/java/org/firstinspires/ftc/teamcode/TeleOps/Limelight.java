@@ -13,11 +13,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 public class Limelight {
 
     private RobotHardware robot;
+    private Turret turret;
 
     private double conversionFactor;
 
-    public Limelight(RobotHardware robot) {
+    public Limelight(RobotHardware robot, Turret turret) {
         this.robot = robot;
+        this.turret = turret;
     }
 
     public void initLimelight(int apriltagID) {
@@ -40,7 +42,7 @@ public class Limelight {
         else {
             throw new IllegalArgumentException("Distance Unit can only be in INCH or MM");
         }
-        double yaw = robot.external_imu.getAngularOrientation().firstAngle;
+        double yaw = turret.getTurretMotorAngle() + robot.pinpoint.getHeading(AngleUnit.DEGREES);//robot.external_imu.getAngularOrientation().firstAngle;
         robot.limelight3A.updateRobotOrientation(yaw);
         LLResult llResult = robot.limelight3A.getLatestResult();
         if (llResult != null && llResult.isValid()) {
