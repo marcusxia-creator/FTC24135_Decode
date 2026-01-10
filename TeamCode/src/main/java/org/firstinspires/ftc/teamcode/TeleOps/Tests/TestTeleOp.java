@@ -13,12 +13,14 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotDrive;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 import org.firstinspires.ftc.teamcode.TeleOps.ShooterPowerAngleCalculator;
 import org.firstinspires.ftc.teamcode.TeleOps.Turret;
+import org.firstinspires.ftc.teamcode.TeleOps.Limelight;
 
 @Config
 @TeleOp (name = "TestTeleOp", group = "org.firstinspires.ftc.teamcode")
@@ -43,6 +45,8 @@ public class TestTeleOp extends OpMode {
     double currentShooterRPM;
     public static double tickToRPM = 60/28;
 
+    private Limelight limelight;
+
     private PIDController pidController;
 
 
@@ -64,6 +68,10 @@ public class TestTeleOp extends OpMode {
         robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
 
         turret = new Turret(robot);
+
+        limelight = new Limelight(robot);
+        limelight.initLimelight(24);
+        limelight.start();
 
         /**
          robot.pushRampServo.setPosition(RobotActionConfig.rampDownPos);
@@ -186,6 +194,9 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
         telemetry.addData("turret motor drive angle", turret.getTurretDriveAngle());
         telemetry.addData("turret motor drive tick", turret.motorDriveTick());
+        telemetry.addLine("----------------------------------------------------");
+        telemetry.addData("limelight Pose2D", limelight.updateTagMT2(DistanceUnit.INCH));
+        telemetry.addData("pinpoint Pose2D", robot.pinpoint.getPosition());
         telemetry.update();
     }
 
