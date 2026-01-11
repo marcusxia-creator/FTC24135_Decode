@@ -33,10 +33,10 @@ public class LUTPowerCalculator {
     //Target RPM base on the zone
     LUT<Integer, Integer> targetRPM = new LUT<Integer, Integer>()
     {{
-        add(4, 4464);//far zone   0.93*4800
-        add(3, 3744);//far range   0.78*4800
-        add(2, 3504); //mid range  0.73*4800
-        add(1, 3600); //near range 0.75*4800
+        add(4, (int) (5000*FZPower));//far zone   0.93*4800
+        add(3, (int) (5000*farPower));//far range   0.78*4800
+        add(2, (int) (5000*midPower)); //mid range  0.73*4800
+        add(1, (int) (5000*closePower)); //near range 0.75*4800
         add(0, 3000); //Not in shooting zone
 
     }};
@@ -76,18 +76,17 @@ public class LUTPowerCalculator {
 
     //Returns the power for the shooter motors
     public double getPower() {
-
         //Calculate the distance of the robot from goal base on pythagoras theorem
         distance = Math.sqrt(Math.pow(robot.pinpoint.getPosX(DistanceUnit.INCH) - actualGoalPose.getX(DistanceUnit.INCH),2) + Math.pow(robot.pinpoint.getPosY(DistanceUnit.INCH) - actualGoalPose.getY(DistanceUnit.INCH), 2));
 
         //Determine which zone the robot is currently in
-        if (distance > close && distance <= mid) {
+        if (distance > CLOSE && distance <= MID) {
             zone = 1;
         }
-        else if (distance > mid && distance <= far) {
+        else if (distance > MID && distance <= FAR) {
             zone = 2;
         }
-        else if (distance > far && distance <= farEdge) {
+        else if (distance > FAR && distance <= FAR_EDGE) {
             zone = 3;
         }
         else if (distance > FAR_ZONE_LOW && distance <= FAR_ZONE_HIGH) {
@@ -112,18 +111,17 @@ public class LUTPowerCalculator {
 
     //Returns the desired angle for shooter
     public double getShooterAngle() {
-
         //Calculate distance of robot to goal
         distance = Math.sqrt(Math.pow(robot.pinpoint.getPosX(DistanceUnit.INCH) - actualGoalPose.getX(DistanceUnit.INCH),2) + Math.pow(robot.pinpoint.getPosY(DistanceUnit.INCH) - actualGoalPose.getY(DistanceUnit.INCH), 2));
 
         //Determine the zone the robot is in
-        if (distance > close && distance <= mid) {
+        if (distance > CLOSE && distance <= MID) {
             zone = 1;
         }
-        else if (distance > mid && distance <= far) {
+        else if (distance > MID && distance <= FAR) {
             zone = 2;
         }
-        else if (distance > far && distance <= farEdge) {
+        else if (distance > FAR && distance <= FAR_EDGE) {
             zone = 3;
         }
         else {

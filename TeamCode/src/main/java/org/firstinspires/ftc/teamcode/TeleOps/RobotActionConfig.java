@@ -19,6 +19,8 @@ public class RobotActionConfig {
     public static double spindexerSlot4                 = 0.971;
     public static double spindexerSlot5                 = 1.0;
     public static double angleResetPos                  = 0.0;
+    public static double slotAngleDelta                 = 0.22;
+
     //Speed
     public static double kickerIn                      = 1;
     public static double kickerOut                       = 0;
@@ -66,10 +68,10 @@ public class RobotActionConfig {
     public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, -64, 8, AngleUnit.DEGREES, 0);
     public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, -64, 8, AngleUnit.DEGREES, 0);
 
-    public static final double farEdge                  = 100.0;
-    public static final double far                      = 80.0;
-    public static final double mid                      = 70.0;
-    public static final double close                    = 55.0;
+    public static final double FAR_EDGE = 100.0;
+    public static final double FAR = 80.0;
+    public static final double MID = 70.0;
+    public static final double CLOSE = 55.0;
     public static final double closeEdge                = 50.0;
 
     public static final double FAR_ZONE_LOW             = 151.0;
@@ -79,4 +81,5 @@ public class RobotActionConfig {
     public static final double midPower                 = 0.73;
     public static final double closePower               = 0.75;
     public static final double OZPower                  = 0.5;
+    public static final double FZPower                  = 0.93;
 }
