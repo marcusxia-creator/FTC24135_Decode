@@ -27,42 +27,45 @@ import java.util.Collections;
 Hardware config:
 Motor:
 Control hub motor:
-                port 0: FL_Motor
-                port 1: BL_motor
-                port 2: FR_Motor
-                port 3: BR_Motor
+                port 0: FR_Motor
+                port 1: BR_motor
+                port 2: Turret_Motor
+                port 3: FL_Motor
 Expansion hub motor:
-                port 0: VS_Left_Motor
-                port 3: VS_Right_Motor
-                port 1: par (encoder for odometry pod in X direction - parallel direction)
-                port 2: perp (encoder for odometry pod in Y direction - perpendicular direction)
+                port 0: Top_Shooter_Motor
+                port 1: Bottom_Shooter_Motor
+                port 2: Intake_Motor
+                port 3: BL_Motor
 
 Servo:
 EXP hub:
-                port 3: Intake_Wrist_Servo
-                port 5: Intake_Arm_Left_Servo
-                port 0: Deposit_Wrist_Servo
-                port 1: Deposit_Claw_Servo
-                port 2: Deposit_Arm_Servo
+                port 0: Spindexer_Servo
+                port 1: Kicker_Servo
+                port 2: Empty
+                port 3: Empty
                 port 4: Empty
+                port 5: Empty
 
 Control hub:
                 port 0: Empty
-                port 1: Intake_Slide_Right_Servo
-                port 2: Intake_Slide_Left_Servo
-                port 3: Intake_Claw_Servo
-                port 4: Intake_Rotation_Servo
-                port 5: Intake_Arm_Right_Servo
+                port 1: Empty
+                port 2: Shooter_Adjuster_Servo
+                port 3: Empty
+                port 4: goBilda_LED_Light
+                port 5: Empty
 
 
 I2C port
-Control hub
+EXP hub:
+                port 0: external_imu
+Control hub:
                 port 0: control hub imu
                 port 1: Pinpoint (odometry computer)
-                port 2: Color_Sensor
+                port 2: Empty
+                port 3: Color_Sensor
 Digital Port
 Control hub
-                port 7: LimitSwitch
+                port 7: Empty
 
  */
 
