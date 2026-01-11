@@ -18,7 +18,7 @@ public class LUTPowerCalculator {
 
     private double tickToRPM = (double) 60 / 28;
 
-    private int maxVelocity = 4500;
+    private int maxVelocity = 5500;
 
     //Stores the position of both alliance's goal
     private final Pose2D redGoalPose = new Pose2D(DistanceUnit.INCH, -70, 70, AngleUnit.DEGREES, -45);
@@ -33,10 +33,11 @@ public class LUTPowerCalculator {
     //Target RPM base on the zone
     LUT<Integer, Integer> targetRPM = new LUT<Integer, Integer>()
     {{
-        add(3, 3000);//far zone
-        add(2, 2500); //mid zone
-        add(1, 2000); //near zone
-        add(0, 1500); //Not in shooting zone
+        add(4, 4464);//far zone   0.93*4800
+        add(3, 3744);//far range   0.78*4800
+        add(2, 3504); //mid range  0.73*4800
+        add(1, 3600); //near range 0.75*4800
+        add(0, 3000); //Not in shooting zone
 
     }};
 
@@ -88,6 +89,9 @@ public class LUTPowerCalculator {
         }
         else if (distance > far && distance <= farEdge) {
             zone = 3;
+        }
+        else if (distance > FAR_ZONE_LOW && distance <= FAR_ZONE_HIGH) {
+            zone = 4;
         }
         else {
             zone = 0;
