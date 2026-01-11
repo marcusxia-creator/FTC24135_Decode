@@ -18,6 +18,7 @@ public class RobotActionConfig {
     public static double spindexerSlot3                 = 0.749;
     public static double spindexerSlot4                 = 0.971;
     public static double spindexerSlot5                 = 1.0;
+    public static double[] spindexerPositions           = {spindexerSlot0, spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5};
     public static double angleResetPos                  = 0.0;
     //Speed
     public static double kickerIn                      = 1;
