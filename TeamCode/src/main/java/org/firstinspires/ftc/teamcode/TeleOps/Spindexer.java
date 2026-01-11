@@ -109,7 +109,7 @@ public class Spindexer {
      * Updates servo position to current slot, usually unused=
      */
     public void runToSlot(){
-        currentSlot = Math.floorMod(currentSlot,3);
+        currentSlot = Math.floorMod(currentSlot, 3);
         if(currentSlot==0){
             robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
             robot.rightSpindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
@@ -158,9 +158,10 @@ public class Spindexer {
     }
 
     public void sequenceShoot (){
-        runToSlot(Math.floorMod(currentSlot-1,3));
+        if (currentSlot > 0) {
+            runToSlot(Math.floorMod(currentSlot - 1, 3));
+        }
     }
-
 
     /**
      * A storage object to record a Motif, with a few methods
