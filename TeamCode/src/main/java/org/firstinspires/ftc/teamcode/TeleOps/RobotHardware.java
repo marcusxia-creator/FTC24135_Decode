@@ -41,17 +41,17 @@ Servo:
 EXP hub:
                 port 0: Spindexer_Servo
                 port 1: Kicker_Servo
-                port 2: Empty
-                port 3: Empty
+                port 2: Shooter_Adjuster_Servo
+                port 3: goBilda_LED_Light
                 port 4: Empty
                 port 5: Empty
 
 Control hub:
                 port 0: Empty
                 port 1: Empty
-                port 2: Shooter_Adjuster_Servo
+                port 2: Empty
                 port 3: Empty
-                port 4: goBilda_LED_Light
+                port 4: Empty
                 port 5: Empty
 
 
