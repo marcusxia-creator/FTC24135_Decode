@@ -117,13 +117,14 @@ public class TestTeleOp extends OpMode {
         }
         /** run spindexer servoposition*/
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
-            servoposition = robot.leftSpindexerServo.getPosition() + 0.05;
-            robot.leftSpindexerServo.setPosition(Range.clip(servoposition, 0, 1));
+            servoposition = robot.spindexerServo.getPosition() + 0.05;
+            robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
-            servoposition = robot.leftSpindexerServo.getPosition() - 0.05;
-            robot.leftSpindexerServo.setPosition(Range.clip(servoposition, 0, 1));
+            servoposition = robot.spindexerServo.getPosition() - 0.05;
+            robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
         }
+        /*
         //run to position - forward
         if (gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
             servoposition = robot.leftSpindexerServo.getPosition() + 0.33;
@@ -134,6 +135,7 @@ public class TestTeleOp extends OpMode {
             servoposition = robot.leftSpindexerServo.getPosition() - 0.33;
             robot.leftSpindexerServo.setPosition(Range.clip(servoposition, 0, 1));
         }
+         */
 
         /** shooter adjuster */
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && isButtonDebounced()) {
@@ -179,7 +181,7 @@ public class TestTeleOp extends OpMode {
 
 
         telemetry.addData("Kicker Postion", robot.kickerServo.getPosition());
-        telemetry.addData("Spindexer Position", robot.leftSpindexerServo.getPosition());
+        telemetry.addData("Spindexer Position", robot.spindexerServo.getPosition());
         telemetry.addData("Shooter Adjuster Postion", robot.shooterAdjusterServo.getPosition());
         telemetry.addData("Shooter Acutal Power", robot.topShooterMotor.getPower());
         telemetry.addData("Intake Speed", robot.intakeMotor.getPower());

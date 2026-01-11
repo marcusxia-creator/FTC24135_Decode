@@ -5,7 +5,6 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import static org.firstinspires.ftc.teamcode.AprilTagMotif.MotifMemorization.motif;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -138,7 +137,7 @@ public class FSMShooter {
                 break;
             case SORT_SHOOTING:
                 if (shootTimer.seconds() > 0.1) {
-                    robot.leftSpindexerServo.setPosition(spindexerSlot2);
+                    robot.spindexerServo.setPosition(spindexerSlot2);
                     shootTimer.reset();
                 }
                 break;

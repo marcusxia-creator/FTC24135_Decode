@@ -72,6 +72,9 @@ public class RobotActionConfig {
     public static final double close                    = 55.0;
     public static final double closeEdge                = 50.0;
 
+    public static final double FAR_ZONE_LOW             = 151.0;
+    public static final double FAR_ZONE_HIGH            = 171.0;
+
     public static final double farPower                 = 0.78;
     public static final double midPower                 = 0.73;
     public static final double closePower               = 0.75;

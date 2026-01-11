@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import static org.firstinspires.ftc.teamcode.AprilTagMotif.MotifMemorization.motif;
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMIntake.IntakeStates;
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SHOOTERSTATE;
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SORTSHOOTERSTATE;
@@ -203,12 +202,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Shooter Motor Mode", robot.topShooterMotor.getMode());
         telemetry.addLine("-----");
         String MotifAvailable;
-        if(motif==null){
-            telemetry.addData("Motif","null");
-        }
-        else{
-            telemetry.addData("Motif",motif.name);
-        }
         telemetry.addData("desired angle", shooterPowerAngleCalculator.getAngle());
         telemetry.addData("desired robot angle", 90 + shooterPowerAngleCalculator.getAngle()); //If the desired robot angle equal to the current angle, then the robot is on course
         telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));
