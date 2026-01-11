@@ -47,7 +47,9 @@ public class Limelight {
         LLResult llResult = robot.limelight3A.getLatestResult();
         if (llResult != null && llResult.isValid()) {
             Pose3D robotPose3D = llResult.getBotpose_MT2();
-            return new Pose2D(distanceUnit, robotPose3D.getPosition().x * conversionFactor, robotPose3D.getPosition().y * conversionFactor, AngleUnit.DEGREES, robotPose3D.getOrientation().getYaw());
+            double yOffSet = Math.cos(yaw - 90) * (0.1905 * conversionFactor);
+            double xOffSet = Math.sin(yaw - 90) * (0.1905 * conversionFactor);
+            return new Pose2D(distanceUnit, ((robotPose3D.getPosition().x * conversionFactor) - xOffSet), ((robotPose3D.getPosition().y * conversionFactor) - yOffSet), AngleUnit.DEGREES, robotPose3D.getOrientation().getYaw());
         }
 
         return null;
