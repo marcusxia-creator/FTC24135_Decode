@@ -13,6 +13,8 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import java.util.Arrays;
+
 public class Spindexer {
     public enum SLOT{
         Empty,
@@ -22,25 +24,41 @@ public class Spindexer {
 
     public RobotHardware robot;
     public SLOT[] slots;
+    public int currentPos;
     public int currentSlot;
     //For jams
-    public int prevSlot;
+    public int prevPos;
 
-
-
-    Spindexer(RobotHardware robot, SLOT slot0,SLOT slot1,SLOT slot2, int currentSlot){
+    Spindexer(RobotHardware robot, SLOT slot0,SLOT slot1,SLOT slot2, int currentPos){
         //Constructor
         this.robot = robot;
         slots = new SLOT[]{slot0, slot1, slot2};
-        this.currentSlot = currentSlot;
-        runToSlot(currentSlot);
+        this.currentPos = currentPos;
+        runToPos(currentPos);
     }
+
+    public void calculateSlot(){
+        if(currentPos==0) {
+            currentSlot = -1;
+        }
+        else{
+            currentSlot=Math.floorMod(currentPos-1,3);
+        }
+    }
+
+    public void calculatePos(){
+        currentPos=currentSlot+1;
+    }
+
     /**
      * Saves slot value {@code a} into current slot
      * @param a The slot value to write into the current slot
      */
     public void writeToCurrent(SLOT a){
-        slots[currentSlot]=a;
+        calculateSlot();
+        if(currentPos!=0) {
+            slots[currentSlot] = a;
+        }
     }
 
     /**
@@ -81,7 +99,7 @@ public class Spindexer {
      * @return spindexer SLOT object in current slot
      */
     public SLOT slotColour(){
-        return slotColour(currentSlot);
+        return slotColour(currentPos);
     }
 
     /**
@@ -96,6 +114,16 @@ public class Spindexer {
         }
         return counter;
     }
+    /**
+     * Counts the total number of spindexer slots that currently contain any of the inputed SLOTS
+     */
+    public int count(SLOT... a){
+        int counter = 0;
+        for(SLOT slot:a){
+            counter+=count(slot);
+        }
+        return counter;
+    }
 
     /**
      * @return {@code TRUE} if there is at least one instance of the given SLOT object {@code a} in the indexer, else {@code FALSE}
@@ -106,105 +134,101 @@ public class Spindexer {
     }
 
     /**
-     * Updates servo position to current slot, usually unused=
+     * @return {@code TRUE} if there is at least one instance of all given SLOT objects in the indexer, else {@code FALSE}
      */
-    public void runToSlot(){
-        currentSlot = Math.floorMod(currentSlot, 3);
-        if(currentSlot==0){
-            robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
-            robot.rightSpindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
+    public Boolean checkFor(SLOT... slots){
+        //checks
+        for(SLOT slot:slots){
+            if(!checkFor(slot)){
+                return false;
+            }
         }
-        if(currentSlot==1){
-            robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
-            robot.rightSpindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
-        }
-        if(currentSlot==2){
-            robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot2);
-            robot.rightSpindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
-        }
+        return true;
     }
 
     /**
-     * Runs to slot number {@code n} (0, 1, or 2)
+     * Updates servo position to current slot, usually unused externally
+     */
+    public void runToPos(){
+        currentPos = Math.floorMod(currentPos,5);
+        robot.rightSpindexerServo.setPosition(RobotActionConfig.spindexerPositions[currentPos]);
+    }
+
+    /**
+     * Runs to position {@code n} (0-5)
+     */
+    public void runToPos(int n){
+        prevPos = currentPos;
+        currentPos = n;
+        calculateSlot();
+        runToPos();
+    }
+
+    /**
+     * Runs to Slot number {@code n} (0-2)
      */
     public void runToSlot(int n){
-        prevSlot = currentSlot;
+        prevPos = currentPos;
         currentSlot = n;
-        runToSlot();
+        calculatePos();
+        runToPos();
     }
 
     /**
-     * Runs to closest SLOT {@code a}, perfers the one on the right if both slots equal {@code a}
-     * @return (@code FALSE} if no instances of SLOT {@code a} are found in the spindexer
+     * Runs spindexer to position before last movement
      */
-    public Boolean runToSlot(SLOT a){
-        if(checkFor(a)){
-            int n=0;
-            int distance = 4;
-
-            //look for closest slot
-            for(int i=0; i<=2; i++){
-                if(slots[i]==a && Math.abs(i-currentSlot)<=distance){
-                    distance=Math.abs(i-currentSlot);
-                    n=i;
-                }
-            }
-            runToSlot(n);
-            return true;
-        }
-        else{
-            return false;
-        }
+    public void unJam(){
+        runToPos(prevPos);
     }
 
-    public void sequenceShoot (){
-        if (currentSlot > 0) {
-            runToSlot(Math.floorMod(currentSlot - 1, 3));
-        }
+    //Intaking Methods
+    /**
+     * Moves spindexer to position 1 slot 0, in preparation for intaking
+     */
+    public void IntakeBegin(){
+        runToPos(1);
     }
 
     /**
-     * A storage object to record a Motif, with a few methods
+     * Movess spindexer forward one slot after intaking artifact
+     * Note: Does not memorize, run WriteToCurrent before
      */
-    public static class Motif{
-        //Motif constants
-        /**
-         * Constant green-purple-purple motif
-         */
-        public static Motif GPP = new Motif("GPP");
-        /**
-         * Constant purple-green-purple motif
-         */
-        public static Motif PGP = new Motif("PGP");
-        /**
-         * Constant purple-purple-green motif
-         */
-        public static Motif PPG = new Motif("PPG");
+    public void IntakeNext(){
+        runToPos(currentPos+1);
+        //Doesn't handle memorization, that has to be done in external FSM
+    }
+    //Stop when currentPos==3 or count(SLOT.empty)==0
 
-        public SLOT[] slots;
-        public String name;
+    //Shooting Methods
+    /**
+     * Moves spindexer to position 3 slot 2, in preparation for a simple sequential shoot. Usually does nothing
+     */
+    public void BeginSequShoot(){
+        runToPos(currentPos-1);
+    }
 
-
-        public Motif(String name){
-            this.name=name;
-            slots = new SLOT[3];
-            for(int i=0; i<3; i++){
-                if(this.name.charAt(i)=='G'){
-                    slots[i]=SLOT.Green;
-                }
-                else{
-                    slots[i]=SLOT.Purple;
-                }
-            }
-            name="";
-            for(SLOT slot:slots){
-                if(slot==SLOT.Green){
-                    name+="G";
-                }
-                else{
-                    name+="P";
-                }
+    /**
+     * Moves spindexer to a slot where the motif can be sequentially shot. Run the same ShootNext function
+     * @param motifGreen: the green artifact's index in the motif
+     */
+    public void BeginSortShoot(int motifGreen){
+        int spindexerGreen=0;
+        for(int i=0; i<=2; i++){
+            if(slots[i]==SLOT.Green) {
+                spindexerGreen=i;
+                break;
             }
         }
+        runToPos(3+Math.floorMod(motifGreen-spindexerGreen,3));
     }
+    /**
+     * Move's spindexer back one slot to shoot artifact
+     * Note: Writes current slot to Empty
+     * Does not control kicker
+     */
+    public void ShootNext(){
+        writeToCurrent(SLOT.Empty);
+        runToPos(currentPos-1);
+    }
+    //Stop when count(SLOT.empty)==3
 }
