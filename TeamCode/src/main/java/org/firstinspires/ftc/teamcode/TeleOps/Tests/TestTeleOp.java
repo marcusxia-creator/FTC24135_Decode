@@ -55,6 +55,8 @@ public class TestTeleOp extends OpMode {
 
     private boolean finetune = false;
     private boolean pidstatus = false;
+    private boolean turretStatus = false;
+
 
     @Override
     public void init() {
@@ -111,6 +113,14 @@ public class TestTeleOp extends OpMode {
         }
         else{
             shooterPower = 0;
+        }
+
+        /// run turret
+        if (turretStatus){
+            turret.driveTurretMotor();
+        }
+        else{
+            robot.turretMotor.setPower(0);
         }
 
         shooterPower = Math.max(-1.0, Math.min(1.0, shooterPower));
@@ -192,7 +202,7 @@ public class TestTeleOp extends OpMode {
             robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
         }
 
-        /** run spindexer per slot*/
+        /** run shooter based on target distance*/
         if (gamepad_2.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
             finetune = false;
             pidstatus = true;
@@ -201,6 +211,15 @@ public class TestTeleOp extends OpMode {
             finetune = false;
             pidstatus = false;
         }
+
+        /** run turret*/
+        if (gamepad_2.getButton(GamepadKeys.Button.DPAD_UP) && isButtonDebounced()) {
+            turretStatus = true;
+        }
+        if (gamepad_2.getButton(GamepadKeys.Button.DPAD_DOWN) && isButtonDebounced()) {
+            turretStatus = false;
+        }
+
 
         /**
          * LED alarm light
@@ -232,7 +251,7 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("Robot Voltage", robot.getBatteryVoltageRobust());
         telemetry.addData("Shooter target RPM", targetShooterRPM);
         telemetry.addData("Shooter current RPM", currentShooterRPM);
-        telemetry.addData("Shooter Motor Power Calculator", shooterPowerAngleCalculator.getPower());
+        telemetry.addData("Shooter power now", shooterPower);
         telemetry.addLine("----------------------------------------------------");
         telemetry.addData("Color", ballColor);
         telemetry.addLine("----------------------------------------------------");
