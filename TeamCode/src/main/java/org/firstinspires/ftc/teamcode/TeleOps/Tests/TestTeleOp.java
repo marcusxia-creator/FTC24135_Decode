@@ -81,7 +81,7 @@ public class TestTeleOp extends OpMode {
          */
         colorDetection = new ColorDetection(robot);
         pidController = new PIDController(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
-        tickToRPM = -(60/28); // for (tick/s) * 60 (s/min) /28 (tick per rotation)
+        tickToRPM = (60/28); // for (tick/s) * 60 (s/min) /28 (tick per rotation)
         targetShooterRPM = 0;
 
         limelight.start();
@@ -226,6 +226,7 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("Robot Voltage", robot.getBatteryVoltageRobust());
         telemetry.addData("Shooter target RPM", targetShooterRPM);
         telemetry.addData("Shooter current RPM", currentShooterRPM);
+        telemetry.addData("Shooter top velocity", robot.topShooterMotor.getVelocity());
         telemetry.addData("Shooter Motor Power Calculator", shooterPower);
         telemetry.addLine("----------------------------------------------------");
         telemetry.addData("Color", ballColor);
