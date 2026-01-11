@@ -94,8 +94,12 @@ public class FSMShooter {
                 shootTimer.reset();
                 break;
             case KICKER_OUT:
-                robot.kickerServo.setPosition(kickerOut);
+                robot.spindexerServo.setPosition(spindexerSlot2);
+                //Always move to slot 2 after intaking. Add a bit to allow kicker servo to move in
                 if (shootTimer.seconds() > 0.1) {
+                    robot.kickerServo.setPosition(kickerIn);
+                }
+                if (shootTimer.seconds() > 0.2) {
                     shooterState = SHOOTERSTATE.SEQUENCE_SHOOTING;
                 }
                 break;
@@ -107,6 +111,7 @@ public class FSMShooter {
 
             case SHOOTER_STOP:
                 //stop flywheel
+                robot.kickerServo.setPosition(kickerOut);
                 robot.topShooterMotor.setPower(0);
                 shooterState=SHOOTERSTATE.SHOOTER_IDLE;
                 break;
@@ -138,7 +143,7 @@ public class FSMShooter {
                 break;
             case SORT_SHOOTING:
                 if (shootTimer.seconds() > 0.1) {
-                    robot.leftSpindexerServo.setPosition(spindexerSlot2);
+                    robot.spindexerServo.setPosition(spindexerSlot2);
                     shootTimer.reset();
                 }
                 break;
