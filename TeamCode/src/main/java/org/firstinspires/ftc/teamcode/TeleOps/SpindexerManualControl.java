@@ -15,16 +15,17 @@ public class SpindexerManualControl {
         this.gamepadInput=gamepadInput;
     }
     public void loop() {
-        if(/**gamepadManager.Unjam.PressState*/gamepadInput.getDriverBackSinglePressed()) {
+        /**
+        if(gamepadInput.getDriverBackSinglePressed()) {
             spindexer.unJam();
         }
-        if(/**gamepadManager.spinPrev.PressState*/gamepadInput.getDriverLbSinglePressed()|| gamepadInput.getOperatorLbSinglePressed()){
+        */
+        if(gamepadInput.getDriverLbSinglePressed()|| gamepadInput.getOperatorLbSinglePressed()){
             spindexer.runToSlot(spindexer.currentSlot-1);
         }
-        if(/**gamepadManager.spinNext.PressState*/(gamepadInput.getDriverRbSinglePressed() || gamepadInput.getOperatorRbSinglePressed())){
+        if((gamepadInput.getDriverRbSinglePressed() || gamepadInput.getOperatorRbSinglePressed())){
             spindexer.runToSlot(spindexer.currentSlot+1);
         }
-
     }
 
     private boolean isButtonDebounced() {
