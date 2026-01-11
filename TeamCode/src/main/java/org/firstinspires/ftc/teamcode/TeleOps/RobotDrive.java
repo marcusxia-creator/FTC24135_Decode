@@ -136,8 +136,6 @@ public class RobotDrive {
     }
 
 
-
-
     double deadband(double input, double threshold) {
         if (Math.abs(input) < threshold) { // Ignore small values
             return 0.0;
@@ -187,16 +185,6 @@ public class RobotDrive {
 
     }
 
-    // Method to get left encoder count
-    /*
-    public int [] getEncoderCounts() {
-        int[] counts = new int[3];
-        counts[0] = robot.leftodometry.getCurrentPosition();
-        counts[1] = robot.rightodometry.getCurrentPosition();
-        counts[2] = robot.centerodometry.getCurrentPosition();
-        return counts;
-    }
-    */
     public double[] getVelocity() {
         double[] velocities = new double[4];
         velocities[0] = robot.frontLeftMotor.getVelocity();
