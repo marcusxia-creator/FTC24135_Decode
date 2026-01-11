@@ -4,8 +4,8 @@ import static org.firstinspires.ftc.teamcode.TeleOps.FSMIntake.IntakeStates;
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SHOOTERSTATE;
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SORTSHOOTERSTATE;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.close;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.farEdge;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.CLOSE;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.FAR_EDGE;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -147,7 +147,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             }
         }
         //LED alarm light
-        if (shooterPowerAngleCalculator.getDistance() <= close||shooterPowerAngleCalculator.getDistance() >= farEdge) {
+        if (shooterPowerAngleCalculator.getDistance() <= CLOSE ||shooterPowerAngleCalculator.getDistance() >= FAR_EDGE) {
             //Distance less than 54 inches, red alert
             robot.LED.setPosition(0.28);
         }
