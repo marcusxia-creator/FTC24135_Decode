@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.BNO055IMUNew;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -16,11 +15,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -78,7 +73,6 @@ public class RobotHardware {
     public DcMotorEx frontRightMotor;
     public DcMotorEx backRightMotor;
     public Servo kickerServo;
-    public Servo leftSpindexerServo;
     public Servo rightSpindexerServo;
     public Servo spindexerServo;
     public Servo shooterAdjusterServo;
@@ -132,8 +126,7 @@ public class RobotHardware {
         //Servos
         //angleServo = hardwareMap.get(Servo.class, "Angle_Servo");
         kickerServo = hardwareMap.get(Servo.class, "Kicker_Servo");
-        leftSpindexerServo = hardwareMap.get(Servo.class, "Left_Spindexer_Servo");
-        rightSpindexerServo = hardwareMap.get(Servo.class, "Right_Spindexer_Servo");
+        spindexerServo = hardwareMap.get(Servo.class, "Spindexer_Servo");
         shooterAdjusterServo = hardwareMap.get(Servo.class, "Shooter_Adjuster_Servo");
 
         topShooterMotor = hardwareMap.get(DcMotorEx.class, "Top_Shooter_Motor");
@@ -151,46 +144,48 @@ public class RobotHardware {
         LED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
         colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
 
-        //limelight3A = hardwareMap.get(Limelight3A.class, "LimeLight3A");
+        limelight3A = hardwareMap.get(Limelight3A.class, "LimeLight3A");
 
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
-        //Reset the drive train motor encoders
+        /// Reset the drive motor encoders
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        //Set drive train motor run mode
+        /// Set drive motor run mode
         frontLeftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
         backLeftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); //set motor mode
         frontRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
         backRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
-
+        /// config drive motor set front left motor reverse
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        // set robot motor power 0
+
+        /// config intake motor
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        /// config turret motor
         turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        //spindexerServo.setDirection(Servo.Direction.REVERSE);
-
-        /**set run mode of shooter Motor*/
+        /// set run mode of shooter Motor
         topShooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         bottomShooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         topShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         bottomShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         topShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        /** set drive motor 0 */
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
 
+        /// set spindexer servo
+        spindexerServo.setDirection(Servo.Direction.REVERSE);
     }// End of init
 
     // Initialize IMU
