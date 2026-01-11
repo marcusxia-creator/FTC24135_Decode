@@ -36,7 +36,7 @@ public class Limelight {
         if (distanceUnit == DistanceUnit.INCH) {
             conversionFactor = 39.3700787;
         }
-        if (distanceUnit == DistanceUnit.MM) {
+        else if (distanceUnit == DistanceUnit.MM) {
             conversionFactor = 1000;
         }
         else {

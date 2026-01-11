@@ -29,24 +29,20 @@ Motor:
 Control hub motor:
                 port 0: FR_Motor
                 port 1: BR_motor
-                port 2: Turret_Motor
+
+
+
+
+                port 2: BL_Motor
                 port 3: FL_Motor
 Expansion hub motor:
                 port 0: Top_Shooter_Motor
-                port 1: Bottom_Shooter_Motor
+                port 1: Turret_Motor
                 port 2: Intake_Motor
-                port 3: BL_Motor
+                port 3: Bottom_Shooter_Motor
 
 Servo:
-EXP hub:
-                port 0: Spindexer_Servo
-                port 1: Kicker_Servo
-                port 2: Shooter_Adjuster_Servo
-                port 3: goBilda_LED_Light
-                port 4: Empty
-                port 5: Empty
-
-Control hub:
+Control hub servo:
                 port 0: Empty
                 port 1: Empty
                 port 2: Empty
@@ -54,6 +50,13 @@ Control hub:
                 port 4: Empty
                 port 5: Empty
 
+Expansion hub servo:
+                port 0: Spindexer_Servo
+                port 1: Kicker_Servo
+                port 2: Shooter_Adjuster_Servo
+                port 3: goBilda_LED_Light
+                port 4: Empty
+                port 5: Empty
 
 I2C port
 EXP hub:

@@ -196,6 +196,7 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("Color", ballColor);
         telemetry.addLine("----------------------------------------------------");
         telemetry.addData("turret target angle - atan", turret.getTargetAngle());
+        telemetry.addData("turret motor tick", robot.turretMotor.getCurrentPosition());
         telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
         telemetry.addData("turret motor drive angle", turret.getTurretDriveAngle());
         telemetry.addData("turret motor drive tick", turret.motorDriveTick());
