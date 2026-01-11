@@ -26,15 +26,6 @@ public class Turret {
     }
 
     public double getTurretDriveAngle () {
-        /*if (robot.pinpoint.getHeading(AngleUnit.DEGREES) > 0) {
-            floorMod(getTargetAngle()-robot.pinpoint.getHeading(AngleUnit.DEGREES), 360);
-            return 90 - robot.pinpoint.getHeading(AngleUnit.DEGREES)  + getTargetAngle();
-        }
-        if (robot.pinpoint.getHeading(AngleUnit.DEGREES) < 0) {
-            floorMod(getTargetAngle()-robot.pinpoint.getHeading(AngleUnit.DEGREES), 360);
-            return 180 + robot.pinpoint.getHeading(AngleUnit.DEGREES) + getTargetAngle();
-        }
-        return 90 + getTargetAngle();*/
         return -(floorMod(robot.pinpoint.getHeading(AngleUnit.DEGREES) - getTargetAngle()+180, 360)-180);
     }
 

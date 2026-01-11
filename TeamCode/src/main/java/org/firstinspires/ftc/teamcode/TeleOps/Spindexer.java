@@ -5,9 +5,6 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.greenRang
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.greenRangeLow;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.purpleRangeHigh;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.purpleRangeLow;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.spindexerSlot0;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.spindexerSlot1;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.spindexerSlot2;
 
 import android.graphics.Color;
 
@@ -114,15 +111,15 @@ public class Spindexer {
     public void runToSlot(){
         currentSlot = Math.floorMod(currentSlot,3);
         if(currentSlot==0){
-            robot.leftSpindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
+            robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
             robot.rightSpindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
         }
         if(currentSlot==1){
-            robot.leftSpindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
+            robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
             robot.rightSpindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
         }
         if(currentSlot==2){
-            robot.leftSpindexerServo.setPosition(RobotActionConfig.spindexerSlot2);
+            robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot2);
             robot.rightSpindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
         }
     }
