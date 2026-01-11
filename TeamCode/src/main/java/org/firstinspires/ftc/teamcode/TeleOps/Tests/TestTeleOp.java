@@ -105,39 +105,28 @@ public class TestTeleOp extends OpMode {
         robot.topShooterMotor.setPower(Range.clip(shooterPower,0.0,1.0));
         robot.bottomShooterMotor.setPower(Range.clip(shooterPower,0.0,1.0));
 
-        /** run kicker servoposition*/
+        /*fine tuning controls - gamepad 1*/
+        /** kicker servo fine tune*/
         if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
-            servoposition = robot.kickerServo.getPosition() + 0.05;
-            robot.kickerServo.setPosition(Range.clip(0.50, 0.0, 1.0
+            servoposition = robot.kickerServo.getPosition() + 0.02;
+            robot.kickerServo.setPosition(Range.clip(servoposition, 0.0, 1.0
             ));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
-            servoposition = robot.kickerServo.getPosition() - 0.05;
-            robot.kickerServo.setPosition(Range.clip(0.29, 0, 1));
+            servoposition = robot.kickerServo.getPosition() - 0.02;
+            robot.kickerServo.setPosition(Range.clip(servoposition, 0, 1));
         }
-        /** run spindexer servoposition*/
+        /** spindexer servo fine tune*/
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
-            servoposition = robot.spindexerServo.getPosition() + 0.05;
+            servoposition = robot.spindexerServo.getPosition() + 0.02;
             robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
-            servoposition = robot.spindexerServo.getPosition() - 0.05;
+            servoposition = robot.spindexerServo.getPosition() - 0.02;
             robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
         }
-        /*
-        //run to position - forward
-        if (gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
-            servoposition = robot.leftSpindexerServo.getPosition() + 0.33;
-            robot.leftSpindexerServo.setPosition(Range.clip(servoposition, 0, 1));
-        }
-        //run to position- reverse
-        if (gamepad_2.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
-            servoposition = robot.leftSpindexerServo.getPosition() - 0.33;
-            robot.leftSpindexerServo.setPosition(Range.clip(servoposition, 0, 1));
-        }
-         */
 
-        /** shooter adjuster */
+        /** shooter adjuster servo fine tune */
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && isButtonDebounced()) {
             servoposition = robot.shooterAdjusterServo.getPosition() + 0.05;
             robot.shooterAdjusterServo.setPosition(Range.clip(servoposition, 0, 1));
@@ -146,23 +135,69 @@ public class TestTeleOp extends OpMode {
             servoposition = robot.shooterAdjusterServo.getPosition() - 0.05;
             robot.shooterAdjusterServo.setPosition(Range.clip(servoposition, 0, 1));
         }
-        /** run shooter target RPM */
+
+        /** shooter speed up tune*/
         if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()){
             targetShooterRPM += 200;
         }
-
         if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced()){
             targetShooterRPM -= 200;
         }
 
-        /** run intake motor*/
+        /** intake motor run tune*/
         if (gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER) && isButtonDebounced()) {
             robot.intakeMotor.setPower(Range.clip(intakeSpeed, 0.5, 1.0));
             intakeSpeed += 0.05;
         }
         if (gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER) && isButtonDebounced()){
             robot.intakeMotor.setPower(0);
+            intakeSpeed = 0.0;
         }
+
+        /*action controls - gamepad 2*/
+        /**spindexer servo run slots*/
+        if (gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
+            servoposition = robot.spindexerServo.getPosition() + RobotActionConfig.spindexerPerSlot;
+            robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
+        }
+        if (gamepad_2.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
+            servoposition = robot.spindexerServo.getPosition() - RobotActionConfig.spindexerPerSlot;
+            robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
+        }
+
+        /**kicker servo up and down*/
+        if (gamepad_2.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
+            robot.kickerServo.setPosition(RobotActionConfig.kickerOut);
+        }
+        if (gamepad_2.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
+            robot.kickerServo.setPosition(RobotActionConfig.kickerIn);
+        }
+
+        /**intake start stop*/
+        if (gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER) && isButtonDebounced()) {
+            robot.intakeMotor.setPower(0.9);
+        }
+        if (gamepad_2.getButton(GamepadKeys.Button.RIGHT_BUMPER) && isButtonDebounced()) {
+            robot.intakeMotor.setPower(0);
+        }
+
+        /**shooter start stop*/
+        if (gamepad_2.getButton(GamepadKeys.Button.X) && isButtonDebounced()){
+
+        }
+        if (gamepad_2.getButton(GamepadKeys.Button.Y) && isButtonDebounced()){
+            targetShooterRPM = 0;
+        }
+
+        /** shooter adjuster trigger */
+        if (gamepad_2.getButton(GamepadKeys.Button.DPAD_UP) && isButtonDebounced()) {
+            robot.shooterAdjusterServo.setPosition(0.6);
+        }
+        if (gamepad_1.getButton(GamepadKeys.Button.DPAD_DOWN) && isButtonDebounced()) {
+            robot.shooterAdjusterServo.setPosition(0.82);
+        }
+
+
 
         if (shooterPowerAngleCalculator.getDistance() <= 54) {
             robot.LED.setPosition(0.28);
@@ -191,7 +226,7 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("Robot Voltage", robot.getBatteryVoltageRobust());
         telemetry.addData("Shooter target RPM", targetShooterRPM);
         telemetry.addData("Shooter current RPM", currentShooterRPM);
-        telemetry.addData("Shooter Motor Power Calculator", shooterPowerAngleCalculator.getPower());
+        telemetry.addData("Shooter Motor Power Calculator", shooterPower);
         telemetry.addLine("----------------------------------------------------");
         telemetry.addData("Color", ballColor);
         telemetry.addLine("----------------------------------------------------");
