@@ -47,7 +47,7 @@ public class TestTeleOp extends OpMode {
     double shooterPower = 0.0;
     public static double targetShooterRPM = 0.0;
     double currentShooterRPM;
-    public static double tickToRPM = 60/28;
+    public static double tickToRPM = (double) 60 /28;
 
     private Limelight limelight;
 
