@@ -37,6 +37,11 @@ public class Turret {
         robot.turretMotor.setTargetPosition(ticks);
         robot.turretMotor.setPower(0.3);
     }
+
+    public void stopTurretMotor(){
+        robot.turretMotor.setPower(0.0);
+    }
+
     /*public boolean isTurretAtPosition (){
         if (Math.floor(angle) == Math.floor(getTurretMotorAngle())){
             return true;

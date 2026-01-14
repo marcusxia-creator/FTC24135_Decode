@@ -8,6 +8,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
+import java.util.Optional;
+
 public class LUTPowerCalculator {
 
     private RobotHardware robot;
@@ -19,6 +21,7 @@ public class LUTPowerCalculator {
     private double tickToRPM = (double) 60 / 28;
 
     private int maxVelocity = 5500;
+    private int setRPM = 0;
 
     //Stores the position of both alliance's goal
     private final Pose2D redGoalPose = new Pose2D(DistanceUnit.INCH, -70, 70, AngleUnit.DEGREES, -45);
@@ -28,7 +31,7 @@ public class LUTPowerCalculator {
     private Pose2D actualGoalPose = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
 
     //Sets the pid value
-    private final double p = 5, i = 0, d = 0;
+    private final double p = 3, i = 0, d = 0;
 
     //Target RPM base on the zone
     LUT<Integer, Integer> targetRPM = new LUT<Integer, Integer>()
@@ -75,7 +78,7 @@ public class LUTPowerCalculator {
     }
 
     //Returns the power for the shooter motors
-    public double getPower() {
+    public double getRPM() {
 
         //Calculate the distance of the robot from goal base on pythagoras theorem
         distance = Math.sqrt(Math.pow(robot.pinpoint.getPosX(DistanceUnit.INCH) - actualGoalPose.getX(DistanceUnit.INCH),2) + Math.pow(robot.pinpoint.getPosY(DistanceUnit.INCH) - actualGoalPose.getY(DistanceUnit.INCH), 2));
@@ -98,10 +101,16 @@ public class LUTPowerCalculator {
         }
 
         //Normalize target and current values
-        double current = (robot.topShooterMotor.getVelocity() * tickToRPM) / maxVelocity;
-        double target = targetRPM.get(zone) / maxVelocity; //Uses zone to get target rpm
+        Optional<Integer> rpmValue = Optional.ofNullable(targetRPM.get(zone));
+        setRPM = rpmValue.orElse(0);
 
         //Returns the power for the motor base on PID controller
+        return setRPM;
+    }
+    public double getPower() {
+        //Calculate distance of robot to goal
+        double current = (robot.topShooterMotor.getVelocity() * tickToRPM) / maxVelocity;
+        double target = getRPM() / maxVelocity;
         return pidController.calculate(current, target);
     }
 
