@@ -32,6 +32,30 @@ public class Limelight {
         robot.limelight3A.start();
     }
 
+    public Pose2D updateTagMT2OFFSET(DistanceUnit distanceUnit) {
+        if (distanceUnit == DistanceUnit.INCH) {
+            conversionFactor = 39.3700787;
+        }
+        else if (distanceUnit == DistanceUnit.MM) {
+            conversionFactor = 1000;
+        }
+        else {
+            throw new IllegalArgumentException("Distance Unit can only be in INCH or MM");
+        }
+        double yaw = turret.getTurretMotorAngle() + robot.pinpoint.getHeading(AngleUnit.DEGREES);//robot.external_imu.getAngularOrientation().firstAngle;
+        robot.limelight3A.updateRobotOrientation(yaw);
+        LLResult llResult = robot.limelight3A.getLatestResult();
+        if (llResult != null && llResult.isValid()) {
+            Pose3D robotPose3D = llResult.getBotpose_MT2();
+            double yOffSet = Math.sin(robotPose3D.getOrientation().getYaw(AngleUnit.DEGREES) - 90) * (0.1905 * conversionFactor);
+            double xOffSet = Math.cos(robotPose3D.getOrientation().getYaw(AngleUnit.DEGREES) - 90) * (0.1905 * conversionFactor);
+            //return new Pose2D(distanceUnit, ((robotPose3D.getPosition().x * conversionFactor) - xOffSet), ((robotPose3D.getPosition().y * conversionFactor) - yOffSet), AngleUnit.DEGREES, robotPose3D.getOrientation().getYaw());
+            return new Pose2D (distanceUnit, xOffSet, yOffSet, AngleUnit.DEGREES, robotPose3D.getOrientation().getYaw(AngleUnit.DEGREES));
+        }
+
+        return null;
+    }
+
     public Pose2D updateTagMT2(DistanceUnit distanceUnit) {
         if (distanceUnit == DistanceUnit.INCH) {
             conversionFactor = 39.3700787;
@@ -47,9 +71,34 @@ public class Limelight {
         LLResult llResult = robot.limelight3A.getLatestResult();
         if (llResult != null && llResult.isValid()) {
             Pose3D robotPose3D = llResult.getBotpose_MT2();
-            double yOffSet = Math.cos(yaw - 90) * (0.1905 * conversionFactor);
-            double xOffSet = Math.sin(yaw - 90) * (0.1905 * conversionFactor);
+            double yOffSet = Math.sin(robotPose3D.getOrientation().getYaw(AngleUnit.DEGREES) - 90) * (0.1905 * conversionFactor);
+            double xOffSet = Math.cos(robotPose3D.getOrientation().getYaw(AngleUnit.DEGREES) - 90) * (0.1905 * conversionFactor);
+            return new Pose2D(distanceUnit, ((robotPose3D.getPosition().x * conversionFactor)), ((robotPose3D.getPosition().y * conversionFactor)), AngleUnit.DEGREES, robotPose3D.getOrientation().getYaw());
+            //return new Pose2D (distanceUnit, xOffSet, yOffSet, AngleUnit.DEGREES, robotPose3D.getOrientation().getYaw(AngleUnit.DEGREES));
+        }
+
+        return null;
+    }
+
+    public Pose2D updateTagMT2NORMALIZED(DistanceUnit distanceUnit) {
+        if (distanceUnit == DistanceUnit.INCH) {
+            conversionFactor = 39.3700787;
+        }
+        else if (distanceUnit == DistanceUnit.MM) {
+            conversionFactor = 1000;
+        }
+        else {
+            throw new IllegalArgumentException("Distance Unit can only be in INCH or MM");
+        }
+        double yaw = turret.getTurretMotorAngle() + robot.pinpoint.getHeading(AngleUnit.DEGREES);//robot.external_imu.getAngularOrientation().firstAngle;
+        robot.limelight3A.updateRobotOrientation(yaw);
+        LLResult llResult = robot.limelight3A.getLatestResult();
+        if (llResult != null && llResult.isValid()) {
+            Pose3D robotPose3D = llResult.getBotpose_MT2();
+            double yOffSet = Math.sin(robotPose3D.getOrientation().getYaw(AngleUnit.DEGREES) - 90) * (0.1905 * conversionFactor);
+            double xOffSet = Math.cos(robotPose3D.getOrientation().getYaw(AngleUnit.DEGREES) - 90) * (0.1905 * conversionFactor);
             return new Pose2D(distanceUnit, ((robotPose3D.getPosition().x * conversionFactor) - xOffSet), ((robotPose3D.getPosition().y * conversionFactor) - yOffSet), AngleUnit.DEGREES, robotPose3D.getOrientation().getYaw());
+            //return new Pose2D (distanceUnit, xOffSet, yOffSet, AngleUnit.DEGREES, robotPose3D.getOrientation().getYaw(AngleUnit.DEGREES));
         }
 
         return null;

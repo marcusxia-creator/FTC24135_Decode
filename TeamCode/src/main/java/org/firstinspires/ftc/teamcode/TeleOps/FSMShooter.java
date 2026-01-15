@@ -104,7 +104,7 @@ public class FSMShooter {
                 break;
             case SEQUENCE_SHOOTING:
                 robot.topShooterMotor.setPower(speed);
-                spindexer.sequenceShoot();
+                //spindexer.sequenceShoot();
                 shootTimer.reset();
                 break;
 

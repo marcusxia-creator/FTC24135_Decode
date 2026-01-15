@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.TeleOps.LUTPowerCalculator;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 
@@ -261,7 +262,12 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("turret motor drive angle", turret.getTurretDriveAngle());
         telemetry.addData("turret motor drive tick", turret.motorDriveTick());
         telemetry.addLine("----------------------------------------------------");
-        telemetry.addData("limelight Pose2D", limelight.updateTagMT2(DistanceUnit.INCH));
+        Pose2D MT2Pose = limelight.updateTagMT2(DistanceUnit.MM);
+        Pose2D MT2Offset = limelight.updateTagMT2OFFSET(DistanceUnit.MM);
+        Pose2D MT2Normalize = limelight.updateTagMT2NORMALIZED(DistanceUnit.MM);
+        //telemetry.addData("limelight Pose2D", MT2Pose);
+        //telemetry.addData("limelight offset", MT2Offset);
+        telemetry.addData("limelight normalized", MT2Normalize);
         telemetry.addData("pinpoint Pose2D", robot.pinpoint.getPosition());
         telemetry.update();
     }

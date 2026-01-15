@@ -77,7 +77,7 @@ public class FSMIntake {
                 //Put gates down
                 if (intakeTimer.seconds() > gateDownTime && !recorded) {
                     spindexer.writeToCurrent(robot.colorSensor, robot.distanceSensor);
-                    spindexer.runToSlot(Spindexer.SLOT.Empty);
+                    //spindexer.runToSlot(Spindexer.SLOT.Empty);
                     recorded = true;
                 }
                 if (intakeTimer.seconds() > SpindexerMoveTime) {
