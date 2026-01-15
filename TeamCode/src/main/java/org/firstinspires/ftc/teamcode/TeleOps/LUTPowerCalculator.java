@@ -114,32 +114,4 @@ public class LUTPowerCalculator {
         return pidController.calculate(current, target);
     }
 
-    public double getAngle() {
-        double tangent = (actualGoalPose.getY(DistanceUnit.INCH) - robot.pinpoint.getPosY(DistanceUnit.INCH)) / distance;
-        return Math.toDegrees(Math.atan(tangent));
-    }
-
-    //Returns the desired angle for shooter
-    public double getShooterAngle() {
-
-        //Calculate distance of robot to goal
-        distance = Math.sqrt(Math.pow(robot.pinpoint.getPosX(DistanceUnit.INCH) - actualGoalPose.getX(DistanceUnit.INCH),2) + Math.pow(robot.pinpoint.getPosY(DistanceUnit.INCH) - actualGoalPose.getY(DistanceUnit.INCH), 2));
-
-        //Determine the zone the robot is in
-        if (distance > close && distance <= mid) {
-            zone = 1;
-        }
-        else if (distance > mid && distance <= far) {
-            zone = 2;
-        }
-        else if (distance > far && distance <= farEdge) {
-            zone = 3;
-        }
-        else {
-            zone = 0;
-        }
-
-        //Returns the target angle
-        return targetShootingAngle.get(zone);
-    }
 }

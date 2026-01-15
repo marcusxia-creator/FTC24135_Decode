@@ -26,9 +26,7 @@ public class ColourCriterion {
     ColourCriterion(ColorSensor colorSensor, DistanceSensor distanceSensor, Range... ranges) {
         this.colorSensor = colorSensor;
         this.distanceSensor = distanceSensor;
-
         this.ranges = ranges;
-
         timer = new ElapsedTime();
         met = false;
     }
@@ -46,9 +44,7 @@ public class ColourCriterion {
     }
 
     class Range{
-
         RangeType type;
-
         double lower;
         double higher;
 
