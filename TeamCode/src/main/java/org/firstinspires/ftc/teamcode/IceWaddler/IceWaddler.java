@@ -251,7 +251,6 @@ public class IceWaddler {
                 Range.clip(-pController.calculate(currentPos.getX(METER),targetPos.getX(METER)),-minSpeed, minSpeed),
                 Range.clip(-pController.calculate(currentPos.getY(METER),targetPos.getY(METER)),-minSpeed, minSpeed),
                 RADIANS, 0);
-
         writeVel();
     }
 
@@ -350,7 +349,7 @@ public class IceWaddler {
 
         switch(currentAction.actionType){
             case RUN:
-                startingPos = currentAction.startingPos;
+                startingPos = targetPos;
                 targetPos = currentAction.targetPos;
                 tolorance = currentAction.threshold;
                 decelerate = currentAction.decelerate;
@@ -460,16 +459,14 @@ public class IceWaddler {
         public double hTolorance;
 
         //Run variables
-        public Pose2D startingPos;
         public Pose2D targetPos;
         public double speed;
         public boolean decelerate;
         public double threshold; //For transitions
 
         //Run Action
-        public Action(Pose2D startingPos, Pose2D targetPos, double speed, boolean decelerate, double threshold, String[] IDs){
+        public Action(Pose2D targetPos, double speed, boolean decelerate, double threshold, String[] IDs){
             this.actionType = ACTIONTYPE.RUN;
-            this.startingPos = startingPos;
             this.speed = speed;
             this.targetPos = targetPos;
             this.decelerate = decelerate;
