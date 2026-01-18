@@ -62,6 +62,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     /// For alliance colour
     public static Alliance alliance;
 
+    public Limelight limelight;
+
 
     @Override
     public void init() {
@@ -74,31 +76,45 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.initPinpoint(); //Initialize pinpoint
         robot.initExternalIMU(); //Initialize external IMU
 
-        /// ---------------------------------------------------------------
+        /// 0. gamepad---------------------------------------------------------------
         gamepadCo1 = new GamepadEx(gamepad1);
         gamepadCo2 = new GamepadEx(gamepad2);
         gamepadInput = new GamepadInput(gamepadCo1,gamepadCo2);
-        spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
-        spindexer.runToSlot(0);
-        spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
-        /// ---------------------------------------------------------------
-        turret = new Turret(robot);
 
+        /// 1. robot drive-------------------------------------------------------------
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
-        shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
-        colorDetection = new ColorDetection(robot);
+        /// 2.spindexer-------------------------------------------------------------------
+        spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
+        spindexer.runToSlot(0);
+        spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
+        /// 3. turret---------------------------------------------------------------
+        turret = new Turret(robot);
 
-        alliance = Alliance.RED_ALLIANCE;
-        shooterPowerAngleCalculator.setAlliance(true);
-
+        /// 4. shooter-------------------------------------------------------------
         FSMShooter = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, shooterPowerAngleCalculator,gamepadInput);
         FSMShooter.Init();
 
+        /// 4.1. power calculator for shooter------------------------------------------------------------
+        shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
+
+        /// 5. intake------------------------------------------------------------
         FSMIntake = new FSMIntake(gamepadCo1, gamepadCo2, robot, spindexer);
 
+        /// 6. color detection------------------------------------------------------------
+        colorDetection = new ColorDetection(robot);
+
+        /// 7. alliance selection-----------------------------------------------------------
+        alliance = Alliance.RED_ALLIANCE;
+        shooterPowerAngleCalculator.setAlliance(true);
+
+        /// 8. robot state----------------------------------------------------------
         actionStates = RobotActionState.Idle;
+
+        /// 9. limelight--------------------------------------------------------------
+        limelight.initLimelight(24);
+        limelight.start();
     }
 
     @Override
@@ -108,6 +124,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         gamepadCo2.readButtons();
 
         gamepadInput.update();
+
         robot.pinpoint.update();
         ballColor = BallColor.fromHue(colorDetection.getHue());
 
@@ -115,6 +132,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         //Continuous driving
         robotDrive.DriveLoop();
         turret.driveTurretMotor();
+
         switch (actionStates){
             case Sequence_Shooting:
                 FSMShooter.SequenceShooterLoop();
@@ -211,6 +229,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
         //telemetry.addData("turret rotation in degrees", turret.getTurretAngle());
         telemetry.addData("turret target angle", turret.getTargetAngle());
+        telemetry.addLine("-----------------------------------------");
+        telemetry.addData("limelight output", limelight.normalizedPose2D(DistanceUnit.MM));
         telemetry.update();
     }
     public void telemetryManagerSimplified() {
