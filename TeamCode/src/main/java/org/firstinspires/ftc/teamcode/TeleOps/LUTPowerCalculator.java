@@ -1,0 +1,117 @@
+package org.firstinspires.ftc.teamcode.TeleOps;
+
+import com.arcrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.util.LUT;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
+
+import java.util.Optional;
+
+public class LUTPowerCalculator {
+
+    private RobotHardware robot;
+    private PIDController pidController;
+
+    private double distance;
+    private int zone = 0;
+
+    private double tickToRPM = (double) 60 / 28;
+
+    private int maxVelocity = 5500;
+    private int setRPM = 0;
+
+    //Stores the position of both alliance's goal
+    private final Pose2D redGoalPose = new Pose2D(DistanceUnit.INCH, -70, 70, AngleUnit.DEGREES, -45);
+    private final Pose2D blueGoalPose = new Pose2D(DistanceUnit.INCH, -70, -70, AngleUnit.DEGREES, 45);
+
+    //The actual goal pose (depends on which alliance)
+    private Pose2D actualGoalPose = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
+
+    //Sets the pid value
+    private final double p = 3, i = 0, d = 0;
+
+    //Target RPM base on the zone
+    LUT<Integer, Integer> targetRPM = new LUT<Integer, Integer>()
+    {{
+        add(4, 4464);//far zone   0.93*4800
+        add(3, 3744);//far range   0.78*4800
+        add(2, 3504); //mid range  0.73*4800
+        add(1, 3600); //near range 0.75*4800
+        add(0, 3000); //Not in shooting zone
+
+    }};
+
+    //Target shooting angle base on the zone
+    LUT<Integer, Double> targetShootingAngle = new LUT<Integer, Double>()
+    {{
+        add(3, 0.4);//far zone
+        add(2, 0.5); //mid zone
+        add(1, 0.6); //near zone
+        add(0, 0.3); //Not in shooting zone
+
+    }};
+
+    //Constructor for parameter setup
+    public LUTPowerCalculator(RobotHardware robot) {
+        this.robot = robot;
+        pidController = new PIDController(p, i, d);
+    }
+
+    //Set the alliance of the match which determine the actual goal pose
+    public void setAlliance (boolean isRedAlliance) {
+        if (isRedAlliance) {
+            actualGoalPose = redGoalPose;
+        }
+
+        if (!isRedAlliance) {
+            actualGoalPose = blueGoalPose;
+        }
+    }
+
+    //Returns the distance of the robot to the goal
+    public double getDistance() {
+        distance = Math.sqrt(Math.pow(robot.pinpoint.getPosX(DistanceUnit.INCH) - actualGoalPose.getX(DistanceUnit.INCH),2) + Math.pow(robot.pinpoint.getPosY(DistanceUnit.INCH) - actualGoalPose.getY(DistanceUnit.INCH), 2));
+        return distance;
+    }
+
+    //Returns the power for the shooter motors
+    public double getRPM() {
+
+        //Calculate the distance of the robot from goal base on pythagoras theorem
+        distance = Math.sqrt(Math.pow(robot.pinpoint.getPosX(DistanceUnit.INCH) - actualGoalPose.getX(DistanceUnit.INCH),2) + Math.pow(robot.pinpoint.getPosY(DistanceUnit.INCH) - actualGoalPose.getY(DistanceUnit.INCH), 2));
+
+        //Determine which zone the robot is currently in
+        if (distance > close && distance <= mid) {
+            zone = 1;
+        }
+        else if (distance > mid && distance <= far) {
+            zone = 2;
+        }
+        else if (distance > far && distance <= farEdge) {
+            zone = 3;
+        }
+        else if (distance > FAR_ZONE_LOW && distance <= FAR_ZONE_HIGH) {
+            zone = 4;
+        }
+        else {
+            zone = 0;
+        }
+
+        //Normalize target and current values
+        Optional<Integer> rpmValue = Optional.ofNullable(targetRPM.get(zone));
+        setRPM = rpmValue.orElse(0);
+
+        //Returns the power for the motor base on PID controller
+        return setRPM;
+    }
+    public double getPower() {
+        //Calculate distance of robot to goal
+        double current = (robot.topShooterMotor.getVelocity() * tickToRPM) / maxVelocity;
+        double target = getRPM() / maxVelocity;
+        return pidController.calculate(current, target);
+    }
+
+}

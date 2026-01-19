@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.Vision.AprilTagUpdate;
 import java.util.Arrays;
 import java.util.List;
 
-@TeleOp(name = "TeleOps_Decode_gw", group = "org.firstinspires.ftc.teamcode")
+@TeleOp(name = "TeleOps_Decode_gw_2.0", group = "org.firstinspires.ftc.teamcode")
 public class MainTeleOps extends OpMode {
 
     //======================= Enums & Constants ===============================
@@ -45,7 +45,7 @@ public class MainTeleOps extends OpMode {
     private ColorDetection colorDetection;
     private SlotList slotList;
     private AprilTagUpdate aprilTagUpdate;
-    private ShooterDiscreteZonePowerTable powerTable;
+    private LUTPowerCalculator powerTable;
 
     //======================= Controllers & State =============================
     private GamepadEx gamepadCo1, gamepadCo2;
@@ -72,7 +72,7 @@ public class MainTeleOps extends OpMode {
         // Hardware and Subsystems
         robot = new RobotHardware(hardwareMap);
         robot.init();
-        robot.initPinPoint();
+        robot.initPinpoint();
 
         // Controllers
         gamepadCo1 = new GamepadEx(gamepad1);
@@ -81,12 +81,12 @@ public class MainTeleOps extends OpMode {
         // Drivetrain
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
-        powerTable = new ShooterDiscreteZonePowerTable();
+        powerTable = new LUTPowerCalculator(robot);
 
         // Ball Handling Subsystems
         slotList = new SlotList(spindexerSlotAngles);
-        intakeBall = new IntakeBall(robot, gamepadCo2, slotList.getBalls(), spindexerSlotAngles);
-        offTakeBall = new OffTakeBall(robot, gamepadCo2, slotList.getBalls(), powerTable);
+        intakeBall = new IntakeBall(robot, gamepadCo2, slotList, spindexerSlotAngles);
+        offTakeBall = new OffTakeBall(robot, gamepadCo2, slotList, powerTable);
 
         // Vision
         aprilTagUpdate = new AprilTagUpdate(hardwareMap);
@@ -119,7 +119,7 @@ public class MainTeleOps extends OpMode {
     public void loop() {
         //--- Universal Updates ---
         // Always update odometry and calculate distance, regardless of mode
-        robot.pinPoint.update();
+        robot.pinpoint.update();
         double distanceToGoal = getTargetGoalDist(targetGoalPos);
         offTakeBall.setDistanceToGoal(distanceToGoal);
 
@@ -140,9 +140,8 @@ public class MainTeleOps extends OpMode {
 
     @Override
     public void stop() {
-        robot.stopAllMotors();
         intakeBall.stopIntake();
-        offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.OFFTAKE_IDLE);
+        offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.OFFTAKE_READY);
         telemetry.addData("Status", "Robot Stopped");
         telemetry.update();
     }
@@ -160,9 +159,10 @@ public class MainTeleOps extends OpMode {
      * Manages the state transitions for the ball handling system (Intake, Offtake, Idle).
      */
     private void runBallHandlingFSM() {
+        intakeBall.update();
+        offTakeBall.update();
         switch (ballHandlingState) {
             case INTAKING:
-                intakeBall.IntakeBallUpdate();
                 intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
                 offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.OFFTAKE_DONE);
                 if (intakeBall.isFull()) {
@@ -170,17 +170,15 @@ public class MainTeleOps extends OpMode {
                 }
                 break;
             case OFFTAKING:
-                offTakeBall.update();
-                intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
+                intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_END);
+                offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.OFFTAKE_READY);
                 if (offTakeBall.isSortingComplete()) {
                     ballHandlingState = BallHandlingState.IDLE;
                 }
                 break;
             case IDLE:
-                intakeBall.stopIntake();
-                intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_READY);
+                intakeBall.setState(IntakeBall.INTAKEBALLSTATE.INTAKE_END);
                 offTakeBall.setState(OffTakeBall.OFFTAKEBALLSTATE.OFFTAKE_DONE);
-                offTakeBall.update();
                 break;
         }
     }
@@ -207,7 +205,6 @@ public class MainTeleOps extends OpMode {
 
         if (gamepadCo2.getButton(X) && isDebounced()) {
             ballHandlingState = BallHandlingState.OFFTAKING;
-            intakeBall.stopIntake();
         }
 
         if (gamepadCo2.getButton(B) && isDebounced()) {
@@ -245,7 +242,7 @@ public class MainTeleOps extends OpMode {
      */
     private void handleOdomReset() {
         if (gamepadCo1.getButton(DPAD_DOWN) && isDebounced()) {
-            robot.pinPoint.setPosition(new Pose2D(DistanceUnit.INCH,0,0,AngleUnit.DEGREES,0));
+            robot.pinpoint.setPosition(new Pose2D(DistanceUnit.INCH,0,0,AngleUnit.DEGREES,0));
             telemetry.addLine("!!! ODOMETRY RESET !!!");
         }
     }
@@ -267,22 +264,22 @@ public class MainTeleOps extends OpMode {
             // Check the timer to toggle the LED on and off
             // This creates a 1-second cycle (500ms on, 500ms off)
             if (ledFlashTimer.milliseconds() < 500) {
-                robot.rgbLED.setPosition(0.277); // "On" state (e.g., Red)
+                robot.LED.setPosition(0.277); // "On" state (e.g., Red)
             } else if (ledFlashTimer.milliseconds() < 1000) {
-                robot.rgbLED.setPosition(0.9); // "Off" state (or a dim color)
+                robot.LED.setPosition(0.9); // "Off" state (or a dim color)
             } else {
                 ledFlashTimer.reset(); // Reset the timer to repeat the flash cycle
             }
         } else {
             // If not in flashing mode, use the solid color logic
             if (intakeBall.getDetectedColor() == BallColor.GREEN) {
-                robot.rgbLED.setPosition(0.5); // Solid Green
+                robot.LED.setPosition(0.5); // Solid Green
             } else if (intakeBall.getDetectedColor() == BallColor.PURPLE) {
-                robot.rgbLED.setPosition(0.722); // Solid Purple
+                robot.LED.setPosition(0.722); // Solid Purple
             } else if (intakeBall.getDetectedColor() == BallColor.UNKNOWN){
-                robot.rgbLED.setPosition(0.388); // Default solid color (e.g., Orange)
+                robot.LED.setPosition(0.388); // Default solid color (e.g., Orange)
             } else if (intakeBall.isFull()) {
-                robot.rgbLED.setPosition(1.0); // Solid White
+                robot.LED.setPosition(1.0); // Solid White
             }
         }
     }
@@ -346,8 +343,8 @@ public class MainTeleOps extends OpMode {
     }
 
     private double getTargetGoalDist(Pose2D targetPos) {
-        double deltaX = targetPos.getX(DistanceUnit.INCH) - robot.pinPoint.getPosX(DistanceUnit.INCH);
-        double deltaY = targetPos.getY(DistanceUnit.INCH) - robot.pinPoint.getPosY(DistanceUnit.INCH);
+        double deltaX = targetPos.getX(DistanceUnit.INCH) - robot.pinpoint.getPosX(DistanceUnit.INCH);
+        double deltaY = targetPos.getY(DistanceUnit.INCH) - robot.pinpoint.getPosY(DistanceUnit.INCH);
         return Math.hypot(deltaX, deltaY);
     }
 
@@ -372,14 +369,14 @@ public class MainTeleOps extends OpMode {
         telemetry.addData("Battery Voltage", "%.2f V", getBatteryVoltage());
 
         telemetry.addLine("--- Odometry ---");
-        telemetry.addData("X", "%.2f in", robot.pinPoint.getPosX(DistanceUnit.INCH));
-        telemetry.addData("Y", "%.2f in", robot.pinPoint.getPosY(DistanceUnit.INCH));
-        telemetry.addData("Heading", "%.2f°", robot.pinPoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("X", "%.2f in", robot.pinpoint.getPosX(DistanceUnit.INCH));
+        telemetry.addData("Y", "%.2f in", robot.pinpoint.getPosY(DistanceUnit.INCH));
+        telemetry.addData("Heading", "%.2f°", robot.pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.addData("Distance to Goal", "%.2f in", getTargetGoalDist(targetGoalPos));
 
         telemetry.addLine("--- Intake ---");
         telemetry.addData("State", intakeBall.getState());
-        telemetry.addData("Ball Count", intakeBall.getNumberOfBalls());
+        telemetry.addData("Ball Count", slotList.getBallCount());
         telemetry.addData("Detected Color", intakeBall.getDetectedColor().name());
 
 
@@ -389,7 +386,7 @@ public class MainTeleOps extends OpMode {
         telemetry.addData("Shooter Power", "%.2f", offTakeBall.getShooterPower());
 
         telemetry.addLine("--- Shared Ball Slots ---");
-        for (BallSlot b : slotList.getBalls()) {
+        for (SlotList.BallSlot b : slotList.getSlotsReadOnly()) {
             telemetry.addData(
                     "Slot " + b.getSlotPosition(),
                     "HasBall=%s | Color=%s",

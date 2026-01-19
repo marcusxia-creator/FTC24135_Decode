@@ -17,7 +17,7 @@ public class IntakeBall {
         INTAKE_SWEEPING,
         INTAKE_DETECTED,
         INTAKE_INDEXING,
-        INTAKE_FULL,
+        INTAKE_END,
         INTAKE_UNJAMMING
     }
 
@@ -45,6 +45,7 @@ public class IntakeBall {
     //============= SPINDEXER & BALLS =========================
     private final double[] slotAngles;
     private List<BallSlot> ballSlots = new ArrayList<>();
+    private final SlotList slotList;
     private int currentSlot = 0;
     private int nextSlot;
     private int previousSlot = 0;
@@ -55,10 +56,10 @@ public class IntakeBall {
     private boolean colorDetected = false;
 
     // --- Constructor ---
-    public IntakeBall(RobotHardware robot, GamepadEx gamepad, List<BallSlot> ballSlots, double[] slotAngles) {
+    public IntakeBall(RobotHardware robot, GamepadEx gamepad, SlotList slotList, double[] slotAngles) {
         this.robot = robot;
         this.gamepad1 = gamepad;
-        this.ballSlots = ballSlots;
+        this.slotList = slotList;
         this.slotAngles = slotAngles;
 
         this.colorDetection = new ColorDetection(robot);
@@ -69,7 +70,7 @@ public class IntakeBall {
     }
 
     // --- FSM Update Loop ---
-    public void IntakeBallUpdate() {
+    public void update() {
         /// === Read velocity in ticks/sec and convert to RPM ===
         double intake_ticksPerSec = robot.intakeMotor.getVelocity();
         intake_RPM = intake_ticksPerSec * INTAKE_RPM_CONVERSION;
@@ -104,7 +105,7 @@ public class IntakeBall {
                 handleIndexingState();
                 break;
 
-            case INTAKE_FULL:
+            case INTAKE_END:
                 stopIntake();
                 break;
 
@@ -117,15 +118,12 @@ public class IntakeBall {
     //======================== FSM HANDLERS ========================
 
     private void handleReadyState() {
-        currentSlot = findEmptySlot();
+        currentSlot = slotList.findNextEmptySlot();
         if (currentSlot == -1) currentSlot = 0;
-
-        robot.spindexerServo.setPosition(slotAngles[currentSlot]);
-        robot.leftGateServo.setPosition(GATEUP);
-        robot.rightGateServo.setPosition(GATEUP);
-
-        if (gamepad1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
-            robot.intakeMotor.setPower(INTAKE_POWER);
+        double slotAngle = slotList.getSlot(currentSlot).getSlotAngle();
+        robot.spindexerServo.setPosition(slotAngle);
+        if (timer.seconds() > 0.25) {
+            //robot.intakeMotor.setPower(INTAKE_POWER);
             state = INTAKEBALLSTATE.INTAKE_SWEEPING;
             timer.reset();
         }
@@ -152,8 +150,8 @@ public class IntakeBall {
         }
 
         if(colorDetection.isBallPresent()){
-            robot.leftGateServo.setPosition(GATEDOWN);
-            robot.rightGateServo.setPosition(GATEDOWN);
+            //robot.leftGateServo.setPosition(GATEDOWN);
+            //robot.rightGateServo.setPosition(GATEDOWN);
             state = INTAKEBALLSTATE.INTAKE_DETECTED;
         }
     }
@@ -164,20 +162,19 @@ public class IntakeBall {
             // Convert string result → enum
             detectedColor = colorDetection.getStableColor();
 
-            BallSlot b = ballSlots.get(currentSlot);
-            b.setHasBall(true);
-            b.setBallColor(detectedColor);  // ultra-fast enum update
+            slotList.setSlotColor(currentSlot,detectedColor);
+            slotList.setSlotHasBall(currentSlot,colorDetected);
 
             stopIntake();
-            nextSlot = findEmptySlot();
+            nextSlot = slotList.findNextEmptySlot();
 
-            if (!areAllSlotsFull()) {
+            if (!slotList.isFull()) {
                 previousSlot = currentSlot;
                 currentSlot = nextSlot;
                 timer.reset();
                 state = INTAKEBALLSTATE.INTAKE_INDEXING;
             } else {
-                state = INTAKEBALLSTATE.INTAKE_FULL;
+                state = INTAKEBALLSTATE.INTAKE_END;
             }
         }
     }
@@ -186,14 +183,10 @@ public class IntakeBall {
         double t = timer.seconds();
 
         if (t > 0.25) {
-            robot.spindexerServo.setPosition(slotAngles[nextSlot]);
+            robot.spindexerServo.setPosition(slotList.getSlot(currentSlot).getSlotAngle());
             colorDetected = false;
             robot.intakeMotor.setPower(INTAKE_POWER);
-        }
 
-        if (t > 0.5) {
-            robot.leftGateServo.setPosition(GATEUP);
-            robot.rightGateServo.setPosition(GATEUP);
             timer.reset();
             state = INTAKEBALLSTATE.INTAKE_SWEEPING;
         }
@@ -213,14 +206,13 @@ public class IntakeBall {
 
         // --- 2. Return spindexer to previous slot to re-align ---
         if (t >= 0.5 && t < 0.75) {
-            robot.spindexerServo.setPosition(slotAngles[previousSlot]);
+            robot.spindexerServo.setPosition(slotList.getSlot(previousSlot).getSlotAngle());
         }
 
         // --- 3. After 1.0 s, mark the slot as cleared ---
         if (t >= 0.75 ) {
-            BallSlot b = ballSlots.get(previousSlot);
-            b.setHasBall(false);
-            b.setBallColor(BallColor.UNKNOWN);
+            slotList.setSlotHasBall(previousSlot,false);
+            slotList.setSlotColor(previousSlot,BallColor.UNKNOWN);
             currentSlot = previousSlot;
             robot.intakeMotor.setPower(INTAKE_POWER);
             timer.reset();
@@ -242,23 +234,6 @@ public class IntakeBall {
         return false;
     }
 
-    public boolean areAllSlotsFull() {
-        return getNumberOfBalls() == ballSlots.size();
-    }
-
-    public int findEmptySlot() {
-        for (BallSlot b : ballSlots) {
-            if (!b.hasBall()) return b.getSlotPosition();
-        }
-        return -1;
-    }
-
-    public int getNumberOfBalls() {
-        int count = 0;
-        for (BallSlot b : ballSlots) if (b.hasBall()) count++;
-        return count;
-    }
-
     private boolean isButtonDebounced() {
         if (debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
@@ -271,17 +246,10 @@ public class IntakeBall {
 
     public INTAKEBALLSTATE getState() { return state; }
     public boolean isReady() { return state == INTAKEBALLSTATE.INTAKE_READY; }
-    public boolean isFull() { return state == INTAKEBALLSTATE.INTAKE_FULL; }
-    public int getCurrentSlot() { return currentSlot; }
+    public boolean isFull() { return state == INTAKEBALLSTATE.INTAKE_END; }
     public BallColor getDetectedColor() { return detectedColor; }
     public boolean isColorDetected() { return colorDetected; }
-    public List<BallSlot> getBalls() { return ballSlots; }
 
     public void setState(INTAKEBALLSTATE state) { this.state = state; }
 
-    public void resetSpindexerSlot() {
-        currentSlot = 0;
-        robot.spindexerServo.setPosition(slotAngles[0]);
-        for (BallSlot b : ballSlots) b.reset();
-    }
 }
