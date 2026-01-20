@@ -88,7 +88,7 @@ public class RobotHardware {
     public ColorSensor colorSensor;
     public DistanceSensor distanceSensor;
 
-    public CameraName camera;
+    //public CameraName camera;
 
     ///public DigitalChannel limitSwitch;// Limit Switch
 
@@ -141,7 +141,8 @@ public class RobotHardware {
 
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
 
-        camera = hardwareMap.get(CameraName.class, "Webcam1");
+        //camera = hardwareMap.get(CameraName.class, "Webcam1");
+
         //Reset the drive train motor encoders
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

@@ -10,7 +10,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class MotifDetector {
+/*public class MotifDetector {
     //Apriltag ID and sequence map
     Map<Integer, Motif> motifMap;
     AprilTagProcessor processor;
@@ -39,6 +39,6 @@ public class MotifDetector {
             portal.setProcessorEnabled(processor,false);
             portal = null;
         }
-         */
+
     }
-}
+} */
