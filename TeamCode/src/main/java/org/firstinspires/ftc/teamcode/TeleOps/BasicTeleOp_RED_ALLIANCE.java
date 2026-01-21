@@ -202,8 +202,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Shooter Motor Mode", robot.topShooterMotor.getMode());
         telemetry.addLine("-----");
         String MotifAvailable;
-        telemetry.addData("desired angle", shooterPowerAngleCalculator.getAngle());
-        telemetry.addData("desired robot angle", 90 + shooterPowerAngleCalculator.getAngle()); //If the desired robot angle equal to the current angle, then the robot is on course
+        //telemetry.addData("desired angle", shooterPowerAngleCalculator.getAngle());
+        //telemetry.addData("desired robot angle", 90 + shooterPowerAngleCalculator.getAngle()); //If the desired robot angle equal to the current angle, then the robot is on course
         telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));
 
         telemetry.addData("Alliance", alliance);

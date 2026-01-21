@@ -130,6 +130,7 @@ public class VisionResetManager {
             clearNeedsReset();
         }
 
+
         return new Decision(true, shouldReset, visionPose, st);
     }
 }

@@ -54,8 +54,6 @@ public class VisionResidualStdDev {
 
     private Stats compute() {
 
-
-
         int n = buf.size();
         if (n < minSamples) return new Stats(n, 0, 0, Double.NaN, Double.NaN, false);
 
