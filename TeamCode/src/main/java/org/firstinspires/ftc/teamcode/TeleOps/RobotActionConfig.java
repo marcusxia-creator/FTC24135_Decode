@@ -25,7 +25,7 @@ public class RobotActionConfig {
     //Speed
     public static double kickerIn                       = 0.3;  /// value - retract back for spindexer reversing
     public static double kickerOut                      = 0.65; /// value - into the spindexer for pushing the ball up
-    public static double intakeSpeed                    = 0.6;
+    public static double intakeSpeed                    = 0.7;
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.4;
     public static double shooterVel                     = 1900;
@@ -58,8 +58,8 @@ public class RobotActionConfig {
     public static int[] purpleRangeHigh                 = {170, 230};
 
     public static double BALL_PRESENT_THRESHOLD_MM      = 50;
-    public static final double INTAKE_TICKS_PER_REV = 145.1;
-    public static final double INTAKE_RPM_CONVERSION = 60.0 / INTAKE_TICKS_PER_REV;
+    public static final double INTAKE_TICKS_PER_REV     = 145.1;
+    public static final double INTAKE_RPM_CONVERSION    = 60.0 / INTAKE_TICKS_PER_REV;
 
     //Motif IDs
     public static int GPPid                             = 21;
@@ -69,10 +69,10 @@ public class RobotActionConfig {
     public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, -64, 8, AngleUnit.DEGREES, 0);
     public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, -64, 8, AngleUnit.DEGREES, 0);
 
-    public static final double FAR_EDGE = 100.0;
-    public static final double FAR = 80.0;
-    public static final double MID = 70.0;
-    public static final double CLOSE = 55.0;
+    public static final double FAR_EDGE                 = 100.0;
+    public static final double FAR                      = 80.0;
+    public static final double MID                      = 70.0;
+    public static final double CLOSE                    = 55.0;
     public static final double closeEdge                = 50.0;
 
     public static final double FAR_ZONE_LOW             = 151.0;
