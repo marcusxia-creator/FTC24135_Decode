@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 import org.firstinspires.ftc.teamcode.TeleOps.ShooterPowerAngleCalculator;
 import org.firstinspires.ftc.teamcode.TeleOps.Turret;
 import org.firstinspires.ftc.teamcode.TeleOps.LimelightTest;
+import org.firstinspires.ftc.teamcode.TeleOps.Limelight;
 
 @Config
 @TeleOp (name = "TestTeleOp", group = "org.firstinspires.ftc.teamcode")
@@ -49,6 +50,7 @@ public class TestTeleOp extends OpMode {
     public static double tickToRPM;
 
     private LimelightTest limelightTest;
+    private Limelight limelight;
 
     private PIDController pidController;
     private LUTPowerCalculator shooterPowerLUT;
@@ -78,9 +80,17 @@ public class TestTeleOp extends OpMode {
 
         turret = new Turret(robot);
 
+
         limelightTest = new LimelightTest(robot, turret);
         limelightTest.initLimelight(24);
         limelightTest.start();
+
+
+        /**
+        limelight = new Limelight(robot, turret);
+        limelight.initLimelight(24);
+        limelight.start();
+         */
 
         colorDetection = new ColorDetection(robot);
         pidController = new PIDController(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
@@ -261,16 +271,27 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("turret motor drive angle", turret.getTurretDriveAngle());
         telemetry.addData("turret motor drive tick", turret.motorDriveTick());
         telemetry.addLine("----------------------------------------------------");
+
         Pose2D MT2Pose = limelightTest.updateTagMT2(DistanceUnit.MM);
         Pose2D MT2Offset = limelightTest.updateTagMT2OFFSET(DistanceUnit.MM);
         Pose2D turretOffset = limelightTest.updateTagMT2OFFSET2(DistanceUnit.MM);
         Pose2D MT2Normalize = limelightTest.updateTagMT2NORMALIZED(DistanceUnit.MM);
         if (MT2Pose != null && MT2Offset != null && MT2Normalize != null) {
+
             telemetry.addData("limelight Pose2D", "%.2f, %.2f, %.2f", MT2Pose.getX(DistanceUnit.MM), MT2Pose.getY(DistanceUnit.MM), MT2Pose.getHeading(AngleUnit.DEGREES));
             telemetry.addData("limelight offset", "%.2f, %.2f, %.2f", MT2Offset.getX(DistanceUnit.MM), MT2Offset.getY(DistanceUnit.MM), MT2Offset.getHeading(AngleUnit.DEGREES));
             telemetry.addData("turret offset", "%.2f, %.2f, %.2f", turretOffset.getX(DistanceUnit.MM), turretOffset.getY(DistanceUnit.MM), turretOffset.getHeading(AngleUnit.DEGREES));
             telemetry.addData("limelight normalized", "%.2f, %.2f, %.2f", MT2Normalize.getX(DistanceUnit.MM), MT2Normalize.getY(DistanceUnit.MM), MT2Normalize.getHeading(AngleUnit.DEGREES));
         }
+
+
+        /**
+        Limelight.Output output = limelight.normalizedPose2D(DistanceUnit.MM);
+
+        if (output != null) {
+            telemetry.addData("limelight output", output.robotPose);
+        }
+         */
 
         telemetry.addData("pinpoint Pose2D", robot.pinpoint.getPosition());
         telemetry.update();

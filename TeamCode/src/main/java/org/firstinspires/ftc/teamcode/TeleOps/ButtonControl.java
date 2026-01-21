@@ -3,8 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import static org.firstinspires.ftc.teamcode.TeleOps.FSMIntake.IntakeStates;
-import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SHOOTERSTATE;
+
 public class ButtonControl {
     private final GamepadInput gamepadInput;
     private final BasicTeleOp_RED_ALLIANCE redMainLoop;
@@ -39,7 +38,6 @@ public class ButtonControl {
         //For reversing intake
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) || gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT)
                 && isButtonDebounced()) {
-            redMainLoop.FSMIntake.Reversing();
 
         }
     }

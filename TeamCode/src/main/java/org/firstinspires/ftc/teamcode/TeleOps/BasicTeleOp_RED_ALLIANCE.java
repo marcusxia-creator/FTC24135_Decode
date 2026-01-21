@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import static org.firstinspires.ftc.teamcode.TeleOps.FSMIntake.IntakeStates;
-import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SHOOTERSTATE;
-import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SORTSHOOTERSTATE;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.CLOSE;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.FAR_EDGE;
@@ -18,6 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.Tests.BallColor;
 
@@ -39,17 +37,14 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private GamepadEx gamepadCo1, gamepadCo2;
     private GamepadInput gamepadInput;
     private RobotDrive robotDrive;
-    FSMShooter FSMShooter;
-    FSMIntake FSMIntake;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private Turret turret;
     /// ----------------------------------------------------------------
     /**
      * Need to determine the following section later.
     */
-    private SpindexerManualControl spindexerManualControl;
 
-    private Spindexer spindexer;
+    //private Spindexer spindexer;
 
     private LUTPowerCalculator shooterPowerAngleCalculator;
 
@@ -86,21 +81,21 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robotDrive.Init();
 
         /// 2.spindexer-------------------------------------------------------------------
-        spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
-        spindexer.runToSlot(0);
-        spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
+        //spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
+        //spindexer.runToSlot(0);
+        //spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
         /// 3. turret---------------------------------------------------------------
         turret = new Turret(robot);
 
         /// 4. shooter-------------------------------------------------------------
-        FSMShooter = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, shooterPowerAngleCalculator,gamepadInput);
-        FSMShooter.Init();
+        //FSMShooter = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, shooterPowerAngleCalculator,gamepadInput);
+
 
         /// 4.1. power calculator for shooter------------------------------------------------------------
         shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
 
         /// 5. intake------------------------------------------------------------
-        FSMIntake = new FSMIntake(gamepadCo1, gamepadCo2, robot, spindexer);
+        //FSMIntake = new FSMIntake(gamepadCo1, gamepadCo2, robot, spindexer);
 
         /// 6. color detection------------------------------------------------------------
         colorDetection = new ColorDetection(robot);
@@ -113,6 +108,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         actionStates = RobotActionState.Idle;
 
         /// 9. limelight--------------------------------------------------------------
+        limelight = new Limelight(robot, turret);
         limelight.initLimelight(24);
         limelight.start();
     }
@@ -128,29 +124,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.pinpoint.update();
         ballColor = BallColor.fromHue(colorDetection.getHue());
 
-        spindexerManualControl.loop();
         //Continuous driving
         robotDrive.DriveLoop();
         turret.driveTurretMotor();
-
-        switch (actionStates){
-            case Sequence_Shooting:
-                FSMShooter.SequenceShooterLoop();
-                FSMShooter.shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
-                break;
-            case Sort_Shooting:
-                FSMShooter.SortShooterLoop();
-                FSMShooter.sortShooterState = SORTSHOOTERSTATE.FLYWHEEL_RUNNING;
-                break;
-            case Intaking:
-                FSMIntake.loop();
-                FSMIntake.intakeStates = IntakeStates.INTAKE_START;
-                break;
-            case Idle:
-                FSMIntake.intakeStates = IntakeStates.INTAKE_IDLE;
-                FSMShooter.shooterState = SHOOTERSTATE.SHOOTER_IDLE;
-                break;
-        }
 
         if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
             //Reset robot red alliance pose
@@ -200,22 +176,15 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
     public void telemetryManager(){
         telemetry.addData("Action State", actionStates);
-        telemetry.addData("Intake State", FSMIntake.intakeStates);
         telemetry.addData("Sensor Distance", robot.distanceSensor.getDistance(DistanceUnit.MM));
         telemetry.addData("Sensor Color", colorDetection.getStableColor());
-        telemetry.addData("Slot 0", spindexer.slots[0]);
-        telemetry.addData("Slot 1", spindexer.slots[1]);
-        telemetry.addData("Slot 2", spindexer.slots[2]);
-        telemetry.addData("Current Slot", spindexer.currentSlot);
-        telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
+        //telemetry.addData("Slot 0", spindexer.slots[0]);
+        //telemetry.addData("Slot 1", spindexer.slots[1]);
+        //telemetry.addData("Slot 2", spindexer.slots[2]);
+        //telemetry.addData("Current Slot", spindexer.currentSlot);
+        //telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
         telemetry.addLine("-----");
-        telemetry.addData("Shooter State", FSMShooter.shooterState);
-        telemetry.addData("shooter power calculator", shooterPowerAngleCalculator.getPower());
-        telemetry.addData("shooter speed from FSM Shooter", FSMShooter.getSpeed());
-        telemetry.addData("voltage from Shooter", FSMShooter.getVoltage());
-        telemetry.addData("voltage from robot", robot.getBatteryVoltageRobust());
-        telemetry.addData("power set point", FSMShooter.getPower_setpoint());
-        telemetry.addData("Shooter Power", robot.topShooterMotor.getPower());
+                telemetry.addData("Shooter Power", robot.topShooterMotor.getPower());
         telemetry.addData("Shooter Velocity", robot.topShooterMotor.getVelocity());
         telemetry.addData("Shooter Motor Mode", robot.topShooterMotor.getMode());
         telemetry.addLine("-----");
@@ -235,21 +204,18 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     }
     public void telemetryManagerSimplified() {
         telemetry.addLine("-----SPINDEXER-----");
-        telemetry.addData("Slot 0", spindexer.slots[0]);
-        telemetry.addData("Slot 1", spindexer.slots[1]);
-        telemetry.addData("Slot 2", spindexer.slots[2]);
-        telemetry.addData("Current Slot", spindexer.currentSlot);
+        //telemetry.addData("Slot 0", spindexer.slots[0]);
+        //telemetry.addData("Slot 1", spindexer.slots[1]);
+        //telemetry.addData("Slot 2", spindexer.slots[2]);
+        //telemetry.addData("Current Slot", spindexer.currentSlot);
         telemetry.addLine("-----SHOOTER-----");
-        telemetry.addData("Shooter State", FSMShooter.shooterState);
         String MotifEnabled;
         String MotifAvailable;
 
-        telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
-        telemetry.addData("power set point", FSMShooter.getPower_setpoint());
+        //telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
         telemetry.addData("Shooter Power", robot.topShooterMotor.getPower());
         telemetry.addLine("-----ROBOT-----");
         telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
         telemetry.addLine("-----INTAKE-----");
-        telemetry.addData("Intake State", FSMIntake.intakeStates);
     }
 }
