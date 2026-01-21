@@ -12,15 +12,15 @@ public class RobotActionConfig {
     public static double gateUp                         = 0.39;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
     public static double spindexerKickIn                = 0.00;
-    public static double spindexerSlot0                 = 0.083;
-    public static double spindexerSlot1                 = 0.305;
-    public static double spindexerSlot2                 = 0.527;
-    public static double spindexerSlot3                 = 0.749;
-    public static double spindexerSlot4                 = 0.971;
-    public static double spindexerSlot5                 = 1.0;
+    public static double spindexerSlot0                 = 0.04;
+    public static double spindexerSlot1                 = 0.23;
+    public static double spindexerSlot2                 = 0.42;
+    public static double spindexerSlot3                 = 0.61;
+    public static double spindexerSlot4                 = 0.80;
+    public static double spindexerSlot5                 = 0.99;
     public static double[] spindexerPositions           = {spindexerSlot0, spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5};
     public static double angleResetPos                  = 0.0;
-    public static double slotAngleDelta                 = 0.22;
+    public static double slotAngleDelta                 = 0.19;
 
     //Speed
     public static double kickerIn                      = 1;
