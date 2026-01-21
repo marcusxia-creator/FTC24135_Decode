@@ -8,8 +8,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 @Config
 public class RobotActionConfig {
-    public static double gateDown                       = 0.13;
-    public static double gateUp                         = 0.39;
+    public static double gateDown                       = 0.25;
+    public static double gateUp                         = 0.45;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
     public static double spindexerSlot0                 = 0.02;
     public static double spindexerSlot1                 = 0.52;
@@ -42,7 +42,7 @@ public class RobotActionConfig {
     public static double correction                     = 0.053;
 
     //Colour Profiles
-    public static double distanceThreshold              = 85;
+    public static double distanceThreshold              = 35;
     public static int[] none                            = {105, 110};
 
     public static int[] greenRangeLow                   = {120, 130};

@@ -66,7 +66,7 @@ public class FSMShooter {
         robot.leftGateServo.setPosition(gateDown);
         robot.rightGateServo.setPosition(gateDown);
         shooterState = SHOOTERSTATE.SHOOTER_IDLE;
-        shooterpowerstate = SHOOTERPOWERSTATE.AUTO_POWER;
+        shooterpowerstate = SHOOTERPOWERSTATE.MANUAL_POWER;
         robot.shooterMotor.setPower(0);
 
         if(motif==null){
@@ -78,7 +78,7 @@ public class FSMShooter {
         voltage = robot.getBatteryVoltageRobust();
         //speed = shooterPowerAngleCalculator.getPower();
         speed = shooterPowerLUT.getPower();
-        power_setpoint = (speed*12.0)/voltage;
+        power_setpoint = 0.7;//(speed*12.0)/voltage;
         ShooterPowerControl();
         // --- Global Controls (can be triggered from any state) ---
         switch (shooterState) {

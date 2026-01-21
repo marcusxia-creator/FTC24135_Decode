@@ -260,7 +260,7 @@ public class Spindexer {
          * @return the colour at position {@code n}
          */
         public SLOT getColour(int n){
-            return slots[n];
+            return SLOT.Empty;
         }
     }
 }

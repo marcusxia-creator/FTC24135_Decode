@@ -209,5 +209,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
         telemetry.addLine("-----INTAKE-----");
         telemetry.addData("Intake State", FSMIntake.intakeStates);
+        telemetry.addData("Sensor Distance", robot.distanceSensor.getDistance(DistanceUnit.MM));
+        telemetry.update();
     }
 }
