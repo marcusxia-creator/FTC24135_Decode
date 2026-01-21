@@ -11,7 +11,7 @@ public class RobotActionConfig {
     public static double gateDown                       = 0.13;
     public static double gateUp                         = 0.39;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
-    public static double spindexerKickIn                = 0.00;
+    public static double spindexerKickerInDelta         = 0.02;
     public static double spindexerSlot0                 = 0.04;
     public static double spindexerSlot1                 = 0.23;
     public static double spindexerSlot2                 = 0.42;
@@ -23,8 +23,8 @@ public class RobotActionConfig {
     public static double slotAngleDelta                 = 0.19;
 
     //Speed
-    public static double kickerIn                      = 1;
-    public static double kickerOut                       = 0;
+    public static double kickerIn                       = 0.3;  /// value - retract back for spindexer reversing
+    public static double kickerOut                      = 0.65; /// value - into the spindexer for pushing the ball up
     public static double intakeSpeed                    = 0.6;
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.4;

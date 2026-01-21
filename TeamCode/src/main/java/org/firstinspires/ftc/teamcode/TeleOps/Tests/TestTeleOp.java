@@ -140,21 +140,21 @@ public class TestTeleOp extends OpMode {
         }
         /** run spindexer servoposition*/
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
-            servoposition = robot.spindexerServo.getPosition() + 0.05;
+            servoposition = robot.spindexerServo.getPosition() + 0.01;
             robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
-            servoposition = robot.spindexerServo.getPosition() - 0.05;
+            servoposition = robot.spindexerServo.getPosition() - 0.01;
             robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
         }
 
         /** shooter adjuster */
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && isButtonDebounced()) {
-            servoposition = robot.shooterAdjusterServo.getPosition() + 0.05;
+            servoposition = robot.shooterAdjusterServo.getPosition() + 0.02;
             robot.shooterAdjusterServo.setPosition(Range.clip(servoposition, 0, 1));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_DOWN) && isButtonDebounced()) {
-            servoposition = robot.shooterAdjusterServo.getPosition() - 0.05;
+            servoposition = robot.shooterAdjusterServo.getPosition() - 0.02;
             robot.shooterAdjusterServo.setPosition(Range.clip(servoposition, 0, 1));
         }
         /** run shooter target RPM */
