@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotDrive;
@@ -76,7 +77,7 @@ public class TestTeleOp extends OpMode {
 
         robotDrive.DriveLoop();
         ballColor = BallColor.fromHue(colorDetection.getHue());
-
+        double dist = robot.distanceSensor.getDistance(DistanceUnit.MM);
 
         if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
             servoposition = robot.pushRampServo.getPosition() + 0.01;
@@ -159,6 +160,8 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("Shooter Motor Power Calculator", shooterPowerAngleCalculator.getPower());
         telemetry.addLine("----------------------------------------------------");
         telemetry.addData("Color", ballColor);
+        telemetry.addData("Distance", dist);
+        telemetry.addLine("----------------------------------------------------");
 
         telemetry.update();
     }
