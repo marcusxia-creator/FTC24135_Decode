@@ -53,6 +53,7 @@ public class FSMIntake {
 
         this.spindexer = spindexer;
     }
+
     public void loop() {
         switch (intakeStates) {
             //start of intake FSM
