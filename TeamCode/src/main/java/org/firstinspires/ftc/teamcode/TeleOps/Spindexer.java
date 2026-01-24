@@ -151,7 +151,7 @@ public class Spindexer {
      */
     public void runToPos(){
         currentPos = Math.floorMod(currentPos,5);
-        robot.rightSpindexerServo.setPosition(RobotActionConfig.spindexerPositions[currentPos]);
+        robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[currentPos]);
     }
 
     /**

@@ -131,7 +131,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         spindexerManualControl.loop();
         //Continuous driving
         robotDrive.DriveLoop();
-        turret.driveTurretMotor();
+        //turret.driveTurretMotor();
 
         //Changes the action state base on which button is pressed
         buttonUpdate();

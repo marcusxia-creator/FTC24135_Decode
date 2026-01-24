@@ -27,19 +27,15 @@ import java.util.Collections;
 Hardware config:
 Motor:
 Control hub motor:
-                port 0: FR_Motor
-                port 1: BR_motor
-
-
-
-
-                port 2: BL_Motor
-                port 3: FL_Motor
+                port 0: BR_motor
+                port 1: BL_Motor
+                port 2: FL_Motor
+                port 3: FR_Motor
 Expansion hub motor:
-                port 0: Top_Shooter_Motor
-                port 1: Turret_Motor
-                port 2: Intake_Motor
-                port 3: Bottom_Shooter_Motor
+                port 0: Turret_Motor
+                port 1: Intake_Motor
+                port 2: Bottom_Shooter_Motor
+                port 3: Top_Shooter_Motor
 
 Servo:
 Control hub servo:
@@ -52,8 +48,8 @@ Control hub servo:
 
 Expansion hub servo:
                 port 0: Spindexer_Servo
-                port 1: Kicker_Servo
-                port 2: Shooter_Adjuster_Servo
+                port 1: Shooter_Adjuster_Servo
+                port 2: Kicker_Servo
                 port 3: goBilda_LED_Light
                 port 4: Empty
                 port 5: Empty
@@ -79,7 +75,6 @@ public class RobotHardware {
     public DcMotorEx frontRightMotor;
     public DcMotorEx backRightMotor;
     public Servo kickerServo;
-    public Servo rightSpindexerServo;
     public Servo spindexerServo;
     public Servo shooterAdjusterServo;
     public DcMotorEx intakeMotor;
@@ -180,6 +175,8 @@ public class RobotHardware {
         topShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         bottomShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         topShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        shooterAdjusterServo.setDirection(Servo.Direction.REVERSE);
 
         /** set drive motor 0 */
         frontLeftMotor.setPower(0);
