@@ -64,7 +64,9 @@ public class FSMIntake {
             //start intake motor
             case INTAKE_START:
                 boolean jammed = isIntakeJammmed();
-                robot.intakeMotor.setPower(intakeSpeed);
+                if (!jammed) {
+                    robot.intakeMotor.setPower(intakeSpeed);
+                }
                 HandleIntaking(jammed);
                 if (robot.distanceSensor.getDistance(DistanceUnit.MM) < distanceThreshold) {
                     recorded = false;
@@ -74,9 +76,9 @@ public class FSMIntake {
                 break;
             //ball goes into spindxer
             case INTAKE_CAPTURE:
-                robot.intakeMotor.setPower(intakeSpeed);
+                //robot.intakeMotor.setPower(intakeSpeed);
                 //Put gates down
-                if (intakeTimer.seconds() > gateDownTime && !recorded) {
+                if (!recorded) {
                     spindexer.writeToCurrent(robot.colorSensor, robot.distanceSensor);
                     //spindexer.runToSlot(Spindexer.SLOT.Empty);
                     recorded = true;
@@ -94,7 +96,7 @@ public class FSMIntake {
                 robot.intakeMotor.setPower(0);
                 robot.topShooterMotor.setPower(0);
                 robot.bottomShooterMotor.setPower(0);
-                intakeStates = IntakeStates.INTAKE_IDLE;
+                //intakeStates = IntakeStates.INTAKE_IDLE;
                 break;
 
             case INTAKE_REVERSE:
@@ -118,7 +120,7 @@ public class FSMIntake {
         }
         return false;
     }
-    public void Reversing (){
+    public void reversing (){
         reversing = true;
         unjamTimer.reset();
     }

@@ -82,8 +82,6 @@ public class RobotHardware {
     public Servo rightSpindexerServo;
     public Servo spindexerServo;
     public Servo shooterAdjusterServo;
-    public Servo leftGateServo;
-    public Servo rightGateServo;
     public DcMotorEx intakeMotor;
     public DcMotorEx turretMotor;
 

@@ -133,37 +133,25 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robotDrive.DriveLoop();
         turret.driveTurretMotor();
 
+        //Changes the action state base on which button is pressed
+        buttonUpdate();
+
         switch (actionStates){
             case Sequence_Shooting:
                 FSMShooter.SequenceShooterLoop();
-                FSMShooter.shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                 break;
             case Sort_Shooting:
                 FSMShooter.SortShooterLoop();
-                FSMShooter.sortShooterState = SORTSHOOTERSTATE.FLYWHEEL_RUNNING;
                 break;
             case Intaking:
                 FSMIntake.loop();
-                FSMIntake.intakeStates = IntakeStates.INTAKE_START;
                 break;
             case Idle:
-                FSMIntake.intakeStates = IntakeStates.INTAKE_IDLE;
+                FSMIntake.intakeStates = IntakeStates.INTAKE_STOP;
                 FSMShooter.shooterState = SHOOTERSTATE.SHOOTER_IDLE;
                 break;
         }
 
-        if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-            //Reset robot red alliance pose
-            if (alliance == Alliance.RED_ALLIANCE) {
-                robot.pinpoint.setPosition(redAllianceResetPose);
-                robot.LED.setPosition(0.28);
-            }
-            //Reset robot blue alliance pose
-            if (alliance == Alliance.BLUE_ALLIANCE) {
-                robot.pinpoint.setPosition(blueAllianceResetPose);
-                robot.LED.setPosition(0.611);
-            }
-        }
         //LED alarm light
         if (shooterPowerAngleCalculator.getDistance() <= CLOSE ||shooterPowerAngleCalculator.getDistance() >= FAR_EDGE) {
             //Distance less than 54 inches, red alert
@@ -251,5 +239,55 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
         telemetry.addLine("-----INTAKE-----");
         telemetry.addData("Intake State", FSMIntake.intakeStates);
+    }
+
+    private void buttonUpdate() {
+        //Button x - For sequence shooting
+        if (gamepadCo1.getButton(GamepadKeys.Button.X) || gamepadCo2.getButton(GamepadKeys.Button.X)
+                && isButtonDebounced()){
+            actionStates = RobotActionState.Sequence_Shooting;
+            FSMShooter.shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
+        }
+
+        //Button y - For sort shooting
+        if (gamepadCo1.getButton(GamepadKeys.Button.Y) || gamepadCo2.getButton(GamepadKeys.Button.Y)
+                && isButtonDebounced()){
+            actionStates = RobotActionState.Sort_Shooting;
+            FSMIntake.intakeStates = IntakeStates.INTAKE_STOP;
+            FSMShooter.sortShooterState = SORTSHOOTERSTATE.FLYWHEEL_RUNNING;
+        }
+        //Dpad left - For intaking
+        if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_LEFT) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_LEFT)
+                && isButtonDebounced()){
+            actionStates = RobotActionState.Intaking;
+            FSMIntake.intakeStates = IntakeStates.INTAKE_START;
+            FSMShooter.shooterState = SHOOTERSTATE.SHOOTER_STOP;
+        }
+
+        //Dpad right - For reversing intake
+        if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_RIGHT) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_RIGHT)
+                && isButtonDebounced()) {
+            FSMIntake.reversing();
+        }
+
+        //Button B - idle state
+        if (gamepadCo1.getButton(GamepadKeys.Button.B) || gamepadCo2.getButton(GamepadKeys.Button.B)
+                && isButtonDebounced()) {
+            actionStates = RobotActionState.Idle;
+        }
+
+        //Dpad down for alliance selection
+        if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+            //Reset robot red alliance pose
+            if (alliance == Alliance.RED_ALLIANCE) {
+                robot.pinpoint.setPosition(redAllianceResetPose);
+                robot.LED.setPosition(0.28);
+            }
+            //Reset robot blue alliance pose
+            if (alliance == Alliance.BLUE_ALLIANCE) {
+                robot.pinpoint.setPosition(blueAllianceResetPose);
+                robot.LED.setPosition(0.611);
+            }
+        }
     }
 }

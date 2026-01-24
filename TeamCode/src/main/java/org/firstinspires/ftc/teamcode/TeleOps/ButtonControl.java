@@ -39,7 +39,7 @@ public class ButtonControl {
         //For reversing intake
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) || gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT)
                 && isButtonDebounced()) {
-            redMainLoop.FSMIntake.Reversing();
+            redMainLoop.FSMIntake.reversing();
 
         }
     }
