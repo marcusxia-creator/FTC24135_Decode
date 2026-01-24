@@ -113,6 +113,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         actionStates = RobotActionState.Idle;
 
         /// 9. limelight--------------------------------------------------------------
+        limelight = new Limelight(robot, turret);
         limelight.initLimelight(24);
         limelight.start();
     }
@@ -136,6 +137,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         //Changes the action state base on which button is pressed
         buttonUpdate();
 
+        FSMIntake.loop();
+
         switch (actionStates){
             case Sequence_Shooting:
                 FSMShooter.SequenceShooterLoop();
@@ -144,11 +147,10 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                 FSMShooter.SortShooterLoop();
                 break;
             case Intaking:
-                FSMIntake.loop();
                 break;
             case Idle:
                 FSMIntake.intakeStates = IntakeStates.INTAKE_STOP;
-                FSMShooter.shooterState = SHOOTERSTATE.SHOOTER_IDLE;
+                FSMShooter.shooterState = SHOOTERSTATE.SHOOTER_STOP;
                 break;
         }
 
@@ -246,15 +248,15 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         if (gamepadCo1.getButton(GamepadKeys.Button.X) || gamepadCo2.getButton(GamepadKeys.Button.X)
                 && isButtonDebounced()){
             actionStates = RobotActionState.Sequence_Shooting;
-            FSMShooter.shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
+            FSMShooter.shooterState = SHOOTERSTATE.SHOOTER_IDLE;
         }
 
         //Button y - For sort shooting
         if (gamepadCo1.getButton(GamepadKeys.Button.Y) || gamepadCo2.getButton(GamepadKeys.Button.Y)
                 && isButtonDebounced()){
-            actionStates = RobotActionState.Sort_Shooting;
+           // actionStates = RobotActionState.Sort_Shooting;
             FSMIntake.intakeStates = IntakeStates.INTAKE_STOP;
-            FSMShooter.sortShooterState = SORTSHOOTERSTATE.FLYWHEEL_RUNNING;
+            //FSMShooter.sortShooterState = SORTSHOOTERSTATE.SHOOTER_IDLE;
         }
         //Dpad left - For intaking
         if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_LEFT) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_LEFT)

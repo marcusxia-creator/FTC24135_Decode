@@ -86,6 +86,27 @@ public class Spindexer {
         }
     }
 
+    public Boolean runToSlot(SLOT a){
+        if(checkFor(a)){
+            int n=0;
+            int distance = 4;
+
+            //look for closest slot
+            for(int i=0; i<=2; i++){
+                if(slots[i]==a && Math.abs(i-currentSlot)<=distance){
+                    distance=Math.abs(i-currentSlot);
+                    n=i;
+                }
+            }
+            runToSlot(n);
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+
     /**
      * Returns the colour of a given slot {@code n}
      * @return spindexer SLOT object
@@ -150,10 +171,18 @@ public class Spindexer {
      * Updates servo position to current slot, usually unused externally
      */
     public void runToPos(){
-        currentPos = Math.floorMod(currentPos,5);
+        currentPos = Math.floorMod(currentPos,3);
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[currentPos]);
     }
 
+    /**
+     * Reset slot position to 0
+     */
+    public void resetSlot() {
+        slots[0] = SLOT.Empty;
+        slots[1] = SLOT.Empty;
+        slots[2] = SLOT.Empty;
+    }
     /**
      * Runs to position {@code n} (0-5)
      */

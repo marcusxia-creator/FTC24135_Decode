@@ -28,12 +28,12 @@ public class LimelightTest {
 
     public void initLimelight(int apriltagID) {
         if (apriltagID == 24) {
-            robot.limelight3A.pipelineSwitch(0);
+            robot.limelight.pipelineSwitch(0);
         }
     }
 
     public void start() {
-        robot.limelight3A.start();
+        robot.limelight.start();
     }
 
     public Pose2D updateTagMT2OFFSET(DistanceUnit distanceUnit) {
@@ -47,8 +47,8 @@ public class LimelightTest {
             throw new IllegalArgumentException("Distance Unit can only be in INCH or MM");
         }
         double yaw = turret.getTurretMotorAngle() + robot.pinpoint.getHeading(AngleUnit.DEGREES);//robot.external_imu.getAngularOrientation().firstAngle;
-        robot.limelight3A.updateRobotOrientation(yaw);
-        LLResult llResult = robot.limelight3A.getLatestResult();
+        robot.limelight.updateRobotOrientation(yaw);
+        LLResult llResult = robot.limelight.getLatestResult();
         if (llResult != null && llResult.isValid()) {
             Pose3D robotPose3D = llResult.getBotpose_MT2();
             double normalizedYaw = Math.toRadians(robotPose3D.getOrientation().getYaw(AngleUnit.DEGREES) - 90);
@@ -81,8 +81,8 @@ public class LimelightTest {
 
     public boolean ifGood() {
         double yaw = turret.getTurretMotorAngle() + robot.pinpoint.getHeading(AngleUnit.DEGREES);//robot.external_imu.getAngularOrientation().firstAngle;
-        robot.limelight3A.updateRobotOrientation(yaw);
-        LLResult llResult = robot.limelight3A.getLatestResult();
+        robot.limelight.updateRobotOrientation(yaw);
+        LLResult llResult = robot.limelight.getLatestResult();
         double turretYaw = turret.getTurretMotorAngle();
         if (llResult != null && llResult.isValid()) {
             if (llResult.getTx() < 20 && llResult.getTx() > -20) {
@@ -106,8 +106,8 @@ public class LimelightTest {
             throw new IllegalArgumentException("Distance Unit can only be in INCH or MM");
         }
         double yaw = turret.getTurretMotorAngle() + robot.pinpoint.getHeading(AngleUnit.DEGREES);//robot.external_imu.getAngularOrientation().firstAngle;
-        robot.limelight3A.updateRobotOrientation(yaw);
-        LLResult llResult = robot.limelight3A.getLatestResult();
+        robot.limelight.updateRobotOrientation(yaw);
+        LLResult llResult = robot.limelight.getLatestResult();
         if (llResult != null && llResult.isValid()) {
             Pose3D robotPose3D = llResult.getBotpose_MT2();
             double yOffSet = Math.sin(robotPose3D.getOrientation().getYaw(AngleUnit.DEGREES) - 90) * (0.1778 * conversionFactor);
@@ -130,8 +130,8 @@ public class LimelightTest {
             throw new IllegalArgumentException("Distance Unit can only be in INCH or MM");
         }
         double yaw = turret.getTurretMotorAngle() + robot.pinpoint.getHeading(AngleUnit.DEGREES);//robot.external_imu.getAngularOrientation().firstAngle;
-        robot.limelight3A.updateRobotOrientation(yaw);
-        LLResult llResult = robot.limelight3A.getLatestResult();
+        robot.limelight.updateRobotOrientation(yaw);
+        LLResult llResult = robot.limelight.getLatestResult();
         if (llResult != null && llResult.isValid()) {
             Pose3D robotPose3D = llResult.getBotpose_MT2();
             double normalizedYaw = Math.toRadians(robotPose3D.getOrientation().getYaw(AngleUnit.DEGREES) - 90);

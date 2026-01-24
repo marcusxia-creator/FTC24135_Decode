@@ -80,7 +80,7 @@ public class FSMIntake {
                 //Put gates down
                 if (!recorded) {
                     spindexer.writeToCurrent(robot.colorSensor, robot.distanceSensor);
-                    //spindexer.runToSlot(Spindexer.SLOT.Empty);
+                    spindexer.runToSlot(Spindexer.SLOT.Empty);
                     recorded = true;
                 }
                 if (intakeTimer.seconds() > SpindexerMoveTime) {
@@ -123,6 +123,7 @@ public class FSMIntake {
     public void reversing (){
         reversing = true;
         unjamTimer.reset();
+        robot.intakeMotor.setPower(-0.4);
     }
     private void HandleIntaking (boolean jammed) {
         if (jammed && !reversing){

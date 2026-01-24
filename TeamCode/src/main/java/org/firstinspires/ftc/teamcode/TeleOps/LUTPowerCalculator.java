@@ -8,6 +8,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
+import java.util.Optional;
+
 public class LUTPowerCalculator {
 
     private RobotHardware robot;
@@ -40,6 +42,8 @@ public class LUTPowerCalculator {
         add(0, 3000); //Not in shooting zone
 
     }};
+
+
 
     //Target shooting angle base on the zone
     LUT<Integer, Double> targetShootingAngle = new LUT<Integer, Double>()
@@ -98,7 +102,7 @@ public class LUTPowerCalculator {
 
         //Normalize target and current values
         double current = (robot.topShooterMotor.getVelocity() * tickToRPM) / maxVelocity;
-        double target = targetRPM.get(zone) / maxVelocity; //Uses zone to get target rpm
+        double target = (double) targetRPM.get(zone) / maxVelocity; //Uses zone to get target rpm
 
         //Returns the power for the motor base on PID controller
         return pidController.calculate(current, target);

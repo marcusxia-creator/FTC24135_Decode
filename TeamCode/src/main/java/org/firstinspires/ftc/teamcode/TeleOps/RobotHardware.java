@@ -101,7 +101,7 @@ public class RobotHardware {
 
     public Servo LED;
 
-    public Limelight3A limelight3A;
+    public Limelight3A limelight;
 
     private double vEma = 12.0;                 // EMA state
     public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
@@ -142,8 +142,9 @@ public class RobotHardware {
 
         LED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
         colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "Color_Sensor");
 
-        limelight3A = hardwareMap.get(Limelight3A.class, "LimeLight3A");
+        limelight = hardwareMap.get(Limelight3A.class, "LimeLight3A");
 
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
         /// Reset the drive motor encoders
@@ -167,6 +168,7 @@ public class RobotHardware {
         /// config turret motor
         turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         /// set run mode of shooter Motor

@@ -20,6 +20,7 @@ public class FSMShooter {
     private ElapsedTime rampTimer = new ElapsedTime();
     SHOOTERSTATE shooterState;
     SORTSHOOTERSTATE sortShooterState;
+    SHOOTERMOTORSTATE shootermotorstate;
     Spindexer spindexer;
     Spindexer.SLOT targetColour = Spindexer.SLOT.Purple;
 
@@ -52,6 +53,10 @@ public class FSMShooter {
         SORT_SHOOTING,
         SHOOTER_STOP
     }
+    public enum SHOOTERMOTORSTATE{
+        RUN,
+        STOP
+    }
 
     //Constructor
     public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, Spindexer spindexer, LUTPowerCalculator shooterPowerLUT,GamepadInput gamepadInput) {
@@ -70,30 +75,42 @@ public class FSMShooter {
         //shooterpowerstate = SHOOTERPOWERSTATE.AUTO_POWER;
         robot.topShooterMotor.setPower(0);
         robot.bottomShooterMotor.setPower(0);
+        shootermotorstate = SHOOTERMOTORSTATE.STOP;
 
     }
 
     public void SequenceShooterLoop() {
         voltage = robot.getBatteryVoltageRobust();
-        //speed = shooterPowerAngleCalculator.getPower();
-        speed = shooterPowerLUT.getPower();
-        power_setpoint = (speed*12.0)/voltage;
+        speed = 0.7;
+        //speed = shooterPowerLUT.getPower();
+        if (shootermotorstate == SHOOTERMOTORSTATE.RUN){
+            robot.topShooterMotor.setPower(speed);
+            robot.topShooterMotor.setPower(speed);
+        }
+        if (shootermotorstate == SHOOTERMOTORSTATE.STOP) {
+            robot.topShooterMotor.setPower(0);
+            robot.topShooterMotor.setPower(0);
+        }
+        //power_setpoint = (speed*12.0)/voltage;
+
         //ShooterPowerControl();
         // --- Global Controls (can be triggered from any state) ---
         switch (shooterState) {
             case SHOOTER_IDLE:
                //Idle state for shooter
-                robot.topShooterMotor.setPower(0);
+                //robot.topShooterMotor.setPower(0);
                 shootTimer.reset();
+                shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                 break;
             case FLYWHEEL_RUNNING:
+                shootermotorstate = SHOOTERMOTORSTATE.RUN;
                 if (shootTimer.seconds() > 0.5){ //wait for flywheel to spool up; needs testing
+                    shootTimer.reset();
                     shooterState = SHOOTERSTATE.KICKER_OUT;
                 }
-                shootTimer.reset();
                 break;
             case KICKER_OUT:
-                robot.spindexerServo.setPosition(spindexerSlot2);
+                robot.spindexerServo.setPosition(spindexerSlot2+0.02);
                 //Always move to slot 2 after intaking. Add a bit to allow kicker servo to move in
                 if (shootTimer.seconds() > 0.1) {
                     robot.kickerServo.setPosition(kickerIn);
@@ -103,20 +120,26 @@ public class FSMShooter {
                 }
                 break;
             case SEQUENCE_SHOOTING:
-                robot.topShooterMotor.setPower(speed);
-                //spindexer.sequenceShoot();
+                int n = spindexer.count(Spindexer.SLOT.Empty);
+                if (n == 3) {
+                    shooterState = SHOOTERSTATE.SHOOTER_STOP;
+                }else{
+
+                spindexer.runToPos(2-n);
+                spindexer.writeToCurrent(Spindexer.SLOT.Empty);
+                    shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
+                }
                 shootTimer.reset();
                 break;
 
             case SHOOTER_STOP:
                 //stop flywheel
-                robot.kickerServo.setPosition(kickerOut);
-                robot.topShooterMotor.setPower(0);
-                shooterState=SHOOTERSTATE.SHOOTER_IDLE;
+               // robot.kickerServo.setPosition(kickerOut);
+                shootermotorstate = SHOOTERMOTORSTATE.STOP;
                 break;
 
             default:
-                robot.topShooterMotor.setPower(0);
+                shootermotorstate = SHOOTERMOTORSTATE.STOP;
                 shooterState = SHOOTERSTATE.SHOOTER_STOP;
                 break;
         }
