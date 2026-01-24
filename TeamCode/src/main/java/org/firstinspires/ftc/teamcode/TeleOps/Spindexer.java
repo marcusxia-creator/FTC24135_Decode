@@ -112,15 +112,12 @@ public class Spindexer {
         currentSlot = Math.floorMod(currentSlot, 3);
         if(currentSlot==0){
             robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
-            robot.rightSpindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
         }
         if(currentSlot==1){
             robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
-            robot.rightSpindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
         }
         if(currentSlot==2){
             robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot2);
-            robot.rightSpindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
         }
     }
 
