@@ -87,13 +87,13 @@ public class FSMIntake {
                     }
                 }
 
-                /*if (spindexer.checkFor(Spindexer.SLOT.Empty)) {
+                if (spindexer.checkFor(Spindexer.SLOT.Empty)) {
                         intakeStates = IntakeStates.INTAKE_START;
                 } else {
                         intakeStates = IntakeStates.INTAKE_STOP;
                 }
 
-                 */
+
                 break;
 
             case INTAKE_STOP:

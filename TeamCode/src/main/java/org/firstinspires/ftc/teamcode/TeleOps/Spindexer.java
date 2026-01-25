@@ -55,7 +55,7 @@ public class Spindexer {
      * @param a The slot value to write into the current slot
      */
     public void writeToCurrent(SLOT a){
-        calculateSlot();
+        //calculateSlot();
         if(currentPos!=0) {
             slots[currentSlot] = a;
         }
@@ -74,18 +74,21 @@ public class Spindexer {
             if ((greenRangeLow[0] < hsvValues[0] && hsvValues[0] < greenRangeLow[1]) ||
                     greenRangeHigh[0] < hsvValues[0] && hsvValues[0] < greenRangeHigh[1]) {
                 //Green
-                writeToCurrent(Spindexer.SLOT.Green);
+                slots[currentSlot] = Spindexer.SLOT.Green;
+                //writeToCurrent(Spindexer.SLOT.Green);
             } else if ((purpleRangeLow[0] < hsvValues[0] && hsvValues[0] < purpleRangeLow[1]) ||
                     purpleRangeHigh[0] < hsvValues[0] && hsvValues[0] < purpleRangeHigh[1]) {
                 //Purple
-                writeToCurrent(Spindexer.SLOT.Purple);
+                slots[currentSlot] = Spindexer.SLOT.Purple;
+               // writeToCurrent(Spindexer.SLOT.Purple);
             }
         }
         else{
-            writeToCurrent(SLOT.Empty);
+            slots[currentSlot] = SLOT.Empty;
+            //writeToCurrent(SLOT.Empty);
         }
     }
-
+    /**
     public Boolean runToSlot(SLOT a){
         if(checkFor(a)){
             int n=0;
@@ -105,6 +108,7 @@ public class Spindexer {
             return false;
         }
     }
+     */
 
 
     /**
@@ -227,9 +231,9 @@ public class Spindexer {
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[n]);
     }
     public void RunToNext(){
-        prevPos = currentPos;
+        //prevPos = currentPos;
         currentPos = currentPos+1;
-        currentPos = Math.floorMod(currentPos,3);
+        //currentPos = Math.floorMod(currentPos,3);
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[currentPos]);
     }
     public void KickerRetract(){
@@ -268,9 +272,11 @@ public class Spindexer {
      * Note: Writes current slot to Empty
      * Does not control kicker
      */
+    /**
     public void ShootNext(){
         writeToCurrent(SLOT.Empty);
         runToPos(currentPos-1);
     }
     //Stop when count(SLOT.empty)==3
+     */
 }
