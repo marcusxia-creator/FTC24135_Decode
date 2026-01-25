@@ -79,8 +79,8 @@ public class FSMShooter {
 
     public void SequenceShooterLoop() {
         voltage = robot.getBatteryVoltageRobust();
-        speed = 0.7;
-        //speed = shooterPowerLUT.getPower();
+        //speed = 0.7;
+        speed = shooterPowerLUT.getPower();
         if (shootermotorstate == SHOOTERMOTORSTATE.RUN){
             robot.topShooterMotor.setPower(speed);
             robot.topShooterMotor.setPower(speed);
