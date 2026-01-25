@@ -84,6 +84,6 @@ public class RobotActionConfig {
     public static final double OZPower                  = 0.5;
     public static final double FZPower                  = 0.93;
 
-    public static final double turret_Center_X_Offset = 0.0127;
-    public static final double turret_Center_Y_Offset = 0.028575;
+    public static final double turret_Center_X_Offset = 0.01905; //0.00381
+    public static final double turret_Center_Y_Offset = 0.015; //0.014287
 }

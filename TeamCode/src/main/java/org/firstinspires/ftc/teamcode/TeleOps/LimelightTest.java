@@ -51,9 +51,9 @@ public class LimelightTest {
         LLResult llResult = robot.limelight3A.getLatestResult();
         if (llResult != null && llResult.isValid()) {
             Pose3D robotPose3D = llResult.getBotpose_MT2();
-            double normalizedYaw = Math.toRadians(robotPose3D.getOrientation().getYaw(AngleUnit.DEGREES) - 90);
-            double yOffSet = Math.sin(normalizedYaw) * (0.1778 * conversionFactor);
-            double xOffSet = Math.cos(normalizedYaw) * (0.1778 * conversionFactor);
+            double normalizedYaw = Math.toRadians(robotPose3D.getOrientation().getYaw() - 90);
+            double yOffSet = Math.cos(normalizedYaw) * (0.1778 * conversionFactor);
+            double xOffSet = Math.sin(normalizedYaw) * (0.1778 * conversionFactor);
             //return new Pose2D(distanceUnit, ((robotPose3D.getPosition().x * conversionFactor) - xOffSet), ((robotPose3D.getPosition().y * conversionFactor) - yOffSet), AngleUnit.DEGREES, robotPose3D.getOrientation().getYaw());
             return new Pose2D (distanceUnit, xOffSet, yOffSet, AngleUnit.DEGREES, normalizedYaw);
         }
@@ -73,27 +73,12 @@ public class LimelightTest {
         }
 
         double turretYaw = THETA - robot.pinpoint.getHeading(AngleUnit.RADIANS);
-        double yOffSet = Math.sin(turretYaw) * (turretCenterOffsetLength * conversionFactor);
-        double xOffSet = Math.cos(turretYaw) * (turretCenterOffsetLength * conversionFactor);
+        double yOffSet = Math.cos(turretYaw) * (turretCenterOffsetLength * conversionFactor);
+        double xOffSet = Math.sin(turretYaw) * (turretCenterOffsetLength * conversionFactor);
         //return new Pose2D(distanceUnit, ((robotPose3D.getPosition().x * conversionFactor) - xOffSet), ((robotPose3D.getPosition().y * conversionFactor) - yOffSet), AngleUnit.DEGREES, robotPose3D.getOrientation().getYaw());
         return new Pose2D (distanceUnit, xOffSet, yOffSet, AngleUnit.DEGREES, turretYaw);
- }
-
-    public boolean ifGood() {
-        double yaw = turret.getTurretMotorAngle() + robot.pinpoint.getHeading(AngleUnit.DEGREES);//robot.external_imu.getAngularOrientation().firstAngle;
-        robot.limelight3A.updateRobotOrientation(yaw);
-        LLResult llResult = robot.limelight3A.getLatestResult();
-        double turretYaw = turret.getTurretMotorAngle();
-        if (llResult != null && llResult.isValid()) {
-            if (llResult.getTx() < 20 && llResult.getTx() > -20) {
-                return true;
-            }
-
-            return false;
-        }
-
-        return false;
     }
+
 
     public Pose2D updateTagMT2(DistanceUnit distanceUnit) {
         if (distanceUnit == DistanceUnit.INCH) {
@@ -119,6 +104,31 @@ public class LimelightTest {
         return null;
     }
 
+    public Pose2D turretCenter(DistanceUnit distanceUnit) {
+        if (distanceUnit == DistanceUnit.INCH) {
+            conversionFactor = 39.3700787;
+        }
+        else if (distanceUnit == DistanceUnit.MM) {
+            conversionFactor = 1000;
+        }
+        else {
+            throw new IllegalArgumentException("Distance Unit can only be in INCH or MM");
+        }
+        double yaw = turret.getTurretMotorAngle() + robot.pinpoint.getHeading(AngleUnit.DEGREES);//robot.external_imu.getAngularOrientation().firstAngle;
+        robot.limelight3A.updateRobotOrientation(yaw);
+        LLResult llResult = robot.limelight3A.getLatestResult();
+        if (llResult != null && llResult.isValid()) {
+            Pose3D robotPose3D = llResult.getBotpose_MT2();
+            double normalizedYaw = Math.toRadians(robotPose3D.getOrientation().getYaw() - 90);
+            double yOffSet = Math.cos(normalizedYaw) * (0.1778 * conversionFactor);
+            double xOffSet = Math.sin(normalizedYaw) * (0.1778 * conversionFactor);
+            //return new Pose2D(distanceUnit, ((robotPose3D.getPosition().x * conversionFactor) - xOffSet), ((robotPose3D.getPosition().y * conversionFactor) - yOffSet), AngleUnit.DEGREES, robotPose3D.getOrientation().getYaw());
+            return new Pose2D (distanceUnit, (robotPose3D.getPosition().x * conversionFactor + xOffSet), (robotPose3D.getPosition().y * conversionFactor - yOffSet), AngleUnit.DEGREES, normalizedYaw);
+        }
+
+        return null;
+    }
+
     public Pose2D updateTagMT2NORMALIZED(DistanceUnit distanceUnit) {
         if (distanceUnit == DistanceUnit.INCH) {
             conversionFactor = 39.3700787;
@@ -135,15 +145,37 @@ public class LimelightTest {
         if (llResult != null && llResult.isValid()) {
             Pose3D robotPose3D = llResult.getBotpose_MT2();
             double normalizedYaw = Math.toRadians(robotPose3D.getOrientation().getYaw(AngleUnit.DEGREES) - 90);
-            double yOffSet = Math.sin(normalizedYaw) * (0.1778 * conversionFactor);
-            double xOffSet = Math.cos(normalizedYaw) * (0.1778 * conversionFactor);
+            double yOffSet = Math.cos(normalizedYaw) * (0.1778 * conversionFactor);
+            double xOffSet = Math.sin(normalizedYaw) * (0.1778 * conversionFactor);
             double turretYaw = THETA - robot.pinpoint.getHeading(AngleUnit.RADIANS);
-            double turretYOffSet = Math.sin(turretYaw) * (turretCenterOffsetLength * conversionFactor);
-            double turretXOffSet = Math.cos(turretYaw) * (turretCenterOffsetLength * conversionFactor);
-            return new Pose2D(distanceUnit, (robotPose3D.getPosition().x * conversionFactor + (xOffSet + turretXOffSet)), (robotPose3D.getPosition().y * conversionFactor - (yOffSet + turretXOffSet)), AngleUnit.DEGREES, robotPose3D.getOrientation().getYaw());
+            double turretYOffSet = Math.cos(turretYaw) * (turretCenterOffsetLength * conversionFactor);
+            double turretXOffSet = Math.sin(turretYaw) * (turretCenterOffsetLength * conversionFactor);
+            return new Pose2D(distanceUnit, (robotPose3D.getPosition().x * conversionFactor + xOffSet + turretXOffSet), (robotPose3D.getPosition().y * conversionFactor - yOffSet - turretYOffSet), AngleUnit.DEGREES, robotPose3D.getOrientation().getYaw());
             //return new Pose2D (distanceUnit, xOffSet, yOffSet, AngleUnit.DEGREES, robotPose3D.getOrientation().getYaw(AngleUnit.DEGREES));
         }
 
         return null;
+    }
+
+    public double getTx() {
+        double yaw = turret.getTurretMotorAngle() + robot.pinpoint.getHeading(AngleUnit.DEGREES);//robot.external_imu.getAngularOrientation().firstAngle;
+        robot.limelight3A.updateRobotOrientation(yaw);
+        LLResult llResult = robot.limelight3A.getLatestResult();
+        if (llResult != null && llResult.isValid()) {
+            return llResult.getTx();
+        }
+
+        return 0.0;
+    }
+
+    public double getTy() {
+        double yaw = turret.getTurretMotorAngle() + robot.pinpoint.getHeading(AngleUnit.DEGREES);//robot.external_imu.getAngularOrientation().firstAngle;
+        robot.limelight3A.updateRobotOrientation(yaw);
+        LLResult llResult = robot.limelight3A.getLatestResult();
+        if (llResult != null && llResult.isValid()) {
+            return llResult.getTy();
+        }
+
+        return 0.0;
     }
 }

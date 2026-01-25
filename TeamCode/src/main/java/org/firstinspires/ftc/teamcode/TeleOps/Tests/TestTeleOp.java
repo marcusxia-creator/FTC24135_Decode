@@ -275,13 +275,17 @@ public class TestTeleOp extends OpMode {
         Pose2D MT2Pose = limelightTest.updateTagMT2(DistanceUnit.MM);
         Pose2D MT2Offset = limelightTest.updateTagMT2OFFSET(DistanceUnit.MM);
         Pose2D turretOffset = limelightTest.updateTagMT2OFFSET2(DistanceUnit.MM);
+        Pose2D turretNormalized = limelightTest.turretCenter(DistanceUnit.MM);
         Pose2D MT2Normalize = limelightTest.updateTagMT2NORMALIZED(DistanceUnit.MM);
         if (MT2Pose != null && MT2Offset != null && MT2Normalize != null) {
 
-            telemetry.addData("limelight Pose2D", "%.2f, %.2f, %.2f", MT2Pose.getX(DistanceUnit.MM), MT2Pose.getY(DistanceUnit.MM), MT2Pose.getHeading(AngleUnit.DEGREES));
-            telemetry.addData("limelight offset", "%.2f, %.2f, %.2f", MT2Offset.getX(DistanceUnit.MM), MT2Offset.getY(DistanceUnit.MM), MT2Offset.getHeading(AngleUnit.DEGREES));
-            telemetry.addData("turret offset", "%.2f, %.2f, %.2f", turretOffset.getX(DistanceUnit.MM), turretOffset.getY(DistanceUnit.MM), turretOffset.getHeading(AngleUnit.DEGREES));
+            telemetry.addData("limelight Pose2D Raw", "%.2f, %.2f, %.2f", MT2Pose.getX(DistanceUnit.MM), MT2Pose.getY(DistanceUnit.MM), MT2Pose.getHeading(AngleUnit.DEGREES));
+            telemetry.addData("limelight -> Turret center offset", "%.2f, %.2f, %.2f", MT2Offset.getX(DistanceUnit.MM), MT2Offset.getY(DistanceUnit.MM), MT2Offset.getHeading(AngleUnit.DEGREES));
+            telemetry.addData("turret -> robot center offset", "%.2f, %.2f, %.2f", turretOffset.getX(DistanceUnit.MM), turretOffset.getY(DistanceUnit.MM), turretOffset.getHeading(AngleUnit.DEGREES));
+            telemetry.addData("turret center normalized", "%.2f, %.2f, %.2f", turretNormalized.getX(DistanceUnit.MM), turretNormalized.getY(DistanceUnit.MM), turretNormalized.getHeading(AngleUnit.DEGREES));
             telemetry.addData("limelight normalized", "%.2f, %.2f, %.2f", MT2Normalize.getX(DistanceUnit.MM), MT2Normalize.getY(DistanceUnit.MM), MT2Normalize.getHeading(AngleUnit.DEGREES));
+            telemetry.addData("tx", limelightTest.getTx());
+            telemetry.addData("ty", limelightTest.getTy());
         }
 
 
