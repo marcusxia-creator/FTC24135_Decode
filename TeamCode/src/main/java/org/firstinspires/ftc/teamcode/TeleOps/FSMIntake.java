@@ -55,11 +55,11 @@ public class FSMIntake {
             //start of intake FSM
             case INTAKE_IDLE:
                 reversing = false;
-                intakeTimer.reset();
+                robot.intakeMotor.setPower(0);
                 break;
             //start intake motor
             case INTAKE_PREP:
-                spindexer.SpindexerBegin(0);
+                spindexer.RuntoPosition(0);
                 intakeTimer.reset();
                 intakeStates = IntakeStates.INTAKE_START;
                 break;
@@ -89,6 +89,7 @@ public class FSMIntake {
                         intakeTimer.reset();
                     } else {
                         intakeStates = IntakeStates.INTAKE_STOP;
+                        intakeTimer.reset();
                     }
                 }
                 break;
@@ -100,7 +101,19 @@ public class FSMIntake {
 
             case INTAKE_STOP:
                 robot.intakeMotor.setPower(0);
-                //intakeStates = IntakeStates.INTAKE_IDLE;
+                if(intakeTimer.seconds()>0.1 && intakeTimer.seconds()<0.2 ){
+                    robot.spindexerServo.setPosition(0.4);
+                }
+                if(intakeTimer.seconds()>0.4 && intakeTimer.seconds()<0.5 ){
+                    robot.spindexerServo.setPosition(0.3);
+                }
+                if(intakeTimer.seconds()>0.7 && intakeTimer.seconds()<0.8 ){
+                    robot.spindexerServo.setPosition(0.2);
+                }
+                if(intakeTimer.seconds()>1.0){
+                    spindexer.RuntoPosition(0);
+                    intakeStates = IntakeStates.INTAKE_IDLE;
+                }
                 break;
 
             case INTAKE_REVERSE:

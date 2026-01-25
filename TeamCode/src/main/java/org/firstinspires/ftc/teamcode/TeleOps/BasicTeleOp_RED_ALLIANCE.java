@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMIntake.IntakeStates;
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SHOOTERSTATE;
-import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SORTSHOOTERSTATE;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.CLOSE;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.FAR_EDGE;
@@ -88,7 +87,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         /// 2.spindexer-------------------------------------------------------------------
         spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
         //spindexer.runToSlot(0);
-        spindexer.SpindexerBegin(0);
+        spindexer.RuntoPosition(0);
         spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
         /// 3. turret---------------------------------------------------------------
         turret = new Turret(robot);
@@ -150,13 +149,13 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             case Intaking:
                 break;
             case Idle:
-                FSMIntake.intakeStates = IntakeStates.INTAKE_STOP;
-                FSMShooter.shooterState = SHOOTERSTATE.SHOOTER_STOP;
+                FSMIntake.intakeStates = IntakeStates.INTAKE_IDLE;
+                FSMShooter.shooterState = SHOOTERSTATE.SHOOTER_IDLE;
                 break;
         }
 
         //LED alarm light
-        if (shooterPowerAngleCalculator.getDistance() <= CLOSE ||shooterPowerAngleCalculator.getDistance() >= FAR_EDGE) {
+        if (shooterPowerAngleCalculator.getZone() ==0) {
             //Distance less than 54 inches, red alert
             robot.LED.setPosition(0.28);
         }
@@ -213,13 +212,11 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Shooter Motor Mode", robot.topShooterMotor.getMode());
         telemetry.addLine("-----");
         String MotifAvailable;
-        telemetry.addData("desired angle", shooterPowerAngleCalculator.getAngle());
-        telemetry.addData("desired robot angle", 90 + shooterPowerAngleCalculator.getAngle()); //If the desired robot angle equal to the current angle, then the robot is on course
         telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));
 
         telemetry.addData("Alliance", alliance);
         telemetry.addData("Pose2D", robot.pinpoint.getPosition());
-        telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
+        telemetry.addData("distance to goal", shooterPowerAngleCalculator.());
         //telemetry.addData("turret rotation in degrees", turret.getTurretAngle());
         telemetry.addData("turret target angle", turret.getTargetAngle());
         telemetry.addLine("-----------------------------------------");
@@ -251,7 +248,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         if (gamepadCo1.getButton(GamepadKeys.Button.X) || gamepadCo2.getButton(GamepadKeys.Button.X)
                 && isButtonDebounced()){
             actionStates = RobotActionState.Sequence_Shooting;
-            FSMShooter.shooterState = SHOOTERSTATE.SHOOTER_IDLE;
+            FSMShooter.shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
+            FSMIntake.intakeStates = IntakeStates.INTAKE_STOP;
         }
 
         //Button y - For sort shooting
@@ -266,7 +264,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                 && isButtonDebounced()){
             actionStates = RobotActionState.Intaking;
             FSMIntake.intakeStates = IntakeStates.INTAKE_PREP;
-            FSMShooter.shooterState = SHOOTERSTATE.SHOOTER_STOP;
+            FSMShooter.shooterState = SHOOTERSTATE.SHOOTER_IDLE;
         }
 
         //Dpad right - For reversing intake

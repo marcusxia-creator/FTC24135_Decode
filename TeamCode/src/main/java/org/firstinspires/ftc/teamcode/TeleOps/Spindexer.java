@@ -40,7 +40,7 @@ public class Spindexer {
         runToPos(currentPos);
     }
 
-    public void SpindexerBegin(int n){
+    public void RuntoPosition(int n){
         currentPos = n;
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[currentPos]);
     }
@@ -49,6 +49,10 @@ public class Spindexer {
         currentPos = currentPos+1;
         //currentPos = Math.floorMod(currentPos,3);
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[currentPos]);
+    }
+
+    public void SpindexerShootingEnd (){
+        robot.spindexerServo.setPosition(spindexerZeroPos);
     }
 
     /**
@@ -110,6 +114,16 @@ public class Spindexer {
         }
         return counter;
     }
+
+    /**
+     * Reset slot position to 0
+     */
+    public void resetSlot() {
+        slots[0] = SLOT.Empty;
+        slots[1] = SLOT.Empty;
+        slots[2] = SLOT.Empty;
+    }
+
 
     /**
      * -------------------------------------------------------------------------------------------------
@@ -204,14 +218,7 @@ public class Spindexer {
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[currentPos]);
     }
 
-    /**
-     * Reset slot position to 0
-     */
-    public void resetSlot() {
-        slots[0] = SLOT.Empty;
-        slots[1] = SLOT.Empty;
-        slots[2] = SLOT.Empty;
-    }
+
     /**
      * Runs to position {@code n} (0-5)
      */
@@ -256,9 +263,7 @@ public class Spindexer {
     public void KickerRetract(){
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[0]);
     }
-    public void SpindexerShootingEnd (){
-        robot.spindexerServo.setPosition(spindexerZeroPos);
-    }
+
 
     //Stop when currentPos==3 or count(SLOT.empty)==0
 

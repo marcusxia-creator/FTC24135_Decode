@@ -79,8 +79,8 @@ public class FSMShooter {
 
     public void SequenceShooterLoop() {
         voltage = robot.getBatteryVoltageRobust();
-        //speed = 0.7;
-        speed = shooterPowerLUT.getPower();
+        speed = 0.75;
+        //speed = shooterPowerLUT.getPower();
         if (shootermotorstate == SHOOTERMOTORSTATE.RUN){
             robot.topShooterMotor.setPower(speed);
             robot.topShooterMotor.setPower(speed);
@@ -96,60 +96,57 @@ public class FSMShooter {
         switch (shooterState) {
             case SHOOTER_IDLE:
                //Idle state for shooter
-                //robot.topShooterMotor.setPower(0);
+                robot.topShooterMotor.setPower(0);
+                robot.bottomShooterMotor.setPower(0);
                 shootTimer.reset();
-                shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
+                //shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                 break;
             case FLYWHEEL_RUNNING:
                 shootermotorstate = SHOOTERMOTORSTATE.RUN;
-                int ballNumber = 3- spindexer.count(Spindexer.SLOT.Empty);
-                if (shootTimer.seconds() > 0.5){ //wait for flywheel to spool up; needs testing
-                    shootTimer.reset();
+                shootCounter = 0;
+                if (shootTimer.seconds() > 0.1){ //wait for flywheel to spool up; needs testing
                     shooterState = SHOOTERSTATE.KICKER_EXTEND;
+                    shootTimer.reset();
+
                 }
                 break;
             case KICKER_EXTEND:
-                shootCounter = 0;
-                spindexer.SpindexerBegin(shootCounter);
-                //Always move to slot 2 after intaking. Add a bit to allow kicker servo to move in
-                if (shootTimer.seconds() > 0.1) {
+                //Always move to slot 2 after intaking. Add a bit to allow kicker servo to move in{
                     robot.kickerServo.setPosition(kickerExtend);
-                }
-                if (shootTimer.seconds() > 0.2) {
-                    shootTimer.reset();
+                if (shootTimer.seconds() > 2.25) {
                     shooterState = SHOOTERSTATE.SEQUENCE_SHOOTING;
+                    shootTimer.reset();
                 }
                 break;
             case SEQUENCE_SHOOTING:
-                if (shootTimer.seconds() > 0.2 * (shootCounter + 1)) {
+                if (shootTimer.seconds() > 0.5 * shootCounter) {
                     shootCounter++;
-                    if (shootCounter < 3) {
+                    if (shootCounter < 4) {
                         spindexer.RunToNext();
+                    }else{
+                        shooterState = SHOOTERSTATE.SHOOTER_STOP;
+                        shootTimer.reset();
                     }
-                    if (shootCounter == 3) {
-                        spindexer.SpindexerShootingEnd();
-                    }
-                }
-                if (shootCounter == 4){
-                    spindexer.KickerRetract();
-                    spindexer.resetSlot();
-                    shootTimer.reset();
-                    shooterState = SHOOTERSTATE.KICKER_RETRACT;
-                }
-                break;
-            case KICKER_RETRACT:
-                if (shootTimer.seconds() > 0.2) {
-                    robot.kickerServo.setPosition(kickerRetract);
-                    shootTimer.reset();
-                    shooterState = SHOOTERSTATE.SHOOTER_STOP;
                 }
                 break;
             case SHOOTER_STOP:
                 //stop flywheel
                // robot.kickerServo.setPosition(kickerExtend);
                 shootermotorstate = SHOOTERMOTORSTATE.STOP;
+                if (shootTimer.seconds() > 0.2) {
+                    //spindexer.RuntoPosition(0);
+                    shootTimer.reset();
+                    shooterState = SHOOTERSTATE.KICKER_RETRACT;
+                    //shooterState = SHOOTERSTATE.SHOOTER_IDLE;
+                }
                 break;
-
+            case KICKER_RETRACT:
+                if (shootTimer.seconds() > 1.0) {
+                    robot.kickerServo.setPosition(kickerRetract);
+                    shootTimer.reset();
+                    shooterState = SHOOTERSTATE.SHOOTER_IDLE;
+                }
+                break;
             default:
                 shootermotorstate = SHOOTERMOTORSTATE.STOP;
                 shooterState = SHOOTERSTATE.SHOOTER_STOP;
