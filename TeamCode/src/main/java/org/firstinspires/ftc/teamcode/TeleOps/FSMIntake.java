@@ -4,7 +4,6 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
@@ -19,7 +18,7 @@ public class FSMIntake {
 
     public enum IntakeStates {
         INTAKE_IDLE,
-
+        INTAKE_PREP,
         INTAKE_START,
         INTAKE_CAPTURE,
         INTAKE_STOP,
@@ -30,18 +29,14 @@ public class FSMIntake {
 
     private ElapsedTime unjamTimer = new ElapsedTime();
     private ElapsedTime jammedTimer = new ElapsedTime();
-    private ElapsedTime reverseTimer = new ElapsedTime();
-    private double DEBOUNCE_THRESHOLD = 0.25;
 
-    private ElapsedTime intakeTimer = new ElapsedTime();
+    public ElapsedTime intakeTimer = new ElapsedTime();
 
     private final RobotHardware robot;
     private final GamepadEx gamepad_1;
     private final GamepadEx gamepad_2;
     private double intakeRPM;
     private boolean reversing = false;
-
-
     Spindexer spindexer;
 
     boolean recorded;
@@ -62,10 +57,17 @@ public class FSMIntake {
                 intakeTimer.reset();
                 break;
             //start intake motor
+            case INTAKE_PREP:
+                spindexer.SpindexerBegin(0);
+                intakeTimer.reset();
+                intakeStates = IntakeStates.INTAKE_START;
+                break;
             case INTAKE_START:
                 boolean jammed = isIntakeJammmed();
                 if (!jammed) {
-                    robot.intakeMotor.setPower(intakeSpeed);
+                    if (intakeTimer.seconds() > 0.1) {
+                        robot.intakeMotor.setPower(intakeSpeed);
+                    }
                 }
                 HandleIntaking(jammed);
                 if (robot.distanceSensor.getDistance(DistanceUnit.MM) < distanceThreshold) {
@@ -76,11 +78,10 @@ public class FSMIntake {
                 break;
             //ball goes into spindxer
             case INTAKE_CAPTURE:
-                //robot.intakeMotor.setPower(intakeSpeed);
-                //Put gates down
+                //robot.intakeMotor.setPower(intakeSpeed)
                 if (!recorded) {
                     spindexer.writeToCurrent(robot.colorSensor, robot.distanceSensor);
-                    spindexer.runToSlot(Spindexer.SLOT.Empty);
+                    spindexer.RunToNext();
                     recorded = true;
                 }
                 if (intakeTimer.seconds() > SpindexerMoveTime) {
@@ -94,8 +95,6 @@ public class FSMIntake {
 
             case INTAKE_STOP:
                 robot.intakeMotor.setPower(0);
-                robot.topShooterMotor.setPower(0);
-                robot.bottomShooterMotor.setPower(0);
                 //intakeStates = IntakeStates.INTAKE_IDLE;
                 break;
 

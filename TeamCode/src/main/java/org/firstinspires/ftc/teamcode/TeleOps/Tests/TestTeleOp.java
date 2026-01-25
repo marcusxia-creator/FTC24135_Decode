@@ -184,12 +184,12 @@ public class TestTeleOp extends OpMode {
          */
         /** run kicker servoposition*/
         if (gamepad_2.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
-            servoposition = kickerIn;
+            servoposition = kickerRetract;
             robot.kickerServo.setPosition(Range.clip(servoposition, 0.0, 1.0
             ));
         }
         if (gamepad_2.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
-            servoposition = kickerOut;
+            servoposition = kickerExtend;
             robot.kickerServo.setPosition(Range.clip(servoposition, 0.0, 1.0));
         }
         /** run spindexer per slot*/

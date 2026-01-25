@@ -12,19 +12,20 @@ public class RobotActionConfig {
     public static double gateUp                         = 0.39;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
     public static double spindexerKickerInDelta         = 0.02;
-    public static double spindexerSlot0                 = 0.13;
-    public static double spindexerSlot1                 = 0.32;
-    public static double spindexerSlot2                 = 0.51;
-    public static double spindexerSlot3                 = 0.695;
-    public static double spindexerSlot4                 = 0.885;
-    public static double spindexerSlot5                 = 0.99;
-    public static double[] spindexerPositions           = {spindexerSlot0, spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5};
+    public static double spindexerZeroPos = 0.00;
+    public static double spindexerSlot1                 = 0.13;
+    public static double spindexerSlot2                 = 0.32;
+    public static double spindexerSlot3                 = 0.51;
+    public static double spindexerSlot4                 = 0.7;
+    public static double spindexerSlot5                 = 0.885;
+    public static double spindexerFullPos = 1.0;
+    public static double[] spindexerPositions           = {spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5};
     public static double angleResetPos                  = 0.0;
     public static double slotAngleDelta                 = 0.19;
 
     //Speed
-    public static double kickerIn                       = 0.3;  /// value - retract back for spindexer reversing
-    public static double kickerOut                      = 0.65; /// value - into the spindexer for pushing the ball up
+    public static double kickerRetract = 0.3;  /// value - retract back for spindexer reversing
+    public static double kickerExtend = 0.6; /// value - into the spindexer for pushing the ball up
     public static double intakeSpeed                    = 0.7;
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.4;
@@ -40,7 +41,7 @@ public class RobotActionConfig {
     //Intake capture timing
     public static double gateDownTime                   = 0.25;
     public static double SpindexerStartTime             = 0.7;
-    public static double SpindexerMoveTime              = 0.5;
+    public static double SpindexerMoveTime              = 0.2;
 
     public static double a                              = 0.0001320186;
     public static double b                              = -0.01961813;

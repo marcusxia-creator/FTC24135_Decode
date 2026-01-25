@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.greenRang
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.greenRangeLow;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.purpleRangeHigh;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.purpleRangeLow;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.spindexerZeroPos;
 
 import android.graphics.Color;
 
@@ -13,14 +14,13 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-import java.util.Arrays;
-
 public class Spindexer {
     public enum SLOT{
         Empty,
         Green,
         Purple
     }
+
 
     public RobotHardware robot;
     public SLOT[] slots;
@@ -190,7 +190,8 @@ public class Spindexer {
         prevPos = currentPos;
         currentPos = n;
         calculateSlot();
-        runToPos();
+        currentPos = Math.floorMod(currentPos,3);
+        robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[currentPos]);
     }
 
     /**
@@ -214,18 +215,30 @@ public class Spindexer {
     /**
      * Moves spindexer to position 1 slot 0, in preparation for intaking
      */
-    public void IntakeBegin(){
-        runToPos(1);
-    }
 
     /**
      * Movess spindexer forward one slot after intaking artifact
      * Note: Does not memorize, run WriteToCurrent before
      */
     public void IntakeNext(){
-        runToPos(currentPos+1);
-        //Doesn't handle memorization, that has to be done in external FSM
+        runToPos(currentPos );
     }
+    public void SpindexerBegin(int n){
+        robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[n]);
+    }
+    public void RunToNext(){
+        prevPos = currentPos;
+        currentPos = currentPos+1;
+        currentPos = Math.floorMod(currentPos,3);
+        robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[currentPos]);
+    }
+    public void KickerRetract(){
+        robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[0]);
+    }
+    public void SpindexerShootingEnd (){
+        robot.spindexerServo.setPosition(spindexerZeroPos);
+    }
+
     //Stop when currentPos==3 or count(SLOT.empty)==0
 
     //Shooting Methods

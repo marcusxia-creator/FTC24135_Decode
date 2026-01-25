@@ -262,13 +262,14 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_LEFT) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_LEFT)
                 && isButtonDebounced()){
             actionStates = RobotActionState.Intaking;
-            FSMIntake.intakeStates = IntakeStates.INTAKE_START;
+            FSMIntake.intakeStates = IntakeStates.INTAKE_PREP;
             FSMShooter.shooterState = SHOOTERSTATE.SHOOTER_STOP;
         }
 
         //Dpad right - For reversing intake
         if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_RIGHT) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_RIGHT)
                 && isButtonDebounced()) {
+            FSMIntake.intakeTimer.reset();
             FSMIntake.reversing();
         }
 

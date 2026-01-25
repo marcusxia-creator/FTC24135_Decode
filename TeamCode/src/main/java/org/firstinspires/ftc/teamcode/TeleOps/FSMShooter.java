@@ -1,13 +1,9 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class FSMShooter {
     private final RobotHardware robot;
@@ -27,6 +23,7 @@ public class FSMShooter {
     private double voltage;
     private double speed;
     private double power_setpoint;
+    private int shootCounter;
 
     /**
      * BUTTON FOR SHOOTING
@@ -42,14 +39,15 @@ public class FSMShooter {
     public enum SHOOTERSTATE {
         SHOOTER_IDLE,
         FLYWHEEL_RUNNING,
-        KICKER_OUT,
+        KICKER_EXTEND,
         SEQUENCE_SHOOTING,
+        KICKER_RETRACT,
         SHOOTER_STOP
     }
     public enum SORTSHOOTERSTATE {
         SHOOTER_IDLE,
         FLYWHEEL_RUNNING,
-        KICKER_OUT,
+        KICKER_EXTEND,
         SORT_SHOOTING,
         SHOOTER_STOP
     }
@@ -104,37 +102,51 @@ public class FSMShooter {
                 break;
             case FLYWHEEL_RUNNING:
                 shootermotorstate = SHOOTERMOTORSTATE.RUN;
+                int ballNumber = 3- spindexer.count(Spindexer.SLOT.Empty);
                 if (shootTimer.seconds() > 0.5){ //wait for flywheel to spool up; needs testing
                     shootTimer.reset();
-                    shooterState = SHOOTERSTATE.KICKER_OUT;
+                    shooterState = SHOOTERSTATE.KICKER_EXTEND;
                 }
                 break;
-            case KICKER_OUT:
-                robot.spindexerServo.setPosition(spindexerSlot2+0.02);
+            case KICKER_EXTEND:
+                shootCounter = 0;
+                spindexer.SpindexerBegin(shootCounter);
                 //Always move to slot 2 after intaking. Add a bit to allow kicker servo to move in
                 if (shootTimer.seconds() > 0.1) {
-                    robot.kickerServo.setPosition(kickerIn);
+                    robot.kickerServo.setPosition(kickerExtend);
                 }
                 if (shootTimer.seconds() > 0.2) {
+                    shootTimer.reset();
                     shooterState = SHOOTERSTATE.SEQUENCE_SHOOTING;
                 }
                 break;
             case SEQUENCE_SHOOTING:
-                int n = spindexer.count(Spindexer.SLOT.Empty);
-                if (n == 3) {
-                    shooterState = SHOOTERSTATE.SHOOTER_STOP;
-                }else{
-
-                spindexer.runToPos(2-n);
-                spindexer.writeToCurrent(Spindexer.SLOT.Empty);
-                    shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
+                if (shootTimer.seconds() > 0.2 * (shootCounter + 1)) {
+                    shootCounter++;
+                    if (shootCounter < 3) {
+                        spindexer.RunToNext();
+                    }
+                    if (shootCounter == 3) {
+                        spindexer.SpindexerShootingEnd();
+                    }
                 }
-                shootTimer.reset();
+                if (shootCounter == 4){
+                    spindexer.KickerRetract();
+                    spindexer.resetSlot();
+                    shootTimer.reset();
+                    shooterState = SHOOTERSTATE.KICKER_RETRACT;
+                }
                 break;
-
+            case KICKER_RETRACT:
+                if (shootTimer.seconds() > 0.2) {
+                    robot.kickerServo.setPosition(kickerRetract);
+                    shootTimer.reset();
+                    shooterState = SHOOTERSTATE.SHOOTER_STOP;
+                }
+                break;
             case SHOOTER_STOP:
                 //stop flywheel
-               // robot.kickerServo.setPosition(kickerOut);
+               // robot.kickerServo.setPosition(kickerExtend);
                 shootermotorstate = SHOOTERMOTORSTATE.STOP;
                 break;
 
@@ -176,43 +188,6 @@ public class FSMShooter {
                 break;
         }
     }
-/*
-    /// May not need manual power or auto power switch
-    public enum SHOOTERPOWERSTATE {
-        AUTO_POWER,
-        MANUAL_POWER
-    }
-
-    public void ToggleShooterPower (){
-        if (shooterpowerstate == SHOOTERPOWERSTATE.AUTO_POWER){
-            shooterpowerstate = SHOOTERPOWERSTATE.MANUAL_POWER;
-        } else {
-            shooterpowerstate = SHOOTERPOWERSTATE.AUTO_POWER;
-        }
-    }
-
-    public void ShooterPowerSwitch () {
-        if (shooterpowerstate != SHOOTERPOWERSTATE.AUTO_POWER) {
-            robot.shooterMotor.setPower(shooterPower);
-        } else {
-            robot.shooterMotor.setPower(Range.clip(power_setpoint,0.3,1.0));
-        }
-    }
-
-    public void ShooterPowerControl () {
-        if (gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER) &&
-                gamepad_2.getButton(GamepadKeys.Button.BACK) &&
-                isButtonDebounced()
-        gamepadInput.getOperatorLbBComboPressed()|| gamepadInput.getDriverLbBComboPressed()) {
-            ToggleShooterPower();
-        }
-    }
-
-    public void SetShooterPowerState (SHOOTERPOWERSTATE state) {
-        this.shooterpowerstate = state;
-    }
-
- */
 
     public double getPower_setpoint () {
         return power_setpoint;
