@@ -13,9 +13,9 @@ public class RobotActionConfig {
     public static double DEBOUNCE_THRESHOLD             = 0.25;
     public static double spindexerKickIn                = 0.00;
     public static double spindexerSlotShoot             = 0.0;
-    public static double spindexerSlot0                 = 0.81;
-    public static double spindexerSlot1                 = 0.555;
-    public static double spindexerSlot2                 = 0.31;
+    public static double spindexerSlot0                 = 0.18;
+    public static double spindexerSlot1                 = 0.43;
+    public static double spindexerSlot2                 = 0.68;
     //public static double spindexerSlot3                 = 0.749;
     //public static double spindexerSlot4                 = 0.971;
     //public static double spindexerSlot5                 = 1.0;

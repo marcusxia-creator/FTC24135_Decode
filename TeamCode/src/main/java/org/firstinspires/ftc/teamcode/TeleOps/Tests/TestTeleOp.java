@@ -35,7 +35,7 @@ public class TestTeleOp extends OpMode {
     private Turret turret;
 
     private static double voltage;
-    private BallColor ballColor;
+    //private BallColor ballColor;
     private ColorDetection colorDetection;
 
     double intakeSpeed = 0.5;
@@ -112,7 +112,7 @@ public class TestTeleOp extends OpMode {
         pidController.setPID(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
 
         robotDrive.DriveLoop();
-        ballColor = BallColor.fromHue(colorDetection.getHue());
+        //ballColor = BallColor.fromHue(colorDetection.getHue());
         currentShooterRPM = robot.topShooterMotor.getVelocity() * tickToRPM;
         shooterPower = pidController.calculate(currentShooterRPM, Range.clip(targetShooterRPM,0,6000));
         shooterPower = Math.max(-1.0, Math.min(1.0, shooterPower));
@@ -209,7 +209,7 @@ public class TestTeleOp extends OpMode {
         }
 
 
-
+        /*
         if (shooterPowerAngleCalculator.getDistance() <= 54) {
             robot.LED.setPosition(0.28);
         }
@@ -224,6 +224,8 @@ public class TestTeleOp extends OpMode {
         else {
             robot.LED.setPosition(1.0);
         }
+
+         */
 
 
         telemetry.addData("Kicker Postion", robot.kickerServo.getPosition());
@@ -240,7 +242,7 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("Shooter top velocity", robot.topShooterMotor.getVelocity());
         telemetry.addData("Shooter Motor Power Calculator", shooterPower);
         telemetry.addLine("----------------------------------------------------");
-        telemetry.addData("Color", ballColor);
+        //telemetry.addData("Color", ballColor);
         telemetry.addLine("----------------------------------------------------");
         telemetry.addData("turret target angle - atan", turret.getTargetAngle());
         telemetry.addData("turret motor tick", robot.turretMotor.getCurrentPosition());
