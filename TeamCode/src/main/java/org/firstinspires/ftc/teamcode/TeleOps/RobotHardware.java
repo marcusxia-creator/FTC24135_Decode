@@ -27,19 +27,15 @@ import java.util.Collections;
 Hardware config:
 Motor:
 Control hub motor:
-                port 0: FR_Motor
-                port 1: BR_motor
-
-
-
-
-                port 2: BL_Motor
-                port 3: FL_Motor
+                port 0: BR_motor
+                port 1: BL_Motor
+                port 2: FL_Motor
+                port 3: FR_Motor
 Expansion hub motor:
-                port 0: Top_Shooter_Motor
-                port 1: Turret_Motor
-                port 2: Intake_Motor
-                port 3: Bottom_Shooter_Motor
+                port 0: Turret_Motor
+                port 1: Intake_Motor
+                port 2: Bottom_Shooter_Motor
+                port 3: Top_Shooter_Motor
 
 Servo:
 Control hub servo:
@@ -52,8 +48,8 @@ Control hub servo:
 
 Expansion hub servo:
                 port 0: Spindexer_Servo
-                port 1: Kicker_Servo
-                port 2: Shooter_Adjuster_Servo
+                port 1: Shooter_Adjuster_Servo
+                port 2: Kicker_Servo
                 port 3: goBilda_LED_Light
                 port 4: Empty
                 port 5: Empty
@@ -105,7 +101,7 @@ public class RobotHardware {
 
     public Servo LED;
 
-    public Limelight3A limelight3A;
+    public Limelight3A limelight;
 
     private double vEma = 12.0;                 // EMA state
     public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
@@ -146,8 +142,9 @@ public class RobotHardware {
 
         LED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
         colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "Color_Sensor");
 
-        limelight3A = hardwareMap.get(Limelight3A.class, "LimeLight3A");
+        limelight = hardwareMap.get(Limelight3A.class, "LimeLight3A");
 
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
         /// Reset the drive motor encoders
@@ -171,7 +168,7 @@ public class RobotHardware {
         /// config turret motor
         turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         /// set run mode of shooter Motor
@@ -180,6 +177,9 @@ public class RobotHardware {
         topShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         bottomShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         topShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        ///spindexer servo direction
+        shooterAdjusterServo.setDirection(Servo.Direction.REVERSE);
 
         /** set drive motor 0 */
         frontLeftMotor.setPower(0);
@@ -217,7 +217,7 @@ public class RobotHardware {
         external_imu.initialize(myBNOIMUparameters);
     }
     public void initPinpoint() {
-        pinpoint.setOffsets(92.4, -143, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+        pinpoint.setOffsets(38.1, -184.15, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
         pinpoint.resetPosAndIMU();

@@ -74,9 +74,9 @@ public class TestTeleOp extends OpMode {
         limelight.initLimelight(24);
         limelight.start();
 
-        robot.kickerServo.setPosition(RobotActionConfig.kickerOut);
-        robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
-        robot.shooterAdjusterServo.setPosition(RobotActionConfig.shooterAdjusterMax);
+        robot.kickerServo.setPosition(RobotActionConfig.kickerRetract);
+        robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
+        robot.shooterAdjusterServo.setPosition(RobotActionConfig.shooterAdjusterMin);
 
         colorDetection = new ColorDetection(robot);
         pidController = new PIDController(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
@@ -89,16 +89,16 @@ public class TestTeleOp extends OpMode {
 
     public void SpindexerRunTo(int slot){
         if (slot==0){
-            robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlotShoot);
-        }
-        if(slot==1){
-            robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot0);
-        }
-        if(slot==2){
             robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot1);
         }
-        if(slot==3){
+        if(slot==1){
             robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot2);
+        }
+        if(slot==2){
+            robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot3);
+        }
+        if(slot==3){
+            robot.spindexerServo.setPosition(RobotActionConfig.spindexerSlot4);
         }
     }
 
@@ -126,15 +126,15 @@ public class TestTeleOp extends OpMode {
             robot.kickerServo.setPosition(Range.clip(servoposition, 0.0, 1.0
             ));
         }
-        if (gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
+
+        if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
+            servoposition = robot.spindexerServo.getPosition() + 0.01;
+            robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
+        }        if (gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
             servoposition = robot.kickerServo.getPosition() - 0.01;
             robot.kickerServo.setPosition(Range.clip(servoposition, 0, 1));
         }
         /** spindexer servo fine tune*/
-        if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
-            servoposition = robot.spindexerServo.getPosition() + 0.01;
-            robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
-        }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
             servoposition = robot.spindexerServo.getPosition() - 0.01;
             robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
@@ -142,11 +142,11 @@ public class TestTeleOp extends OpMode {
 
         /** shooter adjuster servo fine tune */
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && isButtonDebounced()) {
-            servoposition = robot.shooterAdjusterServo.getPosition() + 0.05;
+            servoposition = robot.shooterAdjusterServo.getPosition() + 0.01;
             robot.shooterAdjusterServo.setPosition(Range.clip(servoposition, 0, 1));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_DOWN) && isButtonDebounced()) {
-            servoposition = robot.shooterAdjusterServo.getPosition() - 0.05;
+            servoposition = robot.shooterAdjusterServo.getPosition() - 0.01;
             robot.shooterAdjusterServo.setPosition(Range.clip(servoposition, 0, 1));
         }
 
@@ -186,10 +186,10 @@ public class TestTeleOp extends OpMode {
 
         /**kicker servo up and down*/
         if (gamepad_2.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
-            robot.kickerServo.setPosition(RobotActionConfig.kickerOut);
+            robot.kickerServo.setPosition(RobotActionConfig.kickerExtend);
         }
         if (gamepad_2.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
-            robot.kickerServo.setPosition(RobotActionConfig.kickerIn);
+            robot.kickerServo.setPosition(RobotActionConfig.kickerRetract);
         }
 
         /**intake start stop*/
@@ -250,7 +250,7 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("turret motor drive angle", turret.getTurretDriveAngle());
         telemetry.addData("turret motor drive tick", turret.motorDriveTick());
         telemetry.addLine("----------------------------------------------------");
-        telemetry.addData("limelight Pose2D", limelight.updateTagMT2(DistanceUnit.INCH));
+        //telemetry.addData("limelight Pose2D", limelight.updateTagMT2(DistanceUnit.INCH));
         telemetry.addData("pinpoint Pose2D", robot.pinpoint.getPosition());
         telemetry.update();
     }

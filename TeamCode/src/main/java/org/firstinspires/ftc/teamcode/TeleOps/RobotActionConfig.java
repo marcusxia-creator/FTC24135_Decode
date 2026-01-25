@@ -9,22 +9,25 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 @Config
 public class RobotActionConfig {
     public static double gateDown                       = 0.13;
-    public static double gateUp                         = 0.31;
+    public static double gateUp                         = 0.39;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
-    public static double spindexerKickIn                = 0.00;
-    public static double spindexerSlotShoot             = 0.0;
-    public static double spindexerSlot0                 = 0.18;
-    public static double spindexerSlot1                 = 0.43;
-    public static double spindexerSlot2                 = 0.68;
-    //public static double spindexerSlot3                 = 0.749;
-    //public static double spindexerSlot4                 = 0.971;
-    //public static double spindexerSlot5                 = 1.0;
+    public static double spindexerKickerInDelta         = 0.19;
+    public static double spindexerZeroPos               = 0.00;
+    public static double spindexerSlot1                 = 0.12;     //reverse direction value
+    public static double spindexerSlot2                 = 0.31;     //reverse direction value
+    public static double spindexerSlot3                 = 0.49;     //reverse direction value
+    public static double spindexerSlot4                 = 0.69;     //reverse direction value
+    public static double spindexerSlot5                 = 0.88;     //reverse direction value
+    public static double spindexerFullPos               = 1.0;
+    public static double[] spindexerPositions           = {spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5};
+
+    public static double shooterAdjusterMin                  = 0.0;
+    public static double shooterAdjusterMax                  = 0.5;
+
     //Speed
-    public static double kickerIn                       = 0.64;
-    public static double kickerOut                      = 0.28;
-    public static double shooterAdjusterMax             = 0.6;
-    public static double shooterAdjusterMin             = 0.82;
-    public static double intakeSpeed                    = 0.6;
+    public static double kickerRetract = 0.3;  /// value - retract back for spindexer reversing
+    public static double kickerExtend = 0.6; /// value - into the spindexer for pushing the ball up
+    public static double intakeSpeed                    = 0.85;
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.4;
     public static double shooterVel                     = 1900;
@@ -39,7 +42,7 @@ public class RobotActionConfig {
     //Intake capture timing
     public static double gateDownTime                   = 0.25;
     public static double SpindexerStartTime             = 0.7;
-    public static double SpindexerMoveTime              = 0.5;
+    public static double SpindexerMoveTime              = 0.2;
 
     public static double a                              = 0.0001320186;
     public static double b                              = -0.01961813;
@@ -57,8 +60,8 @@ public class RobotActionConfig {
     public static int[] purpleRangeHigh                 = {170, 230};
 
     public static double BALL_PRESENT_THRESHOLD_MM      = 50;
-    public static final double INTAKE_TICKS_PER_REV = 145.1;
-    public static final double INTAKE_RPM_CONVERSION = 60.0 / INTAKE_TICKS_PER_REV;
+    public static final double INTAKE_TICKS_PER_REV     = 145.1;
+    public static final double INTAKE_RPM_CONVERSION    = 60.0 / INTAKE_TICKS_PER_REV;
 
     //Motif IDs
     public static int GPPid                             = 21;
@@ -68,10 +71,10 @@ public class RobotActionConfig {
     public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, -64, 8, AngleUnit.DEGREES, 0);
     public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, -64, 8, AngleUnit.DEGREES, 0);
 
-    public static final double farEdge                  = 100.0;
-    public static final double far                      = 80.0;
-    public static final double mid                      = 70.0;
-    public static final double close                    = 55.0;
+    public static final double FAR_EDGE                 = 100.0;
+    public static final double FAR                      = 80.0;
+    public static final double MID                      = 70.0;
+    public static final double CLOSE                    = 55.0;
     public static final double closeEdge                = 50.0;
 
     public static final double FAR_ZONE_LOW             = 151.0;
@@ -81,4 +84,8 @@ public class RobotActionConfig {
     public static final double midPower                 = 0.73;
     public static final double closePower               = 0.75;
     public static final double OZPower                  = 0.5;
+    public static final double FZPower                  = 0.93;
+
+    public static final double turret_Center_X_Offset = 0.0127;
+    public static final double turret_Center_Y_Offset = 0.028575;
 }
