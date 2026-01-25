@@ -1,13 +1,9 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class FSMShooter {
     private final RobotHardware robot;
@@ -20,12 +16,14 @@ public class FSMShooter {
     private ElapsedTime rampTimer = new ElapsedTime();
     SHOOTERSTATE shooterState;
     SORTSHOOTERSTATE sortShooterState;
+    SHOOTERMOTORSTATE shootermotorstate;
     Spindexer spindexer;
     Spindexer.SLOT targetColour = Spindexer.SLOT.Purple;
 
     private double voltage;
     private double speed;
     private double power_setpoint;
+    private int shootCounter;
 
     /**
      * BUTTON FOR SHOOTING
@@ -41,16 +39,21 @@ public class FSMShooter {
     public enum SHOOTERSTATE {
         SHOOTER_IDLE,
         FLYWHEEL_RUNNING,
-        KICKER_OUT,
+        KICKER_EXTEND,
         SEQUENCE_SHOOTING,
+        KICKER_RETRACT,
         SHOOTER_STOP
     }
     public enum SORTSHOOTERSTATE {
         SHOOTER_IDLE,
         FLYWHEEL_RUNNING,
-        KICKER_OUT,
+        KICKER_EXTEND,
         SORT_SHOOTING,
         SHOOTER_STOP
+    }
+    public enum SHOOTERMOTORSTATE{
+        RUN,
+        STOP
     }
 
     //Constructor
@@ -70,53 +73,82 @@ public class FSMShooter {
         //shooterpowerstate = SHOOTERPOWERSTATE.AUTO_POWER;
         robot.topShooterMotor.setPower(0);
         robot.bottomShooterMotor.setPower(0);
+        shootermotorstate = SHOOTERMOTORSTATE.STOP;
 
     }
 
     public void SequenceShooterLoop() {
         voltage = robot.getBatteryVoltageRobust();
-        //speed = shooterPowerAngleCalculator.getPower();
-        speed = shooterPowerLUT.getPower();
-        power_setpoint = (speed*12.0)/voltage;
+        speed = 0.75;
+        //speed = shooterPowerLUT.getPower();
+        if (shootermotorstate == SHOOTERMOTORSTATE.RUN){
+            robot.topShooterMotor.setPower(speed);
+            robot.topShooterMotor.setPower(speed);
+        }
+        if (shootermotorstate == SHOOTERMOTORSTATE.STOP) {
+            robot.topShooterMotor.setPower(0);
+            robot.topShooterMotor.setPower(0);
+        }
+        //power_setpoint = (speed*12.0)/voltage;
+
         //ShooterPowerControl();
         // --- Global Controls (can be triggered from any state) ---
         switch (shooterState) {
             case SHOOTER_IDLE:
                //Idle state for shooter
                 robot.topShooterMotor.setPower(0);
+                robot.bottomShooterMotor.setPower(0);
                 shootTimer.reset();
+                //shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                 break;
             case FLYWHEEL_RUNNING:
-                if (shootTimer.seconds() > 0.5){ //wait for flywheel to spool up; needs testing
-                    shooterState = SHOOTERSTATE.KICKER_OUT;
+                shootermotorstate = SHOOTERMOTORSTATE.RUN;
+                shootCounter = 0;
+                if (shootTimer.seconds() > 0.1){ //wait for flywheel to spool up; needs testing
+                    shooterState = SHOOTERSTATE.KICKER_EXTEND;
+                    shootTimer.reset();
+
                 }
-                shootTimer.reset();
                 break;
-            case KICKER_OUT:
-                robot.spindexerServo.setPosition(spindexerSlot2);
-                //Always move to slot 2 after intaking. Add a bit to allow kicker servo to move in
-                if (shootTimer.seconds() > 0.1) {
-                    robot.kickerServo.setPosition(kickerIn);
-                }
-                if (shootTimer.seconds() > 0.2) {
+            case KICKER_EXTEND:
+                //Always move to slot 2 after intaking. Add a bit to allow kicker servo to move in{
+                    robot.kickerServo.setPosition(kickerExtend);
+                if (shootTimer.seconds() > 2.25) {
                     shooterState = SHOOTERSTATE.SEQUENCE_SHOOTING;
+                    shootTimer.reset();
                 }
                 break;
             case SEQUENCE_SHOOTING:
-                robot.topShooterMotor.setPower(speed);
-                spindexer.sequenceShoot();
-                shootTimer.reset();
+                if (shootTimer.seconds() > 0.5 * shootCounter) {
+                    shootCounter++;
+                    if (shootCounter < 4) {
+                        spindexer.RunToNext();
+                    }else{
+                        shooterState = SHOOTERSTATE.SHOOTER_STOP;
+                        shootTimer.reset();
+                    }
+                }
                 break;
-
             case SHOOTER_STOP:
                 //stop flywheel
-                robot.kickerServo.setPosition(kickerOut);
-                robot.topShooterMotor.setPower(0);
-                shooterState=SHOOTERSTATE.SHOOTER_IDLE;
+               // robot.kickerServo.setPosition(kickerExtend);
+                shootermotorstate = SHOOTERMOTORSTATE.STOP;
+                if (shootTimer.seconds() > 0.2) {
+                    //spindexer.RuntoPosition(0);
+                    shootTimer.reset();
+                    shooterState = SHOOTERSTATE.KICKER_RETRACT;
+                    //shooterState = SHOOTERSTATE.SHOOTER_IDLE;
+                }
                 break;
-
+            case KICKER_RETRACT:
+                if (shootTimer.seconds() > 1.0) {
+                    robot.kickerServo.setPosition(kickerRetract);
+                    shootTimer.reset();
+                    shooterState = SHOOTERSTATE.SHOOTER_IDLE;
+                }
+                break;
             default:
-                robot.topShooterMotor.setPower(0);
+                shootermotorstate = SHOOTERMOTORSTATE.STOP;
                 shooterState = SHOOTERSTATE.SHOOTER_STOP;
                 break;
         }
@@ -153,43 +185,6 @@ public class FSMShooter {
                 break;
         }
     }
-/*
-    /// May not need manual power or auto power switch
-    public enum SHOOTERPOWERSTATE {
-        AUTO_POWER,
-        MANUAL_POWER
-    }
-
-    public void ToggleShooterPower (){
-        if (shooterpowerstate == SHOOTERPOWERSTATE.AUTO_POWER){
-            shooterpowerstate = SHOOTERPOWERSTATE.MANUAL_POWER;
-        } else {
-            shooterpowerstate = SHOOTERPOWERSTATE.AUTO_POWER;
-        }
-    }
-
-    public void ShooterPowerSwitch () {
-        if (shooterpowerstate != SHOOTERPOWERSTATE.AUTO_POWER) {
-            robot.shooterMotor.setPower(shooterPower);
-        } else {
-            robot.shooterMotor.setPower(Range.clip(power_setpoint,0.3,1.0));
-        }
-    }
-
-    public void ShooterPowerControl () {
-        if (gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER) &&
-                gamepad_2.getButton(GamepadKeys.Button.BACK) &&
-                isButtonDebounced()
-        gamepadInput.getOperatorLbBComboPressed()|| gamepadInput.getDriverLbBComboPressed()) {
-            ToggleShooterPower();
-        }
-    }
-
-    public void SetShooterPowerState (SHOOTERPOWERSTATE state) {
-        this.shooterpowerstate = state;
-    }
-
- */
 
     public double getPower_setpoint () {
         return power_setpoint;

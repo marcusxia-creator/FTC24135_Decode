@@ -2,10 +2,9 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMIntake.IntakeStates;
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SHOOTERSTATE;
-import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SORTSHOOTERSTATE;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.close;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.farEdge;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.CLOSE;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.FAR_EDGE;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -19,7 +18,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
-import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
+import org.firstinspires.ftc.teamcode.TeleOps.Tests.BallColor;
 
 @TeleOp(name = "RED_TELEOP_MEET_2", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOp_RED_ALLIANCE extends OpMode {
@@ -62,6 +61,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     /// For alliance colour
     public static Alliance alliance;
 
+    public Limelight limelight;
+
 
     @Override
     public void init() {
@@ -74,59 +75,78 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.initPinpoint(); //Initialize pinpoint
         robot.initExternalIMU(); //Initialize external IMU
 
-        /// ---------------------------------------------------------------
+        /// 0. gamepad---------------------------------------------------------------
         gamepadCo1 = new GamepadEx(gamepad1);
         gamepadCo2 = new GamepadEx(gamepad2);
         gamepadInput = new GamepadInput(gamepadCo1,gamepadCo2);
-        spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
-        spindexer.runToSlot(0);
-        spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
-        /// ---------------------------------------------------------------
-        turret = new Turret(robot);
 
+        /// 1. robot drive-------------------------------------------------------------
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
-        shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
-        colorDetection = new ColorDetection(robot);
+        /// 2.spindexer-------------------------------------------------------------------
+        spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
+        //spindexer.runToSlot(0);
+        spindexer.RuntoPosition(0);
+        spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
+        /// 3. turret---------------------------------------------------------------
+        turret = new Turret(robot);
 
-        alliance = Alliance.RED_ALLIANCE;
-        shooterPowerAngleCalculator.setAlliance(true);
-
+        /// 4. shooter-------------------------------------------------------------
         FSMShooter = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, shooterPowerAngleCalculator,gamepadInput);
         FSMShooter.Init();
 
+        /// 4.1. power calculator for shooter------------------------------------------------------------
+        shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
+
+        /// 5. intake------------------------------------------------------------
         FSMIntake = new FSMIntake(gamepadCo1, gamepadCo2, robot, spindexer);
 
+        /// 6. color detection------------------------------------------------------------
+        colorDetection = new ColorDetection(robot);
+
+        /// 7. alliance selection-----------------------------------------------------------
+        alliance = Alliance.RED_ALLIANCE;
+        shooterPowerAngleCalculator.setAlliance(true);
+
+        /// 8. robot state----------------------------------------------------------
         actionStates = RobotActionState.Idle;
+
+        /// 9. limelight--------------------------------------------------------------
+        limelight = new Limelight(robot, turret);
+        limelight.initLimelight(24);
+        limelight.start();
     }
 
     @Override
     public void loop() {
-        //Read gamepad buttons for wasJustPressed events
+        ///Read gamepad buttons for wasJustPressed events
         gamepadCo1.readButtons();
         gamepadCo2.readButtons();
 
         gamepadInput.update();
+
         robot.pinpoint.update();
         ballColor = BallColor.fromHue(colorDetection.getHue());
 
         spindexerManualControl.loop();
-        //Continuous driving
+        ///Continuous driving
         robotDrive.DriveLoop();
-        turret.driveTurretMotor();
+        //turret.driveTurretMotor();
+
+        ///Changes the action state base on which button is pressed
+        buttonUpdate();
+
+        FSMIntake.loop();
+
         switch (actionStates){
             case Sequence_Shooting:
                 FSMShooter.SequenceShooterLoop();
-                FSMShooter.shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                 break;
             case Sort_Shooting:
                 FSMShooter.SortShooterLoop();
-                FSMShooter.sortShooterState = SORTSHOOTERSTATE.FLYWHEEL_RUNNING;
                 break;
             case Intaking:
-                FSMIntake.loop();
-                FSMIntake.intakeStates = IntakeStates.INTAKE_START;
                 break;
             case Idle:
                 FSMIntake.intakeStates = IntakeStates.INTAKE_IDLE;
@@ -134,20 +154,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                 break;
         }
 
-        if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-            //Reset robot red alliance pose
-            if (alliance == Alliance.RED_ALLIANCE) {
-                robot.pinpoint.setPosition(redAllianceResetPose);
-                robot.LED.setPosition(0.28);
-            }
-            //Reset robot blue alliance pose
-            if (alliance == Alliance.BLUE_ALLIANCE) {
-                robot.pinpoint.setPosition(blueAllianceResetPose);
-                robot.LED.setPosition(0.611);
-            }
-        }
         //LED alarm light
-        if (shooterPowerAngleCalculator.getDistance() <= close||shooterPowerAngleCalculator.getDistance() >= farEdge) {
+        if (shooterPowerAngleCalculator.getZone() ==0) {
             //Distance less than 54 inches, red alert
             robot.LED.setPosition(0.28);
         }
@@ -185,10 +193,12 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Intake State", FSMIntake.intakeStates);
         telemetry.addData("Sensor Distance", robot.distanceSensor.getDistance(DistanceUnit.MM));
         telemetry.addData("Sensor Color", colorDetection.getStableColor());
+        telemetry.addData("Sensor values", spindexer.colorValue);
         telemetry.addData("Slot 0", spindexer.slots[0]);
         telemetry.addData("Slot 1", spindexer.slots[1]);
         telemetry.addData("Slot 2", spindexer.slots[2]);
         telemetry.addData("Current Slot", spindexer.currentSlot);
+        telemetry.addData("Current Pos", spindexer.currentPos);
         telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
         telemetry.addLine("-----");
         telemetry.addData("Shooter State", FSMShooter.shooterState);
@@ -202,8 +212,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Shooter Motor Mode", robot.topShooterMotor.getMode());
         telemetry.addLine("-----");
         String MotifAvailable;
-        //telemetry.addData("desired angle", shooterPowerAngleCalculator.getAngle());
-        //telemetry.addData("desired robot angle", 90 + shooterPowerAngleCalculator.getAngle()); //If the desired robot angle equal to the current angle, then the robot is on course
         telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));
 
         telemetry.addData("Alliance", alliance);
@@ -211,6 +219,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
         //telemetry.addData("turret rotation in degrees", turret.getTurretAngle());
         telemetry.addData("turret target angle", turret.getTargetAngle());
+        telemetry.addLine("-----------------------------------------");
+        telemetry.addData("limelight output", limelight.normalizedPose2D(DistanceUnit.MM));
         telemetry.update();
     }
     public void telemetryManagerSimplified() {
@@ -231,5 +241,57 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
         telemetry.addLine("-----INTAKE-----");
         telemetry.addData("Intake State", FSMIntake.intakeStates);
+    }
+
+    private void buttonUpdate() {
+        //Button x - For sequence shooting
+        if (gamepadCo1.getButton(GamepadKeys.Button.X) || gamepadCo2.getButton(GamepadKeys.Button.X)
+                && isButtonDebounced()){
+            actionStates = RobotActionState.Sequence_Shooting;
+            FSMShooter.shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
+            FSMIntake.intakeStates = IntakeStates.INTAKE_STOP;
+        }
+
+        //Button y - For sort shooting
+        if (gamepadCo1.getButton(GamepadKeys.Button.Y) || gamepadCo2.getButton(GamepadKeys.Button.Y)
+                && isButtonDebounced()){
+           // actionStates = RobotActionState.Sort_Shooting;
+            FSMIntake.intakeStates = IntakeStates.INTAKE_STOP;
+            //FSMShooter.sortShooterState = SORTSHOOTERSTATE.SHOOTER_IDLE;
+        }
+        //Dpad left - For intaking
+        if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_LEFT) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_LEFT)
+                && isButtonDebounced()){
+            actionStates = RobotActionState.Intaking;
+            FSMIntake.intakeStates = IntakeStates.INTAKE_PREP;
+            FSMShooter.shooterState = SHOOTERSTATE.SHOOTER_IDLE;
+        }
+
+        //Dpad right - For reversing intake
+        if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_RIGHT) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_RIGHT)
+                && isButtonDebounced()) {
+            FSMIntake.intakeTimer.reset();
+            FSMIntake.reversing();
+        }
+
+        //Button B - idle state
+        if (gamepadCo1.getButton(GamepadKeys.Button.B) || gamepadCo2.getButton(GamepadKeys.Button.B)
+                && isButtonDebounced()) {
+            actionStates = RobotActionState.Idle;
+        }
+
+        //Dpad down for alliance selection
+        if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+            //Reset robot red alliance pose
+            if (alliance == Alliance.RED_ALLIANCE) {
+                robot.pinpoint.setPosition(redAllianceResetPose);
+                robot.LED.setPosition(0.28);
+            }
+            //Reset robot blue alliance pose
+            if (alliance == Alliance.BLUE_ALLIANCE) {
+                robot.pinpoint.setPosition(blueAllianceResetPose);
+                robot.LED.setPosition(0.611);
+            }
+        }
     }
 }

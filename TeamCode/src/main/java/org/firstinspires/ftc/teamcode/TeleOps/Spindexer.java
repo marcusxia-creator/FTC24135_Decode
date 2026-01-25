@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
 import org.firstinspires.ftc.teamcode.TeleOps.Tests.BallColor;
 
 public class Spindexer {
@@ -51,10 +52,6 @@ public class Spindexer {
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[currentPos]);
     }
 
-    public void SpindexerShootingEnd (){
-        robot.spindexerServo.setPosition(spindexerZeroPos);
-    }
-
     /**
      * Processes colour sensor data, and saves data to current slot (including an empty value)
      * @param colorSensor The robot's colour sensor object
@@ -78,6 +75,18 @@ public class Spindexer {
                 slots[currentPos] = SLOT.Unknown;
             }
         }
+    }
+
+    public void writeToCurrent(BallColor ballcolor) {
+        if (ballcolor.isKnown()) {
+            if (ballcolor == BallColor.GREEN) {
+                slots[currentPos] = Spindexer.SLOT.Green;
+            } else if (ballcolor == BallColor.PURPLE) {
+                //Green*/
+                slots[currentPos] = Spindexer.SLOT.Green;}
+        } else {
+                slots[currentPos] = SLOT.Unknown;
+            }
     }
 
     /**
