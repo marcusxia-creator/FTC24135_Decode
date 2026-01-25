@@ -79,17 +79,17 @@ public class FSMIntake {
             //ball goes into spindxer
             case INTAKE_CAPTURE:
                 //robot.intakeMotor.setPower(intakeSpeed)
-                if (!recorded) {
-                    spindexer.writeToCurrent(robot.colorSensor, robot.distanceSensor);
-                    spindexer.RunToNext();
-                    recorded = true;
-                }
                 if (intakeTimer.seconds() > SpindexerMoveTime) {
-                    if (spindexer.checkFor(Spindexer.SLOT.Empty)) {
-                        intakeStates = IntakeStates.INTAKE_START;
-                    } else {
-                        intakeStates = IntakeStates.INTAKE_STOP;
+                    if (!recorded) {
+                        spindexer.writeToCurrent(robot.colorSensor, robot.distanceSensor);
+                        spindexer.RunToNext();
+                        recorded = true;
                     }
+                }
+                if (spindexer.checkFor(Spindexer.SLOT.Empty)) {
+                        intakeStates = IntakeStates.INTAKE_START;
+                } else {
+                        intakeStates = IntakeStates.INTAKE_STOP;
                 }
                 break;
 

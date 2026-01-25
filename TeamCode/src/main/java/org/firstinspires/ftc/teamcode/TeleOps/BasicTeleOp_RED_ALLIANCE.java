@@ -120,7 +120,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
     @Override
     public void loop() {
-        //Read gamepad buttons for wasJustPressed events
+        ///Read gamepad buttons for wasJustPressed events
         gamepadCo1.readButtons();
         gamepadCo2.readButtons();
 
@@ -130,11 +130,11 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         ballColor = BallColor.fromHue(colorDetection.getHue());
 
         spindexerManualControl.loop();
-        //Continuous driving
+        ///Continuous driving
         robotDrive.DriveLoop();
         //turret.driveTurretMotor();
 
-        //Changes the action state base on which button is pressed
+        ///Changes the action state base on which button is pressed
         buttonUpdate();
 
         FSMIntake.loop();
