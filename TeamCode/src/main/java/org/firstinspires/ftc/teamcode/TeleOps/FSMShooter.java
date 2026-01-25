@@ -17,7 +17,7 @@ public class FSMShooter {
     SHOOTERSTATE shooterState;
     SORTSHOOTERSTATE sortShooterState;
     SHOOTERMOTORSTATE shootermotorstate;
-    Spindexer spindexer;
+    SpindexerSimp spindexer;
     Spindexer.SLOT targetColour = Spindexer.SLOT.Purple;
 
     private double voltage;
@@ -57,7 +57,7 @@ public class FSMShooter {
     }
 
     //Constructor
-    public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, Spindexer spindexer, LUTPowerCalculator shooterPowerLUT,GamepadInput gamepadInput) {
+    public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, SpindexerSimp spindexer, LUTPowerCalculator shooterPowerLUT,GamepadInput gamepadInput) {
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
         this.robot = robot;
@@ -107,7 +107,6 @@ public class FSMShooter {
                 if (shootTimer.seconds() > 0.1){ //wait for flywheel to spool up; needs testing
                     shooterState = SHOOTERSTATE.KICKER_EXTEND;
                     shootTimer.reset();
-
                 }
                 break;
             case KICKER_EXTEND:
@@ -134,15 +133,18 @@ public class FSMShooter {
                // robot.kickerServo.setPosition(kickerExtend);
                 shootermotorstate = SHOOTERMOTORSTATE.STOP;
                 if (shootTimer.seconds() > 0.2) {
-                    //spindexer.RuntoPosition(0);
+                    spindexer.resetSlot();
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.KICKER_RETRACT;
                     //shooterState = SHOOTERSTATE.SHOOTER_IDLE;
                 }
                 break;
             case KICKER_RETRACT:
-                if (shootTimer.seconds() > 1.0) {
+                if (shootTimer.seconds() > 0.5) {
                     robot.kickerServo.setPosition(kickerRetract);
+                }
+                if (shootTimer.seconds() > 0.7){
+                    spindexer.RuntoPosition(0);
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.SHOOTER_IDLE;
                 }

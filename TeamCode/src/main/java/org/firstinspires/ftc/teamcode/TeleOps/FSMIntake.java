@@ -38,11 +38,11 @@ public class FSMIntake {
     private final GamepadEx gamepad_2;
     private double intakeRPM;
     private boolean reversing = false;
-    Spindexer spindexer;
+    SpindexerSimp spindexer;
 
     boolean recorded;
 
-    public FSMIntake(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, Spindexer spindexer) {
+    public FSMIntake(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, SpindexerSimp spindexer) {
         this.robot = robot;
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
@@ -52,75 +52,83 @@ public class FSMIntake {
 
     public void loop() {
         switch (intakeStates) {
-            //start of intake FSM
             case INTAKE_IDLE:
                 reversing = false;
                 robot.intakeMotor.setPower(0);
                 break;
-            //start intake motor
+
             case INTAKE_PREP:
+                // Ensure we start at a clean position
                 spindexer.RuntoPosition(0);
                 intakeTimer.reset();
                 intakeStates = IntakeStates.INTAKE_START;
                 break;
+
             case INTAKE_START:
                 boolean jammed = isIntakeJammmed();
-                if (!jammed) {
-                    if (intakeTimer.seconds() > 0.1) {
-                        robot.intakeMotor.setPower(intakeSpeed);
-                    }
-                }
-                HandleIntaking(jammed);
+                HandleIntaking(jammed); // This manages motor power internally
+
+                // Wait for ball to be detected in the intake mouth
                 if (robot.distanceSensor.getDistance(DistanceUnit.MM) < distanceThreshold) {
-                    //recorded = false;
                     intakeTimer.reset();
                     intakeStates = IntakeStates.INTAKE_CAPTURE;
                 }
                 break;
-            //ball goes into spindxer
+
             case INTAKE_CAPTURE:
-                if (intakeTimer.seconds()>0.1){
-                    spindexer.writeToCurrent(robot.colorSensor, robot.distanceSensor);
+                if (intakeTimer.seconds() < 0.05) {
+                    spindexer.clearVoteBuffer();
                 }
-                if (intakeTimer.seconds() > 0.4) {
-                    if (spindexer.checkFor(Spindexer.SLOT.Empty)) {
-                        spindexer.RunToNext();
-                        intakeStates = IntakeStates.INTAKE_RUNTONEXT;
+                else if (intakeTimer.seconds() < 0.25) {
+                    // Collect as many samples as possible in 250ms
+                    spindexer.addVoteSample(robot.colorSensor, robot.distanceSensor);
+                }
+                else {
+                    // Decide the color of the current slot
+                    spindexer.finalizeCurrentSlot();
+
+                    // CHECK: Are all 3 slots filled with something other than Empty?
+                    // We check for Green OR Purple. If count is 3, we are full.
+                    if (spindexer.count(SpindexerSimp.SLOT.Empty) == 0) {
                         intakeTimer.reset();
-                    } else {
                         intakeStates = IntakeStates.INTAKE_STOP;
+                    } else {
+                        // Move to next physical slot and wait for next ball
+                        spindexer.RunToNext();
                         intakeTimer.reset();
+                        intakeStates = IntakeStates.INTAKE_RUNTONEXT;
                     }
                 }
                 break;
+
             case INTAKE_RUNTONEXT:
-                if(intakeTimer.seconds()>0.2) {
+                // Small delay to allow the servo to physically move before starting the motor again
+                if (intakeTimer.seconds() > 0.3) {
                     intakeStates = IntakeStates.INTAKE_START;
                 }
                 break;
 
             case INTAKE_STOP:
                 robot.intakeMotor.setPower(0);
-                if(intakeTimer.seconds()>0.1 && intakeTimer.seconds()<0.2 ){
-                    robot.spindexerServo.setPosition(0.4);
-                }
-                if(intakeTimer.seconds()>0.4 && intakeTimer.seconds()<0.5 ){
-                    robot.spindexerServo.setPosition(0.3);
-                }
-                if(intakeTimer.seconds()>0.7 && intakeTimer.seconds()<0.8 ){
-                    robot.spindexerServo.setPosition(0.2);
-                }
-                if(intakeTimer.seconds()>1.0){
+                double time = intakeTimer.seconds();
+
+                // Keep your sequence logic for spindexer parking
+                if (time > 1.0) {
                     spindexer.RuntoPosition(0);
                     intakeStates = IntakeStates.INTAKE_IDLE;
+                } else if (time > 0.7) {
+                    robot.spindexerServo.setPosition(0.2);
+                } else if (time > 0.4) {
+                    robot.spindexerServo.setPosition(0.3);
+                } else if (time > 0.1) {
+                    robot.spindexerServo.setPosition(0.4);
                 }
                 break;
 
             case INTAKE_REVERSE:
-                if (intakeTimer.seconds()>0.5){
-                /// stop intake motor for reverse
-                robot.intakeMotor.setPower(0);
-                intakeStates = IntakeStates.INTAKE_IDLE;
+                if (intakeTimer.seconds() > 0.5) {
+                    robot.intakeMotor.setPower(0);
+                    intakeStates = IntakeStates.INTAKE_IDLE;
                 }
                 break;
         }

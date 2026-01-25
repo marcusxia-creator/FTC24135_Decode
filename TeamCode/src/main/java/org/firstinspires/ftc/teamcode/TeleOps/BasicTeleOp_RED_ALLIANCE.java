@@ -48,7 +48,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     */
     private SpindexerManualControl spindexerManualControl;
 
-    private Spindexer spindexer;
+    //private Spindexer spindexer;
+    private SpindexerSimp spindexer;
 
     private LUTPowerCalculator shooterPowerAngleCalculator;
 
@@ -85,10 +86,10 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robotDrive.Init();
 
         /// 2.spindexer-------------------------------------------------------------------
-        spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
-        //spindexer.runToSlot(0);
-        spindexer.RuntoPosition(0);
-        spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
+        spindexer = new SpindexerSimp(robot, SpindexerSimp.SLOT.Empty, SpindexerSimp.SLOT.Empty, SpindexerSimp.SLOT.Empty, 0); //Change inits for comp
+
+        //spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
+        // spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
         /// 3. turret---------------------------------------------------------------
         turret = new Turret(robot);
 
@@ -197,7 +198,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Slot 0", spindexer.slots[0]);
         telemetry.addData("Slot 1", spindexer.slots[1]);
         telemetry.addData("Slot 2", spindexer.slots[2]);
-        telemetry.addData("Current Slot", spindexer.currentSlot);
         telemetry.addData("Current Pos", spindexer.currentPos);
         telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
         telemetry.addLine("-----");
@@ -228,7 +228,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Slot 0", spindexer.slots[0]);
         telemetry.addData("Slot 1", spindexer.slots[1]);
         telemetry.addData("Slot 2", spindexer.slots[2]);
-        telemetry.addData("Current Slot", spindexer.currentSlot);
         telemetry.addLine("-----SHOOTER-----");
         telemetry.addData("Shooter State", FSMShooter.shooterState);
         String MotifEnabled;
