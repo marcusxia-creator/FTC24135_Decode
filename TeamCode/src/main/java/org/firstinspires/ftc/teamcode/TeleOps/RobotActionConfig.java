@@ -12,12 +12,12 @@ public class RobotActionConfig {
     public static double gateUp                         = 0.39;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
     public static double spindexerKickerInDelta         = 0.02;
-    public static double spindexerZeroPos = 0.00;
-    public static double spindexerSlot1                 = 0.13;
-    public static double spindexerSlot2                 = 0.32;
-    public static double spindexerSlot3                 = 0.51;
-    public static double spindexerSlot4                 = 0.7;
-    public static double spindexerSlot5                 = 0.885;
+    public static double spindexerZeroPos               = 0.00;
+    public static double spindexerSlot1                 = 0.12;
+    public static double spindexerSlot2                 = 0.31;
+    public static double spindexerSlot3                 = 0.49;
+    public static double spindexerSlot4                 = 0.69;
+    public static double spindexerSlot5                 = 0.88;
     public static double spindexerFullPos = 1.0;
     public static double[] spindexerPositions           = {spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5};
     public static double angleResetPos                  = 0.0;
@@ -26,7 +26,7 @@ public class RobotActionConfig {
     //Speed
     public static double kickerRetract = 0.3;  /// value - retract back for spindexer reversing
     public static double kickerExtend = 0.6; /// value - into the spindexer for pushing the ball up
-    public static double intakeSpeed                    = 0.7;
+    public static double intakeSpeed                    = 0.85;
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.4;
     public static double shooterVel                     = 1900;

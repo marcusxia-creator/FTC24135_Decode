@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.TeleOps.Tests.BallColor;
 
 public class Spindexer {
     public enum SLOT{
@@ -28,6 +29,8 @@ public class Spindexer {
     public int currentSlot;
     //For jams
     public int prevPos;
+    public double colorValue;
+    public BallColor ballColor;
 
     Spindexer(RobotHardware robot, SLOT slot0,SLOT slot1,SLOT slot2, int currentPos){
         //Constructor
@@ -36,6 +39,81 @@ public class Spindexer {
         this.currentPos = currentPos;
         runToPos(currentPos);
     }
+
+    public void SpindexerBegin(int n){
+        currentPos = n;
+        robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[currentPos]);
+    }
+    public void RunToNext(){
+        //prevPos = currentPos;
+        currentPos = currentPos+1;
+        //currentPos = Math.floorMod(currentPos,3);
+        robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[currentPos]);
+    }
+
+    /**
+     * Processes colour sensor data, and saves data to current slot (including an empty value)
+     * @param colorSensor The robot's colour sensor object
+     * @param distanceSensor The robot's distance sensor object
+     */
+    public void writeToCurrent(ColorSensor colorSensor, DistanceSensor distanceSensor) {
+        float[] hsvValues = new float[3];
+        Color.RGBToHSV(colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, hsvValues);
+        colorValue = hsvValues[0];
+
+        if (distanceSensor.getDistance(DistanceUnit.MM)<distanceThreshold) {
+            if ((greenRangeLow[0] < hsvValues[0] && hsvValues[0] < greenRangeLow[1]) ||
+                    greenRangeHigh[0] < hsvValues[0] && hsvValues[0] < greenRangeHigh[1]) {
+                //Green*/
+                slots[currentPos] = Spindexer.SLOT.Green;
+                //writeToCurrent(Spindexer.SLOT.Green);
+            } else if ((purpleRangeLow[0] < hsvValues[0] && hsvValues[0] < purpleRangeLow[1]) ||
+                    purpleRangeHigh[0] < hsvValues[0] && hsvValues[0] < purpleRangeHigh[1]) {
+                //Purple
+                slots[currentPos] = Spindexer.SLOT.Purple;
+                // writeToCurrent(Spindexer.SLOT.Purple);
+            } else {
+                slots[currentPos] = SLOT.Empty;
+                //writeToCurrent(SLOT.Empty);
+            }
+        }
+    }
+
+    /**
+     * @return {@code TRUE} if there is at least one instance of the given SLOT object {@code a} in the indexer, else {@code FALSE}
+     */
+    public Boolean checkFor(SLOT a){
+        //checks
+        return count(a)>0;
+    }
+
+    /**
+     * Counts the total number of spindexer slots that currently contain any of the inputed SLOTS
+     */
+    public int count(SLOT... a){
+        int counter = 0;
+        for(SLOT slot:a){
+            counter+=count(slot);
+        }
+        return counter;
+    }
+
+    /**
+     * Counts the instances of SLOT {@code a} currently recorded in the spindexer
+     */
+    public int count(SLOT a){
+        int counter = 0;
+        for(SLOT slot:slots){
+            if(slot==a){
+                counter++;
+            }
+        }
+        return counter;
+    }
+
+    /**
+     * -------------------------------------------------------------------------------------------------
+     */
 
     public void calculateSlot(){
         if(currentPos==0) {
@@ -61,33 +139,7 @@ public class Spindexer {
         }
     }
 
-    /**
-     * Processes colour sensor data, and saves data to current slot (including an empty value)
-     * @param colorSensor The robot's colour sensor object
-     * @param distanceSensor The robot's distance sensor object
-     */
-    public void writeToCurrent(ColorSensor colorSensor, DistanceSensor distanceSensor) {
-        float[] hsvValues = new float[3];
-        Color.RGBToHSV(colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, hsvValues);
 
-        if (distanceSensor.getDistance(DistanceUnit.MM)<distanceThreshold) {
-            if ((greenRangeLow[0] < hsvValues[0] && hsvValues[0] < greenRangeLow[1]) ||
-                    greenRangeHigh[0] < hsvValues[0] && hsvValues[0] < greenRangeHigh[1]) {
-                //Green
-                slots[currentSlot] = Spindexer.SLOT.Green;
-                //writeToCurrent(Spindexer.SLOT.Green);
-            } else if ((purpleRangeLow[0] < hsvValues[0] && hsvValues[0] < purpleRangeLow[1]) ||
-                    purpleRangeHigh[0] < hsvValues[0] && hsvValues[0] < purpleRangeHigh[1]) {
-                //Purple
-                slots[currentSlot] = Spindexer.SLOT.Purple;
-               // writeToCurrent(Spindexer.SLOT.Purple);
-            }
-        }
-        else{
-            slots[currentSlot] = SLOT.Empty;
-            //writeToCurrent(SLOT.Empty);
-        }
-    }
     /**
     public Boolean runToSlot(SLOT a){
         if(checkFor(a)){
@@ -127,36 +179,9 @@ public class Spindexer {
         return slotColour(currentPos);
     }
 
-    /**
-     * Counts the instances of SLOT {@code a} currently recorded in the spindexer
-     */
-    public int count(SLOT a){
-        int counter = 0;
-        for(SLOT slot:slots){
-            if(slot==a){
-                counter++;
-            }
-        }
-        return counter;
-    }
-    /**
-     * Counts the total number of spindexer slots that currently contain any of the inputed SLOTS
-     */
-    public int count(SLOT... a){
-        int counter = 0;
-        for(SLOT slot:a){
-            counter+=count(slot);
-        }
-        return counter;
-    }
 
-    /**
-     * @return {@code TRUE} if there is at least one instance of the given SLOT object {@code a} in the indexer, else {@code FALSE}
-     */
-    public Boolean checkFor(SLOT a){
-        //checks
-        return count(a)>0;
-    }
+
+
 
     /**
      * @return {@code TRUE} if there is at least one instance of all given SLOT objects in the indexer, else {@code FALSE}
@@ -227,15 +252,7 @@ public class Spindexer {
     public void IntakeNext(){
         runToPos(currentPos );
     }
-    public void SpindexerBegin(int n){
-        robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[n]);
-    }
-    public void RunToNext(){
-        //prevPos = currentPos;
-        currentPos = currentPos+1;
-        //currentPos = Math.floorMod(currentPos,3);
-        robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[currentPos]);
-    }
+
     public void KickerRetract(){
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[0]);
     }

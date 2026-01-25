@@ -187,7 +187,7 @@ public class RobotHardware {
         backRightMotor.setPower(0);
 
         /// set spindexer servo
-        spindexerServo.setDirection(Servo.Direction.FORWARD);
+        spindexerServo.setDirection(Servo.Direction.REVERSE);
     }// End of init
 
     // Initialize IMU

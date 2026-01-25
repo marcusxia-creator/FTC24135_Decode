@@ -87,7 +87,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
         /// 2.spindexer-------------------------------------------------------------------
         spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
-        spindexer.runToSlot(0);
+        //spindexer.runToSlot(0);
+        spindexer.SpindexerBegin(0);
         spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
         /// 3. turret---------------------------------------------------------------
         turret = new Turret(robot);
@@ -193,6 +194,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Intake State", FSMIntake.intakeStates);
         telemetry.addData("Sensor Distance", robot.distanceSensor.getDistance(DistanceUnit.MM));
         telemetry.addData("Sensor Color", colorDetection.getStableColor());
+        telemetry.addData("Sensor values", spindexer.colorValue);
         telemetry.addData("Slot 0", spindexer.slots[0]);
         telemetry.addData("Slot 1", spindexer.slots[1]);
         telemetry.addData("Slot 2", spindexer.slots[2]);

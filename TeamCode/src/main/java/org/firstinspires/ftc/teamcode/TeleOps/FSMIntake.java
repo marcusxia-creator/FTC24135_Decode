@@ -21,6 +21,7 @@ public class FSMIntake {
         INTAKE_PREP,
         INTAKE_START,
         INTAKE_CAPTURE,
+        INTAKE_RUNTONEXT,
         INTAKE_STOP,
         INTAKE_REVERSE,
     }
@@ -71,29 +72,30 @@ public class FSMIntake {
                 }
                 HandleIntaking(jammed);
                 if (robot.distanceSensor.getDistance(DistanceUnit.MM) < distanceThreshold) {
-                    recorded = false;
+                    //recorded = false;
                     intakeTimer.reset();
                     intakeStates = IntakeStates.INTAKE_CAPTURE;
                 }
                 break;
             //ball goes into spindxer
             case INTAKE_CAPTURE:
-                //robot.intakeMotor.setPower(intakeSpeed)
-                if (intakeTimer.seconds() > SpindexerMoveTime) {
-                    if (!recorded) {
-                        spindexer.writeToCurrent(robot.colorSensor, robot.distanceSensor);
+                if (intakeTimer.seconds()>0.1){
+                    spindexer.writeToCurrent(robot.colorSensor, robot.distanceSensor);
+                }
+                if (intakeTimer.seconds() > 0.4) {
+                    if (spindexer.checkFor(Spindexer.SLOT.Empty)) {
                         spindexer.RunToNext();
-                        recorded = true;
+                        intakeStates = IntakeStates.INTAKE_RUNTONEXT;
+                        intakeTimer.reset();
+                    } else {
+                        intakeStates = IntakeStates.INTAKE_STOP;
                     }
                 }
-
-                if (spindexer.checkFor(Spindexer.SLOT.Empty)) {
-                        intakeStates = IntakeStates.INTAKE_START;
-                } else {
-                        intakeStates = IntakeStates.INTAKE_STOP;
+                break;
+            case INTAKE_RUNTONEXT:
+                if(intakeTimer.seconds()>0.2) {
+                    intakeStates = IntakeStates.INTAKE_START;
                 }
-
-
                 break;
 
             case INTAKE_STOP:
