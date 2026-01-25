@@ -197,6 +197,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Slot 1", spindexer.slots[1]);
         telemetry.addData("Slot 2", spindexer.slots[2]);
         telemetry.addData("Current Slot", spindexer.currentSlot);
+        telemetry.addData("Current Pos", spindexer.currentPos);
         telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
         telemetry.addLine("-----");
         telemetry.addData("Shooter State", FSMShooter.shooterState);
