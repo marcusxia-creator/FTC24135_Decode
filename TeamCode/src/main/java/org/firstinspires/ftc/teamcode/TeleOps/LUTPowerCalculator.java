@@ -64,7 +64,7 @@ public class LUTPowerCalculator {
         actualGoalPose = isRedAlliance ? redGoalPose : blueGoalPose;
     }
 
-    private double updateDistanceAndZone() {
+    private void updateDistanceAndZone() {
         double dx = robot.pinpoint.getPosX(DistanceUnit.INCH) - actualGoalPose.getX(DistanceUnit.INCH);
         double dy = robot.pinpoint.getPosY(DistanceUnit.INCH) - actualGoalPose.getY(DistanceUnit.INCH);
         distance = Math.hypot(dx, dy);
@@ -74,7 +74,7 @@ public class LUTPowerCalculator {
         else if (distance > FAR && distance <= FAR_EDGE) zone = 3;
         else if (distance > FAR_ZONE_LOW && distance <= FAR_ZONE_HIGH) zone = 4;
         else zone = 0;
-        return distance;
+        return ;
     }
 
     public double getPower() {
@@ -113,6 +113,10 @@ public class LUTPowerCalculator {
     }
     public int getZone(){
         return zone;
+    }
+
+    public double getDistance(){
+        return distance;
     }
     public double getShooterAngle() {
         int safeZone = Math.max(0, Math.min(zone, 3));

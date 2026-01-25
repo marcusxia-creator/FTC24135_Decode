@@ -216,7 +216,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
         telemetry.addData("Alliance", alliance);
         telemetry.addData("Pose2D", robot.pinpoint.getPosition());
-        telemetry.addData("distance to goal", shooterPowerAngleCalculator.());
+        telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
         //telemetry.addData("turret rotation in degrees", turret.getTurretAngle());
         telemetry.addData("turret target angle", turret.getTargetAngle());
         telemetry.addLine("-----------------------------------------");
