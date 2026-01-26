@@ -15,8 +15,8 @@ public class RobotActionConfig {
     public static double spindexerSlot1                 = 0.52;
     public static double spindexerSlot2                 = 0.96;
     public static double spindexerReset                 = 0.0;
-    public static double rampDownPos                    = 0.51; //0.40 12Kg servo, 0.385 for axon micro
-    public static double rampUpPos                      = 0.28; //0.18 12Kg servo, 0.215 for axon micro
+    public static double rampDownPos                    = 0.53; //0.40 12Kg servo, 0.385 for axon micro
+    public static double rampUpPos                      = 0.25; //0.18 12Kg servo, 0.215 for axon micro
     public static double angleResetPos                  = 0.0;
     //Speed
     public static double intakeSpeed                    = 0.6;
