@@ -94,39 +94,30 @@ public class FSMIntake {
                 break;
             //ball goes into spindxer
             case INTAKE_CAPTURE:
-                jammed = isIntakeJammmed();
-                if (jammed) {
-                    HandleIntaking(true);
-                } else {
-                    robot.intakeMotor.setPower(intakeSpeed);
+                if (intakeTimer.seconds() < 0.05) {
+                    spindexer.clearVoteBuffer();
                 }
-
-                if (colorDetectionStarted) {
-                    colorDetection.updateDetection();
-
-                    if (!colorRecorded && colorDetection.isColorStable()) {
-                        detectedColor = colorDetection.getStableColor();
-                        // Write to spindexer ONCE
-                        spindexer.writeToCurrent(detectedColor);
-                        colorRecorded = true;
-                    }
+                else if (intakeTimer.seconds() < 0.35) {
+                    // Collect as many samples as possible in 250ms
+                    spindexer.addVoteSample(robot.colorSensor, robot.distanceSensor);
                 }
+                else {
+                    // Decide the color of the current slot
+                    spindexer.finalizeCurrentSlot();
 
-                if (intakeTimer.seconds() > 0.4) {
-                    if (spindexer.checkFor(Spindexer.SLOT.Empty)) {
-                        spindexer.RunToNext();
-                        intakeStates = IntakeStates.INTAKE_RUNTONEXT;
+                    // CHECK: Are all 3 slots filled with something other than Empty?
+                    // We check for Green OR Purple. If count is 3, we are full.
+                    if (spindexer.count(Spindexer.SLOT.Empty) == 0) {
                         intakeTimer.reset();
-                        // stop / reset detection for next cycle
-                        colorDetectionStarted = false;
-                    } else {
                         intakeStates = IntakeStates.INTAKE_STOP;
+                    } else {
+                        // Move to next physical slot and wait for next ball
+                        spindexer.RunToNext();
                         intakeTimer.reset();
-                        colorDetectionStarted = false;
+                        intakeStates = IntakeStates.INTAKE_RUNTONEXT;
                     }
                 }
                 break;
-
             case INTAKE_RUNTONEXT:
                 robot.intakeMotor.setPower(0);
                 spindexer.RunToNext();
@@ -138,25 +129,26 @@ public class FSMIntake {
 
             case INTAKE_STOP:
                 robot.intakeMotor.setPower(0);
-                if(intakeTimer.seconds()>0.1 && intakeTimer.seconds()<0.2 ){
-                    robot.spindexerServo.setPosition(0.4);
-                }
-                if(intakeTimer.seconds()>0.4 && intakeTimer.seconds()<0.5 ){
-                    robot.spindexerServo.setPosition(0.3);
-                }
-                if(intakeTimer.seconds()>0.7 && intakeTimer.seconds()<0.8 ){
-                    robot.spindexerServo.setPosition(0.2);
-                }
-                if(intakeTimer.seconds()>1.0){
+                double time = intakeTimer.seconds();
+
+                // Keep your sequence logic for spindexer parking
+                if (time > 1.0) {
                     spindexer.RuntoPosition(0);
                     intakeStates = IntakeStates.INTAKE_IDLE;
+                } else if (time > 0.7) {
+                    robot.spindexerServo.setPosition(0.2);
+                } else if (time > 0.4) {
+                    robot.spindexerServo.setPosition(0.3);
+                } else if (time > 0.1) {
+                    robot.spindexerServo.setPosition(0.4);
                 }
                 break;
 
             case INTAKE_REVERSE:
-                if (intakeTimer.seconds()>0.5){
+                if (intakeTimer.seconds()<1.0){
                 /// stop intake motor for reverse
-                robot.intakeMotor.setPower(0);
+                robot.intakeMotor.setPower(ejectSpeed);}
+                else{
                 intakeStates = IntakeStates.INTAKE_IDLE;
                 }
                 break;
