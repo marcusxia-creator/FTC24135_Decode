@@ -146,7 +146,7 @@ public class FSMShooter {
                 if (shootTimer.seconds() > 0.5) {
                     robot.kickerServo.setPosition(kickerRetract);
                 }
-                if (shootTimer.seconds() > 0.7){
+                if (shootTimer.seconds() > 1.0){
                     spindexer.RuntoPosition(0);
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.SHOOTER_IDLE;
