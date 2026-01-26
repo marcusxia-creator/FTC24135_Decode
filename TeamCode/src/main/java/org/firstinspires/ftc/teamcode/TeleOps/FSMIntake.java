@@ -126,8 +126,9 @@ public class FSMIntake {
                 break;
 
             case INTAKE_REVERSE:
-                if (intakeTimer.seconds() > 0.5) {
-                    robot.intakeMotor.setPower(0);
+                if (intakeTimer.seconds() < 0.5) {
+                    robot.intakeMotor.setPower(ejectSpeed);
+                }else{
                     intakeStates = IntakeStates.INTAKE_IDLE;
                 }
                 break;

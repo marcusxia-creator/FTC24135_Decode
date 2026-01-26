@@ -142,11 +142,13 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         switch (actionStates){
             case Sequence_Shooting:
                 FSMShooter.SequenceShooterLoop();
+                FSMIntake.intakeStates = IntakeStates.INTAKE_STOP;
                 break;
             case Sort_Shooting:
                 FSMShooter.SortShooterLoop();
                 break;
             case Intaking:
+                FSMShooter.shooterState = SHOOTERSTATE.SHOOTER_IDLE;
                 break;
             case Idle:
                 FSMIntake.intakeStates = IntakeStates.INTAKE_IDLE;
@@ -252,7 +254,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                 && isButtonDebounced()){
             actionStates = RobotActionState.Sequence_Shooting;
             FSMShooter.shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
-            FSMIntake.intakeStates = IntakeStates.INTAKE_STOP;
+
         }
 
         //Button y - For sort shooting
@@ -267,7 +269,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                 && isButtonDebounced()){
             actionStates = RobotActionState.Intaking;
             FSMIntake.intakeStates = IntakeStates.INTAKE_PREP;
-            FSMShooter.shooterState = SHOOTERSTATE.SHOOTER_IDLE;
         }
 
         //Dpad right - For reversing intake
