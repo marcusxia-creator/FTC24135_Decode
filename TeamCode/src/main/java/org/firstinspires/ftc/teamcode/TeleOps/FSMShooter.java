@@ -11,9 +11,9 @@ public class FSMShooter {
     private LUTPowerCalculator shooterPowerLUT;
     private final GamepadEx gamepad_1;
     private final GamepadEx gamepad_2;
-    private ElapsedTime debounceTimer = new ElapsedTime();
+
     private ElapsedTime shootTimer = new ElapsedTime();
-    private ElapsedTime rampTimer = new ElapsedTime();
+
     SHOOTERSTATE shooterState;
     SORTSHOOTERSTATE sortShooterState;
     SHOOTERMOTORSTATE shootermotorstate;
