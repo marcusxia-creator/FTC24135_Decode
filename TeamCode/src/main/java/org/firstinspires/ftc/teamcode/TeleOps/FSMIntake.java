@@ -159,7 +159,6 @@ public class FSMIntake {
         }
     }
 
-
     private boolean isIntakeJammmed() {
         double intakeTicksPerSecond = robot.intakeMotor.getVelocity();
         intakeRPM = intakeTicksPerSecond * INTAKE_RPM_CONVERSION;
