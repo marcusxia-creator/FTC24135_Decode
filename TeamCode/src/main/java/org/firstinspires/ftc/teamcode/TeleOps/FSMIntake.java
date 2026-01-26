@@ -79,7 +79,7 @@ public class FSMIntake {
                 if (intakeTimer.seconds() < 0.05) {
                     spindexer.clearVoteBuffer();
                 }
-                else if (intakeTimer.seconds() < 0.25) {
+                else if (intakeTimer.seconds() < 0.35) {
                     // Collect as many samples as possible in 250ms
                     spindexer.addVoteSample(robot.colorSensor, robot.distanceSensor);
                 }

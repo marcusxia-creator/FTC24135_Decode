@@ -93,12 +93,12 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         /// 3. turret---------------------------------------------------------------
         turret = new Turret(robot);
 
+        /// 4.1. power calculator for shooter------------------------------------------------------------
+        shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
+
         /// 4. shooter-------------------------------------------------------------
         FSMShooter = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, shooterPowerAngleCalculator,gamepadInput);
         FSMShooter.Init();
-
-        /// 4.1. power calculator for shooter------------------------------------------------------------
-        shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
 
         /// 5. intake------------------------------------------------------------
         FSMIntake = new FSMIntake(gamepadCo1, gamepadCo2, robot, spindexer);
@@ -130,7 +130,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.pinpoint.update();
         ballColor = BallColor.fromHue(colorDetection.getHue());
 
-        spindexerManualControl.loop();
         ///Continuous driving
         robotDrive.DriveLoop();
         //turret.driveTurretMotor();
@@ -160,6 +159,10 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             //Distance less than 54 inches, red alert
             robot.LED.setPosition(0.28);
         }
+        else if (shooterPowerAngleCalculator.getZone() > 0){
+            robot.LED.setPosition(1.0);
+        }
+        /**
         else if (ballColor.isKnown()) { //Show green and purple colour
             if (ballColor == BallColor.GREEN) {
                 robot.LED.setPosition(0.5);
@@ -167,9 +170,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             if (ballColor == BallColor.PURPLE) {
                 robot.LED.setPosition(0.722);
             }
-        }
+        }*/
         else { //Default white
-            robot.LED.setPosition(1.0);
+            robot.LED.setPosition(0.0);
         }
         telemetryManager();
     }
@@ -217,6 +220,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Alliance", alliance);
         telemetry.addData("Pose2D", robot.pinpoint.getPosition());
         telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
+        telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
         //telemetry.addData("turret rotation in degrees", turret.getTurretAngle());
         telemetry.addData("turret target angle", turret.getTargetAngle());
         telemetry.addLine("-----------------------------------------");

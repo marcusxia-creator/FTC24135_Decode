@@ -79,8 +79,8 @@ public class FSMShooter {
 
     public void SequenceShooterLoop() {
         voltage = robot.getBatteryVoltageRobust();
-        speed = 0.75;
-        //speed = shooterPowerLUT.getPower();
+        //speed = 0.75;
+        speed = shooterPowerLUT.getPower();
         if (shootermotorstate == SHOOTERMOTORSTATE.RUN){
             robot.topShooterMotor.setPower(speed);
             robot.topShooterMotor.setPower(speed);
@@ -118,11 +118,14 @@ public class FSMShooter {
                 }
                 break;
             case SEQUENCE_SHOOTING:
-                if (shootTimer.seconds() > 0.5 * shootCounter) {
+                if (shootTimer.seconds() > 0.6 * shootCounter) {
                     shootCounter++;
-                    if (shootCounter < 4) {
+                    if (shootCounter < 3) {
                         spindexer.RunToNext();
-                    }else{
+                    }else if(shootCounter ==3){
+                        robot.spindexerServo.setPosition(spindexerSlot4);
+                    }
+                    else{
                         shooterState = SHOOTERSTATE.SHOOTER_STOP;
                         shootTimer.reset();
                     }

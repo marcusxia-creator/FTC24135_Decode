@@ -74,7 +74,6 @@ public class LUTPowerCalculator {
         else if (distance > FAR && distance <= FAR_EDGE) zone = 3;
         else if (distance > FAR_ZONE_LOW && distance <= FAR_ZONE_HIGH) zone = 4;
         else zone = 0;
-        return ;
     }
 
     public double getPower() {
