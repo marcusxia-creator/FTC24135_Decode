@@ -130,7 +130,9 @@ public class Limelight {
         }
 
         Pose2D finalPose = new Pose2D(distanceUnit, fusedPose.getX(DistanceUnit.MM) * conversionFactor, fusedPose.getY(DistanceUnit.MM) * conversionFactor, AngleUnit.DEGREES, fusedPose.getHeading(AngleUnit.DEGREES));
-        return new Output(finalPose, robotVisionPose2D, robot.pinpoint.getPosition());
+        return new Output(finalPose, robotVisionPose2D, robot.pinpoint.getPosition(),
+                tx, ty, quality, alpha,
+                error, staleness, tagCount, didRest);
     }
 
     private Pose2D normalizedRobotPose(Pose3D visionPose3D) {
@@ -170,11 +172,29 @@ public class Limelight {
         public Pose2D fusedPose;
         public Pose2D visionPose;
         public Pose2D pinpointPose;
+        public double tx;
+        public double ty;
+        public double quality;
+        public double alpha;
+        public double error;
+        public double staleness;
+        public double tagCount;
+        public boolean didReset;
 
-        public Output(Pose2D fusedPose, Pose2D visionPose, Pose2D pinpointPose) {
+        public Output(Pose2D fusedPose, Pose2D visionPose, Pose2D pinpointPose,
+                      double tx, double ty, double quality, double alpha,
+                      double error, double staleness, double tagCount, boolean didReset) {
             this.fusedPose = fusedPose;
             this.visionPose = visionPose;
             this.pinpointPose = pinpointPose;
+            this.tx = tx;
+            this.ty = ty;
+            this.quality = quality;
+            this.alpha = alpha;
+            this.error = error;
+            this.staleness = staleness;
+            this.tagCount = tagCount;
+            this.didReset = didReset;
         }
     }
 
