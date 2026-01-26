@@ -28,7 +28,7 @@ public class Shooter {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            robot.shooterMotor.setPower(shotPower);
+            robot.topShooterMotor.setPower(shotPower);
             return false;
         }
     }
@@ -40,7 +40,7 @@ public class Shooter {
     public class ShooterOff implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            robot.shooterMotor.setPower(0);
+            robot.topShooterMotor.setPower(0);
             return false;
         }
     }
@@ -81,39 +81,36 @@ public class Shooter {
 
         public void SpindexerRunTo(int slot) {
             if (slot == 0) {
-                robot.spindexerServo.setPosition(spindexerSlot0);
-            }
-            if (slot == 1) {
                 robot.spindexerServo.setPosition(spindexerSlot1);
             }
-            if (slot == 2) {
+            if (slot == 1) {
                 robot.spindexerServo.setPosition(spindexerSlot2);
+            }
+            if (slot == 2) {
+                robot.spindexerServo.setPosition(spindexerSlot3);
             }
         }
 
         public void FSMShooterRun() {
             switch (currentState) {
                 case SHOOTER_INIT:
-                    robot.pushRampServo.setPosition(rampDownPos);
-                    robot.leftGateServo.setPosition(gateDown);
-                    robot.rightGateServo.setPosition(gateDown);
+
                     shooterTimer.reset();
                     stateTimer.reset();
                     currentState = SHOOTERSTATE.SHOOTER_RUN;
                     break;
                 case SHOOTER_RUN:
                     SpindexerRunTo(targetSlot);
-                    robot.shooterMotor.setPower(ShotPower);
+
                     if (stateTimer.seconds() > ShooterWaitTime) {
                         stateTimer2.reset();
                         currentState = SHOOTERSTATE.SHOOTER_LAUNCH;
                     }
                     break;
                 case SHOOTER_LAUNCH:
-                    robot.leftGateServo.setPosition(gateUp);
-                    robot.rightGateServo.setPosition(gateUp);
+;
                     if (stateTimer2.seconds() > 0.3) {
-                        robot.pushRampServo.setPosition(rampUpPos);
+
                         stateTimer.reset();
                         currentState = SHOOTERSTATE.SHOOTER_RESET_1;
                     } else if (shooterTimer.seconds()>(5+ShooterWaitTime)) {
@@ -122,15 +119,14 @@ public class Shooter {
                     break;
                 case SHOOTER_RESET_1:
                     if (stateTimer.seconds() > 0.3) {
-                        robot.pushRampServo.setPosition(rampDownPos);
+
                         stateTimer2.reset();
                         currentState = SHOOTERSTATE.SHOOTER_RESET_2;
                     }
                     break;
                 case SHOOTER_RESET_2:
                     if (stateTimer2.seconds() > 0.2) {
-                        robot.leftGateServo.setPosition(gateDown);
-                        robot.rightGateServo.setPosition(gateDown);
+
                         targetSlot--;
                         stateTimer.reset();
                         currentState = SHOOTERSTATE.SHOOTER_SWITCH;
@@ -149,7 +145,8 @@ public class Shooter {
                     }
                     break;
                 case SHOOTER_END:
-                    robot.shooterMotor.setPower(0);
+                    robot.topShooterMotor.setPower(0);
+                    robot.bottomShooterMotor.setPower(0);
                     break;
             }
         }

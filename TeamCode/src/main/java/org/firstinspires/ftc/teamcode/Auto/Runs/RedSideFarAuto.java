@@ -31,10 +31,7 @@ public class RedSideFarAuto extends LinearOpMode {
         robot.init();
         Shooter shooter = new Shooter(robot);
 
-
-        robot.rightGateServo.setPosition(gateDown);
-        robot.leftGateServo.setPosition(gateDown);
-        robot.pushRampServo.setPosition(rampDownPos);
+        
         robot.spindexerServo.setPosition(spindexerSlot2);
 
         Action DriveToShoot1 = drive.actionBuilder(initialPose)

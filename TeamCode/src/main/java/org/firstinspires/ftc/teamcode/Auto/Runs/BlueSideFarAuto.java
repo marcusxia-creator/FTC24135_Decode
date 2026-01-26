@@ -34,9 +34,7 @@ public class BlueSideFarAuto extends LinearOpMode {
         Shooter shooter = new Shooter(robot);
 
         robot.spindexerServo.setPosition(spindexerSlot2);
-        robot.rightGateServo.setPosition(gateDown);
-        robot.leftGateServo.setPosition(gateDown);
-        robot.pushRampServo.setPosition(rampDownPos);
+
 
         Action DriveToShoot1 = drive.actionBuilder(initialPose)
                 .strafeToLinearHeading(new Vector2d(PreloadShootingPosition_X,PreloadShootingPosition_Y), Math.toRadians(PreloadShootingPosition_Heading))

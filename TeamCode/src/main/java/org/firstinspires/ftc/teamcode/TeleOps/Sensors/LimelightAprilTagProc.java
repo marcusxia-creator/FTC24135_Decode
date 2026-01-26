@@ -32,7 +32,9 @@ public class LimelightAprilTagProc {
 
 
     public void init () {
-        limelight = robot.limelight3A;
+        limelight = robot.limelight;
+        ftcDashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, ftcDashboard.getTelemetry());;
         procState = ProcState.STOPPED;
     }
 

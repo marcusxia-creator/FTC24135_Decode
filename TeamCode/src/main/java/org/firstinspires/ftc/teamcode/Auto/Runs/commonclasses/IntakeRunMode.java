@@ -1,12 +1,6 @@
 package org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses;
 
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.ejectSpeed;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.gateDown;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.gateUp;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.intakeStop;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.spindexerSlot0;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.spindexerSlot1;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.spindexerSlot2;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 import androidx.annotation.NonNull;
 
@@ -48,13 +42,13 @@ public class IntakeRunMode implements Action {
 
     public void SpindexerRunTo(int slot){
         if(slot==0){
-            robot.spindexerServo.setPosition(spindexerSlot0);
-        }
-        if(slot==1){
             robot.spindexerServo.setPosition(spindexerSlot1);
         }
-        if(slot==2){
+        if(slot==1){
             robot.spindexerServo.setPosition(spindexerSlot2);
+        }
+        if(slot==2){
+            robot.spindexerServo.setPosition(spindexerSlot3);
         }
     }
 

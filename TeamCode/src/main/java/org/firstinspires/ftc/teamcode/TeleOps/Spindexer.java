@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
-import org.firstinspires.ftc.teamcode.TeleOps.Tests.BallColor;
+
 
 public class Spindexer {
     public enum SLOT{

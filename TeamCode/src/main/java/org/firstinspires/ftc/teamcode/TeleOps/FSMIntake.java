@@ -66,16 +66,21 @@ public class FSMIntake {
             case INTAKE_PREP:
                 spindexer.RuntoPosition(0);
                 intakeTimer.reset();
+                colorDetectionStarted = false;
+                colorRecorded = false;
+                detectedColor = BallColor.UNKNOWN;
+                robot.intakeMotor.setPower(intakeSpeed);
                 intakeStates = IntakeStates.INTAKE_START;
                 break;
             case INTAKE_START:
                 boolean jammed = isIntakeJammmed();
-                if (!jammed) {
-                    if (intakeTimer.seconds() > 0.1) {
-                        robot.intakeMotor.setPower(intakeSpeed);
-                    }
+
+                if (jammed) {
+                    HandleIntaking(true);
+                } else {
+                    robot.intakeMotor.setPower(intakeSpeed);
                 }
-                HandleIntaking(jammed);
+
                 if (robot.distanceSensor.getDistance(DistanceUnit.MM) < distanceThreshold) {
                     //recorded = false;
                     intakeTimer.reset();
@@ -89,6 +94,13 @@ public class FSMIntake {
                 break;
             //ball goes into spindxer
             case INTAKE_CAPTURE:
+                jammed = isIntakeJammmed();
+                if (jammed) {
+                    HandleIntaking(true);
+                } else {
+                    robot.intakeMotor.setPower(intakeSpeed);
+                }
+
                 if (colorDetectionStarted) {
                     colorDetection.updateDetection();
 
@@ -105,15 +117,22 @@ public class FSMIntake {
                         spindexer.RunToNext();
                         intakeStates = IntakeStates.INTAKE_RUNTONEXT;
                         intakeTimer.reset();
-
                         // stop / reset detection for next cycle
                         colorDetectionStarted = false;
                     } else {
                         intakeStates = IntakeStates.INTAKE_STOP;
                         intakeTimer.reset();
-
                         colorDetectionStarted = false;
                     }
+                }
+                break;
+
+            case INTAKE_RUNTONEXT:
+                robot.intakeMotor.setPower(0);
+                spindexer.RunToNext();
+                if (intakeTimer.seconds() > 0.4) {
+                    intakeStates = IntakeStates.INTAKE_START;
+                    intakeTimer.reset();
                 }
                 break;
 

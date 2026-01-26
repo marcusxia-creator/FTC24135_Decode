@@ -134,14 +134,14 @@ public class FSMShooter {
                // robot.kickerServo.setPosition(kickerExtend);
                 shootermotorstate = SHOOTERMOTORSTATE.STOP;
                 if (shootTimer.seconds() > 0.2) {
-                    //spindexer.RuntoPosition(0);
+                    spindexer.RuntoPosition(0);
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.KICKER_RETRACT;
                     //shooterState = SHOOTERSTATE.SHOOTER_IDLE;
                 }
                 break;
             case KICKER_RETRACT:
-                if (shootTimer.seconds() > 1.0) {
+                if (shootTimer.seconds() > 0.5) {
                     robot.kickerServo.setPosition(kickerRetract);
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.SHOOTER_IDLE;
