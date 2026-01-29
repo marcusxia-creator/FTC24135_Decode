@@ -109,7 +109,7 @@ public class FSMIntake {
                 break;
 
             case INTAKE_STOP:
-                robot.intakeMotor.setPower(0);
+                robot.intakeMotor.setPower(-0.5);
                 double time = intakeTimer.seconds();
 
                 // Keep your sequence logic for spindexer parking
