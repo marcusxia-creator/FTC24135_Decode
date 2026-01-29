@@ -103,44 +103,44 @@ public class FSMIntake {
 
             case INTAKE_RUNTONEXT:
                 // Small delay to allow the servo to physically move before starting the motor again
-                if (intakeTimer.seconds() > 0.25) {
+                if (intakeTimer.seconds() > 0.2) {
                     intakeStates = IntakeStates.INTAKE_START;
                 }
                 break;
 
             case INTAKE_STOP:
-                robot.intakeMotor.setPower(-0.6);
+                robot.intakeMotor.setPower(ejectSpeed);
                 double time = intakeTimer.seconds();
 
                 // Keep your sequence logic for spindexer parking
 
-                if (time > 0.2) {
-                    /**
-                    spindexer.RuntoPosition(0);
-                    intakeStates = IntakeStates.INTAKE_IDLE;
-                } else if (time > 0.6) {
-                    robot.spindexerServo.setPosition(0.19);
-                } else if (time > 0.4) {
-                    robot.spindexerServo.setPosition(0.29);
-                } else if (time > 0.2) {
-                    robot.spindexerServo.setPosition(0.39);
-                }*/
-                double targetPos = 0.13;
-                double currentPos = robot.spindexerServo.getPosition();
-                double maxStep = 0.01; // max movement per loop
+                if (time > 0.15) {
+                        /**
+                        spindexer.RuntoPosition(0);
+                        intakeStates = IntakeStates.INTAKE_IDLE;
+                    } else if (time > 0.6) {
+                        robot.spindexerServo.setPosition(0.19);
+                    } else if (time > 0.4) {
+                        robot.spindexerServo.setPosition(0.29);
+                    } else if (time > 0.2) {
+                        robot.spindexerServo.setPosition(0.39);
+                    }*/
+                    double targetPos = spindexerSlot1;
+                    double currentPos = robot.spindexerServo.getPosition();
+                    double maxStep = 0.01; // max movement per loop
 
-                double error = targetPos - currentPos;
-                double step = Math.copySign(
-                        Math.min(Math.abs(error), maxStep),
-                        error
-                );
+                    double error = targetPos - currentPos;
+                    double step = Math.copySign(
+                            Math.min(Math.abs(error), maxStep),
+                            error
+                    );
 
-                robot.spindexerServo.setPosition(currentPos + step);
+                    robot.spindexerServo.setPosition(currentPos + step);
 
-                if (Math.abs(error) < 0.005) {
-                    spindexer.RuntoPosition(0);
-                    intakeStates = IntakeStates.INTAKE_IDLE;
-                    }
+                    if (Math.abs(error) < 0.005) {
+                        spindexer.RuntoPosition(0);
+                        intakeStates = IntakeStates.INTAKE_IDLE;
+                        }
                 }
                 break;
 

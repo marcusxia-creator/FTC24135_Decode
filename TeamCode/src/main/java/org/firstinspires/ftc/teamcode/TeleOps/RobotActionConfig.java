@@ -25,11 +25,11 @@ public class RobotActionConfig {
     public static double slotAngleDelta                 = 0.19;
 
     //Speed
-    public static double kickerRetract = 0.3;  /// value - retract back for spindexer reversing
-    public static double kickerExtend = 0.6; /// value - into the spindexer for pushing the ball up
+    public static double kickerRetract                  = 0.3;  /// value - retract back for spindexer reversing
+    public static double kickerExtend                   = 0.6; /// value - into the spindexer for pushing the ball up
     public static double intakeSpeed                    = 0.85;
     public static double intakeStop                     = 0;
-    public static double ejectSpeed                     = -0.4;
+    public static double ejectSpeed                     = -0.7;
     public static double shooterVel                     = 1900;
     public static double shooterPower                   = 0.78;
     public static double shooterFactorThreshold         = 0.95;
@@ -40,7 +40,6 @@ public class RobotActionConfig {
     public static double getDistanceThreshold           =0.02;
 
     //Intake capture timing
-    public static double gateDownTime                   = 0.25;
     public static double SpindexerStartTime             = 0.7;
     public static double SpindexerMoveTime              = 0.2;
 
@@ -77,8 +76,8 @@ public class RobotActionConfig {
     public static final double CLOSE                    = 55.0;
     public static final double closeEdge                = 50.0;
 
-    public static final double FAR_ZONE_LOW             = 151.0;
-    public static final double FAR_ZONE_HIGH            = 171.0;
+    public static final double FAR_ZONE_LOW             = 137.0;
+    public static final double FAR_ZONE_HIGH            = 160.0;
 
     public static final double farPower                 = 0.78;
     public static final double midPower                 = 0.73;
