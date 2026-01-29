@@ -17,6 +17,7 @@ public class Limelight {
 
     private RobotHardware robot;
     private Turret turret;
+    private VisionProcessing visionProcessing;
 
     private final double turretRadius = 0.1778;
     private final double turretCenterOffsetLength = Math.hypot(turret_Center_Y_Offset, turret_Center_X_Offset);
@@ -30,7 +31,7 @@ public class Limelight {
     /// Tuning Factor --------------------------------------------
     private final long maxStalenessMs = 120;
 
-    private final int goodTagCount = 2;
+    private final int goodTagCount = 1;
 
     private final double maxTxForHighTrust = 12.0;
     private final double maxTyForHighTrustDeg = 12.0;
@@ -48,9 +49,13 @@ public class Limelight {
     public Limelight(RobotHardware robot, Turret turret) {
         this.robot = robot;
         this.turret = turret;
+
+        visionProcessing = new VisionProcessing();
     }
 
     public void initLimelight(int apriltagID) {
+        visionProcessing.clear();
+
         if (apriltagID == 24) {
             robot.limelight3A.pipelineSwitch(0);
         }
@@ -60,9 +65,6 @@ public class Limelight {
         robot.limelight3A.start();
     }
 
-    public void update() {
-        //return Output;
-    }
 
     public Output normalizedPose2D(DistanceUnit distanceUnit) {
 
@@ -99,6 +101,8 @@ public class Limelight {
         double quality = computeQuality(tagCount, tx, ty, staleness);
 
         double alpha = alphaMin + (alphaMax - alphaMin) * quality;
+
+        VisionProcessing.Stats stats = visionProcessing.updateAndGet(robot.pinpoint.getPosition(), robotVisionPose2D);
 
         Pose2D fusedPose = fusePose(robot.pinpoint.getPosition(), robotVisionPose2D, alpha);
 
@@ -147,7 +151,7 @@ public class Limelight {
     }
 
     private double computeQuality(int tagCount, double tx, double ty, long stalenessMs) {
-        double tagScore = (tagCount >= goodTagCount) ? 1.0 : (tagCount == 1 ? 0.55 : 0.0);
+        double tagScore = tagCount >= goodTagCount ? 1.0 : 0.0;
 
         double txScore = 1.0 - Range.clip(Math.abs(tx) / maxTxForHighTrust, 0.0, 1.0);
         double tyScore = 1.0 - Range.clip(Math.abs(ty + angleAdjustmentTy) / maxTyForHighTrustDeg, 0.0, 1.0);
