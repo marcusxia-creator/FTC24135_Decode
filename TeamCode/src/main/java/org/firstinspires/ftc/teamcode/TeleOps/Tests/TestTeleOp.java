@@ -21,7 +21,6 @@ import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 
 import org.firstinspires.ftc.teamcode.TeleOps.RobotDrive;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
-import org.firstinspires.ftc.teamcode.TeleOps.ShooterPowerAngleCalculator;
 import org.firstinspires.ftc.teamcode.TeleOps.Turret;
 import org.firstinspires.ftc.teamcode.TeleOps.LimelightTest;
 
@@ -35,10 +34,9 @@ public class TestTeleOp extends OpMode {
     private static double speed;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private RobotDrive robotDrive;
-    private ShooterPowerAngleCalculator shooterPowerAngleCalculator;
+    private LUTPowerCalculator powerCalculator;
     private Turret turret;
 
-    private static double voltage;
     private BallColor ballColor;
     private ColorDetection colorDetection;
 
@@ -72,7 +70,7 @@ public class TestTeleOp extends OpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        shooterPowerAngleCalculator = new ShooterPowerAngleCalculator(robot);
+        powerCalculator = new LUTPowerCalculator(robot);
         shooterPowerLUT = new LUTPowerCalculator(robot);
         robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
 
@@ -95,9 +93,6 @@ public class TestTeleOp extends OpMode {
 
         /// color detection
         ballColor = BallColor.fromHue(colorDetection.getHue());
-
-        /// Robot voltage
-        voltage = robot.getBatteryVoltageRobust();
 
         ///  PID Controller for power calculation
         pidController.setPID(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
@@ -224,7 +219,7 @@ public class TestTeleOp extends OpMode {
         /**
          * LED alarm light
          */
-        if (shooterPowerAngleCalculator.getDistance() <= 54) {
+        if (powerCalculator.getDistance() <= 54) {
             robot.LED.setPosition(0.28);
         }
         else if (ballColor.isKnown()) {
@@ -247,10 +242,7 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("Intake Speed", robot.intakeMotor.getPower());
         telemetry.addLine("----------------------------------------------------");
         telemetry.addData("Pose 2D", robot.pinpoint.getPosition());
-        telemetry.addData("Distance To Goal", shooterPowerAngleCalculator.getDistance());
-        telemetry.addData("Robot Voltage", robot.getBatteryVoltageRobust());
-        telemetry.addData("Shooter target RPM", targetShooterRPM);
-        telemetry.addData("Shooter current RPM", currentShooterRPM);
+        telemetry.addData("Distance To Goal", powerCalculator.getDistance());
         telemetry.addData("Shooter power now", shooterPower);
         telemetry.addLine("----------------------------------------------------");
         telemetry.addData("Color", ballColor);
