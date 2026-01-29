@@ -113,15 +113,34 @@ public class FSMIntake {
                 double time = intakeTimer.seconds();
 
                 // Keep your sequence logic for spindexer parking
-                if (time > 1.0) {
+
+                if (time > 0.2) {
+                    /**
                     spindexer.RuntoPosition(0);
                     intakeStates = IntakeStates.INTAKE_IDLE;
-                } else if (time > 0.7) {
-                    robot.spindexerServo.setPosition(0.2);
+                } else if (time > 0.6) {
+                    robot.spindexerServo.setPosition(0.19);
                 } else if (time > 0.4) {
-                    robot.spindexerServo.setPosition(0.3);
-                } else if (time > 0.25) {
-                    robot.spindexerServo.setPosition(0.4);
+                    robot.spindexerServo.setPosition(0.29);
+                } else if (time > 0.2) {
+                    robot.spindexerServo.setPosition(0.39);
+                }*/
+                double targetPos = 0.13;
+                double currentPos = robot.spindexerServo.getPosition();
+                double maxStep = 0.01; // max movement per loop
+
+                double error = targetPos - currentPos;
+                double step = Math.copySign(
+                        Math.min(Math.abs(error), maxStep),
+                        error
+                );
+
+                robot.spindexerServo.setPosition(currentPos + step);
+
+                if (Math.abs(error) < 0.005) {
+                    spindexer.RuntoPosition(0);
+                    intakeStates = IntakeStates.INTAKE_IDLE;
+                    }
                 }
                 break;
 
