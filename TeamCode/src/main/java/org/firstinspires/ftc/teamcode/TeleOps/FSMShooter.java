@@ -30,6 +30,13 @@ public class FSMShooter {
     private double speed;
     private double power_setpoint;
 
+
+    // Shooter velocity control
+    private static final double TICKS_PER_REV = 28.0; // CHANGE to your motor
+    private static final double MAX_RPM = 6000.0;     // CHANGE to your shooter
+    private static final double KP_SHOOTER = 0.0008;          // tune this
+
+
     /**
      * BUTTON FOR SHOOTING
      * * Button X/Square is local key, --- SHOOTER_IDLE STATE---
@@ -78,26 +85,42 @@ public class FSMShooter {
         voltage = robot.getBatteryVoltageRobust();
         //speed = shooterPowerAngleCalculator.getPower();
         speed = shooterPowerLUT.getPower();
-        power_setpoint = 0.7;//(speed*12.0)/voltage;
+        //power_setpoint = 0.7;//(speed*12.0)/voltage;
         ShooterPowerControl();
         // --- Global Controls (can be triggered from any state) ---
+
+        // ===== P-only Shooter Velocity Control =====
+        double targetRPM = speed;
+        double currentRPM = getShooterRPM();
+
+        double kF = targetRPM / MAX_RPM;
+        double error = kF-(targetRPM - currentRPM)/MAX_RPM;
+
+        power_setpoint = Range.clip(
+                (KP_SHOOTER * error),
+                0.3,
+                1.0
+        );
+
+        power_setpoint = Range.clip(power_setpoint, 0.3, 1.0);
+
         switch (shooterState) {
             case SHOOTER_IDLE:
                 //Press B for purple ball
-                if (gamepad_2.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
+                if (gamepad_1.getButton(GamepadKeys.Button.B) && isButtonDebounced()) {
                     targetColour = Spindexer.SLOT.Purple;
                     shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                     gamepadManager.autoMotif.ToggleState=Boolean.FALSE;
                 }
                 //Press A for green ball
-                if (gamepad_2.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
+                if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
                     targetColour = Spindexer.SLOT.Green;
                     shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                     gamepadManager.autoMotif.ToggleState=Boolean.FALSE;
                 }
 
                 // Press 'X' to start spinning the flywheel
-                if (gamepad_2.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
+                if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                     gamepadManager.autoMotif.ToggleState=Boolean.TRUE;
@@ -107,18 +130,18 @@ public class FSMShooter {
                 ShooterPowerSwitch();
                 // Press START an check toggle button true or false to determine slot order for motif
                 // check for targetColor
-                if (gamepad_2.getButton(GamepadKeys.Button.B)){
+                if (gamepad_1.getButton(GamepadKeys.Button.B)){
                     gamepadManager.autoMotif.ToggleState=Boolean.TRUE;
                 }
                 if (gamepadManager.autoMotif.ToggleState && spindexer.checkMotif(motif)){
                     targetColour=spindexer.motifColour(motif);
                 }
 
-                if(!spindexer.checkFor(Spindexer.SLOT.Green)||gamepad_2.getButton(GamepadKeys.Button.B)){
+                if(!spindexer.checkFor(Spindexer.SLOT.Green)||gamepad_1.getButton(GamepadKeys.Button.B)){
                     targetColour = Spindexer.SLOT.Purple;
                     gamepadManager.autoMotif.ToggleState=Boolean.FALSE;
                 }
-                if(!spindexer.checkFor(Spindexer.SLOT.Purple)||gamepad_2.getButton(GamepadKeys.Button.A)){
+                if(!spindexer.checkFor(Spindexer.SLOT.Purple)||gamepad_1.getButton(GamepadKeys.Button.A)){
                     targetColour = Spindexer.SLOT.Green;
                     gamepadManager.autoMotif.ToggleState=Boolean.FALSE;
                 }
@@ -128,7 +151,7 @@ public class FSMShooter {
                     shooterState = SHOOTERSTATE.SPINDEXER_ROTATE;
                 }
 
-                if (gamepad_2.getButton(GamepadKeys.Button.Y)){
+                if (gamepad_1.getButton(GamepadKeys.Button.Y)){
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.SHOOTING;
                 }
@@ -183,7 +206,7 @@ public class FSMShooter {
         }
 
         // Press 'Left Trigger' to stop spinning the flywheel
-        if (gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.5 && shooterState!=SHOOTERSTATE.SHOOTER_IDLE) {
+        if (gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.5 && shooterState!=SHOOTERSTATE.SHOOTER_IDLE) {
             shooterState = SHOOTERSTATE.SHOOTER_STOP;
         }
     }
@@ -216,6 +239,10 @@ public class FSMShooter {
         gamepadInput.getOperatorLbBComboPressed()|| gamepadInput.getDriverLbBComboPressed()) {
             ToggleShooterPower();
         }
+    }
+
+    private double getShooterRPM() {
+        return (robot.shooterMotor.getVelocity() / TICKS_PER_REV) * 60.0;
     }
 
     public void SetShooterPowerState (SHOOTERPOWERSTATE state) {
