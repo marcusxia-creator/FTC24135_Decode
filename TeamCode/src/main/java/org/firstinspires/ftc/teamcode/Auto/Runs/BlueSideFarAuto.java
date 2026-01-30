@@ -26,15 +26,13 @@ public class BlueSideFarAuto extends LinearOpMode {
     public RobotHardware robot;
 
 
+
     @Override
     public void runOpMode() throws InterruptedException {
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         robot = new RobotHardware(hardwareMap);
         robot.init();
         Shooter shooter = new Shooter(robot);
-
-        robot.spindexerServo.setPosition(spindexerSlot2);
-
 
         Action DriveToShoot1 = drive.actionBuilder(initialPose)
                 .strafeToLinearHeading(new Vector2d(PreloadShootingPosition_X,PreloadShootingPosition_Y), Math.toRadians(PreloadShootingPosition_Heading))
@@ -80,6 +78,7 @@ public class BlueSideFarAuto extends LinearOpMode {
         Action DriveToShoot3 = drive.actionBuilder(new Pose2d(Far_IntakeSet2Position4_X,Far_IntakeSet2Position4_Y,Math.toRadians(-90)))
                 .strafeToLinearHeading(new Vector2d(ShootingPosition_X,ShootingPosition_Y),Math.toRadians(ShootingPosition_Heading))
                 .build();
+
 
         waitForStart();
 

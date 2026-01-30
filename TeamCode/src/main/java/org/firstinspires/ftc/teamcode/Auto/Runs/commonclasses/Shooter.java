@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
+
+import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 public class Shooter {
@@ -54,10 +56,8 @@ public class Shooter {
         public enum SHOOTERSTATE {
             SHOOTER_INIT,
             SHOOTER_RUN,
-            SHOOTER_SWITCH,
             SHOOTER_LAUNCH,
-            SHOOTER_RESET_1,
-            SHOOTER_RESET_2,
+            SHOOTER_RESET,
             SHOOTER_END
         }
 
@@ -89,58 +89,49 @@ public class Shooter {
             if (slot == 2) {
                 robot.spindexerServo.setPosition(spindexerSlot3);
             }
+            if (slot == 3) {
+                robot.spindexerServo.setPosition(spindexerSlot4);
+            }
+            if (slot == 4){
+                robot.spindexerServo.setPosition(spindexerSlot5);
+            }
         }
 
         public void FSMShooterRun() {
             switch (currentState) {
                 case SHOOTER_INIT:
-
+                    SpindexerRunTo(targetSlot);
+                    robot.kickerServo.setPosition(kickerRetract);
                     shooterTimer.reset();
                     stateTimer.reset();
                     currentState = SHOOTERSTATE.SHOOTER_RUN;
                     break;
                 case SHOOTER_RUN:
-                    SpindexerRunTo(targetSlot);
-
+                    robot.topShooterMotor.setPower(ShotPower);
+                    robot.bottomShooterMotor.setPower(ShotPower);
                     if (stateTimer.seconds() > ShooterWaitTime) {
+                        robot.kickerServo.setPosition(kickerExtend);
                         stateTimer2.reset();
                         currentState = SHOOTERSTATE.SHOOTER_LAUNCH;
                     }
                     break;
                 case SHOOTER_LAUNCH:
-;
-                    if (stateTimer2.seconds() > 0.3) {
-
-                        stateTimer.reset();
-                        currentState = SHOOTERSTATE.SHOOTER_RESET_1;
-                    } else if (shooterTimer.seconds()>(5+ShooterWaitTime)) {
-                        currentState = SHOOTERSTATE.SHOOTER_END;
-                    }
-                    break;
-                case SHOOTER_RESET_1:
-                    if (stateTimer.seconds() > 0.3) {
-
-                        stateTimer2.reset();
-                        currentState = SHOOTERSTATE.SHOOTER_RESET_2;
-                    }
-                    break;
-                case SHOOTER_RESET_2:
                     if (stateTimer2.seconds() > 0.2) {
-
-                        targetSlot--;
-                        stateTimer.reset();
-                        currentState = SHOOTERSTATE.SHOOTER_SWITCH;
+                        robot.spindexerServo.setPosition(spindexerZeroPos);
+                        if (stateTimer2.seconds() > 0.8) {
+                            stateTimer.reset();
+                            currentState = SHOOTERSTATE.SHOOTER_RESET;
+                        }
                     }
                     break;
-                case SHOOTER_SWITCH:
-                    if (targetSlot >= 0) {
-                        //need to set spindexer to spin here.
-                        SpindexerRunTo(targetSlot);
-                        if (stateTimer.seconds() > 0.4) {
-                            stateTimer2.reset();
-                            currentState = SHOOTERSTATE.SHOOTER_LAUNCH;
+                case SHOOTER_RESET:
+                    robot.spindexerServo.setPosition(spindexerSlot1);
+                    if (stateTimer.seconds() > 0.2) {
+                        robot.kickerServo.setPosition(kickerRetract);
+                        if(stateTimer.seconds()>0.2){
+                            currentState = SHOOTERSTATE.SHOOTER_END;
                         }
-                    } else if (targetSlot < 0) {
+                    } else if (shooterTimer.seconds()>(8+ShooterWaitTime)) {
                         currentState = SHOOTERSTATE.SHOOTER_END;
                     }
                     break;

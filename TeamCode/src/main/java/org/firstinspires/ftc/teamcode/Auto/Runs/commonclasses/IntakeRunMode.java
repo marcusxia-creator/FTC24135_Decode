@@ -15,7 +15,6 @@ public class IntakeRunMode implements Action {
 
     public enum INTAKESTATE {
         INTAKE_INIT,
-        INTAKE_READY,
         INTAKE_RUN,
         INTAKE_DETECT,
         INTAKE_PAUSE,
@@ -31,13 +30,13 @@ public class IntakeRunMode implements Action {
     private final ElapsedTime stateTimer = new ElapsedTime();
     private final ElapsedTime colorSensorTimer = new ElapsedTime();
     private final ElapsedTime intakeTimer = new ElapsedTime();
-    private INTAKESTATE currentState = INTAKESTATE.INTAKE_READY;
+    private INTAKESTATE currentState = INTAKESTATE.INTAKE_INIT;
     private int targetSlot = 0;
 
     /// Constructor
     public IntakeRunMode(RobotHardware robot) {
         this.robot = robot;
-        this.currentState = INTAKESTATE.INTAKE_READY;
+        this.currentState = INTAKESTATE.INTAKE_INIT;
     }
 
     public void SpindexerRunTo(int slot){
@@ -57,20 +56,17 @@ public class IntakeRunMode implements Action {
             case INTAKE_INIT:
                 intakeTimer.reset();
                 SpindexerRunTo(0);
-                currentState = INTAKESTATE.INTAKE_READY;
-                break;
-            case INTAKE_READY: ;
                 currentState = INTAKESTATE.INTAKE_RUN;
                 break;
             case INTAKE_RUN:
-                robot.intakeMotor.setPower(0.8);
+                robot.intakeMotor.setPower(0.95);
                 currentState = INTAKESTATE.INTAKE_DETECT;
                 break;
             case INTAKE_DETECT:
                 if (robot.distanceSensor.getDistance(DistanceUnit.MM) < 50) {
                     stateTimer.reset();
                     currentState = INTAKESTATE.INTAKE_PAUSE;
-                } else if (intakeTimer.seconds()>4) {
+                } else if (intakeTimer.seconds()>6) {
                     currentState = INTAKESTATE.INTAKE_END;
                 } else {
                     currentState = INTAKESTATE.INTAKE_RUN;
@@ -95,7 +91,7 @@ public class IntakeRunMode implements Action {
                 break;
             case INTAKE_SPIN:
                 if (stateTimer.seconds()>0.2){
-                    currentState = INTAKESTATE.INTAKE_READY;
+                    currentState = INTAKESTATE.INTAKE_RUN;
                 }
                 break;
             case INTAKE_UNJAM:

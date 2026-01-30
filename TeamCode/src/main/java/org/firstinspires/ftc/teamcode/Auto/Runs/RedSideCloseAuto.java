@@ -4,7 +4,6 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -34,10 +33,10 @@ public class RedSideCloseAuto extends LinearOpMode {
 
 
         Action DriveToShoot1 = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(ShootingPosition_X, ShootingPosition_Y), Math.toRadians(ShootingPosition_Heading))
+                .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y), Math.toRadians(ShootingPosition_Heading))
                 .build();
 
-        Action IntakeSet1Drive1 = drive.actionBuilder(new Pose2d(ShootingPosition_X, ShootingPosition_Y, Math.toRadians(ShootingPosition_Heading)))
+        Action IntakeSet1Drive1 = drive.actionBuilder(new Pose2d(CloseShootingPosition_X, CloseShootingPosition_Y, Math.toRadians(ShootingPosition_Heading)))
                 .strafeToLinearHeading(new Vector2d(IntakeSet3Position1_X, IntakeSet3Position1_Y), Math.toRadians(90))
                 .build();
 
@@ -54,10 +53,10 @@ public class RedSideCloseAuto extends LinearOpMode {
                 .build();
 
         Action DriveToShoot2 = drive.actionBuilder(new Pose2d(IntakeSet3Position4_X, IntakeSet3Position4_Y, Math.toRadians(90)))
-                .strafeToLinearHeading(new Vector2d(ShootingPosition_X, ShootingPosition_Y), Math.toRadians(ShootingPosition_Heading))
+                .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y), Math.toRadians(ShootingPosition_Heading))
                 .build();
 
-        Action IntakeSet2Drive1 = drive.actionBuilder(new Pose2d(ShootingPosition_X, ShootingPosition_Y, Math.toRadians(ShootingPosition_Heading)))
+        Action IntakeSet2Drive1 = drive.actionBuilder(new Pose2d(CloseShootingPosition_X, CloseShootingPosition_Y, Math.toRadians(ShootingPosition_Heading)))
                 .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position1_X, Close_IntakeSet2Position1_Y), Math.toRadians(90))
                 .build();
 
@@ -74,7 +73,7 @@ public class RedSideCloseAuto extends LinearOpMode {
                 .build();
 
         Action DriveToShoot3 = drive.actionBuilder(new Pose2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y, Math.toRadians(90)))
-                .strafeToLinearHeading(new Vector2d(ShootingPosition_X, ShootingPosition_Y), Math.toRadians(ShootingPosition_Heading))
+                .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y), Math.toRadians(ShootingPosition_Heading))
                 .build();
 
         waitForStart();
