@@ -59,8 +59,8 @@ public class TestAuto extends LinearOpMode {
             Actions.runBlocking(
                 new SequentialAction(
                     IntakeRun(),
-                    shooter.ShooterOn(FarShotPower),
-                    shooter.ShooterRun(FarShotPower,1.5),
+                    //shooter.ShooterOn(FarShotPower),
+                    shooter.ShooterRun(FarShotPower,1),
                     shooter.ShooterOff()
                 )
             );

@@ -4,54 +4,35 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
-import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 public class Shooter {
     private final RobotHardware robot;
+    private static PIDController pidController;
+    public ShooterRunMode.SHOOTERSTATE globalState = ShooterRunMode.SHOOTERSTATE.SHOOTER_INIT;
 
+    public static class PIDTuning {
+        public static double kP = 0.0075;
+        public static double kI = 0.000001;
+        public static double kD = 0.00006; // position or RPM target
+    }
 
+    ///Constructor
     public Shooter(RobotHardware robot){
         this.robot = robot;
+        this.pidController = new PIDController(
+                PIDTuning.kP,
+                PIDTuning.kI,
+                PIDTuning.kD
+        );
     }
 
-    public class ShooterOn implements Action {
-        private double shotPower;
-
-        public ShooterOn (double shotPower){
-            this.shotPower = shotPower;
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            robot.topShooterMotor.setPower(shotPower);
-            return false;
-        }
-    }
-
-    public Action ShooterOn (double shotPower){
-        return new ShooterOn(shotPower);
-    }
-
-    public class ShooterOff implements Action {
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            robot.topShooterMotor.setPower(0);
-            return false;
-        }
-    }
-
-    public Action ShooterOff (){
-        return new ShooterOff();
-    }
-
-
+    ///Shooter Run Mode
     public static class ShooterRunMode implements Action {
         public enum SHOOTERSTATE {
             SHOOTER_INIT,
@@ -63,18 +44,19 @@ public class Shooter {
 
         /// Variables
         private final RobotHardware robot;
+
         private final ElapsedTime stateTimer = new ElapsedTime();
         private final ElapsedTime stateTimer2 = new ElapsedTime();
-        private final ElapsedTime colorSensorTimer = new ElapsedTime();
         private final ElapsedTime shooterTimer = new ElapsedTime();
+
         private int targetSlot = 2;
         private double ShooterWaitTime;
-        private double ShotPower;
-        private SHOOTERSTATE currentState;
+        private double targetVelocity;
+        public SHOOTERSTATE currentState;
 
         public ShooterRunMode(RobotHardware robot, double ShotPower, double ShooterWaitTime) {
             this.robot = robot;
-            this.ShotPower = ShotPower;
+            this.targetVelocity = ShotPower * shooterMaxVel;
             this.ShooterWaitTime = ShooterWaitTime;
             this.currentState = SHOOTERSTATE.SHOOTER_INIT;
         }
@@ -107,8 +89,6 @@ public class Shooter {
                     currentState = SHOOTERSTATE.SHOOTER_RUN;
                     break;
                 case SHOOTER_RUN:
-                    robot.topShooterMotor.setPower(ShotPower);
-                    robot.bottomShooterMotor.setPower(ShotPower);
                     if (stateTimer.seconds() > ShooterWaitTime) {
                         robot.kickerServo.setPosition(kickerExtend);
                         stateTimer2.reset();
@@ -128,7 +108,7 @@ public class Shooter {
                     robot.spindexerServo.setPosition(spindexerSlot1);
                     if (stateTimer.seconds() > 0.2) {
                         robot.kickerServo.setPosition(kickerRetract);
-                        if(stateTimer.seconds()>0.2){
+                        if(stateTimer.seconds()>0.3){
                             currentState = SHOOTERSTATE.SHOOTER_END;
                         }
                     } else if (shooterTimer.seconds()>(8+ShooterWaitTime)) {
@@ -145,7 +125,12 @@ public class Shooter {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            telemetryPacket.put("FSM Intake State", currentState);
+            if (currentState != SHOOTERSTATE.SHOOTER_END){
+                double currentVel = robot.topShooterMotor.getVelocity();
+                double power = pidController.calculate(currentVel, targetVelocity);
+                robot.topShooterMotor.setPower(power);
+                robot.bottomShooterMotor.setPower(power);
+            }
             FSMShooterRun();
             return currentState != SHOOTERSTATE.SHOOTER_END;
         }
@@ -154,4 +139,41 @@ public class Shooter {
     public Action ShooterRun(double ShotPower, double ShooterWaitTime){
         return new ShooterRunMode(robot, ShotPower, ShooterWaitTime);
     }
+
+    ///Shooter Speed
+    public class ShooterOn implements Action {
+        private double targetVelocity;
+
+        public ShooterOn (double shotPower){
+            this.targetVelocity = shotPower * shooterMaxVel;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            double currentVel = robot.topShooterMotor.getVelocity();
+            double power = pidController.calculate(currentVel, targetVelocity);
+            robot.topShooterMotor.setPower(power);
+            robot.bottomShooterMotor.setPower(power);
+            return false;
+        }
+    }
+
+    public Action ShooterOn (double shotPower){
+        return new ShooterOn(shotPower);
+    }
+
+    ///Shooter Off
+    public class ShooterOff implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            robot.topShooterMotor.setPower(0);
+            robot.bottomShooterMotor.setPower(0);
+            return false;
+        }
+    }
+
+    public Action ShooterOff (){
+        return new ShooterOff();
+    }
+
 }

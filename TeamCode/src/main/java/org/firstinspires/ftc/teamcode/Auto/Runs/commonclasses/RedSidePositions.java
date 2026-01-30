@@ -7,12 +7,12 @@ public class RedSidePositions {
     public static double IntakeSet1Position1_X = 36;
     public static double IntakeSet1Position1_Y = 24;
     public static double IntakeSet1Position2_X = 36;
-    public static double IntakeSet1Position2_Y = 56;
+    public static double IntakeSet1Position2_Y = 60;
 
     public static double Far_IntakeSet2Position1_X = 12;
     public static double Far_IntakeSet2Position1_Y = 24;
     public static double Far_IntakeSet2Position4_X = 12;
-    public static double Far_IntakeSet2Position4_Y = 56;
+    public static double Far_IntakeSet2Position4_Y = 60;
 
     public static double Close_IntakeSet2Position1_X = 18;
     public static double Close_IntakeSet2Position1_Y = 32;
