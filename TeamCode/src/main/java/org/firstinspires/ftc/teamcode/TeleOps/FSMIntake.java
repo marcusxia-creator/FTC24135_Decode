@@ -79,7 +79,7 @@ public class FSMIntake {
                 if (intakeTimer.seconds() < 0.05) {
                     spindexer.clearVoteBuffer();
                 }
-                else if (intakeTimer.seconds() < 0.15) {
+                else if (intakeTimer.seconds() < 0.5) {
                     // Collect as many samples as possible in 250ms
                     spindexer.addVoteSample(robot.colorSensor, robot.distanceSensor);
                 }
@@ -103,51 +103,31 @@ public class FSMIntake {
 
             case INTAKE_RUNTONEXT:
                 // Small delay to allow the servo to physically move before starting the motor again
-                if (intakeTimer.seconds() > 0.2) {
+                if (intakeTimer.seconds() > 0.3) {
                     intakeStates = IntakeStates.INTAKE_START;
                 }
                 break;
 
             case INTAKE_STOP:
-                robot.intakeMotor.setPower(ejectSpeed);
+                robot.intakeMotor.setPower(0);
                 double time = intakeTimer.seconds();
 
                 // Keep your sequence logic for spindexer parking
-
-                if (time > 0.15) {
-                        /**
-                        spindexer.RuntoPosition(0);
-                        intakeStates = IntakeStates.INTAKE_IDLE;
-                    } else if (time > 0.6) {
-                        robot.spindexerServo.setPosition(0.19);
-                    } else if (time > 0.4) {
-                        robot.spindexerServo.setPosition(0.29);
-                    } else if (time > 0.2) {
-                        robot.spindexerServo.setPosition(0.39);
-                    }*/
-                    double targetPos = spindexerSlot1;
-                    double currentPos = robot.spindexerServo.getPosition();
-                    double maxStep = 0.01; // max movement per loop
-
-                    double error = targetPos - currentPos;
-                    double step = Math.copySign(
-                            Math.min(Math.abs(error), maxStep),
-                            error
-                    );
-
-                    robot.spindexerServo.setPosition(currentPos + step);
-
-                    if (Math.abs(error) < 0.005) {
-                        spindexer.RuntoPosition(0);
-                        intakeStates = IntakeStates.INTAKE_IDLE;
-                        }
+                if (time > 1.0) {
+                    spindexer.RuntoPosition(0);
+                    intakeStates = IntakeStates.INTAKE_IDLE;
+                } else if (time > 0.7) {
+                    robot.spindexerServo.setPosition(0.2);
+                } else if (time > 0.4) {
+                    robot.spindexerServo.setPosition(0.3);
+                } else if (time > 0.1) {
+                    robot.spindexerServo.setPosition(0.4);
                 }
                 break;
 
             case INTAKE_REVERSE:
-                if (intakeTimer.seconds() < 0.5) {
-                    robot.intakeMotor.setPower(ejectSpeed);
-                }else{
+                if (intakeTimer.seconds() > 0.5) {
+                    robot.intakeMotor.setPower(0);
                     intakeStates = IntakeStates.INTAKE_IDLE;
                 }
                 break;
@@ -158,7 +138,7 @@ public class FSMIntake {
     private boolean isIntakeJammmed() {
         double intakeTicksPerSecond = robot.intakeMotor.getVelocity();
         intakeRPM = intakeTicksPerSecond * INTAKE_RPM_CONVERSION;
-        if (robot.intakeMotor.getPower() > 0.2 && intakeRPM < 400) {
+        if (robot.intakeMotor.getPower() > 0.2 && intakeRPM < 100) {
             if (jammedTimer.seconds() > 0.2) {
                 return true;
             }
