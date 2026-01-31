@@ -132,7 +132,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
         ///Continuous driving
         robotDrive.DriveLoop();
-        //turret.driveTurretMotor();
+        turret.driveTurretMotor();
 
         ///Changes the action state base on which button is pressed
         buttonUpdate();
@@ -142,7 +142,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         switch (actionStates){
             case Sequence_Shooting:
                 FSMShooter.SequenceShooterLoop();
-                FSMIntake.intakeStates = IntakeStates.INTAKE_STOP;
+                FSMIntake.intakeStates = IntakeStates.INTAKE_IDLE;
                 break;
             case Sort_Shooting:
                 FSMShooter.SortShooterLoop();
@@ -224,7 +224,10 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
         telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
         //telemetry.addData("turret rotation in degrees", turret.getTurretAngle());
+        telemetry.addLine("Turret-----------------------------------");
         telemetry.addData("turret target angle", turret.getTargetAngle());
+        telemetry.addData("turret drive angle", turret.getTurretDriveAngle());
+        telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
         telemetry.addLine("-----------------------------------------");
         telemetry.addData("limelight output", limelight.normalizedPose2D(DistanceUnit.MM));
         telemetry.update();

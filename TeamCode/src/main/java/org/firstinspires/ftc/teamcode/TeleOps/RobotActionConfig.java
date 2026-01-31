@@ -25,8 +25,8 @@ public class RobotActionConfig {
     public static double slotAngleDelta                 = 0.19;
 
     //Speed
-    public static double kickerRetract                  = 0.3;  /// value - retract back for spindexer reversing
-    public static double kickerExtend                   = 0.6; /// value - into the spindexer for pushing the ball up
+    public static double kickerRetract                  = 0.36;  /// value - retract back for spindexer reversing
+    public static double kickerExtend                   = 0.66; /// value - into the spindexer for pushing the ball up
     public static double intakeSpeed                    = 0.85;
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.7;
@@ -76,8 +76,8 @@ public class RobotActionConfig {
     public static final double CLOSE                    = 55.0;
     public static final double closeEdge                = 50.0;
 
-    public static final double FAR_ZONE_LOW             = 137.0;
-    public static final double FAR_ZONE_HIGH            = 160.0;
+    public static final double FAR_ZONE_LOW             = 120.0;
+    public static final double FAR_ZONE_HIGH            = 167.0;
 
     public static final double farPower                 = 0.78;
     public static final double midPower                 = 0.73;

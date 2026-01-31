@@ -40,13 +40,15 @@ public class LUTPowerCalculator {
     // --------------------------------
 
     private final LUT<Integer, Integer> targetRPM = new LUT<Integer, Integer>() {{
-        add(4, (int) (5000 * FZPower));
-        add(3, (int) (5000 * farPower));
-        add(2, (int) (5000 * midPower));
-        add(1, (int) (5000 * closePower));
+        add(4, (int) (4800 * FZPower));
+        add(3, (int) (4800 * farPower));
+        add(2, (int) (4800 * midPower));
+        add(1, (int) (4800 * closePower));
         add(0, 0); // not shooting => 0 rpm target
     }};
 
+    //0.05
+    //0.53
     private final LUT<Integer, Double> targetShootingAngle = new LUT<Integer, Double>() {{
         add(4, 0.6);
         add(3, 0.4);
@@ -126,7 +128,7 @@ public class LUTPowerCalculator {
         return x < 0 ? 0 : (x > 1 ? 1 : x);
     }
 
-    private static double clamp(double x, double lo, double hi) {
-        return Math.max(lo, Math.min(hi, x));
+    private static double clamp(double x, double low, double high) {
+        return Math.max(low, Math.min(high, x));
     }
 }

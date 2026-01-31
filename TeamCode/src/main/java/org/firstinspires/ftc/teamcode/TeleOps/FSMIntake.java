@@ -79,6 +79,7 @@ public class FSMIntake {
                 if (intakeTimer.seconds() < 0.05) {
                     spindexer.clearVoteBuffer();
                 }
+                //nned to make this longer
                 else if (intakeTimer.seconds() < 0.15) {
                     // Collect as many samples as possible in 250ms
                     spindexer.addVoteSample(robot.colorSensor, robot.distanceSensor);
@@ -127,7 +128,7 @@ public class FSMIntake {
                     }*/
                     double targetPos = spindexerSlot1;
                     double currentPos = robot.spindexerServo.getPosition();
-                    double maxStep = 0.01; // max movement per loop
+                    double maxStep = 0.05; // max movement per loop
 
                     double error = targetPos - currentPos;
                     double step = Math.copySign(
