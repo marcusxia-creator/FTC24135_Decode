@@ -228,7 +228,7 @@ public class FSMShooter {
         if (shooterpowerstate != SHOOTERPOWERSTATE.AUTO_POWER) {
             robot.shooterMotor.setPower(shooterPower);
         } else {
-            robot.shooterMotor.setPower(Range.clip(power_setpoint,0.3,1.0));
+            robot.shooterMotor.setPower(Range.clip(speed,0.3,1.0));
         }
     }
 
