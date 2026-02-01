@@ -21,7 +21,7 @@ public class LUTPowerCalculator {
     private double distance;
     private int zone = 0;
 
-    private final double tickToRPM = 60.0 / 28.0;
+    private final double tickToRPM = (60.0 / 28.0);
     private final int maxVelocityRPM = 5500;
 
     private final Pose2D redGoalPose  = new Pose2D(DistanceUnit.INCH, -70,  70, AngleUnit.DEGREES, -45);
@@ -39,22 +39,38 @@ public class LUTPowerCalculator {
     public static double kV = 0.95;  // scale from targetNorm to power (roughly 1.0 if perfect)
     // --------------------------------
 
+
+    /**
+     * LUT values goes from farest from goal to closes from goal
+     * higher zone is further from goal
+     */
     private final LUT<Integer, Integer> targetRPM = new LUT<Integer, Integer>() {{
+        /**
         add(4, (int) (4800 * FZPower));
         add(3, (int) (4800 * farPower));
         add(2, (int) (4800 * midPower));
         add(1, (int) (4800 * closePower));
         add(0, 0); // not shooting => 0 rpm target
+         */
+        add(6, 5200);
+        add(5, 4470);
+        add(4, 4440);
+        add(3, 4470);
+        add(2, 3890);
+        add(1, 3750);
+        add(0, 0); ///change this later
     }};
 
     //0.05
     //0.53
     private final LUT<Integer, Double> targetShootingAngle = new LUT<Integer, Double>() {{
-        add(4, 0.6);
-        add(3, 0.4);
-        add(2, 0.5);
-        add(1, 0.6);
-        add(0, 0.3);
+        add(6, 0.51);
+        add(5, 0.51);
+        add(4, 0.51);
+        add(3, 0.51);
+        add(2, 0.3);
+        add(1, 0.06);
+        add(0, 0.51);
     }};
 
     public LUTPowerCalculator(RobotHardware robot) {
@@ -71,10 +87,13 @@ public class LUTPowerCalculator {
         double dy = robot.pinpoint.getPosY(DistanceUnit.INCH) - actualGoalPose.getY(DistanceUnit.INCH);
         distance = Math.hypot(dx, dy);
 
-        if (distance > CLOSE && distance <= MID) zone = 1;
-        else if (distance > MID && distance <= FAR) zone = 2;
-        else if (distance > FAR && distance <= FAR_EDGE) zone = 3;
-        else if (distance > FAR_ZONE_LOW && distance <= FAR_ZONE_HIGH) zone = 4;
+        if (distance > closeEdge && distance <= CLOSE) zone = 1;
+        else if (distance > CLOSE && distance <= MID) zone = 2;
+        else if (distance > MID && distance <= MidPoint) zone = 3;
+        else if (distance > MidPoint && distance <= FAR) zone = 4;
+        else if (distance > FAR && distance <= FAR_EDGE) zone = 5;
+
+        else if (distance > FAR_ZONE_LOW && distance <= FAR_ZONE_HIGH) zone = 6;
         else zone = 0;
     }
 
@@ -112,16 +131,19 @@ public class LUTPowerCalculator {
         if (Double.isNaN(output) || Double.isInfinite(output)) return 0.0;
         return clamp(output, -1.0, 1.0);
     }
+
     public int getZone(){
         return zone;
     }
 
     public double getDistance(){
+        updateDistanceAndZone();
         return distance;
     }
     public double getShooterAngle() {
-        int safeZone = Math.max(0, Math.min(zone, 3));
-        return Optional.ofNullable(targetShootingAngle.get(safeZone)).orElse(0.3);
+        ///int safeZone = Math.max(0, Math.min(zone, 3));
+        updateDistanceAndZone();
+        return Optional.ofNullable(targetShootingAngle.get(zone)).orElse(0.51);
     }
 
     private static double clamp01(double x) {

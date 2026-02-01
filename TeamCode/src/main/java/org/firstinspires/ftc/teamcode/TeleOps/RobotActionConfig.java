@@ -70,11 +70,12 @@ public class RobotActionConfig {
     public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, -64, 8, AngleUnit.DEGREES, 0);
     public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, -64, 8, AngleUnit.DEGREES, 0);
 
-    public static final double FAR_EDGE                 = 100.0;
-    public static final double FAR                      = 80.0;
-    public static final double MID                      = 70.0;
-    public static final double CLOSE                    = 55.0;
-    public static final double closeEdge                = 50.0;
+    public static final double FAR_EDGE                 = 105.0;
+    public static final double FAR                      = 87.0;
+    public static final double MidPoint                 = 82;
+    public static final double MID                      = 75.0;
+    public static final double CLOSE                    = 57.0;
+    public static final double closeEdge                = 36.0;
 
     public static final double FAR_ZONE_LOW             = 120.0;
     public static final double FAR_ZONE_HIGH            = 167.0;
@@ -87,4 +88,6 @@ public class RobotActionConfig {
 
     public static final double turret_Center_X_Offset = 0.0127;
     public static final double turret_Center_Y_Offset = 0.028575;
+
+    public static final double shooterMaxRPM          = 4480; //at 12 volts, power : 1
 }

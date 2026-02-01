@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMIntake.IntakeStates;
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SHOOTERSTATE;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.CLOSE;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.FAR_EDGE;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
 
 import com.acmerobotics.dashboard.FtcDashboard;

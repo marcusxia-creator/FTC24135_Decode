@@ -22,6 +22,7 @@ public class FSMShooter {
 
     private double voltage;
     private double speed;
+    private double angle;
     private double power_setpoint;
     private int shootCounter;
 
@@ -81,6 +82,10 @@ public class FSMShooter {
         voltage = robot.getBatteryVoltageRobust();
         //speed = 0.75;
         speed = shooterPowerLUT.getPower();
+        angle = shooterPowerLUT.getShooterAngle();
+
+        robot.shooterAdjusterServo.setPosition(angle);
+
         if (shootermotorstate == SHOOTERMOTORSTATE.RUN){
             robot.topShooterMotor.setPower(speed);
             robot.topShooterMotor.setPower(speed);
