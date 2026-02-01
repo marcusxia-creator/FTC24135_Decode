@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.controller.PIDController;
@@ -11,15 +12,25 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
+@Config
 public class Shooter {
     private final RobotHardware robot;
     private static PIDController pidController;
-    public ShooterRunMode.SHOOTERSTATE globalState = ShooterRunMode.SHOOTERSTATE.SHOOTER_INIT;
+
+    //Feewforward variables
+    private static double kS; // static friction
+    private static double kV; // velocity coefficient
+    public static final double tickToRPM = 60.0 / 28.0;
 
     public static class PIDTuning {
-        public static double kP = 0.0075;
-        public static double kI = 0.000001;
-        public static double kD = 0.00006; // position or RPM target
+        public static double kP = 10;
+        public static double kI = 0;
+        public static double kD = 0.7; // position or RPM target
+    }
+
+    public static class FeedforwardTuning {
+        public static double kS = 0.03;  // static friction (small bump)
+        public static double kV = 1.285;  // scale from targetNorm to power (roughly 1.0 if perfect)
     }
 
     ///Constructor
@@ -30,6 +41,8 @@ public class Shooter {
                 PIDTuning.kI,
                 PIDTuning.kD
         );
+        this.kS = FeedforwardTuning.kS;
+        this.kV = FeedforwardTuning.kV;
     }
 
     ///Shooter Run Mode
@@ -49,32 +62,35 @@ public class Shooter {
         private final ElapsedTime stateTimer2 = new ElapsedTime();
         private final ElapsedTime shooterTimer = new ElapsedTime();
 
-        private int targetSlot = 2;
+        private int targetSlot = 3;
         private double ShooterWaitTime;
         private double targetVelocity;
         public SHOOTERSTATE currentState;
 
         public ShooterRunMode(RobotHardware robot, double ShotPower, double ShooterWaitTime) {
             this.robot = robot;
-            this.targetVelocity = ShotPower * shooterMaxVel;
+            this.targetVelocity = ShotPower*shooterMaxRPM;
             this.ShooterWaitTime = ShooterWaitTime;
             this.currentState = SHOOTERSTATE.SHOOTER_INIT;
         }
 
         public void SpindexerRunTo(int slot) {
             if (slot == 0) {
-                robot.spindexerServo.setPosition(spindexerSlot1);
+                robot.spindexerServo.setPosition(spindexerZeroPos);
             }
             if (slot == 1) {
-                robot.spindexerServo.setPosition(spindexerSlot2);
+                robot.spindexerServo.setPosition(spindexerSlot1);
             }
             if (slot == 2) {
-                robot.spindexerServo.setPosition(spindexerSlot3);
+                robot.spindexerServo.setPosition(spindexerSlot2);
             }
             if (slot == 3) {
-                robot.spindexerServo.setPosition(spindexerSlot4);
+                robot.spindexerServo.setPosition(spindexerSlot3);
             }
             if (slot == 4){
+                robot.spindexerServo.setPosition(spindexerSlot4);
+            }
+            if (slot == 5){
                 robot.spindexerServo.setPosition(spindexerSlot5);
             }
         }
@@ -82,6 +98,7 @@ public class Shooter {
         public void FSMShooterRun() {
             switch (currentState) {
                 case SHOOTER_INIT:
+                    robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
                     SpindexerRunTo(targetSlot);
                     robot.kickerServo.setPosition(kickerRetract);
                     shooterTimer.reset();
@@ -98,7 +115,7 @@ public class Shooter {
                 case SHOOTER_LAUNCH:
                     if (stateTimer2.seconds() > 0.2) {
                         robot.spindexerServo.setPosition(spindexerZeroPos);
-                        if (stateTimer2.seconds() > 0.8) {
+                        if (stateTimer2.seconds() > 0.3) {
                             stateTimer.reset();
                             currentState = SHOOTERSTATE.SHOOTER_RESET;
                         }
@@ -122,17 +139,38 @@ public class Shooter {
             }
         }
 
+        public void RunShooter(double targetRPM){
+            double currentRPM = robot.topShooterMotor.getVelocity() * tickToRPM;
+
+            //Normalised current and max velocity to 0..1 for stable tuning
+            double normCurrentRPM = currentRPM/shooterMaxRPM;
+            double normTargetRPM = targetRPM /shooterMaxRPM; //Target velocity
+
+            //Feedforward calculations
+            double ff = (kS * Math.signum(normTargetRPM)) + (kV * normTargetRPM);
+            //PID calculations
+            double pidPower = pidController.calculate(normCurrentRPM, normTargetRPM);
+
+            //Shooter total power
+            double power = ff + pidPower;
+
+            robot.topShooterMotor.setPower(power);
+            robot.bottomShooterMotor.setPower(power);
+        }
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (currentState != SHOOTERSTATE.SHOOTER_END){
-                double currentVel = robot.topShooterMotor.getVelocity();
-                double power = pidController.calculate(currentVel, targetVelocity);
-                robot.topShooterMotor.setPower(power);
-                robot.bottomShooterMotor.setPower(power);
+            if (currentState == SHOOTERSTATE.SHOOTER_END) {
+                robot.topShooterMotor.setPower(0);
+                robot.bottomShooterMotor.setPower(0);
+                return false;
             }
-            FSMShooterRun();
-            return currentState != SHOOTERSTATE.SHOOTER_END;
+            else {
+                RunShooter(targetVelocity);
+                FSMShooterRun();
+
+                return true;
+            }
         }
     }
 
@@ -145,13 +183,14 @@ public class Shooter {
         private double targetVelocity;
 
         public ShooterOn (double shotPower){
-            this.targetVelocity = shotPower * shooterMaxVel;
+            this.targetVelocity = shotPower*shooterMaxRPM;
         }
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            double currentVel = robot.topShooterMotor.getVelocity();
+            double currentVel = robot.topShooterMotor.getVelocity()*tickToRPM;
             double power = pidController.calculate(currentVel, targetVelocity);
+
             robot.topShooterMotor.setPower(power);
             robot.bottomShooterMotor.setPower(power);
             return false;

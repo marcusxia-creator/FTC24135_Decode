@@ -66,7 +66,7 @@ public class IntakeRunMode implements Action {
                 if (robot.distanceSensor.getDistance(DistanceUnit.MM) < 50) {
                     stateTimer.reset();
                     currentState = INTAKESTATE.INTAKE_PAUSE;
-                } else if (intakeTimer.seconds()>6) {
+                } else if (intakeTimer.seconds()>12) {
                     currentState = INTAKESTATE.INTAKE_END;
                 } else {
                     currentState = INTAKESTATE.INTAKE_RUN;

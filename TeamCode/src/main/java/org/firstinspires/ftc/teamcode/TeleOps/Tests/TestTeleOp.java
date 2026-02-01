@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOps.Tests;
 
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.shooterMaxRPM;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -12,6 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.Shooter;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
@@ -41,7 +44,7 @@ public class TestTeleOp extends OpMode {
     double intakeSpeed = 0.5;
     double shooterPower = 0.0;
     public static double targetShooterRPM = 0.0;
-    double currentShooterRPM;
+    public static double currentShooterRPM;
     public static double tickToRPM = 60/28;
     private int targetSlot;
 
@@ -68,6 +71,8 @@ public class TestTeleOp extends OpMode {
         shooterPowerAngleCalculator = new ShooterPowerAngleCalculator(robot);
         robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
 
+        pidController = new PIDController(PIDTuning.kP,PIDTuning.kI,PIDTuning.kD);
+
         turret = new Turret(robot);
 
         limelight = new Limelight(robot, turret);
@@ -79,7 +84,7 @@ public class TestTeleOp extends OpMode {
         robot.shooterAdjusterServo.setPosition(RobotActionConfig.shooterAdjusterMin);
 
         colorDetection = new ColorDetection(robot);
-        pidController = new PIDController(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
+
         tickToRPM = (60/28); // for (tick/s) * 60 (s/min) /28 (tick per rotation)
         targetShooterRPM = 0;
 
@@ -113,11 +118,33 @@ public class TestTeleOp extends OpMode {
 
         robotDrive.DriveLoop();
         //ballColor = BallColor.fromHue(colorDetection.getHue());
+
+        ///original PID calculations in this class
+        /*
         currentShooterRPM = robot.topShooterMotor.getVelocity() * tickToRPM;
         shooterPower = pidController.calculate(currentShooterRPM, Range.clip(targetShooterRPM,0,6000));
         shooterPower = Math.max(-1.0, Math.min(1.0, shooterPower));
         robot.topShooterMotor.setPower(Range.clip(shooterPower,0.0,1.0));
         robot.bottomShooterMotor.setPower(Range.clip(shooterPower,0.0,1.0));
+         */
+
+        /// shooter pid controller
+        currentShooterRPM = robot.topShooterMotor.getVelocity() * tickToRPM;
+
+        //Normalised current and max velocity to 0..1 for stable tuning
+        double normCurrentRPM = currentShooterRPM/shooterMaxRPM;
+        double normTargetRPM = Range.clip(targetShooterRPM,0,shooterMaxRPM) /shooterMaxRPM; //Target velocity
+
+        //Feedforward calculations
+        double ff = (FeedforwardTuning.kS * Math.signum(normTargetRPM)) + (FeedforwardTuning.kV * normTargetRPM);
+        //PID calculations
+        double pidPower = pidController.calculate(normCurrentRPM, normTargetRPM);
+
+        //Shooter total power
+        shooterPower = ff + pidPower;
+
+        robot.topShooterMotor.setPower(shooterPower);
+        robot.bottomShooterMotor.setPower(shooterPower);
 
         /*fine tuning controls - gamepad 1*/
         /** kicker servo fine tune*/
@@ -268,5 +295,11 @@ public class TestTeleOp extends OpMode {
         public static double kP = 0.001;
         public static double kI = 0.000001;
         public static double kD = 0.00001; // position or RPM target
+    }
+
+    @Config
+    public static class FeedforwardTuning {
+        public static double kS = 0.03;  // static friction (small bump)
+        public static double kV = 0.95;  // scale from targetNorm to power (roughly 1.0 if perfect)
     }
 }

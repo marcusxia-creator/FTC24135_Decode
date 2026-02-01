@@ -21,17 +21,17 @@ public class RobotActionConfig {
     public static double spindexerFullPos               = 1.0;
     public static double[] spindexerPositions           = {spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5};
 
-    public static double shooterAdjusterMin                  = 0.0;
-    public static double shooterAdjusterMax                  = 0.5;
+    public static double shooterAdjusterMin                  = 0.05;
+    public static double shooterAdjusterMax                  = 0.51;
 
     //Speed
-    public static double kickerRetract = 0.3;  /// value - retract back for spindexer reversing
-    public static double kickerExtend = 0.6; /// value - into the spindexer for pushing the ball up
+    public static double kickerRetract = 0.36;  /// value - retract back for spindexer reversing
+    public static double kickerExtend = 0.67; /// value - into the spindexer for pushing the ball up
     public static double intakeSpeed                    = 0.85;
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.4;
     public static double shooterVel                     = 1900;
-    public static double shooterMaxVel                  = 6000;
+    public static double shooterMaxRPM                  = 5800;
     public static double shooterPower                   = 0.78;
     public static double shooterFactorThreshold         = 0.95;
     public static double powerFactor                    = 1;

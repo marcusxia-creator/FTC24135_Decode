@@ -60,7 +60,7 @@ public class TestAuto extends LinearOpMode {
                 new SequentialAction(
                     IntakeRun(),
                     //shooter.ShooterOn(FarShotPower),
-                    shooter.ShooterRun(FarShotPower,1),
+                    shooter.ShooterRun(FarShotPower,4),
                     shooter.ShooterOff()
                 )
             );
