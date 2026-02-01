@@ -127,7 +127,7 @@ public class FSMShooter {
                 }
                 break;
             case FLYWHEEL_RUNNING:
-                robot.shooterMotor.setPower(0.8);
+                robot.shooterMotor.setPower(0.7);
                 // Press START an check toggle button true or false to determine slot order for motif
                 // check for targetColor
                 if (gamepad_1.getButton(GamepadKeys.Button.B)){
