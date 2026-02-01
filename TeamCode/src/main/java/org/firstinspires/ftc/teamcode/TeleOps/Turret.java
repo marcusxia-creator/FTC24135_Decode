@@ -37,8 +37,17 @@ public class Turret {
         ticks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
         robot.turretMotor.setTargetPosition(ticks);
         robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.turretMotor.setPower(0.3);
+        robot.turretMotor.setPower(0.8);
     }
+
+    public void driveTurretPID() {
+        ticks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
+        robot.turretMotor.setTargetPosition(ticks);
+        robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.turretMotor.setPower(0.8);
+    }
+
+
     /*public boolean isTurretAtPosition (){
         if (Math.floor(angle) == Math.floor(getTurretMotorAngle())){
             return true;

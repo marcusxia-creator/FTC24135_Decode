@@ -53,7 +53,7 @@ public class LUTPowerCalculator {
         add(0, 0); // not shooting => 0 rpm target
          */
         add(6, 5200);
-        add(5, 4470);
+        add(5, 4450);
         add(4, 4440);
         add(3, 4470);
         add(2, 3890);
@@ -64,13 +64,13 @@ public class LUTPowerCalculator {
     //0.05
     //0.53
     private final LUT<Integer, Double> targetShootingAngle = new LUT<Integer, Double>() {{
-        add(6, 0.51);
-        add(5, 0.51);
-        add(4, 0.51);
-        add(3, 0.51);
+        add(6, 0.49);
+        add(5, 0.49);
+        add(4, 0.49);
+        add(3, 0.49);
         add(2, 0.3);
         add(1, 0.06);
-        add(0, 0.51);
+        add(0, 0.49);
     }};
 
     public LUTPowerCalculator(RobotHardware robot) {

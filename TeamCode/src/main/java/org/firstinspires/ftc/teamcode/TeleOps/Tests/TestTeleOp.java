@@ -55,7 +55,7 @@ public class TestTeleOp extends OpMode {
     private boolean pidstatus = false;
     private boolean turretStatus = false;
 
-    public static double adjusterServoPosition = 0.51;
+    public static double adjusterServoPosition = 0.49;
 
 
     @Override

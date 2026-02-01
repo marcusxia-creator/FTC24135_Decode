@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class SpindexerSimp {
-    public enum SLOT { Empty, Green, Purple }
+    public enum SLOT { Empty, Green, Purple, Unknown }
 
     public RobotHardware robot;
     public SLOT[] slots;
@@ -97,7 +97,7 @@ public class SpindexerSimp {
         SLOT winner;
         if (greenVotes > purpleVotes && greenVotes > emptyVotes) winner = SLOT.Green;
         else if (purpleVotes > greenVotes && purpleVotes > emptyVotes) winner = SLOT.Purple;
-        else winner = SLOT.Empty;
+        else winner = SLOT.Unknown;
 
         // Apply result to the current logical index
         slots[Math.floorMod(currentPos, 3)] = winner;

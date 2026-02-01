@@ -11,6 +11,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -115,6 +116,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         limelight = new Limelight(robot, turret);
         limelight.initLimelight(24);
         limelight.start();
+
+        /// 10. start adjuster servo at position to avoid soft start
+        robot.shooterAdjusterServo.setPosition(0.49);
     }
 
     @Override
@@ -226,6 +230,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("turret target angle", turret.getTargetAngle());
         telemetry.addData("turret drive angle", turret.getTurretDriveAngle());
         telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
+        telemetry.addData("motor PIDF coefficient", robot.turretMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
         telemetry.addLine("-----------------------------------------");
         telemetry.addData("limelight output", limelight.normalizedPose2D(DistanceUnit.MM));
         telemetry.update();

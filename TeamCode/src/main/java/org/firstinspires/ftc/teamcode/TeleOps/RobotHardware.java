@@ -122,6 +122,7 @@ public class RobotHardware {
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
         turretMotor = hardwareMap.get(DcMotorEx.class, "Turret_Motor");
+
         //Servos
         //angleServo = hardwareMap.get(Servo.class, "Angle_Servo");
         kickerServo = hardwareMap.get(Servo.class, "Kicker_Servo");
@@ -170,7 +171,7 @@ public class RobotHardware {
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        //turretMotor.setTargetPositionTolerance(6);
+        turretMotor.setTargetPositionTolerance(6);
 
         /// set run mode of shooter Motor
         topShooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
@@ -188,7 +189,7 @@ public class RobotHardware {
         backRightMotor.setPower(0);
 
         /// set spindexer servo
-        spindexerServo.setDirection(Servo.Direction.FORWARD);
+        spindexerServo.setDirection(Servo.Direction.REVERSE);
     }// End of init
 
     // Initialize IMU

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
@@ -82,7 +83,7 @@ public class FSMShooter {
         voltage = robot.getBatteryVoltageRobust();
         //speed = 0.75;
         speed = shooterPowerLUT.getPower();
-        angle = shooterPowerLUT.getShooterAngle();
+        angle = Range.clip(shooterPowerLUT.getShooterAngle(), 0.06, 0.49);
 
         robot.shooterAdjusterServo.setPosition(angle);
 
