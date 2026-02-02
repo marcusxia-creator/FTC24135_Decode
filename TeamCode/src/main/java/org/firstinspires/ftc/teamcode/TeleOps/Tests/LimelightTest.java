@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOps;
+package org.firstinspires.ftc.teamcode.TeleOps.Tests;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -7,6 +7,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
+import org.firstinspires.ftc.teamcode.TeleOps.Turret;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
@@ -37,6 +39,7 @@ public class LimelightTest {
     }
 
     public Pose2D updateTagMT2OFFSET(DistanceUnit distanceUnit) {
+        /**Limelight to Turret center offset*/
         if (distanceUnit == DistanceUnit.INCH) {
             conversionFactor = 39.3700787;
         }
@@ -62,6 +65,7 @@ public class LimelightTest {
     }
 
     public Pose2D updateTagMT2OFFSET2(DistanceUnit distanceUnit) {
+        /** Turret center to Robot center offset*/
         if (distanceUnit == DistanceUnit.INCH) {
             conversionFactor = 39.3700787;
         }
@@ -80,6 +84,7 @@ public class LimelightTest {
  }
 
     public boolean ifGood() {
+        /** Tag Angle Filter */
         double yaw = turret.getTurretMotorAngle() + robot.pinpoint.getHeading(AngleUnit.DEGREES);//robot.external_imu.getAngularOrientation().firstAngle;
         robot.limelight.updateRobotOrientation(yaw);
         LLResult llResult = robot.limelight.getLatestResult();

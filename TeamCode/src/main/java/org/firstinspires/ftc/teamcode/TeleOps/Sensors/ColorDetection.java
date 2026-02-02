@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
-import org.firstinspires.ftc.teamcode.TeleOps.Tests.BallColor;
 
 public class ColorDetection {
     private RobotHardware robot;
@@ -20,7 +19,7 @@ public class ColorDetection {
     private ElapsedTime timer = new ElapsedTime();
 
     // Parameters
-    private final int REQUIRED_STABLE_COUNT = 5; // number of consistent readings (~0.3s if called every 20ms)
+    private final int REQUIRED_STABLE_COUNT = 5; // number of consistent readings (~0.1s if called every 20ms)
     private final double TIMEOUT_S = 1.0;        // maximum time allowed to detect color
     public ColorDetection(RobotHardware robot) {
         this.robot = robot;

@@ -24,15 +24,19 @@ public class RobotActionConfig {
     public static double angleResetPos                  = 0.0;
     public static double slotAngleDelta                 = 0.19;
 
-    //Speed
+    //kicker
     public static double kickerRetract                  = 0.36;  /// value - retract back for spindexer reversing
     public static double kickerExtend                   = 0.66; /// value - into the spindexer for pushing the ball up
+    //intake Speed
     public static double intakeSpeed                    = 0.85;
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.7;
-    public static double shooterVel                     = 1900;
-    public static double shooterPower                   = 0.78;
+    //shooter adjustor
+    public static double shooterAdjusterMax             = 0.59;
+    public static double shooterAdjusterMin             = 0.06;
+    public static double shooterAdjusterMid             = 0.3;
     public static double shooterFactorThreshold         = 0.95;
+    //drive train power
     public static double powerFactor                    = 1;
     public static double accel_Slowness                 = 0.25;
     public static double decel_Slowness                 = 0.5;

@@ -21,8 +21,10 @@ public class LUTPowerCalculator {
     private double distance;
     private int zone = 0;
 
-    private final double tickToRPM = (60.0 / 28.0);
+    public static final double tickToRPM = (60.0 / 28.0);
     private final int maxVelocityRPM = 5500;
+
+    private int rpmTarget;
 
     private final Pose2D redGoalPose  = new Pose2D(DistanceUnit.INCH, -70,  70, AngleUnit.DEGREES, -45);
     private final Pose2D blueGoalPose = new Pose2D(DistanceUnit.INCH, -70, -70, AngleUnit.DEGREES,  45);
@@ -39,19 +41,12 @@ public class LUTPowerCalculator {
     public static double kV = 0.95;  // scale from targetNorm to power (roughly 1.0 if perfect)
     // --------------------------------
 
-
     /**
      * LUT values goes from farest from goal to closes from goal
      * higher zone is further from goal
      */
     private final LUT<Integer, Integer> targetRPM = new LUT<Integer, Integer>() {{
-        /**
-        add(4, (int) (4800 * FZPower));
-        add(3, (int) (4800 * farPower));
-        add(2, (int) (4800 * midPower));
-        add(1, (int) (4800 * closePower));
-        add(0, 0); // not shooting => 0 rpm target
-         */
+        /// RPM is measured based on 13v
         add(6, 5200);
         add(5, 4450);
         add(4, 4440);
@@ -64,13 +59,13 @@ public class LUTPowerCalculator {
     //0.05
     //0.53
     private final LUT<Integer, Double> targetShootingAngle = new LUT<Integer, Double>() {{
-        add(6, 0.49);
-        add(5, 0.49);
-        add(4, 0.49);
-        add(3, 0.49);
-        add(2, 0.3);
-        add(1, 0.06);
-        add(0, 0.49);
+        add(6, shooterAdjusterMax);
+        add(5, shooterAdjusterMax);
+        add(4, shooterAdjusterMax);
+        add(3, shooterAdjusterMax);
+        add(2, shooterAdjusterMid);
+        add(1, shooterAdjusterMin);
+        add(0, shooterAdjusterMax);
     }};
 
     public LUTPowerCalculator(RobotHardware robot) {
@@ -97,13 +92,16 @@ public class LUTPowerCalculator {
         else zone = 0;
     }
 
+    public int getRPM() {
+        updateDistanceAndZone();
+        rpmTarget = Optional.ofNullable(targetRPM.get(zone)).orElse(0);
+        return rpmTarget;
+    }
+
     public double getPower() {
         if (robot == null || robot.pinpoint == null || robot.topShooterMotor == null) return 0.0;
-
         updateDistanceAndZone();
-
         int rpmTarget = Optional.ofNullable(targetRPM.get(zone)).orElse(0);
-
         // If not shooting, return 0 and reset PID so it doesn't "wind up"
         if (rpmTarget <= 0) {
             pid.reset();
@@ -143,7 +141,7 @@ public class LUTPowerCalculator {
     public double getShooterAngle() {
         ///int safeZone = Math.max(0, Math.min(zone, 3));
         updateDistanceAndZone();
-        return Optional.ofNullable(targetShootingAngle.get(zone)).orElse(0.51);
+        return Optional.ofNullable(targetShootingAngle.get(zone)).orElse(shooterAdjusterMax);
     }
 
     private static double clamp01(double x) {

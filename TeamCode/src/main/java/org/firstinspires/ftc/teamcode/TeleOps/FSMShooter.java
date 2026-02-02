@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -14,6 +15,9 @@ public class FSMShooter {
     private final GamepadEx gamepad_2;
 
     private ElapsedTime shootTimer = new ElapsedTime();
+    private ElapsedTime flyWheelTimer = new ElapsedTime();
+    private ElapsedTime debounceTimer = new ElapsedTime();
+    private long lastLoopTime = 0;
 
     SHOOTERSTATE shooterState;
     SORTSHOOTERSTATE sortShooterState;
@@ -22,10 +26,15 @@ public class FSMShooter {
     Spindexer.SLOT targetColour = Spindexer.SLOT.Purple;
 
     private double voltage;
-    private double speed;
-    private double angle;
-    private double power_setpoint;
-    private int shootCounter;
+    private double power;   //power lut power
+    private double angle;   //shooter angle
+    private double power_setpoint; //not actually be used
+    // shooting sequence config
+    private int shootCounter; // counter for # ball shooting
+    private long lastFeedTimeMs = 0; // shooting feed time interval time stamp
+    private static final long FEED_PERIOD_MS = 600; // 0.6s per feed (tune)
+    private static final double SPOOLUP_SEC = 2.25;
+
 
     /**
      * BUTTON FOR SHOOTING
@@ -81,67 +90,93 @@ public class FSMShooter {
 
     public void SequenceShooterLoop() {
         voltage = robot.getBatteryVoltageRobust();
-        //speed = 0.75;
-        speed = shooterPowerLUT.getPower();
-        angle = Range.clip(shooterPowerLUT.getShooterAngle(), 0.06, 0.49);
-
+        /// shooter motor power controller
+        power = shooterPowerLUT.getPower(); //get shooter power based on distance Zone and PID+FF power, shooterPowerAngleCalculator.getPower();
+        double rpm = shooterPowerLUT.getRPM();
+        power_setpoint = (power *13.0)/voltage; // no need to normalized power for shooter to 13v./voltage;
+        angle = Range.clip(shooterPowerLUT.getShooterAngle(), 0.06, 0.49); // get shooter adjuster angle.
+        /// set shooter adjuster angle
         robot.shooterAdjusterServo.setPosition(angle);
-
+        /// shooter motor state to control shooter run/NOT
         if (shootermotorstate == SHOOTERMOTORSTATE.RUN){
-            robot.topShooterMotor.setPower(speed);
-            robot.topShooterMotor.setPower(speed);
+            robot.topShooterMotor.setPower(power);
+            robot.topShooterMotor.setPower(power);
         }
         if (shootermotorstate == SHOOTERMOTORSTATE.STOP) {
             robot.topShooterMotor.setPower(0);
             robot.topShooterMotor.setPower(0);
         }
-        //power_setpoint = (speed*12.0)/voltage;
 
-        //ShooterPowerControl();
-        // --- Global Controls (can be triggered from any state) ---
+        /// --- FMS ---
         switch (shooterState) {
             case SHOOTER_IDLE:
                //Idle state for shooter
                 robot.topShooterMotor.setPower(0);
                 robot.bottomShooterMotor.setPower(0);
                 shootTimer.reset();
-                //shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
                 break;
             case FLYWHEEL_RUNNING:
                 shootermotorstate = SHOOTERMOTORSTATE.RUN;
                 shootCounter = 0;
-                if (shootTimer.seconds() > 0.1){ //wait for flywheel to spool up; needs testing
+                if (shootTimer.seconds() > 0.05){ //wait for flywheel to spool up; needs testing
                     shooterState = SHOOTERSTATE.KICKER_EXTEND;
                     shootTimer.reset();
+                    flyWheelTimer.reset();
                 }
                 break;
             case KICKER_EXTEND:
-                //Always move to slot 2 after intaking. Add a bit to allow kicker servo to move in{
                     robot.kickerServo.setPosition(kickerExtend);
-                if (shootTimer.seconds() > 2.25) {
+                    /// use button x again to shoot.
+                if ((gamepad_1.getButton(GamepadKeys.Button.X)|| gamepad_2.getButton(GamepadKeys.Button.X) && isButtonDebounced())){
+                    robot.spindexerServo.setPosition(spindexerZeroPos);
                     shooterState = SHOOTERSTATE.SEQUENCE_SHOOTING;
-                    shootTimer.reset();
+                        shootTimer.reset();
                 }
                 break;
             case SEQUENCE_SHOOTING:
-                if (shootTimer.seconds() > 0.6 * shootCounter) {
+                boolean flywheelReady =
+                        flyWheelTimer.seconds() >= SPOOLUP_SEC ||
+                                (robot.topShooterMotor.getVelocity() * LUTPowerCalculator.tickToRPM) >= rpm * 0.95;
+
+                if (!flywheelReady) break;
+
+                long now = System.currentTimeMillis();
+
+                // --- First ball: shoot immediately once flywheel is ready ---
+                if (shootCounter == 0) {
+                    shootCounter = 1;
+                    lastFeedTimeMs = now;
+
+                    spindexer.RunToNext();   // feed 1st ball NOW
+                    break;
+                }
+
+                // --- Next balls: every FEED_PERIOD_MS ---
+                if (now - lastFeedTimeMs >= FEED_PERIOD_MS) {
                     shootCounter++;
+                    lastFeedTimeMs = now;
+
                     if (shootCounter < 3) {
-                        spindexer.RunToNext();
-                    }else if(shootCounter ==3){
-                        robot.spindexerServo.setPosition(spindexerSlot4);
-                    }
-                    else{
+                        spindexer.RunToNext();          // feed ball #2, #3
+                    } else if (shootCounter == 3) {
+                        robot.spindexerServo.setPosition(spindexerSlot4);  // your “end position”
+                    } else {
                         shooterState = SHOOTERSTATE.SHOOTER_STOP;
                         shootTimer.reset();
+
+                        // reset these so next time you enter shooting state it works cleanly
+                        shootCounter = 0;
+                        lastFeedTimeMs = 0;
                     }
                 }
+
                 break;
+
             case SHOOTER_STOP:
                 //stop flywheel
                // robot.kickerServo.setPosition(kickerExtend);
                 shootermotorstate = SHOOTERMOTORSTATE.STOP;
-                if (shootTimer.seconds() > 0.2) {
+                if (shootTimer.seconds() > 0.02) {
                     spindexer.resetSlot();
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.KICKER_RETRACT;
@@ -149,11 +184,11 @@ public class FSMShooter {
                 }
                 break;
             case KICKER_RETRACT:
-                if (shootTimer.seconds() > 0.5) {
-                    robot.kickerServo.setPosition(kickerRetract);
+                if (shootTimer.seconds() > 0.25) {
+                    spindexer.RuntoPosition(0);
                 }
                 if (shootTimer.seconds() > 1.0){
-                    spindexer.RuntoPosition(0);
+                    robot.kickerServo.setPosition(kickerRetract);
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.SHOOTER_IDLE;
                 }
@@ -168,8 +203,8 @@ public class FSMShooter {
     public void SortShooterLoop() {
         voltage = robot.getBatteryVoltageRobust();
         //speed = shooterPowerAngleCalculator.getPower();
-        speed = shooterPowerLUT.getPower();
-        power_setpoint = (speed*12.0)/voltage;
+        power = shooterPowerLUT.getPower();
+        power_setpoint = (power *12.0)/voltage;
         //ShooterPowerControl();
         switch(sortShooterState) {
             case SHOOTER_IDLE:
@@ -205,8 +240,16 @@ public class FSMShooter {
         return voltage;
     }
 
-    public double getSpeed () {
-        return speed;
+    public double getPower() {
+        return power_setpoint;
+    }
+
+    public boolean isButtonDebounced() {
+        if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
+            debounceTimer.reset();
+            return true;
+        }
+        return false;
     }
 
 
