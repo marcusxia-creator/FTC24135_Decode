@@ -17,12 +17,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.TeleOps.LUTPowerCalculator;
+import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 
 import org.firstinspires.ftc.teamcode.TeleOps.RobotDrive;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 import org.firstinspires.ftc.teamcode.TeleOps.Turret;
-import org.firstinspires.ftc.teamcode.TeleOps.LimelightTest;
 
 @Config
 @TeleOp (name = "TestTeleOp", group = "org.firstinspires.ftc.teamcode")
@@ -121,7 +121,7 @@ public class TestTeleOp extends OpMode {
         //shooterPower = 1;
         robot.topShooterMotor.setPower(shooterPower);
 
-        /**
+
         /// run turret
         if (turretStatus){
             turret.driveTurretMotor();
@@ -158,6 +158,7 @@ public class TestTeleOp extends OpMode {
             robot.intakeMotor.setPower(0);
         }
 
+        /** run shooter motor*/
         /**
         shooterPower = Math.max(-1.0, Math.min(1.0, shooterPower));
         ///  set shooter power
@@ -167,7 +168,7 @@ public class TestTeleOp extends OpMode {
 
 
         /** run kicker servoposition*/
-        /**
+
         if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
             servoposition = robot.kickerServo.getPosition() + 0.05;
             robot.kickerServo.setPosition(Range.clip(servoposition, 0.0, 1.0
@@ -178,7 +179,7 @@ public class TestTeleOp extends OpMode {
             robot.kickerServo.setPosition(Range.clip(servoposition, 0.0, 1.0));
         }
         /** run spindexer servoposition*/
-        /**
+
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
             servoposition = robot.spindexerServo.getPosition() + 0.01;
             robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
@@ -189,7 +190,7 @@ public class TestTeleOp extends OpMode {
         }
 
         /** shooter adjuster */
-        /**
+
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && isButtonDebounced()) {
             servoposition = robot.shooterAdjusterServo.getPosition() + 0.01;
             robot.shooterAdjusterServo.setPosition(Range.clip(servoposition, 0, 1));
@@ -199,7 +200,7 @@ public class TestTeleOp extends OpMode {
             robot.shooterAdjusterServo.setPosition(Range.clip(servoposition, 0, 1));
         }
         /** run shooter target RPM */
-        /**
+
         if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()){
             finetune = true;
             pidstatus = true;
@@ -213,7 +214,7 @@ public class TestTeleOp extends OpMode {
         }
 
         /** run intake motor*/
-        /**
+
         if (gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER) && isButtonDebounced()) {
             robot.intakeMotor.setPower(Range.clip(intakeSpeed, 0.5, 1.0));
             intakeSpeed += 0.05;
@@ -226,7 +227,7 @@ public class TestTeleOp extends OpMode {
          * GamePad#2 to drive the spindexer
          */
         /** run kicker servoposition*/
-        /**
+
         if (gamepad_2.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
             servoposition = kickerRetract;
             robot.kickerServo.setPosition(Range.clip(servoposition, 0.0, 1.0
@@ -237,7 +238,7 @@ public class TestTeleOp extends OpMode {
             robot.kickerServo.setPosition(Range.clip(servoposition, 0.0, 1.0));
         }
         /** run spindexer per slot*/
-        /**
+
         if (gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
             servoposition = robot.spindexerServo.getPosition() + slotAngleDelta;
             robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
@@ -248,7 +249,7 @@ public class TestTeleOp extends OpMode {
         }
 
         /** run shooter based on target distance*/
-        /**
+
         if (gamepad_2.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
             finetune = false;
             pidstatus = true;
@@ -259,7 +260,7 @@ public class TestTeleOp extends OpMode {
         }
 
         /** run turret*/
-        /**
+
         if (gamepad_2.getButton(GamepadKeys.Button.DPAD_UP) && isButtonDebounced()) {
             turretStatus = true;
         }
