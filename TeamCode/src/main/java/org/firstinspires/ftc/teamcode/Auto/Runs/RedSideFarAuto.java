@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.Auto.PinpointLocalizer;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.IntakeRunMode;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.Shooter;
+import org.firstinspires.ftc.teamcode.Auto.messages.PoseMessage;
 import org.firstinspires.ftc.teamcode.TeleOps.Limelight;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 import org.firstinspires.ftc.teamcode.TeleOps.Turret;
