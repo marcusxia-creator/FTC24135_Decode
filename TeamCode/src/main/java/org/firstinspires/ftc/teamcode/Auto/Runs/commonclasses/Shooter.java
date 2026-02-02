@@ -50,6 +50,7 @@ public class Shooter {
         public enum SHOOTERSTATE {
             SHOOTER_INIT,
             SHOOTER_RUN,
+            SHOOTER_SWITCH,
             SHOOTER_LAUNCH,
             SHOOTER_RESET,
             SHOOTER_END
@@ -62,7 +63,8 @@ public class Shooter {
         private final ElapsedTime stateTimer2 = new ElapsedTime();
         private final ElapsedTime shooterTimer = new ElapsedTime();
 
-        private int targetSlot = 3;
+        private int startingSlot = 3;
+        private int targetSlot = startingSlot;
         private double ShooterWaitTime;
         private double targetVelocity;
         public SHOOTERSTATE currentState;
@@ -108,13 +110,23 @@ public class Shooter {
                 case SHOOTER_RUN:
                     if (stateTimer.seconds() > ShooterWaitTime) {
                         robot.kickerServo.setPosition(kickerExtend);
+                        currentState = SHOOTERSTATE.SHOOTER_SWITCH;
+                    }
+                    break;
+                case SHOOTER_SWITCH:
+                    if (targetSlot == 0 || targetSlot == (startingSlot - 3)) {
+                        stateTimer.reset();
+                        currentState = SHOOTERSTATE.SHOOTER_RESET;
+                    }
+                    else {
+                        targetSlot--;
                         stateTimer2.reset();
                         currentState = SHOOTERSTATE.SHOOTER_LAUNCH;
                     }
                     break;
                 case SHOOTER_LAUNCH:
                     if (stateTimer2.seconds() > 0.2) {
-                        robot.spindexerServo.setPosition(spindexerZeroPos);
+                        SpindexerRunTo(targetSlot);
                         if (stateTimer2.seconds() > 0.3) {
                             stateTimer.reset();
                             currentState = SHOOTERSTATE.SHOOTER_RESET;
