@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -13,15 +14,25 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.*;
 
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Auto.PinpointLocalizer;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.IntakeRunMode;
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.Shooter;
+import org.firstinspires.ftc.teamcode.TeleOps.Limelight;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
+import org.firstinspires.ftc.teamcode.TeleOps.Turret;
+
+import com.qualcomm.hardware.limelightvision.LLResult;
+
+import java.util.List;
 
 @Autonomous(name = "RedSideFarAuto", group = "Autonomous")
 public class RedSideFarAuto extends LinearOpMode {
     public static Pose2d initialPose = new Pose2d(64, 7.5, Math.toRadians(90));
     public RobotHardware robot;
 
+    public int tagID = -1;
+    public double bestArea = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -29,6 +40,21 @@ public class RedSideFarAuto extends LinearOpMode {
         robot = new RobotHardware(hardwareMap);
         robot.init();
         Shooter shooter = new Shooter(robot);
+
+        robot.limelight.pipelineSwitch(0);
+        robot.limelight.start();
+
+
+
+        while (!isStopRequested() && !isStarted()) {
+            LLResult llResult =  robot.limelight.getLatestResult();
+
+            List<LLResultTypes.FiducialResult> fiducials = llResult.getFiducialResults();
+            for (LLResultTypes.FiducialResult fiducial : fiducials) {
+                tagID = fiducial.getFiducialId(); // The ID number of the fiducial
+            }
+        }
+
         robot.spindexerServo.setPosition(spindexerSlot3);
 
         Action IntakeSet1Drive1 = drive.actionBuilder(initialPose)
@@ -100,6 +126,8 @@ public class RedSideFarAuto extends LinearOpMode {
                     )
                 )
             );
+
+            PoseStorage.currentPose = drive.localizer.getPose();
         }
     }
 

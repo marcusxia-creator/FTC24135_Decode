@@ -16,6 +16,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.Tests.BallColor;
 
@@ -68,6 +70,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private static double voltage;
     private BallColor ballColor;
     private ColorDetection colorDetection;
+
     /// ----------------------------------------------------------------
     /// For robot action state
     public RobotActionState actionStates;
@@ -87,6 +90,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.initIMU(); //Initialize control hub IMU
         robot.initPinpoint(); //Initialize pinpoint
         robot.initExternalIMU(); //Initialize external IMU
+
+        Pose2D startingPose = new Pose2D(DistanceUnit.INCH, PoseStorage.currentPose.position.x, PoseStorage.currentPose.position.y, AngleUnit.RADIANS, PoseStorage.currentPose.heading.real);
+        robot.pinpoint.setPosition(startingPose);
 
         /// 0. gamepad---------------------------------------------------------------
         gamepadCo1 = new GamepadEx(gamepad1);
