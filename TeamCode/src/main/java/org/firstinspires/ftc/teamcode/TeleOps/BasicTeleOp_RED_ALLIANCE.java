@@ -19,6 +19,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.Tests.BallColor;
 
+/**
+ * Making the sequence shooting go slot 5-4-3 (intaking) 3-2-1 (shooting)
+ * Put blue alliance code (Turret, LUT, ect)
+ * Sort shooting
+ * Adding Motif Detection to auto
+ * Adding Pose2D storage + turret heading from auto to teleOp
+ * Turret PIDF
+ * Tuning PID values for shooter - coach did
+ ---------------------------------------------------------------------------
+ * Change shooting timing values when hardware is changed for rapid shooting
+ * Tuning LUT values when the hardware changes
+ */
+
 @TeleOp(name = "RED_TELEOP_MEET_2", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     /// Enum states for robot action state

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
@@ -15,10 +16,14 @@ public class Turret {
 
     private final double tickToAngle = ((0.16867469879518 * 360) / 145.1);
     private final double angleToTick = 1 / tickToAngle;
-    public int ticks;
+
+    public static final double kP = 6, kI = 0, kD = 0, kS = 0, kV = 0;
+
+    private PIDController pidController;
 
     public Turret (RobotHardware robot) {
         this.robot = robot;
+        pidController = new PIDController(kP, kI, kD);
     }
 
     public int motorDriveTick() {
@@ -34,17 +39,19 @@ public class Turret {
     }
 
     public void driveTurretMotor(){
-        ticks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
+        int ticks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
         robot.turretMotor.setTargetPosition(ticks);
         robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.turretMotor.setPower(0.8);
     }
 
     public void driveTurretPID() {
-        ticks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
-        robot.turretMotor.setTargetPosition(ticks);
-        robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.turretMotor.setPower(0.8);
+        int targetTicks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
+        int currentTicks = robot.turretMotor.getCurrentPosition();
+        double ff = (kS * Math.signum(targetTicks)) + (kV * targetTicks);
+        double power = pidController.calculate(robot.turretMotor.getCurrentPosition(), targetTicks);
+        double output = power + ff;
+        robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
     }
 
 
