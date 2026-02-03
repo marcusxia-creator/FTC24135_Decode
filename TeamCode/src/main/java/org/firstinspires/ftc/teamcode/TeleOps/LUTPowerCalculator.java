@@ -47,13 +47,13 @@ public class LUTPowerCalculator {
      */
     private final LUT<Integer, Integer> targetRPM = new LUT<Integer, Integer>() {{
         /// RPM is measured based on 13v
-        add(6, 5200);
-        add(5, 4450);
-        add(4, 4440);
-        add(3, 4470);
-        add(2, 3890);
-        add(1, 3750);
-        add(0, 4000); ///change this later
+        add(6, 5200); // 5200
+        add(5, 4450); // 4450
+        add(4, 4290); // 4440
+        add(3, 3960); // 4470
+        add(2, 3890); // 3890
+        add(1, 3750); //3750
+        add(0, 4100); ///change this later
     }};
 
     //0.05
@@ -82,12 +82,11 @@ public class LUTPowerCalculator {
         double dy = robot.pinpoint.getPosY(DistanceUnit.INCH) - actualGoalPose.getY(DistanceUnit.INCH);
         distance = Math.hypot(dx, dy);
 
-        if (distance > closeEdge && distance <= CLOSE) zone = 1;
-        else if (distance > CLOSE && distance <= MID) zone = 2;
-        else if (distance > MID && distance <= MidPoint) zone = 3;
-        else if (distance > MidPoint && distance <= FAR) zone = 4;
-        else if (distance > FAR && distance <= FAR_EDGE) zone = 5;
-
+        if (distance > closeEdge && distance <= CLOSE) zone     = 1;
+        else if (distance > CLOSE && distance <= MID) zone      = 2;
+        else if (distance > MID && distance <= MidPoint) zone   = 3;
+        else if (distance > MidPoint && distance <= FAR) zone   = 4;
+        else if (distance > FAR && distance <= FAR_EDGE) zone   = 5;
         else if (distance > FAR_ZONE_LOW && distance <= FAR_ZONE_HIGH) zone = 6;
         else zone = 0;
     }
