@@ -206,12 +206,12 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robotDrive.DriveLoop();
 
         // =========================================================
-        // 4. ACTION STATE TRANSITION MANAGER (GRACEFUL)
+        // FIXME: 4. NEW! - ACTION STATE TRANSITION MANAGER (GRACEFUL)
         // =========================================================
         updateActionStateTransitions();
 
         // =========================================================
-        // 5. PER-ACTION "EXTRAS" (NO FSM STATE FORCING HERE)
+        // FIXME: 5. MODIFIED - PER-ACTION "EXTRAS" (NO FSM STATE FORCING HERE)
         // =========================================================
         switch (activeActionState){
             case Sequence_Shooting:
@@ -257,6 +257,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     }
 
     // =========================================================
+    // FIXME - prevent change Action State when FSM not finish
     // Update Action State based on button presses
     // =========================================================
     private void updateActionStateTransitions() {
@@ -276,7 +277,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         //    (this will not hard-cut; it triggers each FSM's stop sequence)
         // ------------------------------------------------------------
 
-        //TODO if specific stop flow needed. change the following function.
+        //TODO: if specific stop flow needed. uncomment the function below
         //requestGracefulStopsIfNeeded(activeActionState, requestedActionState);
 
         // ------------------------------------------------------------
@@ -311,12 +312,12 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         }
     }
     // =========================================================
+    // TODO: not use, but if needed, it forces Greacefulstop()
     // CHECK SAFE EXIT
     // NOT SAFE, REQUEST TO GRACEFULSTOP - FSMShooter.requestGracefulStop()
     // NOT SAFE, REQUEST TO GRACEFULSTOP - FSMIntake.requestGracefulStop()
     //===========================================================
     private void requestGracefulStopsIfNeeded(RobotActionState current, RobotActionState target) {
-
         switch (target) {
             case Sequence_Shooting:
                 if (!FSMIntake.canExit()) {
