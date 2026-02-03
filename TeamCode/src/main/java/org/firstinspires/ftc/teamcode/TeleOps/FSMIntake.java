@@ -126,7 +126,7 @@ public class FSMIntake {
                     } else if (time > 0.2) {
                         robot.spindexerServo.setPosition(0.39);
                     }*/
-                    double targetPos = spindexerSlot1;
+                    double targetPos =spindexerZeroPos;
                     double currentPos = robot.spindexerServo.getPosition();
                     double maxStep = 0.05; // max movement per loop
 
