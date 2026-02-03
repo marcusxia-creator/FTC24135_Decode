@@ -312,7 +312,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         }
     }
     // =========================================================
-    // TODO: not use, but if needed, it forces Greacefulstop()
+    // TODO: not use, but if needed, Greacefulstop() stop the fms before naturally finish
     // CHECK SAFE EXIT
     // NOT SAFE, REQUEST TO GRACEFULSTOP - FSMShooter.requestGracefulStop()
     // NOT SAFE, REQUEST TO GRACEFULSTOP - FSMIntake.requestGracefulStop()
