@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.aimingAngleThrehold;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.turret_Center_X_Offset;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.turret_Center_Y_Offset;
 
@@ -22,6 +23,7 @@ public class Limelight {
 
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
     private final double turretCenterOffsetLength = Math.hypot(turret_Center_Y_Offset, turret_Center_X_Offset);
+    private final double turretCameraRadius = 0.1778;
 
     public Limelight(RobotHardware robot, Turret turret) {
         this.robot = robot;
@@ -38,11 +40,12 @@ public class Limelight {
         robot.limelight.start();
     }
 
+    // Get AprilTag Angle to fine tune the Apr tag aiming angle.
     public double getTargetX() {
         LLResult result = robot.limelight.getLatestResult();
 
         if (result != null && result.getFiducialResults() != null) {
-            if (result.getTx()<5)
+            if (result.getTx()<aimingAngleThrehold)
                 for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
                     // Horizontal angular offset (degrees)
                     return fiducial.getTargetXDegrees();
@@ -72,8 +75,8 @@ public class Limelight {
         if (llResult != null && llResult.isValid()) {
             Pose3D robotPose3D = llResult.getBotpose_MT2();
             double normalizedYaw = Math.toRadians(robotPose3D.getOrientation().getYaw(AngleUnit.DEGREES) - 90);
-            double yOffSet = Math.sin(normalizedYaw) * (0.1778 * conversionFactor);
-            double xOffSet = Math.cos(normalizedYaw) * (0.1778 * conversionFactor);
+            double yOffSet = Math.sin(normalizedYaw) * (turretCameraRadius * conversionFactor); // unit M, 0.1778 is the radius of the turret center to limelight
+            double xOffSet = Math.cos(normalizedYaw) * (turretCameraRadius * conversionFactor);
             double turretYaw = THETA - robot.pinpoint.getHeading(AngleUnit.RADIANS);
             double turretYOffSet = Math.sin(turretYaw) * (turretCenterOffsetLength * conversionFactor);
             double turretXOffSet = Math.cos(turretYaw) * (turretCenterOffsetLength * conversionFactor);
