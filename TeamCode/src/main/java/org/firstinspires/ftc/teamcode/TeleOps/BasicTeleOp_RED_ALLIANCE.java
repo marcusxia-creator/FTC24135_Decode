@@ -115,7 +115,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
         // spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
         /// 3. turret---------------------------------------------------------------
-        turret = new Turret(robot);
+        turret = new Turret(robot, limelight);
 
         /// 4.1. power calculator for shooter------------------------------------------------------------
         shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
@@ -257,8 +257,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     }
 
     // =========================================================
-    // FIXME - prevent change Action State when FSM not finish
     // Update Action State based on button presses
+    // - prevent change Action State when FSM not finish
     // =========================================================
     private void updateActionStateTransitions() {
 
@@ -277,7 +277,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         //    (this will not hard-cut; it triggers each FSM's stop sequence)
         // ------------------------------------------------------------
 
-        //TODO: if specific stop flow needed. uncomment the function below
+        //TODO: if specific stop needed. uncomment the function below
         //requestGracefulStopsIfNeeded(activeActionState, requestedActionState);
 
         // ------------------------------------------------------------
@@ -397,7 +397,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                 (gamepadCo1.getButton(GamepadKeys.Button.B) || gamepadCo2.getButton(GamepadKeys.Button.B))
                         && isButtonDebounced();
 
-        boolean sortPressed = gamepadInput.getOperatorLbXComboPressed(); // assume this is edge-based already
+        boolean sortPressed = gamepadInput.getOperatorLbXComboPressed(); // combo - LB+X for sorted shooting. Assume this is edge-based already
         if (seqShootPressed) requestedActionState = RobotActionState.Sequence_Shooting;
         if (sortPressed)     requestedActionState = RobotActionState.Sort_Shooting;
         if (intakePressed)   requestedActionState = RobotActionState.Intaking;
