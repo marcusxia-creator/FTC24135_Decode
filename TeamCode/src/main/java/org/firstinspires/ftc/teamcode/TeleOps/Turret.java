@@ -20,18 +20,25 @@ public class Turret {
     public static final double kP = 6, kI = 0, kD = 0, kS = 0, kV = 0;
 
     private PIDController pidController;
+    private Limelight limelight;
 
-    public Turret (RobotHardware robot) {
+    public Turret (RobotHardware robot, Limelight limelight) {
         this.robot = robot;
         pidController = new PIDController(kP, kI, kD);
+        this.limelight = limelight;
     }
 
     public int motorDriveTick() {
         return (int) Math.round(getTurretDriveAngle() * angleToTick);
     }
 
+
     public double getTurretDriveAngle () {
-        return -(floorMod(robot.pinpoint.getHeading(AngleUnit.DEGREES) - getTargetAngle()+180, 360)-180);
+        //return -(floorMod(robot.pinpoint.getHeading(AngleUnit.DEGREES) - getTargetAngle()+180, 360)-180);
+        ///  Added the correction Angle from Limelight
+        double correctX = limelight.getTargetX();
+        double rawAngle = -(floorMod(robot.pinpoint.getHeading(AngleUnit.DEGREES) - getTargetAngle()+180, 360)-180);
+        return rawAngle - correctX;
     }
 
     public double getTurretMotorAngle(){
@@ -54,7 +61,6 @@ public class Turret {
         robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
     }
 
-
     /*public boolean isTurretAtPosition (){
         if (Math.floor(angle) == Math.floor(getTurretMotorAngle())){
             return true;
@@ -64,6 +70,7 @@ public class Turret {
         }
     }
      */
+
     public double getTargetAngle () {
         return Math.toDegrees(Math.atan2((72-robot.pinpoint.getPosY(DistanceUnit.INCH)), (-72-robot.pinpoint.getPosX(DistanceUnit.INCH))));
     }
