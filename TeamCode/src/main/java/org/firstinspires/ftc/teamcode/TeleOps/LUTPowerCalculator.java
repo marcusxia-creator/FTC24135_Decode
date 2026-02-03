@@ -21,8 +21,8 @@ public class LUTPowerCalculator {
     private double distance;
     private int zone = 0;
 
-    public static final double tickToRPM = (60.0 / 28.0);
-    private final int maxVelocityRPM = 5500;
+    public static final double tickToRPM = SHOOTER_RPM_CONVERSION;
+    private final int maxVelocityRPM = shooterMaxRPM;
 
     private int rpmTarget;
 
@@ -32,13 +32,13 @@ public class LUTPowerCalculator {
 
     // --------- Tune these ----------
     // PID
-    public static double kP = 2.5;   // start ~1.5 to 4.0 (normalized units)
+    public static double kP = 10;   // start ~1.5 to 4.0 (normalized units)
     public static double kI = 0.0;
-    public static double kD = 0.0;
+    public static double kD = 0.7;
 
     // Feedforward
     public static double kS = 0.03;  // static friction (small bump)
-    public static double kV = 0.95;  // scale from targetNorm to power (roughly 1.0 if perfect)
+    public static double kV = 1.285;  // scale from targetNorm to power (roughly 1.0 if perfect)
     // --------------------------------
 
     /**
