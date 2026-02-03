@@ -52,7 +52,7 @@ public class LUTPowerCalculator {
         add(4, 4290); // 4440
         add(3, 3960); // 4470
         add(2, 3890); // 3890
-        add(1, 3750); //3750
+        add(1, 3750); // 3750
         add(0, 4100); ///change this later
     }};
 
