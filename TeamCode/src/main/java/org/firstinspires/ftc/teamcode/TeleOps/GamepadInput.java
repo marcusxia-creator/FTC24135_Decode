@@ -19,17 +19,19 @@ public class GamepadInput {
     private final ButtonReader oLb;
     private final ButtonReader oRb;
     private final ButtonReader oB;
+    private final ButtonReader oX;
 
     // Per-gamepad consumption flags
-    private boolean dLbSingleConsumed = false;
-    private boolean dRbSingleConsumed = false;
-    private boolean dComboConsumed    = false;
-    private boolean dBackSingleConsumed = false;
+    private boolean dLbSingleConsumed       = false;
+    private boolean dRbSingleConsumed       = false;
+    private boolean dLbcomboConsumed        = false;
+    private boolean dBackSingleConsumed     = false;
 
-    private boolean oLbSingleConsumed = false;
-    private boolean oRbSingleConsumed = false;
-    private boolean oComboConsumed    = false;
-    private boolean oBackSingleConsumed    = false;
+    private boolean oLbSingleConsumed       = false;
+    private boolean oRbSingleConsumed       = false;
+    private boolean oLbBkComboConsumed      = false;
+    private boolean oLbXComboConsumed       = false;
+    private boolean oBackSingleConsumed     = false;
 
     public GamepadInput(GamepadEx driverGp, GamepadEx operatorGp) {
         this.driverGp   = driverGp;
@@ -44,6 +46,7 @@ public class GamepadInput {
         oLb = new ButtonReader(operatorGp, GamepadKeys.Button.LEFT_BUMPER);
         oRb = new ButtonReader(operatorGp, GamepadKeys.Button.RIGHT_BUMPER);
         oB = new ButtonReader(operatorGp, GamepadKeys.Button.BACK);
+        oX = new ButtonReader(operatorGp,GamepadKeys.Button.X);
     }
 
     public void update() {
@@ -58,17 +61,19 @@ public class GamepadInput {
         oLb.readValue();
         oRb.readValue();
         oB.readValue();
+        oX.readValue();
 
         // Reset consumption every loop
-        dLbSingleConsumed = false;
-        dRbSingleConsumed = false;
-        dComboConsumed    = false;
+        dLbSingleConsumed   = false;
+        dRbSingleConsumed   = false;
+        dLbcomboConsumed    = false;
         dBackSingleConsumed = false;
 
 
-        oLbSingleConsumed = false;
-        oRbSingleConsumed = false;
-        oComboConsumed    = false;
+        oLbSingleConsumed   = false;
+        oRbSingleConsumed   = false;
+        oLbBkComboConsumed  = false;
+        oLbXComboConsumed   = false;
         oBackSingleConsumed = false;
     }
 
@@ -77,15 +82,15 @@ public class GamepadInput {
     // ==========================
 
     public boolean getDriverLbBComboPressed() {
-        if (dComboConsumed) return false;
+        if (dLbcomboConsumed) return false;
 
         boolean result = dLb.isDown() && dB.wasJustPressed();
-        if (result) dComboConsumed = true;
+        if (result) dLbcomboConsumed = true;
         return result;
     }
 
     public boolean getDriverLbSinglePressed() {
-        if (dLbSingleConsumed || dComboConsumed) return false;
+        if (dLbSingleConsumed || dLbcomboConsumed) return false;
 
         boolean result = dLb.wasJustPressed() && !dB.isDown();
         if (result) dLbSingleConsumed = true;
@@ -101,7 +106,7 @@ public class GamepadInput {
     }
 
     public boolean getDriverBackSinglePressed() {
-        if (dBackSingleConsumed || dComboConsumed) return false;
+        if (dBackSingleConsumed || dLbcomboConsumed) return false;
         boolean result = !dLb.isDown() && dB.wasJustPressed();
         if (result) dBackSingleConsumed = true;
         return result;
@@ -112,15 +117,23 @@ public class GamepadInput {
     // ==========================
 
     public boolean getOperatorLbBComboPressed() {
-        if (oComboConsumed) return false;
+        if (oLbBkComboConsumed) return false;
 
         boolean result = oLb.isDown() && oB.wasJustPressed();
-        if (result) oComboConsumed = true;
+        if (result) oLbBkComboConsumed = true;
+        return result;
+    }
+
+    public boolean getOperatorLbXComboPressed() {
+        if (oLbXComboConsumed) return false;
+
+        boolean result = oLb.isDown() && oX.wasJustPressed();
+        if (result) oLbXComboConsumed = true;
         return result;
     }
 
     public boolean getOperatorLbSinglePressed() {
-        if (oLbSingleConsumed || oComboConsumed) return false;
+        if (oLbSingleConsumed || oLbBkComboConsumed) return false;
 
         boolean result = oLb.wasJustPressed() && !oB.isDown();
         if (result) oLbSingleConsumed = true;
@@ -136,7 +149,7 @@ public class GamepadInput {
     }
 
     public boolean getOperatorBackSinglePressed() {
-        if (oBackSingleConsumed || oComboConsumed) return false;
+        if (oBackSingleConsumed || oLbBkComboConsumed ) return false;
 
         boolean result = !oLb.isDown() && oB.wasJustPressed();
         if (result) oBackSingleConsumed = true;

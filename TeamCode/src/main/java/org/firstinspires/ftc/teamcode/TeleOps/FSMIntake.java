@@ -26,12 +26,12 @@ public class FSMIntake {
         INTAKE_REVERSE,
     }
 
-    public IntakeStates intakeStates = IntakeStates.INTAKE_IDLE;
+    public static IntakeStates intakeStates = IntakeStates.INTAKE_IDLE;
 
     private ElapsedTime unjamTimer = new ElapsedTime();
     private ElapsedTime jammedTimer = new ElapsedTime();
 
-    public ElapsedTime intakeTimer = new ElapsedTime();
+    public static ElapsedTime intakeTimer = new ElapsedTime();
 
     private final RobotHardware robot;
     private final GamepadEx gamepad_1;
@@ -114,7 +114,6 @@ public class FSMIntake {
                 double time = intakeTimer.seconds();
 
                 // Keep your sequence logic for spindexer parking
-
                 if (time > 0.15) {
                         /**
                         spindexer.RuntoPosition(0);
@@ -126,7 +125,7 @@ public class FSMIntake {
                     } else if (time > 0.2) {
                         robot.spindexerServo.setPosition(0.39);
                     }*/
-                    double targetPos =spindexerZeroPos;
+                    double targetPos =spindexerSlot1;
                     double currentPos = robot.spindexerServo.getPosition();
                     double maxStep = 0.05; // max movement per loop
 
@@ -139,7 +138,8 @@ public class FSMIntake {
                     robot.spindexerServo.setPosition(currentPos + step);
 
                     if (Math.abs(error) < 0.005) {
-                        spindexer.RuntoPosition(0);
+                        spindexer.RuntoPosition(0); // go to slot1 position.
+                        //robot.spindexerServo.setPosition(0.08);
                         intakeStates = IntakeStates.INTAKE_IDLE;
                         }
                 }
@@ -187,6 +187,21 @@ public class FSMIntake {
         }
         if (!jammed && !reversing) {
             robot.intakeMotor.setPower(intakeSpeed);
+        }
+    }
+
+    /**
+     * Added New for safe change of state
+     */
+    public boolean canExit() {
+        return intakeStates == IntakeStates.INTAKE_IDLE;
+    }
+
+    public void requestGracefulStop() {
+        // Only request STOP if we are not already stopping/idle
+        if (intakeStates != IntakeStates.INTAKE_IDLE && intakeStates != IntakeStates.INTAKE_STOP) {
+            intakeTimer.reset();
+            intakeStates = IntakeStates.INTAKE_STOP;
         }
     }
 }

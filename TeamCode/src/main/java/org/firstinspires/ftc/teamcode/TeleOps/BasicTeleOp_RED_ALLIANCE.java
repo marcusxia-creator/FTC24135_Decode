@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMIntake.IntakeStates;
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SHOOTERSTATE;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerRetract;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -77,6 +78,10 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     /// ----------------------------------------------------------------
     /// For robot action state
     public RobotActionState actionStates;
+
+    private RobotActionState requestedActionState = RobotActionState.Idle;
+    private RobotActionState activeActionState = RobotActionState.Idle;
+
     /// For alliance colour
     public static Alliance alliance;
 
@@ -92,8 +97,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.initPinpoint();               //Initialize pinpoint
         robot.initExternalIMU();            //Initialize external IMU
 
-        Pose2D startingPose = new Pose2D(DistanceUnit.INCH, PoseStorage.currentPose.position.x, PoseStorage.currentPose.position.y, AngleUnit.RADIANS, PoseStorage.currentPose.heading.real);
-        robot.pinpoint.setPosition(startingPose);
+        ///Pose2D startingPose = new Pose2D(DistanceUnit.INCH, PoseStorage.currentPose.position.x, PoseStorage.currentPose.position.y, AngleUnit.RADIANS, PoseStorage.currentPose.heading.real);
+        ///robot.pinpoint.setPosition(startingPose);
 
         /// 0. gamepad---------------------------------------------------------------
         gamepadCo1 = new GamepadEx(gamepad1);
@@ -139,61 +144,107 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
         /// 10. start adjuster servo at position to avoid soft start
         robot.shooterAdjusterServo.setPosition(0.49);
+
+        robot.kickerServo.setPosition(kickerRetract);
     }
 
     @Override
     public void loop() {
-        /// 1. Buttons--------------------------------------------------------------
-        /// Read gamepad buttons for wasJustPressed events
+        // ========================================================
+        // WORKING FLOW:
+        // 1.updateActionStateTransitions() decides when safe to enter
+        // 2.requestGracefulStopsIfNeeded(target) requests STOP sequence
+        // 3.onEnterActionState(target) starts the new sequence only
+        // 4.PER-ACTION FSM switch uses activeActionState and does not set FSM states
+        //---------------------------------------------------------
+        //OPERATION FLOW
+        // 1.Buttons → requestedActionState
+        // 2.Transition manager:-> requests graceful stops -> waits for canExit() ->commits activeActionState
+        //                     -> calls onEnterActionState()
+        // 3. Pre-loop switch ->only adds behavior, never changes FSM states
+        // --------VISUAL MIND MODEL-------------------------------
+        //      [Buttons]
+        //      ↓
+        //      requestedActionState
+        //      ↓
+        //      updateActionStateTransitions()
+        //      ↓
+        //      activeActionState
+        //      ↓
+        //      onEnterActionState()   (once)
+        //      ↓
+        //      ┌─────────────────────────────┐
+        //      │  Pre-loop switch (extras)   │  ← turret / LEDs / telemetry only
+        //      └─────────────────────────────┘
+        //      ↓
+        //      FSMIntake.loop()
+        //      FSMShooter.loop()
+        // =========================================================
+
+        // =========================================================
+        // 1. INPUT UPDATE (read buttons + combos)
+        // =========================================================
         gamepadCo1.readButtons();
         gamepadCo2.readButtons();
 
         /// combo button LB+ & RB+ config and update
-        gamepadInput.update();
+        gamepadInput.update(); // for combined button combo
         /// Changes the action state base on which button is pressed
-        buttonUpdate();
+        buttonUpdate(); // sets requestedActionState ONLY
 
-        /// 2. Continuous updates -pinpoint & ballcolor & loop frequency--------------------
+        // =========================================================
+        // 2. CONTINUOUS SENSOR / HOUSEKEEPING UPDATES
+        // =========================================================
         robot.pinpoint.update();
         ballColor = BallColor.fromHue(colorDetection.getHue());
         updateLoopFrequency();
 
 
-        /// 3. Subsystem Continous Running----------------------------------------------
+        // =========================================================
+        // 3. DRIVE (always responsive)
+        // =========================================================
         robotDrive.DriveLoop();
-        ///FSM intake controller
-        FSMIntake.loop();
 
-        /// Robot Action States
-        switch (actionStates){
+        // =========================================================
+        // 4. ACTION STATE TRANSITION MANAGER (GRACEFUL)
+        // =========================================================
+        updateActionStateTransitions();
+
+        // =========================================================
+        // 5. PER-ACTION "EXTRAS" (NO FSM STATE FORCING HERE)
+        // =========================================================
+        switch (activeActionState){
             case Sequence_Shooting:
-                FSMShooter.SequenceShooterLoop();
                 turret.driveTurretMotor();
-                FSMIntake.intakeStates = IntakeStates.INTAKE_IDLE;
                 break;
             case Sort_Shooting:
+                turret.driveTurretMotor();
                 //FSMShooter.SortShooterLoop();
                 break;
             case Intaking:
-                FSMShooter.shooterState = SHOOTERSTATE.SHOOTER_IDLE;
+                // empty as the FSM handles this,intake FSM already running
                 break;
             case Idle:
-                FSMIntake.intakeStates = IntakeStates.INTAKE_IDLE;
-                FSMShooter.shooterState = SHOOTERSTATE.SHOOTER_IDLE;
+                // empty as the FSM handles this
+            default:
+                // do nothing — graceful stop handled elsewhere
                 break;
         }
-        /// 4. LED alarm light ----------------------------------------------
-        if (shooterPowerAngleCalculator.getZone() ==0) {
-            //Distance less than 54 inches, red alert
-            robot.LED.setPosition(0.28);
-        }
-        else if (shooterPowerAngleCalculator.getZone() > 0){
-            robot.LED.setPosition(1.0);
-        }
-        else { //Default white
-            robot.LED.setPosition(0.0);
-        }
-        /// 5. telemetry helper ----------------------------------------------
+
+        // =========================================================
+        // 6. SUBSYSTEM FSMs (ALWAYS RUN)
+        // =========================================================
+        FSMIntake.loop();
+        FSMShooter.SequenceShooterLoop();
+
+        // =========================================================
+        // 7. LED STATUS (non-blocking)
+        // =========================================================
+        updateLED();
+
+        // =========================================================
+        // 8. TELEMETRY
+        // =========================================================
         telemetryManager();
     }
 
@@ -205,9 +256,168 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.backRightMotor.setPower(0);
     }
 
-    /**
-     * Button debounce helper
-     */
+    // =========================================================
+    // Update Action State based on button presses
+    // =========================================================
+    private void updateActionStateTransitions() {
+
+        if (requestedActionState == activeActionState) return;
+
+        // Decide which subsystems must be "safe" before switching
+        boolean intakeSafe  = FSMIntake.canExit();
+        boolean shooterSafe = FSMShooter.canExit();
+
+        // Example policy:
+        // - Switching INTO Intaking requires shooter safe (so you don't intake while shooting)
+        // - Switching INTO Shooting requires intake safe (so you don't stop intake mid-park)
+        // - Switching INTO Idle requires both safe, or you can force a "stop request" first (recommended)
+        // ------------------------------------------------------------
+        // 1) If we are NOT safe yet, request graceful stop(s)
+        //    (this will not hard-cut; it triggers each FSM's stop sequence)
+        // ------------------------------------------------------------
+
+        //TODO if specific stop flow needed. change the following function.
+        //requestGracefulStopsIfNeeded(activeActionState, requestedActionState);
+
+        // ------------------------------------------------------------
+        // 2) Decide if we are allowed to switch into the requested state
+        // ------------------------------------------------------------
+        boolean canSwitch = false;
+
+        switch (requestedActionState) {
+            case Intaking:
+                canSwitch = shooterSafe;
+                break;
+
+            case Sequence_Shooting:
+                canSwitch = intakeSafe;  // wait until intake finishes its current sequence
+                break;
+            case Sort_Shooting:
+                canSwitch = intakeSafe;  // wait until intake finishes its current sequence
+                break;
+            case Idle:
+            default:
+                // safest: wait for both to finish their sequences
+                canSwitch = intakeSafe && shooterSafe;
+                break;
+        }
+        // ------------------------------------------------------------
+        // 3) Commit switch only when safe
+        // ------------------------------------------------------------
+        if (canSwitch) {
+            // commit the switch
+            activeActionState = requestedActionState;
+            onEnterActionState(activeActionState);
+        }
+    }
+    // =========================================================
+    // CHECK SAFE EXIT
+    // NOT SAFE, REQUEST TO GRACEFULSTOP - FSMShooter.requestGracefulStop()
+    // NOT SAFE, REQUEST TO GRACEFULSTOP - FSMIntake.requestGracefulStop()
+    //===========================================================
+    private void requestGracefulStopsIfNeeded(RobotActionState current, RobotActionState target) {
+
+        switch (target) {
+            case Sequence_Shooting:
+                if (!FSMIntake.canExit()) {
+                    FSMIntake.requestGracefulStop(); // sets INTAKE_STOP if needed
+                }
+                break;
+
+            case Sort_Shooting:
+                // We are trying to start shooting → intake must finish gracefully first
+                if (!FSMIntake.canExit()) {
+                    FSMIntake.requestGracefulStop(); // sets INTAKE_STOP if needed
+                }
+                break;
+
+            case Intaking:
+                // We are trying to intake → shooter must finish gracefully first
+                if (!FSMShooter.canExit()) {
+                    FSMShooter.requestGracefulStop(); // you implement: STOPPING or set IDLE safely
+                }
+                break;
+
+            case Idle:
+            default:
+                // Going idle → stop both gracefully
+                if (!FSMIntake.canExit()) {
+                    FSMIntake.requestGracefulStop();
+                }
+                if (!FSMShooter.canExit()) {
+                    FSMShooter.requestGracefulStop();
+                }
+                break;
+        }
+    }
+    //===========================================================
+    // Enter Action State
+    // Actually set FSM STATES
+    //===========================================================
+    private void onEnterActionState(RobotActionState s) {
+        switch (s) {
+            case Sequence_Shooting:
+                FSMShooter.shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
+                break;
+
+            case Sort_Shooting:
+                FSMIntake.intakeStates  = IntakeStates.INTAKE_STOP; // or IDLE
+                // FSMShooter.sortShooterState = ...
+                break;
+
+            case Intaking:
+                FSMIntake.intakeStates  = IntakeStates.INTAKE_PREP;
+                break;
+
+            case Idle:
+            default:
+                // Don't hard-cut motors here unless your FSM is already idle-safe.
+                // Better: request FSMs to go to IDLE naturally.
+                // Graceful stop is handled by requestSubsystemStopForTransition()
+                break;
+        }
+    }
+    //===========================================================
+    // button updates
+    // Assign button for FSM states -
+    //===========================================================
+
+    private void buttonUpdate() {
+        boolean seqShootPressed =
+                (gamepadCo1.getButton(GamepadKeys.Button.X) || gamepadCo2.getButton(GamepadKeys.Button.X))
+                        && isButtonDebounced();
+        boolean intakePressed =
+                (gamepadCo1.getButton(GamepadKeys.Button.DPAD_LEFT) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_LEFT))
+                        && isButtonDebounced();
+        boolean reversePressed =
+                (gamepadCo1.getButton(GamepadKeys.Button.DPAD_RIGHT) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_RIGHT))
+                        && isButtonDebounced();
+        boolean idlePressed =
+                (gamepadCo1.getButton(GamepadKeys.Button.B) || gamepadCo2.getButton(GamepadKeys.Button.B))
+                        && isButtonDebounced();
+
+        boolean sortPressed = gamepadInput.getOperatorLbXComboPressed(); // assume this is edge-based already
+        if (seqShootPressed) requestedActionState = RobotActionState.Sequence_Shooting;
+        if (sortPressed)     requestedActionState = RobotActionState.Sort_Shooting;
+        if (intakePressed)   requestedActionState = RobotActionState.Intaking;
+        //if (reversePressed)  requestedActionState = RobotActionState.Reverse_Intake; // add enum if needed
+        if (idlePressed)     requestedActionState = RobotActionState.Idle;
+
+        // Dpad down pose reset stays immediate (that's fine)
+        if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+            if (alliance == Alliance.RED_ALLIANCE) {
+                robot.pinpoint.setPosition(redAllianceResetPose);
+                robot.LED.setPosition(0.28);
+            }
+            if (alliance == Alliance.BLUE_ALLIANCE) {
+                robot.pinpoint.setPosition(blueAllianceResetPose);
+                robot.LED.setPosition(0.611);
+            }
+        }
+    }
+
+    ///  helper functions
+    /// - button debounce
     public boolean isButtonDebounced() {
         if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
@@ -215,8 +425,20 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         }
         return false;
     }
-
-    /// Frequency Updates
+    ///  - LED Update
+    private void updateLED() {
+        if (shooterPowerAngleCalculator.getZone() ==0) {
+            //Distance less than 54 inches, red alert
+            robot.LED.setPosition(0.28);
+        }
+        else if (shooterPowerAngleCalculator.getZone() > 0){
+            robot.LED.setPosition(1.0);
+        }
+        else { //Default white
+            robot.LED.setPosition(0.0);
+        }
+    }
+    ///  - Frequency Updates
     private void updateLoopFrequency() {
 
         long now = System.currentTimeMillis();
@@ -231,11 +453,18 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         lastLoopTime = now;
     }
 
-    /// telemetry Manager
+    //===========================================================
+    // telemetry Manager
+    //===========================================================
     public void telemetryManager(){
         telemetry.addData("Action State", actionStates);
+        telemetry.addData("Requested", requestedActionState);
+        telemetry.addData("Active", activeActionState);
+        telemetry.addData("IntakeState", FSMIntake.intakeStates);
+        telemetry.addData("ShooterState", FSMShooter.shooterState);
+        telemetry.addData("IntakeSafe", FSMIntake.canExit());
+        telemetry.addData("ShooterSafe", FSMShooter.canExit());
         telemetry.addLine("-----");
-        telemetry.addData("Intake State", FSMIntake.intakeStates);
         telemetry.addData("Distance Sensor", robot.distanceSensor.getDistance(DistanceUnit.MM));
         telemetry.addData("Sensor Color", colorDetection.getStableColor());
         telemetry.addData("Sensor values", spindexer.colorValue);
@@ -245,7 +474,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Current Pos", spindexer.currentPos);
         telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
         telemetry.addLine("-----");
-        telemetry.addData("Shooter State", FSMShooter.shooterState);
         telemetry.addData("shooter power calculator", shooterPowerAngleCalculator.getPower());
         telemetry.addData("shooter power from FSM Shooter", FSMShooter.getPower());
         telemetry.addData("voltage from Shooter", FSMShooter.getVoltage());
@@ -269,7 +497,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
         telemetry.addData("motor PIDF coefficient", robot.turretMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
         telemetry.addLine("-----------------------------------------");
-        telemetry.addData("limelight output", limelight.normalizedPose2D(DistanceUnit.MM));
+        telemetry.addData("limelight output", limelight.normalizedPose2D(DistanceUnit.INCH));
         telemetry.update();
     }
     public void telemetryManagerSimplified() {
@@ -277,69 +505,21 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Slot 0", spindexer.slots[0]);
         telemetry.addData("Slot 1", spindexer.slots[1]);
         telemetry.addData("Slot 2", spindexer.slots[2]);
-        telemetry.addLine("-----SHOOTER-----");
-        telemetry.addData("Shooter State", FSMShooter.shooterState);
+        telemetry.addLine("-----ROBOT STATE-----");
+        telemetry.addData("Action State", actionStates);
+        telemetry.addData("Requested", requestedActionState);
+        telemetry.addData("Active", activeActionState);
+        telemetry.addData("IntakeState", FSMIntake.intakeStates);
+        telemetry.addData("ShooterState", FSMShooter.shooterState);
+        telemetry.addData("IntakeSafe", FSMIntake.canExit());
+        telemetry.addData("ShooterSafe", FSMShooter.canExit());
+        telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
         String MotifEnabled;
         String MotifAvailable;
-
+        telemetry.addLine("-----SHOOTER STATE-----");
         telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
-        telemetry.addData("power set point", FSMShooter.getPower_setpoint());
-        telemetry.addData("Shooter Power", robot.topShooterMotor.getPower());
-        telemetry.addLine("-----ROBOT-----");
-        telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
-        telemetry.addLine("-----INTAKE-----");
-        telemetry.addData("Intake State", FSMIntake.intakeStates);
+        telemetry.addData("power set point-NORMED", FSMShooter.getPower_setpoint());
+        telemetry.addData("Shooter Power-LUT OUT", robot.topShooterMotor.getPower());
     }
 
-    private void buttonUpdate() {
-        //Button x - For sequence shooting
-        if (gamepadCo1.getButton(GamepadKeys.Button.X) || gamepadCo2.getButton(GamepadKeys.Button.X)
-                && isButtonDebounced()){
-            actionStates = RobotActionState.Sequence_Shooting;
-            FSMShooter.shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
-            FSMIntake.intakeStates = IntakeStates.INTAKE_STOP;
-        }
-
-        //Button y - For sort shooting
-        if (gamepadCo1.getButton(GamepadKeys.Button.Y) || gamepadCo2.getButton(GamepadKeys.Button.Y)
-                && isButtonDebounced()){
-           // actionStates = RobotActionState.Sort_Shooting;
-            FSMIntake.intakeStates = IntakeStates.INTAKE_STOP;
-            //FSMShooter.sortShooterState = SORTSHOOTERSTATE.SHOOTER_IDLE;
-        }
-
-        //Dpad left - For intaking
-        if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_LEFT) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_LEFT)
-                && isButtonDebounced()){
-            actionStates = RobotActionState.Intaking;
-            FSMIntake.intakeStates = IntakeStates.INTAKE_PREP;
-        }
-
-        //Dpad right - For reversing intake
-        if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_RIGHT) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_RIGHT)
-                && isButtonDebounced()) {
-            FSMIntake.intakeTimer.reset();
-            FSMIntake.reversing();
-        }
-
-        //Button B - idle state
-        if (gamepadCo1.getButton(GamepadKeys.Button.B) || gamepadCo2.getButton(GamepadKeys.Button.B)
-                && isButtonDebounced()) {
-            actionStates = RobotActionState.Idle;
-        }
-
-        //Dpad down for alliance selection
-        if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-            //Reset robot red alliance pose
-            if (alliance == Alliance.RED_ALLIANCE) {
-                robot.pinpoint.setPosition(redAllianceResetPose);
-                robot.LED.setPosition(0.28);
-            }
-            //Reset robot blue alliance pose
-            if (alliance == Alliance.BLUE_ALLIANCE) {
-                robot.pinpoint.setPosition(blueAllianceResetPose);
-                robot.LED.setPosition(0.611);
-            }
-        }
-    }
 }

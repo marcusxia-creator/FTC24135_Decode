@@ -136,7 +136,7 @@ public class TestTeleOp extends OpMode {
         if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
             robot.kickerServo.setPosition(kickerExtend);
         }
-
+        /**
         if (gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER) && isButtonDebounced()) {
             robot.spindexerServo.setPosition(spindexerSlot3);
         }
@@ -149,7 +149,7 @@ public class TestTeleOp extends OpMode {
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
             robot.spindexerServo.setPosition(spindexerSlot2);
-        }
+        }*/
 
         if (gamepad_1.getButton(GamepadKeys.Button.A)) {
             robot.intakeMotor.setPower(0.9);
@@ -301,6 +301,7 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("shooter RPM", robot.topShooterMotor.getVelocity() * tickToRPM);
         telemetry.addLine("----------------------------------------------------");
         telemetry.addData("Color", ballColor);
+        telemetry.addData("Color Hue", colorDetection.getHue());
         telemetry.addLine("----------------------------------------------------");
         telemetry.addData("turret target angle - atan", turret.getTargetAngle());
         telemetry.addData("turret motor tick", robot.turretMotor.getCurrentPosition());

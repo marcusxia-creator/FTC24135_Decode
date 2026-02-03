@@ -193,10 +193,6 @@ public class Spindexer {
         return slotColour(currentPos);
     }
 
-
-
-
-
     /**
      * @return {@code TRUE} if there is at least one instance of all given SLOT objects in the indexer, else {@code FALSE}
      */

@@ -18,7 +18,8 @@ public class RobotActionConfig {
     public static double spindexerSlot3                 = 0.49;
     public static double spindexerSlot4                 = 0.69;
     public static double spindexerSlot5                 = 0.88;
-    public static double spindexerFullPos = 1.0;
+    public static double spindexerFullPos               = 1.0;
+    public static double spinderxerShootPos             = 0.08;
     public static double[] spindexerPositions           = {spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5};
 
     public static double angleResetPos                  = 0.0;
@@ -31,6 +32,9 @@ public class RobotActionConfig {
     public static double intakeSpeed                    = 0.85;
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.7;
+    //shooter timer
+    public static final long FEED_PERIOD_MS             = 600; // 0.6s per feed (tune)
+    public static final double SPOOLUP_SEC              = 1.25;
     //shooter adjustor
     public static double shooterAdjusterMax             = 0.59;
     public static double shooterAdjusterMin             = 0.06;

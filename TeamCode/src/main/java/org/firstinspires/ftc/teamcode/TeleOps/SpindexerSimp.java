@@ -110,6 +110,21 @@ public class SpindexerSimp {
         return counter;
     }
 
+    // find next higher slot
+    public double findNextHigherSlot(double currentPos, double[] slots) {
+        double closest = -1;
+
+        for (double slot : slots) {
+            if (slot > currentPos) {
+                closest = slot;
+                break; // first higher is the closest higher
+            }
+        }
+
+        return closest; // -1 means none found
+    }
+
+
     public void resetSlot() {
         for (int i = 0; i < slots.length; i++) slots[i] = SLOT.Empty;
     }
