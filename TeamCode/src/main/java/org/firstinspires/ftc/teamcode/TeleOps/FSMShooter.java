@@ -119,15 +119,13 @@ public class FSMShooter {
         double rpm = shooterPowerLUT.getRPM();
         power_setpoint = (power *13.0)/voltage; // not used - normalized power for shooter to 13v./voltage;
 
-
         /// set shooter adjuster angle
         angle = Range.clip(shooterPowerLUT.getShooterAngle(), 0.06, 0.49); // get shooter adjuster angle.
-        robot.shooterAdjusterServo.setPosition(angle);
-
         /// shooter motor state to control shooter run/NOT
         if (shootermotorstate == SHOOTERMOTORSTATE.RUN){
             robot.topShooterMotor.setPower(power);
             robot.bottomShooterMotor.setPower(power);
+            robot.shooterAdjusterServo.setPosition(angle);
         }
         if (shootermotorstate == SHOOTERMOTORSTATE.STOP) {
             robot.topShooterMotor.setPower(0);
@@ -188,7 +186,6 @@ public class FSMShooter {
                 if (shootCounter == 0) {
                     shootCounter = 1;
                     lastFeedTimeMs = now;
-
                     spindexer.RunToNext();   // feed 1st ball NOW
                     break;
                 }
@@ -225,11 +222,15 @@ public class FSMShooter {
 
             case KICKER_RETRACT:
                 if (shootTimer.seconds() > 0.2) {
+                    //=========================================================================
                     // this is the place to reset the spindexer counter
                     // meanwhile spindexer return back to spinderxerPositions[0] - slot 1 position
-                    spindexer.RuntoPosition(0);
-                    shooterState = SHOOTERSTATE.SHOOTER_IDLE;
+                    //==========================================================================
+                    spindexer.RuntoPosition(0); // reset counter in spindexer
                 }
+                //=========================================================
+                // when slot back to 0 position,then the kicker Retract
+                //=========================================================
                 if (shootTimer.seconds() > 1.0){
                     robot.kickerServo.setPosition(kickerRetract);
                     shootTimer.reset();

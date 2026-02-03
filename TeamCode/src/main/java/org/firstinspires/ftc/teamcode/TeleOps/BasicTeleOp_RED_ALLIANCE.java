@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMIntake.IntakeStates;
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SHOOTERSTATE;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.INTAKE_TICKS_PER_REV;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.SHOOTER_RPM_CONVERSION;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerRetract;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
@@ -461,6 +463,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     // telemetry Manager
     //===========================================================
     public void telemetryManager(){
+        telemetry.addData("loop frequency (Hz)", loopHz);
+        telemetry.addData("voltage from robot", robot.getBatteryVoltageRobust());
+        telemetry.addLine("-----");
         telemetry.addData("Action State", actionStates);
         telemetry.addData("Requested", requestedActionState);
         telemetry.addData("Active", activeActionState);
@@ -479,20 +484,17 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
         telemetry.addLine("-----");
         telemetry.addData("shooter power calculator", shooterPowerAngleCalculator.getPower());
-        telemetry.addData("shooter power from FSM Shooter", FSMShooter.getPower());
-        telemetry.addData("voltage from Shooter", FSMShooter.getVoltage());
-        telemetry.addData("voltage from robot", robot.getBatteryVoltageRobust());
-        telemetry.addData("power set point", FSMShooter.getPower_setpoint());
         telemetry.addData("Shooter Power", robot.topShooterMotor.getPower());
-        telemetry.addData("Shooter Velocity", robot.topShooterMotor.getVelocity());
-        telemetry.addData("Shooter Motor Mode", robot.topShooterMotor.getMode());
+        telemetry.addData("voltage from Shooter", FSMShooter.getVoltage());
+        telemetry.addData("power set point", FSMShooter.getPower_setpoint());
+        telemetry.addData("Shooter RPM","%,0f",robot.topShooterMotor.getVelocity()*SHOOTER_RPM_CONVERSION);
         telemetry.addLine("-----");
         String MotifAvailable;
         telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));
 
         telemetry.addData("Alliance", alliance);
         telemetry.addData("Pose2D", robot.pinpoint.getPosition());
-        telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
+        telemetry.addData("distance to goal", "%,0f",shooterPowerAngleCalculator.getDistance());
         telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
         //telemetry.addData("turret rotation in degrees", turret.getTurretAngle());
         telemetry.addLine("Turret-----------------------------------");
@@ -501,7 +503,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
         telemetry.addData("motor PIDF coefficient", robot.turretMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
         telemetry.addLine("-----------------------------------------");
-        telemetry.addData("limelight output", limelight.normalizedPose2D(DistanceUnit.INCH));
+        telemetry.addData("limelight output", "%,1f",limelight.normalizedPose2D(DistanceUnit.INCH));
         telemetry.addData("limelight angle Tx", limelight.getTargetX());
         telemetry.update();
     }
