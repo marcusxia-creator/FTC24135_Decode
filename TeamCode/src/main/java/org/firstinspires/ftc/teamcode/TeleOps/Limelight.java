@@ -42,12 +42,15 @@ public class Limelight {
         LLResult result = robot.limelight.getLatestResult();
 
         if (result != null && result.getFiducialResults() != null) {
-            for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
-                // Horizontal angular offset (degrees)
-                return fiducial.getTargetXDegrees();
+            if (result.getTx()<5)
+                for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
+                    // Horizontal angular offset (degrees)
+                    return fiducial.getTargetXDegrees();
+                }
+            else{
+                return 0.0;
             }
         }
-
         // No valid AprilTag
         return 0.0;
     }
