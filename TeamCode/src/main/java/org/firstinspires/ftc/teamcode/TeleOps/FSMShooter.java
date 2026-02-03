@@ -41,7 +41,7 @@ public class FSMShooter {
     private boolean stopInitDone = false;
 
     // Tuning constants
-    private double stopClearancePos = 0.0;
+    private double stopClearancePos = 0;
     private boolean clearanceChosen = false;
 
     private static final double MOVE_TO_CLEARANCE_TIME_S = 0.2;  // tune
@@ -331,7 +331,8 @@ public class FSMShooter {
         // Step 1: Move spindexer to clearance slot (do NOT retract yet)
         // ---------------------------------------------------------
         if (t < MOVE_TO_CLEARANCE_TIME_S) {
-            robot.spindexerServo.setPosition(stopClearancePos);
+            int p = Range.clip( (int) (stopClearancePos/slotAngleDelta),0,3);
+            spindexer.RuntoPosition(p);
             return;
         }
 
@@ -349,7 +350,7 @@ public class FSMShooter {
         // ---------------------------------------------------------
         if (t < (MOVE_TO_CLEARANCE_TIME_S + KICKER_RETRACT_TIME_S + PARK_TO_ZERO_TIME_S)) {
             robot.kickerServo.setPosition(kickerRetract);
-            spindexer.RuntoPosition(0);
+            spindexer.RuntoPosition(0);  // reset spindexer slot counter to 0
             return;
         }
         // ---------------------------------------------------------
