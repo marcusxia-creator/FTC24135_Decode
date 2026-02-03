@@ -4,11 +4,14 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.turret_Ce
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.turret_Center_Y_Offset;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
+import java.util.List;
 
 public class Limelight {
 
@@ -33,6 +36,20 @@ public class Limelight {
 
     public void start() {
         robot.limelight.start();
+    }
+
+    public double getTargetX() {
+        LLResult result = robot.limelight.getLatestResult();
+
+        if (result != null && result.getFiducialResults() != null) {
+            for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
+                // Horizontal angular offset (degrees)
+                return fiducial.getTargetXDegrees();
+            }
+        }
+
+        // No valid AprilTag
+        return 0.0;
     }
 
 
