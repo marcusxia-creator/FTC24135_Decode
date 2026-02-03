@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.aimingAngleThrehold;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.turretCameraRadius;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.turret_Center_X_Offset;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.turret_Center_Y_Offset;
 
@@ -23,7 +24,7 @@ public class Limelight {
 
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
     private final double turretCenterOffsetLength = Math.hypot(turret_Center_Y_Offset, turret_Center_X_Offset);
-    private final double turretCameraRadius = 0.1778;
+
 
     public Limelight(RobotHardware robot, Turret turret) {
         this.robot = robot;
