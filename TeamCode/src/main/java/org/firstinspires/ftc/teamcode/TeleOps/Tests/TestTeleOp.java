@@ -17,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.TeleOps.LUTPowerCalculator;
+import org.firstinspires.ftc.teamcode.TeleOps.Limelight;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 
@@ -47,6 +48,7 @@ public class TestTeleOp extends OpMode {
     public static double tickToRPM;
 
     private LimelightTest limelightTest;
+    private Limelight limelight;
 
     private PIDController pidController;
     private LUTPowerCalculator shooterPowerLUT;
@@ -76,11 +78,14 @@ public class TestTeleOp extends OpMode {
         shooterPowerLUT = new LUTPowerCalculator(robot);
         robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
 
-        turret = new Turret(robot);
-
         limelightTest = new LimelightTest(robot, turret);
         limelightTest.initLimelight(24);
         limelightTest.start();
+        limelight = new Limelight(robot, turret);
+        limelight.initLimelight(24);
+        limelight.start();
+
+        turret = new Turret(robot, limelight);
 
         colorDetection = new ColorDetection(robot);
         pidController = new PIDController(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
