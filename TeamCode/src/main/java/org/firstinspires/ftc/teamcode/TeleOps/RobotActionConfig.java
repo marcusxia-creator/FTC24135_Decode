@@ -69,6 +69,8 @@ public class RobotActionConfig {
     public static double BALL_PRESENT_THRESHOLD_MM      = 50;
     public static final double INTAKE_TICKS_PER_REV     = 145.1;
     public static final double INTAKE_RPM_CONVERSION    = 60.0 / INTAKE_TICKS_PER_REV;
+    public static final double SHOOTER_RPM_CONVERSION    = (60.0 / 28.0);
+
 
     //Motif IDs
     public static int GPPid                             = 21;
@@ -97,5 +99,8 @@ public class RobotActionConfig {
     public static final double turret_Center_X_Offset = 0.0127;
     public static final double turret_Center_Y_Offset = 0.028575;
 
-    public static final double shooterMaxRPM          = 4480; //at 12 volts, power : 1
+    public static final int shooterMaxRPM          = 5500; //at 13.5 volts, power : 1
+
+    public static final double aimingAngleThrehold = 5;
+    public static final double turretCameraRadius = 0.1778;// for limelight aiming angle correction
 }
