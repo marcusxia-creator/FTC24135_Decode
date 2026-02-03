@@ -429,13 +429,16 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     ///  - LED Update
     private void updateLED() {
         if (shooterPowerAngleCalculator.getZone() ==0) {
-            //Distance less than 54 inches, red alert
+            //Distance outside shooting zone, red alert
             robot.LED.setPosition(0.28);
         }
-        else if (shooterPowerAngleCalculator.getZone() > 0){
+        else if (shooterPowerAngleCalculator.getZone() > 0 && limelight.llresult()){
             robot.LED.setPosition(1.0);
         }
-        else { //Default white
+        else if (shooterPowerAngleCalculator.getZone() > 0 && !limelight.llresult()){
+            robot.LED.setPosition(0.388);
+        }
+        else { //Default black
             robot.LED.setPosition(0.0);
         }
     }
@@ -499,6 +502,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("motor PIDF coefficient", robot.turretMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
         telemetry.addLine("-----------------------------------------");
         telemetry.addData("limelight output", limelight.normalizedPose2D(DistanceUnit.INCH));
+        telemetry.addData("limelight angle Tx", limelight.getTargetX());
         telemetry.update();
     }
     public void telemetryManagerSimplified() {
