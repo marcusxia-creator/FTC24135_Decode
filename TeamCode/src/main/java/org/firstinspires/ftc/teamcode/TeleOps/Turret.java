@@ -2,8 +2,10 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.Range;
 
+import org.apache.commons.math3.filter.KalmanFilter;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -17,15 +19,22 @@ public class Turret {
     private final double tickToAngle = ((0.16867469879518 * 360) / 145.1);
     private final double angleToTick = 1 / tickToAngle;
 
-    public static final double kP = 6, kI = 0, kD = 0, kS = 0, kV = 0;
+    public static final double kP = 7, kI = 0, kD = 0.6, kS = 0.2, kV = 1.285;
 
     private PIDController pidController;
     private Limelight limelight;
+    PIDFCoefficients pidf = new PIDFCoefficients(
+            7.0,   // P
+            0.0,    // I
+            0.6,    // D
+            1.285    // F
+    );
 
     public Turret (RobotHardware robot, Limelight limelight) {
         this.robot = robot;
         pidController = new PIDController(kP, kI, kD);
         this.limelight = limelight;
+        this.robot.turretMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
     }
 
     public int motorDriveTick() {
@@ -49,7 +58,7 @@ public class Turret {
         int ticks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
         robot.turretMotor.setTargetPosition(ticks);
         robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.turretMotor.setPower(0.8);
+        robot.turretMotor.setPower(1);
     }
 
     public void driveTurretPID() {
