@@ -125,7 +125,7 @@ public class FSMIntake {
                     } else if (time > 0.2) {
                         robot.spindexerServo.setPosition(0.39);
                     }*/
-                    double targetPos =spindexerSlot1 -0.04;
+                    double targetPos =spindexerSlot1;
                     double currentPos = robot.spindexerServo.getPosition();
                     double maxStep = 0.05; // max movement per loop
 
@@ -139,7 +139,7 @@ public class FSMIntake {
 
                     if (Math.abs(error) < 0.01) {
                         spindexer.RuntoPosition(0); // go to slot1 position and reset the spindexer counter
-                        robot.spindexerServo.setPosition(0.08);
+
                         intakeStates = IntakeStates.INTAKE_IDLE;
                         }
                 }

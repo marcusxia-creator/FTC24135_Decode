@@ -177,7 +177,6 @@ public class FSMShooter {
                 boolean flywheelReady =
                         flyWheelTimer.seconds() >= SPOOLUP_SEC ||
                                 (robot.topShooterMotor.getVelocity() * LUTPowerCalculator.tickToRPM) >= rpm * 0.95;
-
                 if (!flywheelReady) break;
 
                 long now = System.currentTimeMillis();
@@ -250,6 +249,7 @@ public class FSMShooter {
     }
 
     public void SortShooterLoop() {
+
         voltage = robot.getBatteryVoltageRobust();
         //speed = shooterPowerAngleCalculator.getPower();
         power = shooterPowerLUT.getPower();

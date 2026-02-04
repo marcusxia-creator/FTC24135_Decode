@@ -38,7 +38,7 @@ public class RobotActionConfig {
     //shooter adjustor
     public static double shooterAdjusterMax             = 0.59;
     public static double shooterAdjusterMin             = 0.06;
-    public static double shooterAdjusterMid             = 0.3;
+    public static double shooterAdjusterMid             = 0.4;
     public static double shooterFactorThreshold         = 0.95;
     //drive train power
     public static double powerFactor                    = 1;
@@ -80,15 +80,24 @@ public class RobotActionConfig {
     public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, -64, 8, AngleUnit.DEGREES, 0);
     public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, -64, 8, AngleUnit.DEGREES, 0);
 
-    public static final double FAR_EDGE                 = 105.0;
-    public static final double FAR                      = 87.0;
-    public static final double MidPoint                 = 82;
-    public static final double MID                      = 75.0;
-    public static final double CLOSE                    = 57.0;
-    public static final double closeEdge                = 36.0;
+    public static double FAR_EDGE                 = 105.0;
+    public static double FAR                      = 87.0;
+    public static double MidPoint                 = 82;
+    public static double MID                      = 75.0;
+    public static double CLOSE                    = 57.0;
+    public static double closeEdge                = 36.0;
 
-    public static final double FAR_ZONE_LOW             = 120.0;
-    public static final double FAR_ZONE_HIGH            = 167.0;
+    public static double FAR_ZONE_LOW             = 120.0;
+    public static double FAR_ZONE_HIGH            = 167.0;
+
+    public static int RPM0            = 3900;
+    public static int RPM1            = 3350;
+    public static int RPM2            = 3500;
+    public static int RPM3            = 3750;
+    public static int RPM4            = 3900;
+    public static int RPM5            = 4000;
+    public static int RPM6            = 4600;
+
 
     public static final double farPower                 = 0.78;
     public static final double midPower                 = 0.73;

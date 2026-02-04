@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.util.LUT;
 
@@ -10,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 import java.util.Optional;
-
+@Config
 public class LUTPowerCalculator {
 
     private final RobotHardware robot;
@@ -25,6 +26,7 @@ public class LUTPowerCalculator {
     private final int maxVelocityRPM = shooterMaxRPM;
 
     private int rpmTarget;
+    private double rpmMeasured;
 
     private final Pose2D redGoalPose  = new Pose2D(DistanceUnit.INCH, -70,  70, AngleUnit.DEGREES, -45);
     private final Pose2D blueGoalPose = new Pose2D(DistanceUnit.INCH, -70, -70, AngleUnit.DEGREES,  45);
@@ -32,13 +34,13 @@ public class LUTPowerCalculator {
 
     // --------- Tune these ----------
     // PID
-    public static double kP = 10;   // start ~1.5 to 4.0 (normalized units)
+    public static double kP = 2;   // start ~1.5 to 4.0 (normalized units)
     public static double kI = 0.0;
-    public static double kD = 0.7;
+    public static double kD = 0.02;
 
     // Feedforward
     public static double kS = 0.03;  // static friction (small bump)
-    public static double kV = 1.285;  // scale from targetNorm to power (roughly 1.0 if perfect)
+    public static double kV = 1.0;  // scale from targetNorm to power (roughly 1.0 if perfect)
     // --------------------------------
 
     /**
@@ -47,13 +49,13 @@ public class LUTPowerCalculator {
      */
     private final LUT<Integer, Integer> targetRPM = new LUT<Integer, Integer>() {{
         /// RPM is measured based on 13v
-        add(6, 5200); // 5200
-        add(5, 4450); // 4450
-        add(4, 4290); // 4440
-        add(3, 3960); // 4470
-        add(2, 3890); // 3890
-        add(1, 3750); // 3750
-        add(0, 4100); ///change this later
+        add(6, RPM6); // 5200
+        add(5, RPM5); // 4450
+        add(4, RPM4); // 4440
+        add(3, RPM3); // 4470
+        add(2, RPM2); // 3890
+        add(1, RPM1); // 3750
+        add(0, RPM0); ///change this later
     }};
 
     //0.05
@@ -108,7 +110,7 @@ public class LUTPowerCalculator {
         }
 
         // Measured RPM from encoder ticks/sec
-        double rpmMeasured = robot.topShooterMotor.getVelocity() * tickToRPM;
+        rpmMeasured = robot.topShooterMotor.getVelocity() * tickToRPM;
 
         // Normalize to 0..1 for stable tuning
         double targetNorm = rpmTarget / (double) maxVelocityRPM;
@@ -137,6 +139,11 @@ public class LUTPowerCalculator {
         updateDistanceAndZone();
         return distance;
     }
+
+    public double getMeasureRPM(){
+        return rpmMeasured;
+    }
+
     public double getShooterAngle() {
         ///int safeZone = Math.max(0, Math.min(zone, 3));
         updateDistanceAndZone();

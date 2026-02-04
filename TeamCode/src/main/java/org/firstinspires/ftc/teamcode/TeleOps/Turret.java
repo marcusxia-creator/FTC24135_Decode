@@ -24,16 +24,16 @@ public class Turret {
     private PIDController pidController;
     private Limelight limelight;
     PIDFCoefficients pidf = new PIDFCoefficients(
-            7.0,   // P
+            12.0,   // P
             0.0,    // I
-            0.6,    // D
+            0.05,    // D
             1.285    // F
     );
 
-    public Turret (RobotHardware robot, Limelight limelight) {
+    public Turret (RobotHardware robot) {
         this.robot = robot;
         pidController = new PIDController(kP, kI, kD);
-        this.limelight = limelight;
+        //this.limelight = limelight;
         this.robot.turretMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
     }
 
@@ -43,11 +43,11 @@ public class Turret {
 
 
     public double getTurretDriveAngle () {
-        //return -(floorMod(robot.pinpoint.getHeading(AngleUnit.DEGREES) - getTargetAngle()+180, 360)-180);
+        return -(floorMod(robot.pinpoint.getHeading(AngleUnit.DEGREES) - getTargetAngle()+180, 360)-180);
         ///  Added the correction Angle from Limelight
-        double correctX = limelight.getTargetX();
-        double rawAngle = -(floorMod(robot.pinpoint.getHeading(AngleUnit.DEGREES) - getTargetAngle()+180, 360)-180);
-        return rawAngle - correctX;
+        //double correctX = limelight.getTargetX();
+        //double rawAngle = -(floorMod(robot.pinpoint.getHeading(AngleUnit.DEGREES) - getTargetAngle()+180, 360)-180);
+        //return rawAngle - correctX;
     }
 
     public double getTurretMotorAngle(){

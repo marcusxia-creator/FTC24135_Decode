@@ -85,7 +85,7 @@ public class TestTeleOp extends OpMode {
         limelight.initLimelight(24);
         limelight.start();
 
-        turret = new Turret(robot, limelight);
+        turret = new Turret(robot);
 
         colorDetection = new ColorDetection(robot);
         pidController = new PIDController(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
