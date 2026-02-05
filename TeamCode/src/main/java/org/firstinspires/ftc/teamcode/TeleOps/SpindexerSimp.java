@@ -27,6 +27,16 @@ public class SpindexerSimp {
 
     private final List<SLOT> voteBuffer = new ArrayList<>();
 
+    // -------------------------------
+    // NEW ! - Incremental servo stepping state
+    // -------------------------------
+    private double servoTargetPos = 0.0;      // absolute servo target (0..1)
+    private boolean servoBusy = false;
+
+    // TODO Tune these
+    private double servoStepSize = 0.05;     // per update() call (try 0.002–0.01)
+    private double servoTolerance = 0.025;    // "close enough" to finish
+
     public SpindexerSimp(RobotHardware robot, SLOT slot0, SLOT slot1, SLOT slot2, int startPos) {
         this.robot = robot;
         this.slots = new SLOT[]{slot0, slot1, slot2};
@@ -34,12 +44,11 @@ public class SpindexerSimp {
         RuntoPosition(currentPos);
     }
 
+    //-------------------------------------------------------------
     // --- MOVEMENT METHODS ---
-
-    /**
-     * Moves to a specific position. Uses Math.floorMod to ensure
-     * the index is always 0, 1, or 2 regardless of how high n is.
-     */
+    // Moves to a specific position. Uses Math.floorMod to ensure
+    // the index is always 0, 1, or 2 regardless of how high n is.
+    //-------------------------------------------------------------
     public void RuntoPosition(int n) {
         prevPos = currentPos;
         currentPos = n;
@@ -47,6 +56,16 @@ public class SpindexerSimp {
         // Logical safety: map n to 0, 1, or 2
         int index = Math.floorMod(currentPos, 3);
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[index]);
+    }
+
+    public void RuntoPositionIncremental(int n) {
+        prevPos = currentPos;
+        currentPos = n;
+
+        // Logical safety: map n to 0, 1, or 2
+        int index = Math.floorMod(currentPos, 3);
+        servoTargetPos = RobotActionConfig.spindexerPositions[index];
+        servoBusy = true;
     }
 
     public void RunToNext() {
@@ -57,8 +76,45 @@ public class SpindexerSimp {
         RuntoPosition(prevPos);
     }
 
-    // --- COLOR SENSING (MAJORITY VOTE) ---
+    //==================================================
+    // Update Servo Step
+    //==================================================
+    /**
+     * Call this EVERY loop() (or every FSM update tick).
+     * Returns true when the servo has reached the target (within tolerance).
+     */
+    public boolean updateServoStep() {
+        if (!servoBusy) return true;
 
+        double currentCmd = robot.spindexerServo.getPosition(); // last commanded, not actual
+        double error = servoTargetPos - currentCmd;
+
+        if (Math.abs(error) <= servoTolerance) {
+            robot.spindexerServo.setPosition(servoTargetPos); // snap to exact target
+            servoBusy = false;
+            return true;
+        }
+
+        double step = Math.copySign(Math.min(Math.abs(error), servoStepSize), error);
+        robot.spindexerServo.setPosition(clamp01(currentCmd + step));
+        return false;
+    }
+
+    public boolean isServoBusy() {
+        return servoBusy;
+    }
+
+    public void setServoStepSize(double stepSize) {
+        this.servoStepSize = Math.max(1e-6, stepSize);
+    }
+
+    public void setServoTolerance(double tol) {
+        this.servoTolerance = Math.max(0.0, tol);
+    }
+
+    //==================================================
+    // --- COLOR SENSING (MAJORITY VOTE) ---
+    //==================================================
     public void clearVoteBuffer() {
         voteBuffer.clear();
     }
@@ -88,7 +144,6 @@ public class SpindexerSimp {
      */
     public void finalizeCurrentSlot() {
         if (voteBuffer.isEmpty()) return;
-
         int greenVotes = Collections.frequency(voteBuffer, SLOT.Green);
         int purpleVotes = Collections.frequency(voteBuffer, SLOT.Purple);
         int unKonwnVotes = Collections.frequency(voteBuffer, SLOT.Unknown);
@@ -104,8 +159,9 @@ public class SpindexerSimp {
         slots[Math.floorMod(currentPos, 3)] = winner;
     }
 
+    //==================================================
     // --- UTILITY METHODS ---
-
+    //==================================================
     public int count(SLOT target) {
         int counter = 0;
         for (SLOT s : slots) if (s == target) counter++;
@@ -122,20 +178,30 @@ public class SpindexerSimp {
                 break; // first higher is the closest higher
             }
         }
-
         return closest; // -1 means none found
     }
 
-
+    //==================================================
+    // Getter and Setter Helper
+    //==================================================
     public void resetSlot() {
         for (int i = 0; i < slots.length; i++) slots[i] = SLOT.Empty;
     }
-
     public SLOT getCurrentSlotColor() {
         return slots[Math.floorMod(currentPos, 3)];
     }
 
+    //==================================================
+    // Shooter End Helper
+    //==================================================
     public void SpindexerShootingEnd() {
         robot.spindexerServo.setPosition(spindexerZeroPos);
+    }
+
+    //==================================================
+    // Value Clamp Helper
+    //==================================================
+    private static double clamp01(double v) {
+        return Math.max(0.0, Math.min(1.0, v));
     }
 }
