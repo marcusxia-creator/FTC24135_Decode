@@ -76,7 +76,7 @@ public class SpindexerSimp {
                     (purpleRangeHigh[0] < hsvValues[0] && hsvValues[0] < purpleRangeHigh[1])) {
                 voteBuffer.add(SLOT.Purple);
             } else {
-                voteBuffer.add(SLOT.Empty);
+                voteBuffer.add(SLOT.Unknown);
             }
         } else {
             voteBuffer.add(SLOT.Empty);
@@ -91,12 +91,14 @@ public class SpindexerSimp {
 
         int greenVotes = Collections.frequency(voteBuffer, SLOT.Green);
         int purpleVotes = Collections.frequency(voteBuffer, SLOT.Purple);
+        int unKonwnVotes = Collections.frequency(voteBuffer, SLOT.Unknown);
         int emptyVotes = Collections.frequency(voteBuffer, SLOT.Empty);
 
         SLOT winner;
-        if (greenVotes > purpleVotes && greenVotes > emptyVotes) winner = SLOT.Green;
-        else if (purpleVotes > greenVotes && purpleVotes > emptyVotes) winner = SLOT.Purple;
-        else winner = SLOT.Unknown;
+        if (greenVotes > purpleVotes && greenVotes > unKonwnVotes && greenVotes > emptyVotes) winner = SLOT.Green;
+        else if (purpleVotes > greenVotes && purpleVotes > unKonwnVotes && purpleVotes > emptyVotes) winner = SLOT.Purple;
+        else if (unKonwnVotes > greenVotes && unKonwnVotes > purpleVotes && unKonwnVotes > emptyVotes) winner = SLOT.Unknown;
+        else winner = SLOT.Empty;
 
         // Apply result to the current logical index
         slots[Math.floorMod(currentPos, 3)] = winner;
@@ -115,7 +117,7 @@ public class SpindexerSimp {
         double closest = -1;
 
         for (double slot : slots) {
-            if (slot > currentPos) {
+            if (slot >= currentPos) {
                 closest = slot;
                 break; // first higher is the closest higher
             }
