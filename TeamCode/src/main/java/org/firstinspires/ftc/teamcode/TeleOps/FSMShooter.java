@@ -113,15 +113,22 @@ public class FSMShooter {
         //✅ Transition manager: request stop, wait for canExit()
         //===========================================================
 
+        //==========================================================
+        // Set shooter power
+        //==========================================================
         voltage = robot.getBatteryVoltageRobust();
         /// shooter motor power controller
         power = shooterPowerLUT.getPower(); //get shooter power based on distance Zone and PID+FF power, shooterPowerAngleCalculator.getPower();
         double rpm = shooterPowerLUT.getRPM();
-        power_setpoint = (power *13.0)/voltage; // not used - normalized power for shooter to 13v./voltage;
 
-        /// set shooter adjuster angle
+        //==========================================================
+        // Set shooter adjuster angle
+        //==========================================================
         angle = Range.clip(shooterPowerLUT.getShooterAngle(), 0.06, 0.49); // get shooter adjuster angle.
-        /// shooter motor state to control shooter run/NOT
+
+        //==========================================================
+        //Control shooter run/NOT
+        //==========================================================
         if (shootermotorstate == SHOOTERMOTORSTATE.RUN){
             robot.topShooterMotor.setPower(power);
             robot.bottomShooterMotor.setPower(power);
@@ -132,16 +139,22 @@ public class FSMShooter {
             robot.bottomShooterMotor.setPower(0);
         }
         //==========================================================
-        //Handle stopping
-        //==========================================================
-
+        // Handle stopping
         // If stop is requested, immediately transition to STOPPING
+        //==========================================================
         if (stopRequested
                 && shooterState != SHOOTERSTATE.SHOOTER_IDLE
                 && shooterState != SHOOTERSTATE.SHOOTER_GRACE_STOPPING) {
                 enterStoppingState();   // this sets stopInitDone = true
         }
-        /// --- FMS ---
+        //==========================================================
+        // Update Spindexer servo
+        //==========================================================
+        spindexer.updateServoStep();
+
+        //==========================================================
+        // Main FSM
+        //==========================================================
         switch (shooterState) {
             case SHOOTER_IDLE:
                //Idle state for shooter
@@ -149,28 +162,39 @@ public class FSMShooter {
                 robot.bottomShooterMotor.setPower(0);
                 shootTimer.reset();
                 robot.kickerServo.setPosition(kickerRetract);
+
+                /// New 2.5
+                // ✅ single authoritative reset point
+                shootCounter = 0;
+                lastFeedTimeMs = 0;
+
                 stopRequested = false;
                 stopInitDone = false;
+
+                shootTimer.reset();
+                flyWheelTimer.reset();
                 break;
 
             case FLYWHEEL_RUNNING:
+                // Start flywheels (your motor control elsewhere should respond to this state)
                 shootermotorstate = SHOOTERMOTORSTATE.RUN;
-                shootCounter = 0;
-                if (shootTimer.seconds() > 0.05){ //wait for flywheel to spool up; needs testing
-                    shooterState = SHOOTERSTATE.KICKER_EXTEND;
-                    shootTimer.reset();
-                    flyWheelTimer.reset();
-                }
+
+                shooterState = SHOOTERSTATE.KICKER_EXTEND;
+                shootTimer.reset();
+                // IMPORTANT: flyWheelTimer should be reset when flywheel starts
+                flyWheelTimer.reset();
                 break;
 
             case KICKER_EXTEND:
                     robot.kickerServo.setPosition(kickerExtend);
-                    /// use button x again to shoot.
-                if ((gamepad_1.getButton(GamepadKeys.Button.Y)|| gamepad_2.getButton(GamepadKeys.Button.Y)) && isButtonDebounced()){
-                    robot.spindexerServo.setPosition(spinderxerShootPos);
-                    shooterState = SHOOTERSTATE.SEQUENCE_SHOOTING;
+                    /// use button Y to shoot.
+                    if ((gamepad_1.getButton(GamepadKeys.Button.Y)
+                            || gamepad_2.getButton(GamepadKeys.Button.Y))
+                            && isButtonDebounced()){
+                        spindexer.requestServoPosition(spinderxerShootPos);
+                        shooterState = SHOOTERSTATE.SEQUENCE_SHOOTING;
                         shootTimer.reset();
-                }
+                    }
                 break;
 
             case SEQUENCE_SHOOTING:
@@ -178,9 +202,8 @@ public class FSMShooter {
                         flyWheelTimer.seconds() >= SPOOLUP_SEC ||
                                 (robot.topShooterMotor.getVelocity() * LUTPowerCalculator.tickToRPM) >= rpm * 0.95;
                 if (!flywheelReady) break;
-
+                // make a timer to feed balls
                 long now = System.currentTimeMillis();
-
                 // --- First ball: shoot immediately once flywheel is ready ---
                 if (shootCounter == 0) {
                     shootCounter = 1;
@@ -188,20 +211,17 @@ public class FSMShooter {
                     spindexer.RunToNext();   // feed 1st ball NOW
                     break;
                 }
-
                 // --- Next balls: every FEED_PERIOD_MS ---
                 if (now - lastFeedTimeMs >= FEED_PERIOD_MS) {
                     shootCounter++;
                     lastFeedTimeMs = now;
-
                     if (shootCounter < 3) {
                         spindexer.RunToNext();          // feed ball #2, #3
                     } else if (shootCounter == 3) {
-                        robot.spindexerServo.setPosition(spindexerSlot4);  // your “end position”
+                        spindexer.requestServoPosition(spindexerSlot4); // your “end position”
                     } else {
                         shooterState = SHOOTERSTATE.SHOOTER_STOP;
                         shootTimer.reset();
-
                         // reset these so next time you enter shooting state it works cleanly
                         shootCounter = 0;
                         lastFeedTimeMs = 0;
@@ -212,6 +232,7 @@ public class FSMShooter {
             case SHOOTER_STOP:
                 //stop flywheel
                 shootermotorstate = SHOOTERMOTORSTATE.STOP;
+
                 if (shootTimer.seconds() > 0.05) {
                     spindexer.resetSlot();
                     shootTimer.reset();
@@ -220,18 +241,24 @@ public class FSMShooter {
                 break;
 
             case KICKER_RETRACT:
-                if (shootTimer.seconds() > 0.2) {
+                // Request spindexer return ONCE
+                if (!stopInitDone){
+                //if (shootTimer.seconds() > 0.2) {
                     //=========================================================================
                     // this is the place to reset the spindexer counter
                     // meanwhile spindexer return back to spinderxerPositions[0] - slot 1 position
                     //==========================================================================
                     spindexer.RuntoPosition(0); // reset counter in spindexer
+                    stopInitDone = true;
+                    shootTimer.reset();
                 }
                 //=========================================================
                 // when slot back to 0 position,then the kicker Retract
                 //=========================================================
-                if (shootTimer.seconds() > 1.0){
+                if (!spindexer.isServoBusy() || shootTimer.seconds() > 1.0){
                     robot.kickerServo.setPosition(kickerRetract);
+
+                    stopInitDone = false;
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.SHOOTER_IDLE;
                 }
@@ -295,14 +322,12 @@ public class FSMShooter {
     }
 
     private void handleStoppingState() {
-
         // Always stop flywheel immediately
         shootermotorstate = SHOOTERMOTORSTATE.STOP;
         robot.topShooterMotor.setPower(0.0);
         robot.bottomShooterMotor.setPower(0.0);
 
         double t = shooterTimer.seconds();
-
         // ---------------------------------------------------------
         // Step 0: Decide clearance slot ONCE (closest > current)
         // ---------------------------------------------------------
