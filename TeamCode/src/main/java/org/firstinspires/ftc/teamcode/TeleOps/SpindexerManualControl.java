@@ -21,10 +21,10 @@ public class SpindexerManualControl {
         }
         */
         if(gamepadInput.getDriverLbSinglePressed()|| gamepadInput.getOperatorLbSinglePressed()){
-            spindexer.RuntoPosition(spindexer.currentSlot-1);
+            spindexer.RuntoPosition(spindexer.currentPos-1);
         }
         if((gamepadInput.getDriverRbSinglePressed() || gamepadInput.getOperatorRbSinglePressed())){
-            spindexer.RuntoPosition(spindexer.currentSlot+1);
+            spindexer.RuntoPosition(spindexer.currentPos+1);
         }
     }
 
