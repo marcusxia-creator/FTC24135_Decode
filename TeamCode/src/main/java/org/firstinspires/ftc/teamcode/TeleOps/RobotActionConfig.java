@@ -29,7 +29,7 @@ public class RobotActionConfig {
     public static double kickerRetract                  = 0.36;  /// value - retract back for spindexer reversing
     public static double kickerExtend                   = 0.66; /// value - into the spindexer for pushing the ball up
     //intake Speed
-    public static double intakeSpeed                    = 0.85;
+    public static double intakeSpeed                    = 0.75;
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.7;
     //shooter timer
@@ -58,8 +58,6 @@ public class RobotActionConfig {
 
     //Colour Profiles
     public static double distanceThreshold              = 85;
-    public static int[] none                            = {105, 110};
-
     public static int[] greenRangeLow                   = {120, 130};
     public static int[] greenRangeHigh                  = {135, 160};
 
@@ -69,7 +67,7 @@ public class RobotActionConfig {
     public static double BALL_PRESENT_THRESHOLD_MM      = 50;
     public static final double INTAKE_TICKS_PER_REV     = 145.1;
     public static final double INTAKE_RPM_CONVERSION    = 60.0 / INTAKE_TICKS_PER_REV;
-    public static final double SHOOTER_RPM_CONVERSION    = (60.0 / 28.0);
+    public static final double SHOOTER_RPM_CONVERSION   = (60.0 / 28.0);
 
 
     //Motif IDs
@@ -101,18 +99,17 @@ public class RobotActionConfig {
     public static int RPM5            = 4000;
     public static int RPM6            = 4600;
 
-
     public static final double farPower                 = 0.78;
     public static final double midPower                 = 0.73;
     public static final double closePower               = 0.75;
     public static final double OZPower                  = 0.5;
     public static final double FZPower                  = 0.93;
 
-    public static final double turret_Center_X_Offset = 0.0127;
-    public static final double turret_Center_Y_Offset = 0.028575;
+    public static final double turret_Center_X_Offset   = 0.0127;
+    public static final double turret_Center_Y_Offset   = 0.028575;
 
-    public static final int shooterMaxRPM          = 5500; //at 13.5 volts, power : 1
+    public static final int shooterMaxRPM               = 5500; //at 13.5 volts, power : 1
 
-    public static final double aimingAngleThrehold = 5;
-    public static final double turretCameraRadius = 0.1778;// for limelight aiming angle correction
+    public static final double aimingAngleThrehold      = 5;
+    public static final double turretCameraRadius       = 0.1778;// for limelight aiming angle correction
 }

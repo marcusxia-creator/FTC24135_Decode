@@ -21,16 +21,19 @@ public class Turret {
     private final double tickToAngle = ((0.16867469879518 * 360) / 145.1);
     private final double angleToTick = 1 / tickToAngle;
 
-    public static double kP = 17, kI = 0, kD = 0.005, kS = 0.2, kV = 2;
+    public static double kP = 17, kI = 0, kD = 0.005, kS = 0.2, kV = 2; // turret motor drive pidcontroller
+    public static double kP_motor = 17, kI_motor = 0, kD_motor = 0.005, kF = 2; // turret motor pidf
 
     private PIDController pidController;
     private Limelight limelight;
     PIDFCoefficients pidf = new PIDFCoefficients(
-            kP,      // P
-            kI,      // I
-            kD,      // D
-            kV       // F
+            kP_motor,      // P
+            kI_motor,      // I
+            kD_motor,      // D
+            kF               // F
     );
+    private double lastkP = Double.NaN, lastkI = Double.NaN, lastkD = Double.NaN;
+    private double lastkPmotor = Double.NaN, lastkImotor = Double.NaN, lastkDmotor = Double.NaN, lastkF = Double.NaN;
 
     public Turret (RobotHardware robot) {
         this.robot = robot;
@@ -41,6 +44,22 @@ public class Turret {
 
     public int motorDriveTick() {
         return (int) Math.round(getTurretDriveAngle() * angleToTick);
+    }
+
+
+    public void updatePidFromDashboard() {
+        // FTCLib PID (your own controller)
+        if (kP != lastkP || kI != lastkI || kD != lastkD) {
+            pidController.setPID(kP, kI, kD);
+            lastkP = kP; lastkI = kI; lastkD = kD;
+        }
+
+        // Motor controller PIDF (RUN_USING_ENCODER) — only if you really need it
+        if (kP_motor != lastkPmotor || kI_motor != lastkImotor || kD_motor != lastkDmotor || kF != lastkF) {
+            PIDFCoefficients pidf = new PIDFCoefficients(kP_motor, kI_motor, kD_motor, kF);
+            robot.turretMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+            lastkPmotor = kP_motor; lastkImotor = kI_motor; lastkDmotor = kD_motor; lastkF = kF;
+        }
     }
 
 

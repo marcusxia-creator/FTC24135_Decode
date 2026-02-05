@@ -69,7 +69,7 @@ public class FSMIntake {
                 HandleIntaking(jammed); // This manages motor power internally
 
                 // Wait for ball to be detected in the intake mouth
-                if (robot.distanceSensor.getDistance(DistanceUnit.MM) < distanceThreshold) {
+                if (robot.distanceSensor.getDistance(DistanceUnit.MM) < BALL_PRESENT_THRESHOLD_MM) {
                     intakeTimer.reset();
                     intakeStates = IntakeStates.INTAKE_CAPTURE;
                 }
@@ -80,8 +80,8 @@ public class FSMIntake {
                     spindexer.clearVoteBuffer();
                 }
                 //nned to make this longer
-                else if (intakeTimer.seconds() < 0.4) {
-                    // Collect as many samples as possible in 250ms
+                else if (intakeTimer.seconds() < 0.25) {
+                    // Collect as many samples as possible in 200ms
                     spindexer.addVoteSample(robot.colorSensor, robot.distanceSensor);
                 }
                 else {

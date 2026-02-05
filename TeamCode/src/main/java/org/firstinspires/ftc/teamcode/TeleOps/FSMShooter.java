@@ -249,7 +249,6 @@ public class FSMShooter {
     }
 
     public void SortShooterLoop() {
-
         voltage = robot.getBatteryVoltageRobust();
         //speed = shooterPowerAngleCalculator.getPower();
         power = shooterPowerLUT.getPower();
