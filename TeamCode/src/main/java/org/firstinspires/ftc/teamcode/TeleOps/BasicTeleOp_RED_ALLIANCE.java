@@ -213,7 +213,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         //turret.driveTurretMotor();
 
         // =========================================================
-        // FIXME: 4. NEW! - ACTION STATE TRANSITION MANAGER (GRACEFUL)
+        // 4. NEW! - ACTION STATE TRANSITION MANAGER (GRACEFUL)
         // =========================================================
         updateActionStateTransitions();
 
@@ -222,10 +222,10 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         switch (activeActionState){
             case Sequence_Shooting:
-                turret.driveTurretMotor();
+                //turret.driveTurretMotor();
                 break;
             case Sort_Shooting:
-                turret.driveTurretMotor();
+                //turret.driveTurretMotor();
                 //FSMShooter.SortShooterLoop();
                 break;
             case Intaking:
@@ -233,6 +233,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                 break;
             case Idle:
                 // empty as the FSM handles this
+                spindexerManualControl.loop();
+                break;
             default:
                 // do nothing — graceful stop handled elsewhere
                 break;
