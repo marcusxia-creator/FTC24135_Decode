@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotDrive;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 import org.firstinspires.ftc.teamcode.TeleOps.Turret;
+import org.firstinspires.ftc.teamcode.TeleOps.TurretUpd;
 
 @Config
 @TeleOp (name = "TestTeleOp", group = "org.firstinspires.ftc.teamcode")
@@ -37,6 +38,7 @@ public class TestTeleOp extends OpMode {
     private RobotDrive robotDrive;
     private LUTPowerCalculator powerCalculator;
     private Turret turret;
+    private TurretUpd turretUpd;
 
     private BallColor ballColor;
     private ColorDetection colorDetection;
@@ -78,14 +80,17 @@ public class TestTeleOp extends OpMode {
         shooterPowerLUT = new LUTPowerCalculator(robot);
         robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
 
+        turret = new Turret(robot);
+        turretUpd = new TurretUpd(robot);
+
         limelightTest = new LimelightTest(robot, turret);
         limelightTest.initLimelight(24);
         limelightTest.start();
-        limelight = new Limelight(robot, turret);
+        limelight = new Limelight(robot, turretUpd);
         limelight.initLimelight(24);
         limelight.start();
 
-        turret = new Turret(robot);
+
 
         colorDetection = new ColorDetection(robot);
         pidController = new PIDController(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
@@ -308,11 +313,11 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("Color", ballColor);
         telemetry.addData("Color Hue", colorDetection.getHue());
         telemetry.addLine("----------------------------------------------------");
-        telemetry.addData("turret target angle - atan", turret.getTargetAngle());
+        //telemetry.addData("turret target angle - atan", turret.getTargetAngle());
         telemetry.addData("turret motor tick", robot.turretMotor.getCurrentPosition());
-        telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
-        telemetry.addData("turret motor drive angle", turret.getTurretDriveAngle());
-        telemetry.addData("turret motor drive tick", turret.motorDriveTick());
+        //telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
+        //telemetry.addData("turret motor drive angle", turret.getTurretDriveAngle());
+        //telemetry.addData("turret motor drive tick", turret.motorDriveTick());
         telemetry.addLine("----------------------------------------------------");
         Pose2D MT2Pose = limelightTest.updateTagMT2(DistanceUnit.MM);
         Pose2D MT2Offset = limelightTest.updateTagMT2OFFSET(DistanceUnit.MM);

@@ -18,13 +18,13 @@ import java.util.List;
 public class Limelight {
 
     private RobotHardware robot;
-    private Turret turret;
+    private TurretUpd turret;
     private double conversionFactor;
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
     private final double turretCenterOffsetLength = Math.hypot(turret_Center_Y_Offset, turret_Center_X_Offset);
 
 
-    public Limelight(RobotHardware robot, Turret turret) {
+    public Limelight(RobotHardware robot, TurretUpd turret) {
         this.robot = robot;
         this.turret = turret;
     }
@@ -50,20 +50,17 @@ public class Limelight {
     // Use Limelight Tx Angle to filter the llresult
     // generate Tag angle for turret angle correction
     //============================================================
-    public double getTargetX() {
-        LLResult result = robot.limelight.getLatestResult();
+    public double getTargetXForTag(int tagId) {
+        LLResult r = robot.limelight.getLatestResult();
+        if (r == null || !r.isValid() || r.getFiducialResults() == null) return 0.0;
 
-        if (result != null && result.getFiducialResults() != null) {
-            if (result.getTx()<aimingAngleThrehold)
-                for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
-                    // Horizontal angular offset (degrees)
-                    return fiducial.getTargetXDegrees();
-                }
-            else{
-                return 0.0;
+        for (LLResultTypes.FiducialResult f : r.getFiducialResults()) {
+            if (f.getFiducialId() == tagId) {
+                double tx = f.getTargetXDegrees();
+                if (Math.abs(tx) < aimingAngleThrehold) return 0.0;
+                return tx;
             }
         }
-        // No valid AprilTag
         return 0.0;
     }
 
@@ -92,7 +89,8 @@ public class Limelight {
             double turretYOffSet = Math.sin(turretYaw) * (turretCenterOffsetLength * conversionFactor);
             double turretXOffSet = Math.cos(turretYaw) * (turretCenterOffsetLength * conversionFactor);
             Pose2D robotPose = new Pose2D(distanceUnit, (robotPose3D.getPosition().x * conversionFactor + (xOffSet + turretXOffSet)), (robotPose3D.getPosition().y * conversionFactor - (yOffSet + turretYOffSet)), AngleUnit.DEGREES, robotPose3D.getOrientation().getYaw());
-            return new Output(robotPose, xOffSet, yOffSet, turretXOffSet, turretYOffSet);
+            double targetX = llResult.getTx();
+            return new Output(robotPose, xOffSet, yOffSet, turretXOffSet, turretYOffSet, targetX);
         }
         return null;
     }
@@ -106,13 +104,15 @@ public class Limelight {
         public final double cameraYOffset;
         public final double turretXOffset;
         public final double turretYOffset;
+        public final double TargetX;
 
-        public Output(Pose2D robotPose, double cameraXOffset, double cameraYOffset, double turretXOffSet, double turretYOffset) {
+        public Output(Pose2D robotPose, double cameraXOffset, double cameraYOffset, double turretXOffSet, double turretYOffset, double targetX) {
             this.robotPose = robotPose;
             this.cameraXOffset = cameraXOffset;
             this.cameraYOffset = cameraYOffset;
             this.turretXOffset = turretXOffSet;
             this.turretYOffset = turretYOffset;
+            TargetX = targetX;
         }
     }
 

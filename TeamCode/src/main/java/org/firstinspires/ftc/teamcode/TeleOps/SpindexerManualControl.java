@@ -6,10 +6,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class SpindexerManualControl {
     RobotHardware robot;
-    Spindexer spindexer;
+    SpindexerSimp spindexer;
     GamepadInput gamepadInput;
     ElapsedTime debounceTimer = new ElapsedTime();
-    public SpindexerManualControl(RobotHardware robot, Spindexer spindexer, GamepadInput gamepadInput){
+    public SpindexerManualControl(RobotHardware robot, SpindexerSimp spindexer, GamepadInput gamepadInput){
         this.robot=robot;
         this.spindexer=spindexer;
         this.gamepadInput=gamepadInput;
@@ -21,10 +21,10 @@ public class SpindexerManualControl {
         }
         */
         if(gamepadInput.getDriverLbSinglePressed()|| gamepadInput.getOperatorLbSinglePressed()){
-            spindexer.runToSlot(spindexer.currentSlot-1);
+            spindexer.RuntoPosition(spindexer.currentSlot-1);
         }
         if((gamepadInput.getDriverRbSinglePressed() || gamepadInput.getOperatorRbSinglePressed())){
-            spindexer.runToSlot(spindexer.currentSlot+1);
+            spindexer.RuntoPosition(spindexer.currentSlot+1);
         }
     }
 

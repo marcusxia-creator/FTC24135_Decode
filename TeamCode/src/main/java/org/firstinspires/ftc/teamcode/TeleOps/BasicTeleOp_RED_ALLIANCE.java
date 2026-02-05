@@ -59,7 +59,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private RobotDrive robotDrive;
     FSMShooter FSMShooter;
     FSMIntake FSMIntake;
-    private Turret turret;
+    private TurretUpd turret;
     private SpindexerManualControl spindexerManualControl;
     //private Spindexer spindexer;
     private SpindexerSimp spindexer;
@@ -123,13 +123,13 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
 
         /// 3. turret---------------------------------------------------------------
-        turret = new Turret(robot);
+        turret = new TurretUpd(robot);
 
         /// 4.1. power calculator for shooter------------------------------------------------------------
         shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
 
         /// 4. shooter-------------------------------------------------------------
-        FSMShooter = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, shooterPowerAngleCalculator,gamepadInput);
+        FSMShooter = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, shooterPowerAngleCalculator,gamepadInput, turret, limelight);
         FSMShooter.Init();
 
         /// 5. intake------------------------------------------------------------
@@ -509,15 +509,15 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
         //telemetry.addData("turret rotation in degrees", turret.getTurretAngle());
         telemetry.addLine("Turret-----------------------------------");
-        telemetry.addData("turret target angle", turret.getTargetAngle());
-        telemetry.addData("turret drive angle", turret.getTurretDriveAngle());
-        telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
+        //telemetry.addData("turret target angle", turret.getTargetAngle());
+        //telemetry.addData("turret drive angle", turret.getTurretDriveAngle());
+        //telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
         telemetry.addData("motor PIDF coefficient", robot.turretMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
-        telemetry.addData("current motor tick", turret.getCurrentTick());
-        telemetry.addData("target motor tick", turret.getTargetTick());
+        //telemetry.addData("current motor tick", turret.getCurrentTick());
+        //telemetry.addData("target motor tick", turret.getTargetTick());
         telemetry.addLine("-----------------------------------------");
         telemetry.addData("limelight output", "%,.1f",limelight.normalizedPose2D(DistanceUnit.INCH));
-        telemetry.addData("limelight angle Tx", limelight.getTargetX());
+        telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(24));
         telemetry.update();
     }
     public void telemetryManagerSimplified() {
