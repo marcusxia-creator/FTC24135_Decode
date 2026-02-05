@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses;
+package org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 

@@ -14,14 +14,11 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.*;
 
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Auto.PinpointLocalizer;
-import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.IntakeRunMode;
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.Intake;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.Shooter;
-import org.firstinspires.ftc.teamcode.Auto.messages.PoseMessage;
-import org.firstinspires.ftc.teamcode.TeleOps.Limelight;
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.TurretRunMode;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
-import org.firstinspires.ftc.teamcode.TeleOps.Turret;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 
@@ -41,6 +38,7 @@ public class RedSideFarAuto extends LinearOpMode {
         robot = new RobotHardware(hardwareMap);
         robot.init();
         Shooter shooter = new Shooter(robot);
+        Intake intake  = new Intake(robot);
 
         robot.limelight.pipelineSwitch(0);
         robot.limelight.start();
@@ -87,11 +85,12 @@ public class RedSideFarAuto extends LinearOpMode {
         if (opModeIsActive()) {
             Actions.runBlocking(
                 new SequentialAction(
+                    TurretRun(108),
                     shooter.ShooterOn(FarShotPower),
                     shooter.ShooterRun(FarShotPower, 2),
                     shooter.ShooterOff(),
                     new ParallelAction(
-                        IntakeRun(),
+                        intake.IntakeRun(),
                         new SequentialAction(
                             IntakeSet1Drive1,
                             IntakeSet1Drive2
@@ -119,7 +118,7 @@ public class RedSideFarAuto extends LinearOpMode {
                             new SequentialAction(
 
                             ),
-                            IntakeRun()
+
                     ),
                     new ParallelAction(
                             DriveToShoot2,
@@ -132,8 +131,8 @@ public class RedSideFarAuto extends LinearOpMode {
         }
     }
 
-    public Action IntakeRun(){
-        return new IntakeRunMode(robot);
+    public Action TurretRun (int targetAngle){
+        return new TurretRunMode(robot, targetAngle);
     }
 
 }

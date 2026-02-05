@@ -1,24 +1,18 @@
 package org.firstinspires.ftc.teamcode.Auto.Runs;
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
-import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.IntakeRunMode;
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.Intake;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.Shooter;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.BlueSidePositions.*;
@@ -130,6 +124,6 @@ public class BlueSideCloseAuto extends LinearOpMode {
     }
 
     public Action IntakeRun(){
-        return new IntakeRunMode(robot);
+        return new Intake(robot);
     }
 }

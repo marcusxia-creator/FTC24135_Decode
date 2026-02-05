@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.IntakeRunMode;
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.Intake;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.Shooter;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.*;
@@ -123,6 +123,6 @@ public class RedSideCloseAuto extends LinearOpMode {
     }
 
     public Action IntakeRun() {
-        return new IntakeRunMode(robot);
+        return new Intake(robot);
     }
 }
