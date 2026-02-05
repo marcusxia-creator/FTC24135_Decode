@@ -25,8 +25,11 @@ public class RobotActionConfig {
     public static double angleResetPos                  = 0.0;
     public static double slotAngleDelta                 = 0.19;
 
-    public static double servoStepSize = 0.05;     // per update() call (try 0.002–0.01)
-    public static double servoTolerance = 0.025;    // "close enough" to finish
+    public static double servoStepSize                  = 0.05;     // per update() call (try 0.002–0.01)
+    public static double servoTolerance                 = 0.025;    // "close enough" to finish
+
+    public static double spindexerServoFullTime             = 0.65;    // full circle time
+    public static double spindexerServoPerSlotTime          = 0.15;    // per slot time
 
     //kicker
     public static double kickerRetract                  = 0.36;  /// value - retract back for spindexer reversing
@@ -36,7 +39,7 @@ public class RobotActionConfig {
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.7;
     //shooter timer
-    public static final long FEED_PERIOD_MS             = 600; // 0.6s per feed (tune)
+    public static final long FEED_PERIOD_MS             = 500; // 0.6s per feed (tune)
     public static final double SPOOLUP_SEC              = 1.25;
     //shooter adjustor
     public static double shooterAdjusterMax             = 0.59;
@@ -57,7 +60,6 @@ public class RobotActionConfig {
     public static double correction                     = 0.053;
 
     //Colour Profiles
-    public static double distanceThreshold              = 85;
     public static int[] greenRangeLow                   = {120, 130};
     public static int[] greenRangeHigh                  = {135, 160};
 

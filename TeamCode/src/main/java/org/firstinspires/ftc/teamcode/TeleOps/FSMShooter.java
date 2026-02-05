@@ -24,7 +24,7 @@ public class FSMShooter {
     public static SHOOTERSTATE shooterState;
     SORTSHOOTERSTATE sortShooterState;
     SHOOTERMOTORSTATE shootermotorstate;
-    SpindexerSimp spindexer;
+    SpindexerUpd spindexer;
     private final TurretUpd turret;
     private final Limelight limelight;
 
@@ -90,7 +90,7 @@ public class FSMShooter {
 
     //Constructor
     public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot,
-                      SpindexerSimp spindexer, LUTPowerCalculator shooterPowerLUT,
+                      SpindexerUpd spindexer, LUTPowerCalculator shooterPowerLUT,
                       GamepadInput gamepadInput, TurretUpd turret, Limelight limelight) {
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
@@ -273,7 +273,7 @@ public class FSMShooter {
                 //stop flywheel
                 shootermotorstate = SHOOTERMOTORSTATE.STOP;
 
-                if (shootTimer.seconds() > 0.05) {
+                if (shootTimer.seconds() > spindexerServoPerSlotTime) {
                     spindexer.resetSlot();
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.KICKER_RETRACT;
@@ -281,6 +281,7 @@ public class FSMShooter {
                 break;
 
             case KICKER_RETRACT:
+                robot.kickerServo.setPosition(kickerRetract);
                 // Request spindexer return ONCE
                 if (!stopInitDone){
                 //if (shootTimer.seconds() > 0.2) {
@@ -295,9 +296,7 @@ public class FSMShooter {
                 //=========================================================
                 // when slot back to 0 position,then the kicker Retract
                 //=========================================================
-                if (!spindexer.isServoBusy() || shootTimer.seconds() > 1.0){
-                    robot.kickerServo.setPosition(kickerRetract);
-
+                if (!spindexer.isServoBusy() || shootTimer.seconds() > spindexerServoFullTime){
                     stopInitDone = false;
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.SHOOTER_IDLE;
@@ -319,7 +318,6 @@ public class FSMShooter {
         voltage = robot.getBatteryVoltageRobust();
         //speed = shooterPowerAngleCalculator.getPower();
         power = shooterPowerLUT.getPower();
-        power_setpoint = (power *12.0)/voltage;
         //ShooterPowerControl();
         switch(sortShooterState) {
             case SHOOTER_IDLE:
@@ -372,7 +370,7 @@ public class FSMShooter {
         // Step 0: Decide clearance slot ONCE (closest > current)
         // ---------------------------------------------------------
         if (!clearanceChosen) {
-            int emptyCount = spindexer.count(SpindexerSimp.SLOT.Empty);
+            int emptyCount = spindexer.count(SpindexerUpd.SLOT.Empty);
             boolean noBall = emptyCount == 3; // =   noBall
 
             if (noBall) {

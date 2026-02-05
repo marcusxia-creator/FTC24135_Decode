@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SpindexerSimp {
+public class SpindexerUpd {
     public enum SLOT { Empty, Green, Purple, Unknown }
 
     public RobotHardware robot;
@@ -38,7 +38,7 @@ public class SpindexerSimp {
     //public double servoStepSize;     // per update() call (try 0.05)
     //private double servoTolerance;    // "close enough" to finish 0.025
 
-    public SpindexerSimp(RobotHardware robot, SLOT slot0, SLOT slot1, SLOT slot2, int startPos) {
+    public SpindexerUpd(RobotHardware robot, SLOT slot0, SLOT slot1, SLOT slot2, int startPos) {
         this.robot = robot;
         this.slots = new SLOT[]{slot0, slot1, slot2};
         this.currentPos = startPos;

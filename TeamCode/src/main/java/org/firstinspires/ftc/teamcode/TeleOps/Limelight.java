@@ -77,7 +77,7 @@ public class Limelight {
         else {
             throw new IllegalArgumentException("Distance Unit can only be in INCH or MM");
         }
-        double yaw = turret.getTurretMotorAngle() + robot.pinpoint.getHeading(AngleUnit.DEGREES);//robot.external_imu.getAngularOrientation().firstAngle;
+        double yaw = turret.getTurretMotorAngleDeg() + robot.pinpoint.getHeading(AngleUnit.DEGREES);//robot.external_imu.getAngularOrientation().firstAngle;
         robot.limelight.updateRobotOrientation(yaw);
         LLResult llResult = robot.limelight.getLatestResult();
         if (llResult != null && llResult.isValid()) {

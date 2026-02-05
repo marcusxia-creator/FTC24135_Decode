@@ -38,11 +38,11 @@ public class FSMIntake {
     private final GamepadEx gamepad_2;
     private double intakeRPM;
     private boolean reversing = false;
-    SpindexerSimp spindexer;
+    SpindexerUpd spindexer;
 
     boolean recorded;
 
-    public FSMIntake(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, SpindexerSimp spindexer) {
+    public FSMIntake(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, SpindexerUpd spindexer) {
         this.robot = robot;
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
@@ -90,7 +90,7 @@ public class FSMIntake {
 
                     // CHECK: Are all 3 slots filled with something other than Empty?
                     // We check for Green OR Purple. If count is 3, we are full.
-                    if (spindexer.count(SpindexerSimp.SLOT.Empty) == 0) {
+                    if (spindexer.count(SpindexerUpd.SLOT.Empty) == 0) {
                         intakeTimer.reset();
                         intakeStates = IntakeStates.INTAKE_STOP;
                     } else {

@@ -1,15 +1,13 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class SpindexerManualControl {
     RobotHardware robot;
-    SpindexerSimp spindexer;
+    SpindexerUpd spindexer;
     GamepadInput gamepadInput;
     ElapsedTime debounceTimer = new ElapsedTime();
-    public SpindexerManualControl(RobotHardware robot, SpindexerSimp spindexer, GamepadInput gamepadInput){
+    public SpindexerManualControl(RobotHardware robot, SpindexerUpd spindexer, GamepadInput gamepadInput){
         this.robot=robot;
         this.spindexer=spindexer;
         this.gamepadInput=gamepadInput;

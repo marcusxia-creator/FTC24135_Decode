@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMIntake.IntakeStates;
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SHOOTERSTATE;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.INTAKE_TICKS_PER_REV;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.SHOOTER_RPM_CONVERSION;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerRetract;
@@ -20,8 +19,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
 
@@ -62,7 +59,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private TurretUpd turret;
     private SpindexerManualControl spindexerManualControl;
     //private Spindexer spindexer;
-    private SpindexerSimp spindexer;
+    private SpindexerUpd spindexer;
     public Limelight limelight;
     /// ----------------------------------------------------------------
     // For shooter power and angle calculator
@@ -117,10 +114,10 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robotDrive.Init();
 
         /// 2.spindexer-------------------------------------------------------------------
-        spindexer = new SpindexerSimp(robot, SpindexerSimp.SLOT.Empty, SpindexerSimp.SLOT.Empty, SpindexerSimp.SLOT.Empty, 0); //Change inits for comp
+        spindexer = new SpindexerUpd(robot, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, 0); //Change inits for comp
 
         // spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
-        // spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
+        spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
 
         /// 3. turret---------------------------------------------------------------
         turret = new TurretUpd(robot);
@@ -300,7 +297,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             case Intaking:
                 canSwitch = shooterSafe;
                 break;
-
             case Sequence_Shooting:
                 canSwitch = intakeSafe;  // wait until intake finishes its current sequence
                 break;
@@ -407,6 +403,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         boolean idlePressed =
                 (gamepadCo1.getButton(GamepadKeys.Button.B) || gamepadCo2.getButton(GamepadKeys.Button.B))
                         && isButtonDebounced();
+        boolean dpDown =
+                ((gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN))
+                        && isButtonDebounced());
 
         boolean sortPressed = gamepadInput.getOperatorLbXComboPressed(); // combo - LB+X for sorted shooting. Assume this is edge-based already
         if (seqShootPressed) requestedActionState = RobotActionState.Sequence_Shooting;
@@ -416,7 +415,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         if (idlePressed)     requestedActionState = RobotActionState.Idle;
 
         // Dpad down pose reset stays immediate (that's fine)
-        if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+        if (dpDown) {
             if (alliance == Alliance.RED_ALLIANCE) {
                 robot.pinpoint.setPosition(redAllianceResetPose);
             }
@@ -507,14 +506,13 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Pose2D", robot.pinpoint.getPosition());
         telemetry.addData("distance to goal", "%,.0f",shooterPowerAngleCalculator.getDistance());
         telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
-        //telemetry.addData("turret rotation in degrees", turret.getTurretAngle());
         telemetry.addLine("Turret-----------------------------------");
-        //telemetry.addData("turret target angle", turret.getTargetAngle());
-        //telemetry.addData("turret drive angle", turret.getTurretDriveAngle());
-        //telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
+        telemetry.addData("turret target angle", turret.getBaseTargetFieldAngleDeg());
+        telemetry.addData("turret drive angle", turret.getTurretDriveAngleDeg());
+        telemetry.addData("turret motor angle", turret.getTurretMotorAngleDeg());
         telemetry.addData("motor PIDF coefficient", robot.turretMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
-        //telemetry.addData("current motor tick", turret.getCurrentTick());
-        //telemetry.addData("target motor tick", turret.getTargetTick());
+        telemetry.addData("current motor tick", turret.getCurrentTicks());
+        telemetry.addData("target motor tick", turret.getTargetTicks());
         telemetry.addLine("-----------------------------------------");
         telemetry.addData("limelight output", "%,.1f",limelight.normalizedPose2D(DistanceUnit.INCH));
         telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(24));
