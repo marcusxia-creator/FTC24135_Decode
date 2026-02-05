@@ -109,6 +109,7 @@ public class RobotActionConfig {
     public static final double turret_Center_Y_Offset   = 0.028575;
 
     public static final int shooterMaxRPM               = 5500; //at 13.5 volts, power : 1
+    public static final double REF_VOLTAGE              = 13.5;
 
     public static final double aimingAngleThrehold      = 5;
     public static final double turretCameraRadius       = 0.1778;// for limelight aiming angle correction
