@@ -150,8 +150,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         limelight.initLimelight(24);
         limelight.start();
 
-
-
         /// 10. start adjuster servo at position to avoid soft start
         robot.shooterAdjusterServo.setPosition(0.49);
 
