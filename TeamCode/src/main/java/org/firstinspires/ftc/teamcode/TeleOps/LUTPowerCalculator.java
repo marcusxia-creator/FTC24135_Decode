@@ -112,9 +112,13 @@ public class LUTPowerCalculator {
         // Measured RPM from encoder ticks/sec
         rpmMeasured = robot.topShooterMotor.getVelocity() * tickToRPM;
 
+        // Voltage - aware max RPM
+        double voltage = robot.getBatteryVoltageRobust();
+        double maxRPMDynamic = maxVelocityRPM * voltage / REF_VOLTAGE;
+
         // Normalize to 0..1 for stable tuning
-        double targetNorm = rpmTarget / (double) maxVelocityRPM;
-        double currentNorm = rpmMeasured / (double) maxVelocityRPM;
+        double targetNorm = (double) rpmTarget / maxRPMDynamic;
+        double currentNorm = (double) rpmMeasured / maxRPMDynamic;
 
         targetNorm = clamp01(targetNorm);
         currentNorm = clamp01(currentNorm);
