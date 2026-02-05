@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -9,6 +10,7 @@ import org.apache.commons.math3.filter.KalmanFilter;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+@Config
 public class Turret {
     /*We will control the turret using input from the pinpoint
     turret is continuously running and is separate from the shooter control
@@ -19,15 +21,15 @@ public class Turret {
     private final double tickToAngle = ((0.16867469879518 * 360) / 145.1);
     private final double angleToTick = 1 / tickToAngle;
 
-    public static final double kP = 7, kI = 0, kD = 0.6, kS = 0.2, kV = 1.285;
+    public static double kP = 17, kI = 0, kD = 0.005, kS = 0.2, kV = 2;
 
     private PIDController pidController;
     private Limelight limelight;
     PIDFCoefficients pidf = new PIDFCoefficients(
-            12.0,   // P
-            0.0,    // I
-            0.05,    // D
-            1.285    // F
+            kP,      // P
+            kI,      // I
+            kD,      // D
+            kV       // F
     );
 
     public Turret (RobotHardware robot) {
@@ -70,6 +72,14 @@ public class Turret {
         robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
     }
 
+    public int getTargetTick () {
+        return (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
+    }
+
+    public int getCurrentTick () {
+        return robot.turretMotor.getCurrentPosition();
+    }
+
     /*public boolean isTurretAtPosition (){
         if (Math.floor(angle) == Math.floor(getTurretMotorAngle())){
             return true;
@@ -81,7 +91,7 @@ public class Turret {
      */
 
     public double getTargetAngle () {
-        return Math.toDegrees(Math.atan2((72-robot.pinpoint.getPosY(DistanceUnit.INCH)), (-72-robot.pinpoint.getPosX(DistanceUnit.INCH))));
+        return Math.toDegrees(Math.atan2((66-robot.pinpoint.getPosY(DistanceUnit.INCH)), (-66-robot.pinpoint.getPosX(DistanceUnit.INCH))));
     }
 
     private double floorMod(double x, double y){

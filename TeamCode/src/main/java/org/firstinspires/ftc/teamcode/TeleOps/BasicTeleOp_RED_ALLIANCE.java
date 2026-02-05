@@ -214,6 +214,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // 3. DRIVE (always responsive)
         // =========================================================
         robotDrive.DriveLoop();
+        turret.driveTurretMotor();
 
         // =========================================================
         // FIXME: 4. NEW! - ACTION STATE TRANSITION MANAGER (GRACEFUL)
@@ -419,11 +420,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         if (gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
             if (alliance == Alliance.RED_ALLIANCE) {
                 robot.pinpoint.setPosition(redAllianceResetPose);
-                robot.LED.setPosition(0.28);
             }
             if (alliance == Alliance.BLUE_ALLIANCE) {
                 robot.pinpoint.setPosition(blueAllianceResetPose);
-                robot.LED.setPosition(0.611);
             }
         }
     }
@@ -515,6 +514,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("turret drive angle", turret.getTurretDriveAngle());
         telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
         telemetry.addData("motor PIDF coefficient", robot.turretMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
+        telemetry.addData("current motor tick", turret.getCurrentTick());
+        telemetry.addData("target motor tick", turret.getTargetTick());
         telemetry.addLine("-----------------------------------------");
         telemetry.addData("limelight output", "%,.1f",limelight.normalizedPose2D(DistanceUnit.INCH));
         telemetry.addData("limelight angle Tx", limelight.getTargetX());
