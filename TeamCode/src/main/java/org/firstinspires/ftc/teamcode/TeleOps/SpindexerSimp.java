@@ -5,7 +5,8 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.greenRang
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.greenRangeLow;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.purpleRangeHigh;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.purpleRangeLow;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.spindexerZeroPos;
+//import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.spindexerZeroPos;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 import android.graphics.Color;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -34,8 +35,8 @@ public class SpindexerSimp {
     private boolean servoBusy = false;
 
     // TODO Tune these
-    private double servoStepSize = 0.05;     // per update() call (try 0.002–0.01)
-    private double servoTolerance = 0.025;    // "close enough" to finish
+    //public double servoStepSize;     // per update() call (try 0.05)
+    //private double servoTolerance;    // "close enough" to finish 0.025
 
     public SpindexerSimp(RobotHardware robot, SLOT slot0, SLOT slot1, SLOT slot2, int startPos) {
         this.robot = robot;
@@ -49,7 +50,7 @@ public class SpindexerSimp {
     // Moves to a specific position. Uses Math.floorMod to ensure
     // the index is always 0, 1, or 2 regardless of how high n is.
     //-------------------------------------------------------------
-    public void RuntoPosition(int n) {
+    public void RuntoPositionOLD(int n) {
         prevPos = currentPos;
         currentPos = n;
 
@@ -58,7 +59,16 @@ public class SpindexerSimp {
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[index]);
     }
 
-    public void RuntoPositionIncremental(int n) {
+    public void RunToNext() {
+        RuntoPosition(currentPos + 1);
+    }
+
+    public void unJam() {
+        RuntoPosition(prevPos);
+    }
+
+    ///  New!! method to run servo to incremental position
+    public void RuntoPosition(int n) {
         prevPos = currentPos;
         currentPos = n;
 
@@ -68,12 +78,10 @@ public class SpindexerSimp {
         servoBusy = true;
     }
 
-    public void RunToNext() {
-        RuntoPosition(currentPos + 1);
-    }
-
-    public void unJam() {
-        RuntoPosition(prevPos);
+    ///  New!! method to run servo to specific position
+    public void requestServoPosition(double pos) {
+        servoTargetPos = clamp01(pos);
+        servoBusy = true;
     }
 
     //==================================================
@@ -102,14 +110,6 @@ public class SpindexerSimp {
 
     public boolean isServoBusy() {
         return servoBusy;
-    }
-
-    public void setServoStepSize(double stepSize) {
-        this.servoStepSize = Math.max(1e-6, stepSize);
-    }
-
-    public void setServoTolerance(double tol) {
-        this.servoTolerance = Math.max(0.0, tol);
     }
 
     //==================================================
