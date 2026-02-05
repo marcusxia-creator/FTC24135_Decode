@@ -25,6 +25,9 @@ public class RobotActionConfig {
     public static double angleResetPos                  = 0.0;
     public static double slotAngleDelta                 = 0.19;
 
+    public static double servoStepSize = 0.05;     // per update() call (try 0.002–0.01)
+    public static double servoTolerance = 0.025;    // "close enough" to finish
+
     //kicker
     public static double kickerRetract                  = 0.36;  /// value - retract back for spindexer reversing
     public static double kickerExtend                   = 0.66; /// value - into the spindexer for pushing the ball up
@@ -47,9 +50,6 @@ public class RobotActionConfig {
 
     public static double getDistanceThreshold           =0.02;
 
-    //Intake capture timing
-    public static double SpindexerStartTime             = 0.7;
-    public static double SpindexerMoveTime              = 0.2;
 
     public static double a                              = 0.0001320186;
     public static double b                              = -0.01961813;
