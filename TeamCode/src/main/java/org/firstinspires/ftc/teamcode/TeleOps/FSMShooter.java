@@ -124,8 +124,8 @@ public class FSMShooter {
         robot.limelight.updateRobotOrientation(yawDeg);
 
         // 2) read tx (your Limelight.getTargetX returns 0 if invalid)
-        double txDeg = limelight.getTargetXForTag(24);
-
+        //double txDeg = limelight.getTargetXForTag(24);
+        double txDeg = 0.0;
         // 3) feed tx to turret assist
         turret.updateVisionTx(txDeg);
 
