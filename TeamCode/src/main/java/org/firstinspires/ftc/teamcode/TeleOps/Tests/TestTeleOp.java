@@ -86,7 +86,7 @@ public class TestTeleOp extends OpMode {
         limelightTest = new LimelightTest(robot, turret);
         limelightTest.initLimelight(24);
         limelightTest.start();
-        limelight = new Limelight(robot, turretUpd);
+        limelight = new Limelight(robot);
         limelight.initLimelight(24);
         limelight.start();
 
