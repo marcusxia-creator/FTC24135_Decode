@@ -24,9 +24,8 @@ public class Limelight {
     private final double turretCenterOffsetLength = Math.hypot(turret_Center_Y_Offset, turret_Center_X_Offset);
 
 
-    public Limelight(RobotHardware robot, TurretUpd turret) {
+    public Limelight(RobotHardware robot) {
         this.robot = robot;
-        this.turret = turret;
     }
 
     /// init limelight
@@ -77,8 +76,8 @@ public class Limelight {
         else {
             throw new IllegalArgumentException("Distance Unit can only be in INCH or MM");
         }
-        double yaw = turret.getTurretMotorAngleDeg() + robot.pinpoint.getHeading(AngleUnit.DEGREES);//robot.external_imu.getAngularOrientation().firstAngle;
-        robot.limelight.updateRobotOrientation(yaw);
+        //double yaw = turret.getTurretMotorAngleDeg() + robot.pinpoint.getHeading(AngleUnit.DEGREES);//robot.external_imu.getAngularOrientation().firstAngle;
+        //robot.limelight.updateRobotOrientation(yaw);
         LLResult llResult = robot.limelight.getLatestResult();
         if (llResult != null && llResult.isValid()) {
             Pose3D robotPose3D = llResult.getBotpose_MT2();
