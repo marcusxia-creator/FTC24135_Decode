@@ -84,9 +84,9 @@ public class RobotActionConfig {
     public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, 9, 48.5, AngleUnit.DEGREES, 0);
 
     public static double FAR_EDGE                 = 105.0;
-    public static double FAR                      = 87.0;
-    public static double MidPoint                 = 82;
-    public static double MID                      = 75.0;
+    public static double FAR                      = 92.0;
+    public static double MidPoint                 = 82.0;
+    public static double MID                      = 72.0;
     public static double CLOSE                    = 57.0;
     public static double closeEdge                = 36.0;
 
@@ -99,7 +99,7 @@ public class RobotActionConfig {
     public static int RPM3            = 3750;
     public static int RPM4            = 3900;
     public static int RPM5            = 4000;
-    public static int RPM6            = 4600;
+    public static int RPM6            = 4500;
 
     public static final double farPower                 = 0.78;
     public static final double midPower                 = 0.73;
