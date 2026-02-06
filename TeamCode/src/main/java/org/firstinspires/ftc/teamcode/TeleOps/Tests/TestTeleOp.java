@@ -194,7 +194,7 @@ public class TestTeleOp extends OpMode {
             shootermotorstate = SHOOTERMOTORSTATE.RUN;
             finetune = true;
             pidstatus = false;
-            shooterPower += 0.1;
+            shooterPower += 0.025;
         }
 
         if (gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER) && isButtonDebounced()){

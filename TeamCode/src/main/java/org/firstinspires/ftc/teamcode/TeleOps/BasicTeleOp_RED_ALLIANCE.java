@@ -212,8 +212,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         robotDrive.DriveLoop();
 
-        //turret.driveTurretMotor();
-
         // =========================================================
         // 4. NEW! - ACTION STATE TRANSITION MANAGER (GRACEFUL)
         // =========================================================

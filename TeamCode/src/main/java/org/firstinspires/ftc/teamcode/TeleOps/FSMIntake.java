@@ -176,6 +176,9 @@ public class FSMIntake {
                     intakeStates = IntakeStates.INTAKE_IDLE;
                 }
                 break;
+            default:
+                intakeStates = IntakeStates.INTAKE_IDLE;
+                break;
         }
     }
 

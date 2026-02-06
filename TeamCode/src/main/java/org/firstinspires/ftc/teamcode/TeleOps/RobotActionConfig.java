@@ -96,22 +96,22 @@ public class RobotActionConfig {
     public static int RPM0            = 3900;
     public static int RPM1            = 3350;
     public static int RPM2            = 3500;
-    public static int RPM3            = 3750;
-    public static int RPM4            = 3900;
-    public static int RPM5            = 4000;
-    public static int RPM6            = 4500;
+    public static int RPM3            = 3650;
+    public static int RPM4            = 3800;
+    public static int RPM5            = 3900;
+    public static int RPM6            = 4400;
 
-    public static final double farPower                 = 0.78;
-    public static final double midPower                 = 0.73;
-    public static final double closePower               = 0.75;
+    public static final double farPower                 = 0.78;     // 3920 - 0.8  @ 12.73
+    public static final double midPower                 = 0.73;     // 3360 - 0.70 @ 12.82
+    public static final double closePower               = 0.75;     // 3700 - 0.75 @ 13.00
     public static final double OZPower                  = 0.5;
     public static final double FZPower                  = 0.93;
 
     public static final double turret_Center_X_Offset   = 0.0127;
     public static final double turret_Center_Y_Offset   = 0.028575;
 
-    public static final int shooterMaxRPM               = 5500; //at 13.5 volts, power : 1
-    public static final double REF_VOLTAGE              = 13.5;
+    public static final int shooterMaxRPM               = 5200; //at 13.1 volts, power : 1
+    public static final double REF_VOLTAGE              = 13.1;
 
     public static final double aimingAngleThrehold      = 5;
     public static final double turretCameraRadius       = 0.1778;// for limelight aiming angle correction
