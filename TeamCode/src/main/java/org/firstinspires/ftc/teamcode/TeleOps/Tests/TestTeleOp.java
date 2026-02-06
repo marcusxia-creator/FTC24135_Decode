@@ -47,6 +47,7 @@ public class TestTeleOp extends OpMode {
 
     double intakeSpeed = 0.5;
     double shooterPower = 0.0;
+    double power = 0.0;
     public static double targetShooterRPM = 0.0;
     double currentShooterRPM = 0;
     public static double tickToRPM = (60/28); // for (tick/s) * 60 (s/min) /28 (tick per rotation)
@@ -122,15 +123,16 @@ public class TestTeleOp extends OpMode {
         //targetShooterRPM = shooterPowerLUT.getPower();
 
         /// PID Controller and power status
-        shooterPower = pidController.calculate(currentShooterRPM, Range.clip(targetShooterRPM,0,6000));
+
         if (shootermotorstate == SHOOTERMOTORSTATE.RUN && pidstatus){
-            robot.topShooterMotor.setPower(shooterPower);
-            robot.bottomShooterMotor.setPower(shooterPower);
+            shooterPower = pidController.calculate(currentShooterRPM, Range.clip(targetShooterRPM,0,5500));
+            robot.topShooterMotor.setPower(Range.clip(shooterPower,0,1));
+            robot.bottomShooterMotor.setPower(Range.clip(shooterPower,0,1));
             robot.shooterAdjusterServo.setPosition(adjusterservoposition);
         }
         if (shootermotorstate == SHOOTERMOTORSTATE.RUN && !pidstatus) {
-            robot.topShooterMotor.setPower(shooterPower);
-            robot.bottomShooterMotor.setPower(shooterPower);
+            robot.topShooterMotor.setPower(Range.clip(shooterPower,0,1));
+            robot.bottomShooterMotor.setPower(Range.clip(shooterPower,0,1));
         }
         if (shootermotorstate == SHOOTERMOTORSTATE.STOP) {
             robot.topShooterMotor.setPower(0);
@@ -196,9 +198,10 @@ public class TestTeleOp extends OpMode {
         }
 
         if (gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER) && isButtonDebounced()){
-            finetune = true;
+            shootermotorstate = SHOOTERMOTORSTATE.STOP;
+            finetune = false;
             pidstatus = false;
-            targetShooterRPM -= 0.1;
+            shooterPower = 0;
         }
 
         /** run intake motor*/
