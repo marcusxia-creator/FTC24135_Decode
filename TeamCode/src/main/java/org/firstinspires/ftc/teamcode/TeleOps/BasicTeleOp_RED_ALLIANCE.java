@@ -143,7 +143,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         actionStates = RobotActionState.Idle;
 
         /// 9. limelight--------------------------------------------------------------
-        limelight = new Limelight(robot, turret);
+        limelight = new Limelight(robot);
         limelight.initLimelight(24);
         limelight.start();
 
