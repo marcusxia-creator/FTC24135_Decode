@@ -44,8 +44,8 @@ public class TurretUpd {
     // ---------------------------
     // Motion limits / safety
     // ---------------------------
-    public static double minTurretDeg = -170;
-    public static double maxTurretDeg = 170;
+    public static double minTurretDeg = -180;
+    public static double maxTurretDeg = 180;
     public static double maxPower = 1.0;
 
     // ---------------------------
@@ -219,9 +219,7 @@ public class TurretUpd {
      * wrapped to [-180,180], then sign-adjusted to match your original behavior.
      */
     public double getTurretDriveAngleDeg() {
-        double target = getFinalTargetFieldAngleDeg();
-        double error = wrapDeg(getRobotHeadingDeg() - target);
-        return -error; // keep your original sign convention
+        return -(floorMod(robot.pinpoint.getHeading(AngleUnit.DEGREES) - getFinalTargetFieldAngleDeg()+180, 360)-180); // keep your original sign convention
     }
 
     /** Target ticks based on turret drive angle. */
@@ -303,5 +301,9 @@ public class TurretUpd {
         if (deg >= 180.0) deg -= 360.0;
         if (deg < -180.0) deg += 360.0;
         return deg;
+    }
+
+    private double floorMod(double x, double y){
+        return x-(Math.floor(x/y) * y);
     }
 }
