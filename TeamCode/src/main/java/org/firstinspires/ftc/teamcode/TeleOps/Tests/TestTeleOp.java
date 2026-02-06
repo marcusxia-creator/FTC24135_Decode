@@ -17,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
+import org.firstinspires.ftc.teamcode.TeleOps.FSMShooter;
 import org.firstinspires.ftc.teamcode.TeleOps.LUTPowerCalculator;
 import org.firstinspires.ftc.teamcode.TeleOps.Limelight;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
@@ -48,7 +49,10 @@ public class TestTeleOp extends OpMode {
     double shooterPower = 0.0;
     public static double targetShooterRPM = 0.0;
     double currentShooterRPM = 0;
-    public static double tickToRPM;
+    public static double tickToRPM = (60/28); // for (tick/s) * 60 (s/min) /28 (tick per rotation)
+    public SHOOTERMOTORSTATE shootermotorstate;
+    public double adjusterservoposition;
+
 
     private LimelightTest limelightTest;
     private Limelight limelight;
@@ -63,7 +67,11 @@ public class TestTeleOp extends OpMode {
 
     public static double adjusterServoPosition = 0.49;
 
-
+    /// Power status
+    public enum SHOOTERMOTORSTATE{
+        RUN,
+        STOP
+    }
     @Override
     public void init() {
         gamepad_1 = new GamepadEx(gamepad1);
@@ -93,11 +101,10 @@ public class TestTeleOp extends OpMode {
         limelight.initLimelight(24);
         limelight.start();
 
-
-
         colorDetection = new ColorDetection(robot);
         pidController = new PIDController(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
-        tickToRPM = (60/28); // for (tick/s) * 60 (s/min) /28 (tick per rotation)
+
+        robot.shooterAdjusterServo.setPosition(adjusterServoPosition);
     }
 
     @Override
@@ -114,26 +121,17 @@ public class TestTeleOp extends OpMode {
         currentShooterRPM = robot.topShooterMotor.getVelocity() * tickToRPM;
         //targetShooterRPM = shooterPowerLUT.getPower();
 
-        robot.shooterAdjusterServo.setPosition(adjusterServoPosition);
-
         /// PID Controller and power status
-        /*
-        if (finetune & pidstatus) {
-            shooterPower = pidController.calculate(currentShooterRPM, Range.clip(targetShooterRPM,0,6000));
-        }
-        else if (!finetune & pidstatus){
-            shooterPower = shooterPowerLUT.getPower();
-        }
-        else{
-            shooterPower = 0;
-        }
-         */
-
-
         shooterPower = pidController.calculate(currentShooterRPM, Range.clip(targetShooterRPM,0,6000));
-        //shooterPower = 1;
-        robot.topShooterMotor.setPower(shooterPower);
-
+        if (shootermotorstate == SHOOTERMOTORSTATE.RUN){
+            robot.topShooterMotor.setPower(shooterPower);
+            robot.bottomShooterMotor.setPower(shooterPower);
+            robot.shooterAdjusterServo.setPosition(adjusterservoposition);
+        }
+        if (shootermotorstate == SHOOTERMOTORSTATE.STOP) {
+            robot.topShooterMotor.setPower(0);
+            robot.bottomShooterMotor.setPower(0);
+        }
 
         /// run turret
         if (turretStatus){
@@ -143,45 +141,15 @@ public class TestTeleOp extends OpMode {
             robot.turretMotor.setPower(0);
         }
 
-        if (gamepad_1.getButton(GamepadKeys.Button.Y) && isButtonDebounced()) {
-            robot.kickerServo.setPosition(kickerRetract);
+        /** intake Motor*/
+        if (gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
+            robot.intakeMotor.setPower(0.75);
         }
-        if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
-            robot.kickerServo.setPosition(kickerExtend);
-        }
-        /**
-        if (gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER) && isButtonDebounced()) {
-            robot.spindexerServo.setPosition(spindexerSlot3);
-        }
-        if (gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER) && isButtonDebounced()) {
-            robot.spindexerServo.setPosition(0);
-        }
-
-        if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) && isButtonDebounced()) {
-            robot.spindexerServo.setPosition(spindexerSlot1);
-        }
-        if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
-            robot.spindexerServo.setPosition(spindexerSlot2);
-        }*/
-
-        if (gamepad_1.getButton(GamepadKeys.Button.A)) {
-            robot.intakeMotor.setPower(0.9);
-        }
-        if (gamepad_1.getButton(GamepadKeys.Button.B)) {
+        if (gamepad_2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
             robot.intakeMotor.setPower(0);
         }
 
-        /** run shooter motor*/
-        /**
-        shooterPower = Math.max(-1.0, Math.min(1.0, shooterPower));
-        ///  set shooter power
-        robot.topShooterMotor.setPower(Range.clip(shooterPower,0.0,1.0));
-        robot.bottomShooterMotor.setPower(Range.clip(shooterPower,0.0,1.0));
-         */
-
-
         /** run kicker servoposition*/
-
         if (gamepad_1.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
             servoposition = robot.kickerServo.getPosition() + 0.05;
             robot.kickerServo.setPosition(Range.clip(servoposition, 0.0, 1.0
@@ -192,7 +160,6 @@ public class TestTeleOp extends OpMode {
             robot.kickerServo.setPosition(Range.clip(servoposition, 0.0, 1.0));
         }
         /** run spindexer servoposition*/
-
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
             servoposition = robot.spindexerServo.getPosition() + 0.01;
             robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
@@ -203,18 +170,17 @@ public class TestTeleOp extends OpMode {
         }
 
         /** shooter adjuster */
-
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_UP) && isButtonDebounced()) {
-            servoposition = robot.shooterAdjusterServo.getPosition() + 0.01;
-            robot.shooterAdjusterServo.setPosition(Range.clip(servoposition, 0, 1));
+            adjusterservoposition = robot.shooterAdjusterServo.getPosition() + 0.01;
+            robot.shooterAdjusterServo.setPosition(Range.clip(adjusterservoposition, 0, 1));
         }
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_DOWN) && isButtonDebounced()) {
-            servoposition = robot.shooterAdjusterServo.getPosition() - 0.01;
-            robot.shooterAdjusterServo.setPosition(Range.clip(servoposition, 0, 1));
+            adjusterservoposition = robot.shooterAdjusterServo.getPosition() - 0.01;
+            robot.shooterAdjusterServo.setPosition(Range.clip(adjusterservoposition, 0, 1));
         }
         /** run shooter target RPM */
-
         if (gamepad_1.getButton(GamepadKeys.Button.X) && isButtonDebounced()){
+            shootermotorstate = SHOOTERMOTORSTATE.RUN;
             finetune = true;
             pidstatus = true;
             targetShooterRPM += 200;
@@ -227,7 +193,6 @@ public class TestTeleOp extends OpMode {
         }
 
         /** run intake motor*/
-
         if (gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER) && isButtonDebounced()) {
             robot.intakeMotor.setPower(Range.clip(intakeSpeed, 0.5, 1.0));
             intakeSpeed += 0.05;
@@ -240,7 +205,6 @@ public class TestTeleOp extends OpMode {
          * GamePad#2 to drive the spindexer
          */
         /** run kicker servoposition*/
-
         if (gamepad_2.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
             servoposition = kickerRetract;
             robot.kickerServo.setPosition(Range.clip(servoposition, 0.0, 1.0
@@ -251,7 +215,6 @@ public class TestTeleOp extends OpMode {
             robot.kickerServo.setPosition(Range.clip(servoposition, 0.0, 1.0));
         }
         /** run spindexer per slot*/
-
         if (gamepad_2.getButton(GamepadKeys.Button.DPAD_RIGHT) && isButtonDebounced()) {
             servoposition = robot.spindexerServo.getPosition() + slotAngleDelta;
             robot.spindexerServo.setPosition(Range.clip(servoposition, 0, 1));
@@ -262,18 +225,18 @@ public class TestTeleOp extends OpMode {
         }
 
         /** run shooter based on target distance*/
-
         if (gamepad_2.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
             finetune = false;
             pidstatus = true;
+            targetShooterRPM = shooterPowerLUT.getRPM();
         }
         if (gamepad_2.getButton(GamepadKeys.Button.Y) && isButtonDebounced()) {
             finetune = false;
             pidstatus = false;
+            targetShooterRPM = 0;
         }
 
         /** run turret*/
-
         if (gamepad_2.getButton(GamepadKeys.Button.DPAD_UP) && isButtonDebounced()) {
             turretStatus = true;
         }
