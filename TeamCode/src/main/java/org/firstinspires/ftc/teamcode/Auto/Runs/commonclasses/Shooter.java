@@ -64,7 +64,7 @@ public class Shooter {
         private final ElapsedTime shooterTimer = new ElapsedTime();
 
         private final int startingSlot;
-        private int targetSlot = startingSlot;
+        private int targetSlot;
         private double ShooterWaitTime;
         private double targetVelocity;
         public SHOOTERSTATE currentState;
@@ -75,6 +75,7 @@ public class Shooter {
             this.ShooterWaitTime = ShooterWaitTime;
             this.currentState = SHOOTERSTATE.SHOOTER_INIT;
             this.startingSlot = startingSlot;
+            this.targetSlot = startingSlot;
         }
 
         public void SpindexerRunTo(int slot) {

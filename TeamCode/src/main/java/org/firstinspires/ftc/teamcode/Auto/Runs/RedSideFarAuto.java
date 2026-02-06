@@ -27,31 +27,19 @@ import java.util.List;
 @Autonomous(name = "RedSideFarAuto", group = "Autonomous")
 public class RedSideFarAuto extends LinearOpMode {
     public static Pose2d initialPose = new Pose2d(64, 7.5, Math.toRadians(90));
-    public RobotHardware robot;
+    public RobotHardware robot = new RobotHardware(hardwareMap);
+    Shooter shooter = new Shooter(robot);
+    //Intake intake  = new Intake(robot,ta);
 
-    public int tagID = -1;
-    public double bestArea = 0;
+    //int initShotSlot = Intake.
 
     @Override
     public void runOpMode() throws InterruptedException {
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
-        robot = new RobotHardware(hardwareMap);
-        robot.init();
-        Shooter shooter = new Shooter(robot);
-        Intake intake  = new Intake(robot);
-
-        robot.limelight.pipelineSwitch(0);
-        robot.limelight.start();
 
 
 
         while (!isStopRequested() && !isStarted()) {
-            LLResult llResult =  robot.limelight.getLatestResult();
-
-            List<LLResultTypes.FiducialResult> fiducials = llResult.getFiducialResults();
-            for (LLResultTypes.FiducialResult fiducial : fiducials) {
-                tagID = fiducial.getFiducialId(); // The ID number of the fiducial
-            }
         }
 
         robot.spindexerServo.setPosition(spindexerSlot3);
@@ -87,10 +75,10 @@ public class RedSideFarAuto extends LinearOpMode {
                 new SequentialAction(
                     TurretRun(108),
                     shooter.ShooterOn(FarShotPower),
-                    shooter.ShooterRun(FarShotPower, 2),
+                    //shooter.ShooterRun(FarShotPower, 2),
                     shooter.ShooterOff(),
                     new ParallelAction(
-                        intake.IntakeRun(),
+
                         new SequentialAction(
                             IntakeSet1Drive1,
                             IntakeSet1Drive2
@@ -100,24 +88,24 @@ public class RedSideFarAuto extends LinearOpMode {
                             DriveToShoot1,
                             shooter.ShooterOn(FarShotPower)
                     ),
-                    shooter.ShooterRun(FarShotPower, 0.5),
+                    //shooter.ShooterRun(FarShotPower, 0.5),
                     shooter.ShooterOff(),
                         IntakeSet2Drive1,
                     new ParallelAction(
-                        IntakeSet2Drive2,
-                        IntakeRun()
+                        IntakeSet2Drive2
+                        //IntakeRun()
                     ),
                     new ParallelAction(
                         DriveToShoot2,
                         shooter.ShooterOn(FarShotPower)
                     ),
-                    shooter.ShooterRun(FarShotPower, 0.5),
+                    //shooter.ShooterRun(FarShotPower, 0.5),
                     shooter.ShooterOff(),
                     IntakeSet2Drive1,
                     new ParallelAction(
                             new SequentialAction(
 
-                            ),
+                            )
 
                     ),
                     new ParallelAction(

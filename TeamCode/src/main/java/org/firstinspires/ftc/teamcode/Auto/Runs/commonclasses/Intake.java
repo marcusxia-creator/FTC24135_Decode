@@ -13,9 +13,12 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 public class Intake {
     private final RobotHardware robot;
+    private final int targetGreenSlot;
+    public static int shootingInitSlot;
 
-    public Intake (RobotHardware robot) {
+    public Intake (RobotHardware robot, int targetGreenSlot) {
         this.robot = robot;
+        this.targetGreenSlot = targetGreenSlot;
     }
 
     public static class IntakeRunMode implements Action {
@@ -33,21 +36,23 @@ public class Intake {
 
         /// Variables
         private RobotHardware robot;
-        public ColorDetection colorDetection;
+        private final ColorDetection colorDetection;
 
         private final ElapsedTime stateTimer = new ElapsedTime();
         private final ElapsedTime intakeTimer = new ElapsedTime();
 
         private INTAKESTATE currentState;
+
         private int targetSlot = 0;
-        private BallColors currentColor;
-        public int greenSlot;
-        public int shootingInitSlot;
+        public int currentGreenSlot;
+        private final int targetGreenSlot;
 
         /// Constructor
-        public IntakeRunMode(RobotHardware robot) {
+        public IntakeRunMode(RobotHardware robot, int targetGreenSlot) {
             this.robot = robot;
+            this.targetGreenSlot = targetGreenSlot;
             this.currentState = INTAKESTATE.INTAKE_INIT;
+            this.colorDetection = new ColorDetection(robot);
         }
 
         public void SpindexerRunTo(int slot) {
@@ -66,7 +71,7 @@ public class Intake {
             colorDetection.updateDetection();
             switch (currentState) {
                 case INTAKE_INIT:
-                    greenSlot = -1;
+                    currentGreenSlot = -1;
                     colorDetection.detectInit();
                     intakeTimer.reset();
                     SpindexerRunTo(0);
@@ -80,7 +85,7 @@ public class Intake {
                 case INTAKE_DETECT:
                     if (colorDetection.isBallPresent()) {
                         if (colorDetection.getColor() == BallColors.GREEN) {
-                            greenSlot = targetSlot + 1;
+                            currentGreenSlot = targetSlot + 1;
                             stateTimer.reset();
                             currentState = INTAKESTATE.INTAKE_PAUSE;
                         } else {
@@ -126,15 +131,11 @@ public class Intake {
         }
 
         private void updateShootingInitSlot() {
-            if (greenSlot == -1) {
+            if (currentGreenSlot == -1) {
                 shootingInitSlot = 2;
             } else {
-                shootingInitSlot = Math.floorMod(greenSlot - targetGreenSlot, 3) + 1;
+                shootingInitSlot = Math.floorMod(currentGreenSlot - targetGreenSlot, 3) + 1;
             }
-        }
-
-        public int getShootingInitSlot() {
-            return shootingInitSlot;
         }
 
         @Override
@@ -146,7 +147,11 @@ public class Intake {
         }
     }
 
-    public Action IntakeRun () {
-        return new IntakeRunMode(robot);
+    public Action IntakeRun (int targetGreenSlot) {
+        return new IntakeRunMode(robot, targetGreenSlot);
+    }
+
+    public int getInitShotSlot () {
+        return shootingInitSlot;
     }
 }
