@@ -110,7 +110,7 @@ public class Turret {
      */
 
     public double getTargetAngle () {
-        return Math.toDegrees(Math.atan2((66-robot.pinpoint.getPosY(DistanceUnit.INCH)), (-66-robot.pinpoint.getPosX(DistanceUnit.INCH))));
+        return Math.toDegrees(Math.atan2((60-robot.pinpoint.getPosY(DistanceUnit.INCH)), (-66-robot.pinpoint.getPosX(DistanceUnit.INCH))));
     }
 
     private double floorMod(double x, double y){

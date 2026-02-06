@@ -47,7 +47,7 @@ public class SpindexerUpd {
     // Moves to a specific position. Uses Math.floorMod to ensure
     // the index is always 0, 1, or 2 regardless of how high n is.
     //-------------------------------------------------------------
-    public void RuntoPositionOLD(int n) {
+    public void RuntoPosition(int n) {
         prevPos = currentPos;
         currentPos = n;
 
@@ -65,7 +65,7 @@ public class SpindexerUpd {
     }
 
     ///  New!! method to run servo to incremental position
-    public void RuntoPosition(int n) {
+    public void RuntoPositionNew(int n) {
         prevPos = currentPos;
         currentPos = n;
 

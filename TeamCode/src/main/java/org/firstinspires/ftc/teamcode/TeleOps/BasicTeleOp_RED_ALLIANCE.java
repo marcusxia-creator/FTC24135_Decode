@@ -56,7 +56,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private RobotDrive robotDrive;
     FSMShooter FSMShooter;
     FSMIntake FSMIntake;
-    private TurretUpd turret;
+    //private TurretUpd turret;
+    private Turret turret;
     private SpindexerManualControl spindexerManualControl;
     //private Spindexer spindexer;
     private SpindexerUpd spindexer;
@@ -120,7 +121,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
 
         /// 3. turret---------------------------------------------------------------
-        turret = new TurretUpd(robot);
+        //turret = new TurretUpd(robot);
+        turret = new Turret(robot);
 
         /// 4.1. power calculator for shooter------------------------------------------------------------
         shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
@@ -509,12 +511,12 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("distance to goal", "%,.0f",shooterPowerAngleCalculator.getDistance());
         telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
         telemetry.addLine("Turret-----------------------------------");
-        telemetry.addData("turret target angle", turret.getBaseTargetFieldAngleDeg());
-        telemetry.addData("turret drive angle", turret.getTurretDriveAngleDeg());
-        telemetry.addData("turret motor angle", turret.getTurretMotorAngleDeg());
+        //telemetry.addData("turret target angle", turret.getBaseTargetFieldAngleDeg());
+        //telemetry.addData("turret drive angle", turret.getTurretDriveAngleDeg());
+        //telemetry.addData("turret motor angle", turret.getTurretMotorAngleDeg());
         telemetry.addData("motor PIDF coefficient", robot.turretMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
-        telemetry.addData("current motor tick", turret.getCurrentTicks());
-        telemetry.addData("target motor tick", turret.getTargetTicks());
+        //telemetry.addData("current motor tick", turret.getCurrentTicks());
+        //telemetry.addData("target motor tick", turret.getTargetTicks());
         telemetry.addLine("-----------------------------------------");
         telemetry.addData("limelight output", "%,.1f",limelight.normalizedPose2D(DistanceUnit.INCH));
         telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(24));

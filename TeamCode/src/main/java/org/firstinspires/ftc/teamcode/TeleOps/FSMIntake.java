@@ -104,7 +104,7 @@ public class FSMIntake {
                 break;
 
             case INTAKE_RUNTONEXT:
-
+                /**
                 // ✅ Instead of a fixed delay, wait until the servo finishes the incremental move
                 // This avoids starting intake early when the servo is slow / jammed.
                 if (!spindexer.isServoBusy()) {
@@ -114,14 +114,14 @@ public class FSMIntake {
                     //if (intakeTimer.seconds() > 0.6) { spindexer.unJam(); intakeStates = IntakeStates.INTAKE_START; }
                 }
                 break;
+                 */
 
-                /**
                 // OLD - Small delay to allow the servo to physically move before starting the motor again
-                if (intakeTimer.seconds() > 0.2) {
+                if (intakeTimer.seconds() > spindexerServoPerSlotTime) {
                     intakeStates = IntakeStates.INTAKE_START;
                 }
                  break;
-                 */
+
 
             case INTAKE_STOP:
                 robot.intakeMotor.setPower(ejectSpeed);
@@ -129,7 +129,7 @@ public class FSMIntake {
 
                 // Keep your sequence logic for spindexer parking
                 if (time > spindexerServoPerSlotTime) {
-                    /**
+
                     double targetPos =spindexerSlot1;
                     double currentPos = robot.spindexerServo.getPosition();
                     double maxStep = 0.05; // max movement per loop
@@ -145,7 +145,7 @@ public class FSMIntake {
 
                         intakeStates = IntakeStates.INTAKE_IDLE;
                     }
-                    */
+                /**
                 //=========================================
                 //New Method
                 //=========================================
@@ -164,6 +164,8 @@ public class FSMIntake {
                         intakeStates = IntakeStates.INTAKE_IDLE;
                         stopMoveRequested = false;      // reset for next time
                     }
+                }
+                 */
                 }
                 break;
 

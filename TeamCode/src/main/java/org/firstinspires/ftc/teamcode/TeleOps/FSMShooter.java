@@ -25,7 +25,7 @@ public class FSMShooter {
     SORTSHOOTERSTATE sortShooterState;
     SHOOTERMOTORSTATE shootermotorstate;
     SpindexerUpd spindexer;
-    private final TurretUpd turret;
+    private final Turret turret;
     private final Limelight limelight;
 
     Spindexer.SLOT targetColour = Spindexer.SLOT.Purple;
@@ -91,7 +91,7 @@ public class FSMShooter {
     //Constructor
     public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot,
                       SpindexerUpd spindexer, LUTPowerCalculator shooterPowerLUT,
-                      GamepadInput gamepadInput, TurretUpd turret, Limelight limelight) {
+                      GamepadInput gamepadInput, Turret turret, Limelight limelight) {
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
         this.robot = robot;
@@ -114,23 +114,23 @@ public class FSMShooter {
 
     private void updateTurretAutoAim(boolean aimEnabled) {
         if (!aimEnabled) {
-            turret.resetVisionAssist(); // clear tx offset so it doesn't linger
-            turret.update();            // still hold/aim based on base target
+            //turret.resetVisionAssist(); // clear tx offset so it doesn't linger
+            //turret.update();            // still hold/aim based on base target
             return;
         }
 
         // 1) tell Limelight the camera yaw (turret-mounted camera)
-        double yawDeg = turret.getTurretMotorAngleDeg() + robot.pinpoint.getHeading(AngleUnit.DEGREES);
+        double yawDeg = turret.getTurretMotorAngle() + robot.pinpoint.getHeading(AngleUnit.DEGREES);
         robot.limelight.updateRobotOrientation(yawDeg);
 
         // 2) read tx (your Limelight.getTargetX returns 0 if invalid)
         //double txDeg = limelight.getTargetXForTag(24);
         double txDeg = 0.0;
         // 3) feed tx to turret assist
-        turret.updateVisionTx(txDeg);
+        //turret.updateVisionTx(txDeg);
 
         // 4) drive turret motor
-        turret.update();
+        //turret.update();
     }
 
     public void SequenceShooterLoop() {
@@ -216,7 +216,7 @@ public class FSMShooter {
                 break;
 
             case FLYWHEEL_RUNNING:
-                updateTurretAutoAim(aimEnabled);
+                turret.driveTurretMotor();
                 // Start flywheels (your motor control elsewhere should respond to this state)
                 shootermotorstate = SHOOTERMOTORSTATE.RUN;
 
@@ -227,7 +227,7 @@ public class FSMShooter {
                 break;
 
             case KICKER_EXTEND:
-                updateTurretAutoAim(aimEnabled);
+                turret.driveTurretMotor();
                     robot.kickerServo.setPosition(kickerExtend);
                     /// use button Y to shoot.
                     if ((gamepad_1.getButton(GamepadKeys.Button.Y)
@@ -240,7 +240,7 @@ public class FSMShooter {
                 break;
 
             case SEQUENCE_SHOOTING:
-                updateTurretAutoAim(aimEnabled);
+                turret.driveTurretMotor();
                 boolean flywheelReady =
                         flyWheelTimer.seconds() >= SPOOLUP_SEC ||
                                 (robot.topShooterMotor.getVelocity() * LUTPowerCalculator.tickToRPM) >= rpm * 0.95;
@@ -284,10 +284,26 @@ public class FSMShooter {
                 break;
 
             case KICKER_RETRACT:
+                if (shootTimer.seconds() > 0.2) {
+                    //=========================================================================
+                    // this is the place to reset the spindexer counter
+                    // meanwhile spindexer return back to spinderxerPositions[0] - slot 1 position
+                    //==========================================================================
+                    spindexer.RuntoPosition(0); // reset counter in spindexer
+                }
+                //=========================================================
+                // when slot back to 0 position,then the kicker Retract
+                //=========================================================
+                if (shootTimer.seconds() > 1.0){
+                    robot.kickerServo.setPosition(kickerRetract);
+                    shootTimer.reset();
+                    shooterState = SHOOTERSTATE.SHOOTER_IDLE;
+                }
+                /**
                 robot.kickerServo.setPosition(kickerRetract);
                 // Request spindexer return ONCE
-                if (!stopInitDone){
-                //if (shootTimer.seconds() > 0.2) {
+                //if (!stopInitDone){
+                if (shootTimer.seconds() > spindexerServoPerSlotTime) {
                     //=========================================================================
                     // this is the place to reset the spindexer counter
                     // meanwhile spindexer return back to spinderxerPositions[0] - slot 1 position
@@ -304,6 +320,7 @@ public class FSMShooter {
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.SHOOTER_IDLE;
                 }
+                 */
                 break;
 
             case SHOOTER_GRACE_STOPPING:
