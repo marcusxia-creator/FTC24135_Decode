@@ -34,9 +34,6 @@ public class SpindexerUpd {
     private double servoTargetPos = 0.0;      // absolute servo target (0..1)
     private boolean servoBusy = false;
 
-    // TODO Tune these
-    //public double servoStepSize;     // per update() call (try 0.05)
-    //private double servoTolerance;    // "close enough" to finish 0.025
 
     public SpindexerUpd(RobotHardware robot, SLOT slot0, SLOT slot1, SLOT slot2, int startPos) {
         this.robot = robot;
@@ -91,6 +88,8 @@ public class SpindexerUpd {
      * Call this EVERY loop() (or every FSM update tick).
      * Returns true when the servo has reached the target (within tolerance).
      */
+
+
     public boolean updateServoStep() {
         if (!servoBusy) return true;
 
