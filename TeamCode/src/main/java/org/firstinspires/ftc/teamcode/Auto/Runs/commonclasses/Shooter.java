@@ -17,7 +17,7 @@ public class Shooter {
     private final RobotHardware robot;
     private static PIDController pidController;
 
-    //Feewforward variables
+    //Feedforward variables
     private static double kS; // static friction
     private static double kV; // velocity coefficient
     public static final double tickToRPM = 60.0 / 28.0;
@@ -63,17 +63,19 @@ public class Shooter {
         private final ElapsedTime stateTimer2 = new ElapsedTime();
         private final ElapsedTime shooterTimer = new ElapsedTime();
 
-        private int startingSlot = 3;
-        private int targetSlot = startingSlot;
+        private final int startingSlot;
+        private int targetSlot;
         private double ShooterWaitTime;
         private double targetVelocity;
         public SHOOTERSTATE currentState;
 
-        public ShooterRunMode(RobotHardware robot, double ShotPower, double ShooterWaitTime) {
+        public ShooterRunMode(RobotHardware robot, double ShotPower, double ShooterWaitTime, int startingSlot) {
             this.robot = robot;
             this.targetVelocity = ShotPower*shooterMaxRPM;
             this.ShooterWaitTime = ShooterWaitTime;
             this.currentState = SHOOTERSTATE.SHOOTER_INIT;
+            this.startingSlot = startingSlot;
+            this.targetSlot = startingSlot;
         }
 
         public void SpindexerRunTo(int slot) {
@@ -186,8 +188,8 @@ public class Shooter {
         }
     }
 
-    public Action ShooterRun(double ShotPower, double ShooterWaitTime){
-        return new ShooterRunMode(robot, ShotPower, ShooterWaitTime);
+    public Action ShooterRun(double ShotPower, double ShooterWaitTime, int startingSlot){
+        return new ShooterRunMode(robot, ShotPower, ShooterWaitTime, startingSlot);
     }
 
     ///Shooter Speed

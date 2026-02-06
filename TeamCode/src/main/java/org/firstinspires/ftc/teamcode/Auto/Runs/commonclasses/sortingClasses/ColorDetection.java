@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses;
+package org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -15,7 +15,7 @@ public class ColorDetection {
     private BallColors currentColor;
     private BallColors stableColor;
     private int stableCount = 0;
-    private final int REQUIRED_STABLE_COUNT = 5; // number of consistent readings (~0.3s if called every 20ms)
+    private final int REQUIRED_STABLE_COUNT = 3; // number of consistent readings (~0.3s if called every 20ms)
     private final ElapsedTime timer = new ElapsedTime();
 
     private boolean isDetectionRunning = false;
@@ -34,7 +34,7 @@ public class ColorDetection {
 
     /// color detection update!
     public void updateDetection(){
-        if(!isBallPresent()){
+        if(isBallPresent()){
             ///convert Hue value to color enum name
             currentColor = BallColors.fromHue(gethue());
             if (currentColor == lastReadColor && currentColor.isKnown())

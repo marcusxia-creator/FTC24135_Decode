@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.LUTPowerCalculator;
 import org.firstinspires.ftc.teamcode.TeleOps.Limelight;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
@@ -54,6 +55,7 @@ public class TestTeleOp extends OpMode {
 
     private PIDController pidController;
     private LUTPowerCalculator shooterPowerLUT;
+    private AprilTagDetection aprilTagDetection;
 
     private boolean finetune = false;
     private boolean pidstatus = false;
@@ -79,6 +81,7 @@ public class TestTeleOp extends OpMode {
         powerCalculator = new LUTPowerCalculator(robot);
         shooterPowerLUT = new LUTPowerCalculator(robot);
         robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
+        aprilTagDetection = new AprilTagDetection(robot);
 
         turret = new Turret(robot);
         turretUpd = new TurretUpd(robot);
