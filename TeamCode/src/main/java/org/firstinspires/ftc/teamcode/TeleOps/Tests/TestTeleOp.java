@@ -123,10 +123,14 @@ public class TestTeleOp extends OpMode {
 
         /// PID Controller and power status
         shooterPower = pidController.calculate(currentShooterRPM, Range.clip(targetShooterRPM,0,6000));
-        if (shootermotorstate == SHOOTERMOTORSTATE.RUN){
+        if (shootermotorstate == SHOOTERMOTORSTATE.RUN && pidstatus){
             robot.topShooterMotor.setPower(shooterPower);
             robot.bottomShooterMotor.setPower(shooterPower);
             robot.shooterAdjusterServo.setPosition(adjusterservoposition);
+        }
+        if (shootermotorstate == SHOOTERMOTORSTATE.RUN && !pidstatus) {
+            robot.topShooterMotor.setPower(shooterPower);
+            robot.bottomShooterMotor.setPower(shooterPower);
         }
         if (shootermotorstate == SHOOTERMOTORSTATE.STOP) {
             robot.topShooterMotor.setPower(0);
@@ -139,14 +143,6 @@ public class TestTeleOp extends OpMode {
         }
         else{
             robot.turretMotor.setPower(0);
-        }
-
-        /** intake Motor*/
-        if (gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
-            robot.intakeMotor.setPower(0.75);
-        }
-        if (gamepad_2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
-            robot.intakeMotor.setPower(0);
         }
 
         /** run kicker servoposition*/
@@ -192,7 +188,21 @@ public class TestTeleOp extends OpMode {
             targetShooterRPM -= 200;
         }
 
+        if (gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER) && isButtonDebounced()){
+            shootermotorstate = SHOOTERMOTORSTATE.RUN;
+            finetune = true;
+            pidstatus = false;
+            shooterPower += 0.1;
+        }
+
+        if (gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER) && isButtonDebounced()){
+            finetune = true;
+            pidstatus = false;
+            targetShooterRPM -= 0.1;
+        }
+
         /** run intake motor*/
+        /**
         if (gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER) && isButtonDebounced()) {
             robot.intakeMotor.setPower(Range.clip(intakeSpeed, 0.5, 1.0));
             intakeSpeed += 0.05;
@@ -200,10 +210,20 @@ public class TestTeleOp extends OpMode {
         if (gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER) && isButtonDebounced()){
             robot.intakeMotor.setPower(0);
         }
+         */
 
         /**
          * GamePad#2 to drive the spindexer
          */
+
+        /** intake Motor*/
+        if (gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
+            robot.intakeMotor.setPower(0.75);
+        }
+        if (gamepad_2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
+            robot.intakeMotor.setPower(0);
+        }
+
         /** run kicker servoposition*/
         if (gamepad_2.getButton(GamepadKeys.Button.A) && isButtonDebounced()) {
             servoposition = kickerRetract;
