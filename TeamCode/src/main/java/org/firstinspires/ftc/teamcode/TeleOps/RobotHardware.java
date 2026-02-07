@@ -167,8 +167,8 @@ public class RobotHardware {
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         /// config turret motor
-        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ///turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         turretMotor.setTargetPositionTolerance(6);

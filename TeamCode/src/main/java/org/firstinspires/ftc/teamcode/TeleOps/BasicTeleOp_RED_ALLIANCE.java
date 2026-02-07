@@ -107,8 +107,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         /**
          * Transfer the pose 2D from Auto Ops
          */
-        //Pose2D startingPose = new Pose2D(DistanceUnit.INCH, PoseStorage.currentPose.position.x, PoseStorage.currentPose.position.y, AngleUnit.RADIANS, PoseStorage.currentPose.heading.real);
-        //robot.pinpoint.setPosition(startingPose);
+        Pose2D startingPose = new Pose2D(DistanceUnit.INCH, PoseStorage.currentPose.position.x, PoseStorage.currentPose.position.y, AngleUnit.RADIANS, PoseStorage.currentPose.heading.real);
+        robot.pinpoint.setPosition(startingPose);
 
         /// 0. gamepad---------------------------------------------------------------
         gamepadCo1 = new GamepadEx(gamepad1);
@@ -533,9 +533,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("distance to goal", "%,.0f",shooterPowerAngleCalculator.getDistance());
         telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
         telemetry.addLine("Turret-----------------------------------");
-        //telemetry.addData("turret target angle", turret.getBaseTargetFieldAngleDeg());
-        //telemetry.addData("turret drive angle", turret.getTurretDriveAngleDeg());
-        //telemetry.addData("turret motor angle", turret.getTurretMotorAngleDeg());
+        telemetry.addData("turret target angle", turret.getTargetAngle());
+        telemetry.addData("turret drive angle", turret.getTurretDriveAngle());
+        telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
         telemetry.addData("motor PIDF coefficient", robot.turretMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
         telemetry.addData("current motor tick", turret.getCurrentTick());
         telemetry.addData("target motor tick", turret.getTargetTick());
