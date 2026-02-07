@@ -180,7 +180,10 @@ public class RobotHardware {
         bottomShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         topShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        ///set servo direction
         shooterAdjusterServo.setDirection(Servo.Direction.REVERSE);
+        kickerServo.setDirection(Servo.Direction.REVERSE);
+
 
         /** set drive motor 0 */
         frontLeftMotor.setPower(0);
@@ -188,8 +191,6 @@ public class RobotHardware {
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
 
-        /// set spindexer servo
-        spindexerServo.setDirection(Servo.Direction.REVERSE);
     }// End of init
 
     // Initialize IMU

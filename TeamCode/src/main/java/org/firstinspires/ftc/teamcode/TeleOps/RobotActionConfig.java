@@ -16,8 +16,8 @@ public class RobotActionConfig {
     public static double spindexerSlot1                 = 0.12;
     public static double spindexerSlot2                 = 0.31;
     public static double spindexerSlot3                 = 0.49;
-    public static double spindexerSlot4                 = 0.69;
-    public static double spindexerSlot5                 = 0.88;
+    public static double spindexerSlot4                 = 0.68;
+    public static double spindexerSlot5                 = 0.86;
     public static double spindexerFullPos               = 1.0;
     public static double spinderxerShootPos             = 0.08;
     public static double[] spindexerPositions           = {spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5};
@@ -32,8 +32,8 @@ public class RobotActionConfig {
     public static double spindexerServoPerSlotTime          = 0.15;    // per slot time
 
     //kicker
-    public static double kickerRetract                  = 0.36;  /// value - retract back for spindexer reversing
-    public static double kickerExtend                   = 0.66; /// value - into the spindexer for pushing the ball up
+    public static double kickerRetract                  = 0.05;  /// value - retract back for spindexer reversing
+    public static double kickerExtend                   = 0.30; /// value - into the spindexer for pushing the ball up
     //intake Speed
     public static double intakeSpeed                    = 0.75;
     public static double intakeStop                     = 0;
