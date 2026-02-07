@@ -102,5 +102,6 @@ public class ColorDetection {
     }
 
     public BallColor getStableColor(){ return stableColor;}
+
     public double getDistance(){ return robot.distanceSensor.getDistance(DistanceUnit.MM);}
 }

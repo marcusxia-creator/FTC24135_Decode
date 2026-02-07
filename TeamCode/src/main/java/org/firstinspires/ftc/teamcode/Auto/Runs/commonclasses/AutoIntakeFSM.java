@@ -6,17 +6,20 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.BallColors;
-import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.ColorDetection;
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AutoBallColors;
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AutoColorDetection;
 
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
+
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
-public class Intake {
+
+public class AutoIntakeFSM {
     private final RobotHardware robot;
+
     private final int targetGreenSlot;
     public static int shootingInitSlot;
 
-    public Intake (RobotHardware robot, int targetGreenSlot) {
+    public AutoIntakeFSM(RobotHardware robot, int targetGreenSlot) {
         this.robot = robot;
         this.targetGreenSlot = targetGreenSlot;
     }
@@ -36,7 +39,8 @@ public class Intake {
 
         /// Variables
         private RobotHardware robot;
-        private final ColorDetection colorDetection;
+        private final AutoColorDetection colorDetection;
+        private AutoBallColors ballColors;
 
         private final ElapsedTime stateTimer = new ElapsedTime();
         private final ElapsedTime intakeTimer = new ElapsedTime();
@@ -52,7 +56,8 @@ public class Intake {
             this.robot = robot;
             this.targetGreenSlot = targetGreenSlot;
             this.currentState = INTAKESTATE.INTAKE_INIT;
-            this.colorDetection = new ColorDetection(robot);
+            this.colorDetection = new AutoColorDetection(robot);
+            this.ballColors = AutoBallColors.UNKNOWN;
         }
 
         public void SpindexerRunTo(int slot) {
@@ -78,17 +83,19 @@ public class Intake {
                     currentState = INTAKESTATE.INTAKE_RUN;
                     break;
                 case INTAKE_RUN:
-                    robot.intakeMotor.setPower(0.95);
+                    robot.intakeMotor.setPower(0.75);
                     stateTimer.reset();
                     currentState = INTAKESTATE.INTAKE_DETECT;
                     break;
                 case INTAKE_DETECT:
                     if (colorDetection.isBallPresent()) {
-                        if (colorDetection.getColor() == BallColors.GREEN) {
+                        if (colorDetection.getColor() == AutoBallColors.GREEN) {
                             currentGreenSlot = targetSlot + 1;
+                            targetSlot++;
                             stateTimer.reset();
                             currentState = INTAKESTATE.INTAKE_PAUSE;
-                        } else {
+                        }else {
+                            targetSlot++;
                             stateTimer.reset();
                             currentState = INTAKESTATE.INTAKE_PAUSE;
                         }
@@ -101,27 +108,33 @@ public class Intake {
                 case INTAKE_PAUSE:
                     robot.intakeMotor.setPower(intakeStop);
                     if (stateTimer.seconds() > 0.2) {
-                        targetSlot++;
+                        stateTimer.reset();
                         currentState = INTAKESTATE.INTAKE_INDEX;
                     }
                     break;
                 case INTAKE_INDEX:
-                    if (targetSlot <= 2) {
+                    if (targetSlot < 3) {
                         SpindexerRunTo(targetSlot);
                         stateTimer.reset();
                         currentState = INTAKESTATE.INTAKE_SPIN;
-                    } else if (targetSlot >= 3) {
-                        currentState = INTAKESTATE.INTAKE_END;
+                    } else {
+                        if (stateTimer.seconds()>0.4) {
+                            stateTimer.reset();
+                            currentState = INTAKESTATE.INTAKE_UNJAM;
+                        }
                     }
                     break;
                 case INTAKE_SPIN:
-                    if (stateTimer.seconds() > 0.2) {
+                    if (stateTimer.seconds() > 0.3) {
                         currentState = INTAKESTATE.INTAKE_RUN;
                     }
                     break;
                 case INTAKE_UNJAM:
+                    SpindexerRunTo(0);
                     robot.intakeMotor.setPower(ejectSpeed);
-                    currentState = INTAKESTATE.INTAKE_RUN;
+                    if (stateTimer.seconds() > 0.4) {
+                        currentState = INTAKESTATE.INTAKE_END;
+                    }
                     break;
                 case INTAKE_END:
                     robot.intakeMotor.setPower(intakeStop);
@@ -132,9 +145,9 @@ public class Intake {
 
         private void updateShootingInitSlot() {
             if (currentGreenSlot == -1) {
-                shootingInitSlot = 2;
+                shootingInitSlot = 0;
             } else {
-                shootingInitSlot = Math.floorMod(currentGreenSlot - targetGreenSlot, 3) + 1;
+                shootingInitSlot = Math.floorMod(currentGreenSlot - targetGreenSlot, 3);
             }
         }
 
