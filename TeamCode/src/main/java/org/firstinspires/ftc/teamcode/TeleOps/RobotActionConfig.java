@@ -42,7 +42,7 @@ public class RobotActionConfig {
     public static final long FEED_PERIOD_MS             = 500; // 0.6s per feed (tune)
     public static final double SPOOLUP_SEC              = 1.25;
     //shooter adjustor
-    public static double shooterAdjusterMax             = 0.59;
+    public static double shooterAdjusterMax             = 0.49;
     public static double shooterAdjusterMin             = 0.06;
     public static double shooterAdjusterMid             = 0.4;
     public static double shooterFactorThreshold         = 0.95;

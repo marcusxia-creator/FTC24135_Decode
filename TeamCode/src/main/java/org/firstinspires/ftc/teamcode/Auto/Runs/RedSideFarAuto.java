@@ -6,7 +6,6 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -14,35 +13,35 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.*;
 
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.Intake;
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoIntakeFSM;
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoTurretDrive;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
-import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.Shooter;
-import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.TurretRunMode;
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
-
-import com.qualcomm.hardware.limelightvision.LLResult;
-
-import java.util.List;
 
 @Autonomous(name = "RedSideFarAuto", group = "Autonomous")
 public class RedSideFarAuto extends LinearOpMode {
     public static Pose2d initialPose = new Pose2d(64, 7.5, Math.toRadians(90));
-    public RobotHardware robot = new RobotHardware(hardwareMap);
-    Shooter shooter = new Shooter(robot);
-    //Intake intake  = new Intake(robot,ta);
 
-    //int initShotSlot = Intake.
+    public RobotHardware robot;
+
+    public AutoIntakeFSM intake;
+    public AutoShooterFSM shooter;
+    public AutoTurretDrive turret;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
+        robot = new RobotHardware(hardwareMap);
+        robot.init();
 
+        turret = new AutoTurretDrive(robot);
+        intake = new AutoIntakeFSM(robot,2);
+        shooter = new AutoShooterFSM(robot);
 
-        while (!isStopRequested() && !isStarted()) {
-        }
-
-        robot.spindexerServo.setPosition(spindexerSlot3);
+        robot.spindexerServo.setPosition(spindexerSlot1);
 
         Action IntakeSet1Drive1 = drive.actionBuilder(initialPose)
                 .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position1_X, Far_IntakeSet2Position1_Y), Math.toRadians(90))
@@ -73,12 +72,12 @@ public class RedSideFarAuto extends LinearOpMode {
         if (opModeIsActive()) {
             Actions.runBlocking(
                 new SequentialAction(
-                    TurretRun(108),
+                    turret.TurretRun(72),
                     shooter.ShooterOn(FarShotPower),
-                    //shooter.ShooterRun(FarShotPower, 2),
+                    shooter.ShooterRun(FarShotPower, 2,1),
                     shooter.ShooterOff(),
                     new ParallelAction(
-
+                        intake.IntakeRun(2),
                         new SequentialAction(
                             IntakeSet1Drive1,
                             IntakeSet1Drive2
@@ -88,39 +87,26 @@ public class RedSideFarAuto extends LinearOpMode {
                             DriveToShoot1,
                             shooter.ShooterOn(FarShotPower)
                     ),
-                    //shooter.ShooterRun(FarShotPower, 0.5),
+                    shooter.ShooterRun(FarShotPower, 0.5,1),
                     shooter.ShooterOff(),
-                        IntakeSet2Drive1,
                     new ParallelAction(
-                        IntakeSet2Drive2
-                        //IntakeRun()
-                    ),
-                    new ParallelAction(
-                        DriveToShoot2,
-                        shooter.ShooterOn(FarShotPower)
-                    ),
-                    //shooter.ShooterRun(FarShotPower, 0.5),
-                    shooter.ShooterOff(),
-                    IntakeSet2Drive1,
-                    new ParallelAction(
+                            intake.IntakeRun(2),
                             new SequentialAction(
-
+                                    IntakeSet2Drive1,
+                                    IntakeSet2Drive2
                             )
-
                     ),
                     new ParallelAction(
                             DriveToShoot2,
                             shooter.ShooterOn(FarShotPower)
-                    )
+                    ),
+                    shooter.ShooterRun(FarShotPower, 0.5,1),
+                    shooter.ShooterOff()
                 )
             );
 
             PoseStorage.currentPose = drive.localizer.getPose();
         }
-    }
-
-    public Action TurretRun (int targetAngle){
-        return new TurretRunMode(robot, targetAngle);
     }
 
 }

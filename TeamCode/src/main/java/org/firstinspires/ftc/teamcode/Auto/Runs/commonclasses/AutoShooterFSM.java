@@ -13,7 +13,7 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 @Config
-public class Shooter {
+public class AutoShooterFSM {
     private final RobotHardware robot;
     private static PIDController pidController;
 
@@ -34,7 +34,7 @@ public class Shooter {
     }
 
     ///Constructor
-    public Shooter(RobotHardware robot){
+    public AutoShooterFSM(RobotHardware robot){
         this.robot = robot;
         this.pidController = new PIDController(
                 PIDTuning.kP,
@@ -74,8 +74,8 @@ public class Shooter {
             this.targetVelocity = ShotPower*shooterMaxRPM;
             this.ShooterWaitTime = ShooterWaitTime;
             this.currentState = SHOOTERSTATE.SHOOTER_INIT;
-            this.startingSlot = startingSlot;
-            this.targetSlot = startingSlot;
+            this.startingSlot = startingSlot + 1;
+            this.targetSlot = startingSlot + 1;
         }
 
         public void SpindexerRunTo(int slot) {
@@ -112,34 +112,35 @@ public class Shooter {
                 case SHOOTER_RUN:
                     if (stateTimer.seconds() > ShooterWaitTime) {
                         robot.kickerServo.setPosition(kickerExtend);
-                        currentState = SHOOTERSTATE.SHOOTER_SWITCH;
+                        if (stateTimer.seconds() > ShooterWaitTime + 0.2) {
+                            stateTimer2.reset();
+                            currentState = SHOOTERSTATE.SHOOTER_SWITCH;
+                        }
                     }
                     break;
                 case SHOOTER_SWITCH:
-                    if (targetSlot == 0 || targetSlot == (startingSlot - 3)) {
-                        stateTimer.reset();
+                    if (targetSlot == 4 || targetSlot == (startingSlot + 3)) {
+                        stateTimer2.reset();
                         currentState = SHOOTERSTATE.SHOOTER_RESET;
                     }
                     else {
-                        targetSlot--;
+                        targetSlot++;
                         stateTimer2.reset();
                         currentState = SHOOTERSTATE.SHOOTER_LAUNCH;
                     }
                     break;
                 case SHOOTER_LAUNCH:
-                    if (stateTimer2.seconds() > 0.2) {
-                        SpindexerRunTo(targetSlot);
-                        if (stateTimer2.seconds() > 0.3) {
-                            stateTimer.reset();
-                            currentState = SHOOTERSTATE.SHOOTER_RESET;
-                        }
+                    SpindexerRunTo(targetSlot);
+                    if (stateTimer2.seconds() > 0.5) {
+                        stateTimer.reset();
+                        currentState = SHOOTERSTATE.SHOOTER_SWITCH;
                     }
                     break;
                 case SHOOTER_RESET:
-                    robot.spindexerServo.setPosition(spindexerSlot1);
-                    if (stateTimer.seconds() > 0.2) {
+                    SpindexerRunTo(1);
+                    if (stateTimer2.seconds() > 0.3) {
                         robot.kickerServo.setPosition(kickerRetract);
-                        if(stateTimer.seconds()>0.3){
+                        if(stateTimer2.seconds()>0.6){
                             currentState = SHOOTERSTATE.SHOOTER_END;
                         }
                     } else if (shooterTimer.seconds()>(8+ShooterWaitTime)) {
@@ -182,7 +183,6 @@ public class Shooter {
             else {
                 RunShooter(targetVelocity);
                 FSMShooterRun();
-
                 return true;
             }
         }

@@ -9,11 +9,11 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import android.graphics.Color;
 
 
-public class ColorDetection {
+public class AutoColorDetection {
     private final RobotHardware robot;
-    private BallColors lastReadColor = BallColors.UNKNOWN;
-    private BallColors currentColor;
-    private BallColors stableColor;
+    private AutoBallColors lastReadColor = AutoBallColors.UNKNOWN;
+    private AutoBallColors currentColor;
+    private AutoBallColors stableColor;
     private int stableCount = 0;
     private final int REQUIRED_STABLE_COUNT = 3; // number of consistent readings (~0.3s if called every 20ms)
     private final ElapsedTime timer = new ElapsedTime();
@@ -21,13 +21,14 @@ public class ColorDetection {
     private boolean isDetectionRunning = false;
     private static final int SENSOR_GAIN = 0;
 
-    public ColorDetection (RobotHardware robot) {
+    public AutoColorDetection(RobotHardware robot) {
         this.robot = robot;
     }
 
     public void detectInit(){
         this.isDetectionRunning = true;
-        this.lastReadColor = BallColors.UNKNOWN;
+        this.lastReadColor = AutoBallColors.UNKNOWN;
+        this.stableColor = AutoBallColors.UNKNOWN;
         this.timer.reset();
     }
 
@@ -36,7 +37,7 @@ public class ColorDetection {
     public void updateDetection(){
         if(isBallPresent()){
             ///convert Hue value to color enum name
-            currentColor = BallColors.fromHue(gethue());
+            currentColor = AutoBallColors.fromHue(gethue());
             if (currentColor == lastReadColor && currentColor.isKnown())
             {
                 stableCount++;
@@ -44,6 +45,7 @@ public class ColorDetection {
                     stableColor = currentColor;
                     timer.reset();
                 }
+                lastReadColor = currentColor;
             }else {
                 stableCount = 0;
             }
@@ -51,11 +53,11 @@ public class ColorDetection {
     }
 
     /// get color enum name
-    public BallColors getColor(){
+    public AutoBallColors getColor(){
         if (stableColor.isKnown()){
             return stableColor;
         }else{
-            return BallColors.UNKNOWN;
+            return AutoBallColors.UNKNOWN;
         }
     }
 
