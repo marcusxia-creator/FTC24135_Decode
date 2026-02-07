@@ -24,6 +24,7 @@ public class SpindexerUpd {
     public SLOT[] slots;
     public int currentPos; // This is the only variable we need to track
     public int prevPos;
+    public int index;
     public double colorValue;
 
     private final List<SLOT> voteBuffer = new ArrayList<>();
@@ -52,7 +53,7 @@ public class SpindexerUpd {
         currentPos = n;
 
         // Logical safety: map n to 0, 1, or 2
-        int index = Math.floorMod(currentPos, 6);
+        index = Math.floorMod(currentPos, 6);
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[index]);
     }
 

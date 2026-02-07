@@ -1,23 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.CLOSE;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.FAR;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.FAR_EDGE;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.FAR_ZONE_HIGH;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.FAR_ZONE_LOW;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.MID;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.MidPoint;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.RPM0;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.RPM1;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.RPM2;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.RPM3;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.RPM4;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.RPM5;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.RPM6;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueCloseGoalPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueFarGoalPose;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.closeEdge;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redCloseGoalPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redFarGoalPose;
 
@@ -163,7 +147,7 @@ public class Turret {
     public void updateZoneForGoalPose(int zone) {
         int normalizedZone;
 
-        if (zone <= 4) {
+        if (zone <= 5) {
             normalizedZone = 1;
         }
         else {

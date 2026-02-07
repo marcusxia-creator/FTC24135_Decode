@@ -39,10 +39,12 @@ public class RobotActionConfig {
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.7;
     //shooter timer
-    public static final long FEED_PERIOD_MS             = 350; // 0.6s per feed (tune)
+    public static final long FEED_PERIOD_MS_CLOSE       = 350; // (tune)
+    public static final long FEED_PERIOD_MS_FAR         = 500;
+
     public static final double SPOOLUP_SEC              = 1.25;
     //shooter adjustor
-    public static double shooterAdjusterMax             = 0.49;
+    public static double shooterAdjusterMax             = 0.48;
     public static double shooterAdjusterMin             = 0.06;
     public static double shooterAdjusterMid             = 0.4;
     public static double shooterFactorThreshold         = 0.95;
@@ -83,10 +85,11 @@ public class RobotActionConfig {
     public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, 9, -48.5, AngleUnit.DEGREES, 0);
     public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, 9, 48.5, AngleUnit.DEGREES, 0);
 
-    public static final Pose2D redCloseGoalPose         = new Pose2D(DistanceUnit.INCH, -64, 66, AngleUnit.DEGREES, 0);
+    //-64 66 works
+    public static final Pose2D redCloseGoalPose         = new Pose2D(DistanceUnit.INCH, -63, 66, AngleUnit.DEGREES, 0);
     public static final Pose2D redFarGoalPose           = new Pose2D(DistanceUnit.INCH, -66, 66, AngleUnit.DEGREES, 0);
 
-    public static final Pose2D blueCloseGoalPose        = new Pose2D(DistanceUnit.INCH, -64, -66, AngleUnit.DEGREES, 0);
+    public static final Pose2D blueCloseGoalPose        = new Pose2D(DistanceUnit.INCH, -63, -66, AngleUnit.DEGREES, 0);
     public static final Pose2D blueFarGoalPose          = new Pose2D(DistanceUnit.INCH, -66, -66, AngleUnit.DEGREES, 0);
 
     public static double FAR_EDGE                 = 105.0;
@@ -96,8 +99,9 @@ public class RobotActionConfig {
     public static double CLOSE                    = 57.0;
     public static double closeEdge                = 36.0;
 
-    public static double FAR_ZONE_LOW             = 120.0;
-    public static double FAR_ZONE_HIGH            = 167.0;
+    public static double FAR_ZONE_CLOSE             = 120.0;
+    public static double FAR_ZONE_MID               = 144;
+    public static double FAR_ZONE_FAR               = 167.0;
 
     public static int RPM0            = 3900;
     public static int RPM1            = 3350;
@@ -106,6 +110,7 @@ public class RobotActionConfig {
     public static int RPM4            = 3800;
     public static int RPM5            = 3900;
     public static int RPM6            = 4400;
+    public static int RPM7            = 4600;
 
     public static final double farPower                 = 0.78;     // 3920 - 0.8  @ 12.73
     public static final double midPower                 = 0.73;     // 3360 - 0.70 @ 12.82

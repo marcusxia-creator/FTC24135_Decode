@@ -19,6 +19,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
 
@@ -102,8 +104,11 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.initPinpoint();               //Initialize pinpoint
         robot.initExternalIMU();            //Initialize external IMU
 
-        ///Pose2D startingPose = new Pose2D(DistanceUnit.INCH, PoseStorage.currentPose.position.x, PoseStorage.currentPose.position.y, AngleUnit.RADIANS, PoseStorage.currentPose.heading.real);
-        ///robot.pinpoint.setPosition(startingPose);
+        /**
+         * Transfer the pose 2D from Auto Ops
+         */
+        //Pose2D startingPose = new Pose2D(DistanceUnit.INCH, PoseStorage.currentPose.position.x, PoseStorage.currentPose.position.y, AngleUnit.RADIANS, PoseStorage.currentPose.heading.real);
+        //robot.pinpoint.setPosition(startingPose);
 
         /// 0. gamepad---------------------------------------------------------------
         gamepadCo1 = new GamepadEx(gamepad1);
@@ -241,23 +246,22 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         }
 
         // =========================================================
-        // 6. SUBSYSTEM FSMs (ALWAYS RUN)
+        // 6. ZONE STATUS
+        // =========================================================
+        int zone = shooterPowerAngleCalculator.getZone();
+        turret.updateZoneForGoalPose(zone);
+        FSMShooter.updateZoneForGoalPose(zone);
+
+        // =========================================================
+        // 7. SUBSYSTEM FSMs (ALWAYS RUN)
         // =========================================================
         FSMIntake.loop();
         FSMShooter.SequenceShooterLoop();
 
         // =========================================================
-        // 7. LED STATUS (non-blocking)
+        // 8. LED STATUS (non-blocking)
         // =========================================================
         updateLED();
-
-        // =========================================================
-        // 8. ZONE STATUS
-        // =========================================================
-        int zone = shooterPowerAngleCalculator.getZone();
-        turret.updateZoneForGoalPose(zone);
-
-        turret.driveTurretMotor();
 
         // =========================================================
         // 9. TELEMETRY
@@ -446,19 +450,25 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     }
     ///  - LED Update
     private void updateLED() {
-        if (shooterPowerAngleCalculator.getZone() ==0) {
-            //Distance outside shooting zone, red alert
-            robot.LED.setPosition(0.28);
+        if (Math.abs(turret.getTargetTick() - turret.getCurrentTick())<5){
+            /// +/- 2deg for 5 tick
+            robot.LED.setPosition(0.277);
         }
-        else if (shooterPowerAngleCalculator.getZone() > 0 && limelight.llresult()){
-            robot.LED.setPosition(1.0);
+        else {
+            if (shooterPowerAngleCalculator.getZone() == 0) {
+                //Distance outside shooting zone, red alert
+                robot.LED.setPosition(0.28);
+            } else if (shooterPowerAngleCalculator.getZone() > 0 && limelight.llresult()) {
+                robot.LED.setPosition(1.0);
+            } else if (shooterPowerAngleCalculator.getZone() > 0 && !limelight.llresult()) {
+                robot.LED.setPosition(0.388);
+            } else { //Default black
+                robot.LED.setPosition(0.0);
+            }
         }
-        else if (shooterPowerAngleCalculator.getZone() > 0 && !limelight.llresult()){
-            robot.LED.setPosition(0.388);
-        }
-        else { //Default black
-            robot.LED.setPosition(0.0);
-        }
+
+
+
     }
 
     private int updateXandY () {
@@ -502,6 +512,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Slot 1", spindexer.slots[1]);
         telemetry.addData("Slot 2", spindexer.slots[2]);
         telemetry.addData("Current Pos", spindexer.currentPos);
+        telemetry.addData("Current index", spindexer.index);
         telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
         telemetry.addLine("-----");
         telemetry.addData("shooter power calculator", shooterPowerAngleCalculator.getPower());
@@ -514,7 +525,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Shooter acutal RPM",shooterRPM);
         telemetry.addData("Shooter RPM","%,.0f",robot.topShooterMotor.getVelocity()*SHOOTER_RPM_CONVERSION);
         telemetry.addLine("-----");
-        String MotifAvailable;
+        //String MotifAvailable;
         telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));
 
         telemetry.addData("Alliance", alliance);

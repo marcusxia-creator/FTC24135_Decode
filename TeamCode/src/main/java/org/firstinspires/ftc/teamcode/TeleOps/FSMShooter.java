@@ -2,12 +2,15 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.util.LUT;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
+import java.util.Optional;
 
 public class FSMShooter {
     private final RobotHardware robot;
@@ -52,6 +55,14 @@ public class FSMShooter {
     private static final double MOVE_TO_CLEARANCE_TIME_S = 0.2;  // tune
     private static final double KICKER_RETRACT_TIME_S     = 0.25;  // tune
     private static final double PARK_TO_ZERO_TIME_S       = 0.50;  // tune
+
+
+    LUT<Integer, Long> timeStamp = new LUT<Integer, Long>() {{
+        add(1, FEED_PERIOD_MS_CLOSE);
+        add(2, FEED_PERIOD_MS_FAR);
+    }};
+
+    private long waitTimeMS = 350;
 
 
 
@@ -238,10 +249,10 @@ public class FSMShooter {
                 break;
             case SHOOT_READY:
                 /// use button Y to shoot.
+                turret.driveTurretMotor();
                 if ((gamepad_1.getButton(GamepadKeys.Button.Y)
                         || gamepad_2.getButton(GamepadKeys.Button.Y))
                         && isButtonDebounced()){
-                    //spindexer.requestServoPosition(spinderxerShootPos);
                     shooterState = SHOOTERSTATE.SEQUENCE_SHOOTING;
                     shootTimer.reset();
                 }
@@ -263,7 +274,7 @@ public class FSMShooter {
                     break;
                 }
                 // --- Next balls: every FEED_PERIOD_MS ---
-                if (now - lastFeedTimeMs >= FEED_PERIOD_MS) {
+                if (now - lastFeedTimeMs >= waitTimeMS) {
                     shootCounter++;
                     lastFeedTimeMs = now;
                     if (shootCounter < 3) {
@@ -292,7 +303,7 @@ public class FSMShooter {
                 break;
 
             case KICKER_RETRACT:
-                if (shootTimer.seconds() > 0.2) {
+                if (shootTimer.seconds() > 0.4) {
                     //=========================================================================
                     // this is the place to reset the spindexer counter
                     // meanwhile spindexer return back to spinderxerPositions[0] - slot 1 position
@@ -307,28 +318,6 @@ public class FSMShooter {
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.SHOOTER_IDLE;
                 }
-                /**
-                robot.kickerServo.setPosition(kickerRetract);
-                // Request spindexer return ONCE
-                //if (!stopInitDone){
-                if (shootTimer.seconds() > spindexerServoPerSlotTime) {
-                    //=========================================================================
-                    // this is the place to reset the spindexer counter
-                    // meanwhile spindexer return back to spinderxerPositions[0] - slot 1 position
-                    //==========================================================================
-                    spindexer.RuntoPosition(0); // reset counter in spindexer
-                    stopInitDone = true;
-                    shootTimer.reset();
-                }
-                //=========================================================
-                // when slot back to 0 position,then the kicker Retract
-                //=========================================================
-                if (!spindexer.isServoBusy() || shootTimer.seconds() > spindexerServoFullTime){
-                    stopInitDone = false;
-                    shootTimer.reset();
-                    shooterState = SHOOTERSTATE.SHOOTER_IDLE;
-                }
-                 */
                 break;
 
             case SHOOTER_GRACE_STOPPING:
@@ -462,6 +451,22 @@ public class FSMShooter {
         stopRequested= true;
     }
 
+    //============================================================
+    // helper - get zone
+    //============================================================
+
+    public void updateZoneForGoalPose(int zone) {
+        int normalizedZone;
+
+        if (zone <= 5) {
+            normalizedZone = 1;
+        }
+        else {
+            normalizedZone = 2;
+        }
+
+         waitTimeMS = Optional.ofNullable(timeStamp.get(normalizedZone)).orElse(timeStamp.get(1));
+    }
 
     //============================================================
     // helper - get power

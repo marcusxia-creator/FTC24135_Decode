@@ -49,6 +49,7 @@ public class LUTPowerCalculator {
      */
     private final LUT<Integer, Integer> targetRPM = new LUT<Integer, Integer>() {{
         /// RPM is measured based on 13v
+        add(7, RPM7);
         add(6, RPM6); // 5200
         add(5, RPM5); // 4450
         add(4, RPM4); // 4440
@@ -61,6 +62,7 @@ public class LUTPowerCalculator {
     //0.05
     //0.53
     private final LUT<Integer, Double> targetShootingAngle = new LUT<Integer, Double>() {{
+        add(7, shooterAdjusterMax);
         add(6, shooterAdjusterMax);
         add(5, shooterAdjusterMax);
         add(4, shooterAdjusterMax);
@@ -89,7 +91,8 @@ public class LUTPowerCalculator {
         else if (distance > MID && distance <= MidPoint) zone   = 3;
         else if (distance > MidPoint && distance <= FAR) zone   = 4;
         else if (distance > FAR && distance <= FAR_EDGE) zone   = 5;
-        else if (distance > FAR_ZONE_LOW && distance <= FAR_ZONE_HIGH) zone = 6;
+        else if (distance > FAR_ZONE_CLOSE && distance <= FAR_ZONE_MID) zone = 6;
+        else if (distance > FAR_ZONE_MID && distance <= FAR_ZONE_FAR) zone = 7;
         else zone = 0;
     }
 
