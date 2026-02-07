@@ -16,12 +16,10 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 public class AutoIntakeFSM {
     private final RobotHardware robot;
 
-    private final int targetGreenSlot;
     public static int shootingInitSlot;
 
-    public AutoIntakeFSM(RobotHardware robot, int targetGreenSlot) {
+    public AutoIntakeFSM(RobotHardware robot) {
         this.robot = robot;
-        this.targetGreenSlot = targetGreenSlot;
     }
 
     public static class IntakeRunMode implements Action {
@@ -125,7 +123,7 @@ public class AutoIntakeFSM {
                     }
                     break;
                 case INTAKE_SPIN:
-                    if (stateTimer.seconds() > 0.3) {
+                    if (stateTimer.seconds() > 0.25) {
                         currentState = INTAKESTATE.INTAKE_RUN;
                     }
                     break;

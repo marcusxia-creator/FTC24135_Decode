@@ -1,4 +1,4 @@
-/*package org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses;
+package org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
@@ -19,12 +19,12 @@ public class AprilTagDetection {
     }
 
     public void limelightStart () {
-        robot.limelight.pipelineSwitch(0);
+        robot.limelight.pipelineSwitch(2);
         robot.limelight.start();
     }
 
     public void limelightDetect () {
-        LLResult llResult =  robot.limelight.getLatestResult();
+        LLResult llResult = robot.limelight.getLatestResult();
 
         List<LLResultTypes.FiducialResult> fiducials = llResult.getFiducialResults();
         for (LLResultTypes.FiducialResult fiducial : fiducials) {
@@ -44,5 +44,3 @@ public class AprilTagDetection {
         }
     }
 }
-
- */

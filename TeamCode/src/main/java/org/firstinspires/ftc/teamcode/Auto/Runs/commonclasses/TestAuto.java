@@ -34,7 +34,7 @@ public class TestAuto extends LinearOpMode {
         drive = new MecanumDrive(hardwareMap, initialPose);
         robot = new RobotHardware(hardwareMap);
         shooter = new AutoShooterFSM(robot);
-        intake = new AutoIntakeFSM(robot, targetGreenSlot);
+        intake = new AutoIntakeFSM(robot);
         turret = new AutoTurretDrive(robot);
 
         robot.init();

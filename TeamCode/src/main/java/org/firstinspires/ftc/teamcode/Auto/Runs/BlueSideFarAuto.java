@@ -39,10 +39,10 @@ public class BlueSideFarAuto extends LinearOpMode {
                 .build();
 
         Action IntakeSet1Drive2_1 = drive.actionBuilder(new Pose2d(IntakeSet1Position1_X, IntakeSet1Position1_Y,Math.toRadians(-90)))
-                .strafeToLinearHeading(new Vector2d(IntakeSet1Position2_X,IntakeSet1Position2_Y),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(IntakeSet1Position4_X,IntakeSet1Position2_Y),Math.toRadians(-90))
                 .build();
 
-        Action IntakeSet1Drive2_2 = drive.actionBuilder(new Pose2d(IntakeSet1Position2_X,IntakeSet1Position2_Y,Math.toRadians(-90)))
+        Action IntakeSet1Drive2_2 = drive.actionBuilder(new Pose2d(IntakeSet1Position4_X,IntakeSet1Position2_Y,Math.toRadians(-90)))
                 .strafeToLinearHeading(new Vector2d(IntakeSet1Position3_X,IntakeSet1Position3_Y),Math.toRadians(-90))
                 .build();
 
@@ -60,10 +60,10 @@ public class BlueSideFarAuto extends LinearOpMode {
                 .build();
 
         Action IntakeSet2Drive2_1 = drive.actionBuilder(new Pose2d(Far_IntakeSet2Position1_X, Far_IntakeSet2Position1_Y,Math.toRadians(-90)))
-                .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position2_X,Far_IntakeSet2Position2_Y),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position4_X,Far_IntakeSet2Position2_Y),Math.toRadians(-90))
                 .build();
 
-        Action IntakeSet2Drive2_2 = drive.actionBuilder(new Pose2d(Far_IntakeSet2Position2_X,Far_IntakeSet2Position2_Y,Math.toRadians(-90)))
+        Action IntakeSet2Drive2_2 = drive.actionBuilder(new Pose2d(Far_IntakeSet2Position4_X,Far_IntakeSet2Position2_Y,Math.toRadians(-90)))
                 .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position3_X,Far_IntakeSet2Position3_Y),Math.toRadians(-90))
                 .build();
 
