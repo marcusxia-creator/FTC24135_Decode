@@ -19,18 +19,16 @@ public class AprilTagDetection {
     }
 
     public void limelightStart () {
-        robot.limelight.pipelineSwitch(0);
+        robot.limelight.pipelineSwitch(2);
         robot.limelight.start();
     }
 
-    public void limelightDetect (boolean run) {
-        while (run) {
-            LLResult llResult = robot.limelight.getLatestResult();
+    public void limelightDetect () {
+        LLResult llResult = robot.limelight.getLatestResult();
 
-            List<LLResultTypes.FiducialResult> fiducials = llResult.getFiducialResults();
-            for (LLResultTypes.FiducialResult fiducial : fiducials) {
-                tagID = fiducial.getFiducialId(); // The ID number of the fiducial
-            }
+        List<LLResultTypes.FiducialResult> fiducials = llResult.getFiducialResults();
+        for (LLResultTypes.FiducialResult fiducial : fiducials) {
+            tagID = fiducial.getFiducialId(); // The ID number of the fiducial
         }
     }
 

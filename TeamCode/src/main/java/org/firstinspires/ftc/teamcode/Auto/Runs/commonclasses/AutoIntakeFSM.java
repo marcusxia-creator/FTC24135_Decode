@@ -123,7 +123,7 @@ public class AutoIntakeFSM {
                     }
                     break;
                 case INTAKE_SPIN:
-                    if (stateTimer.seconds() > 0.3) {
+                    if (stateTimer.seconds() > 0.25) {
                         currentState = INTAKESTATE.INTAKE_RUN;
                     }
                     break;

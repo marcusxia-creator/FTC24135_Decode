@@ -23,14 +23,14 @@ public class AutoShooterFSM {
     public static final double tickToRPM = 60.0 / 28.0;
 
     public static class PIDTuning {
-        public static double kP = 10;
+        public static double kP = 2;
         public static double kI = 0;
-        public static double kD = 0.7; // position or RPM target
+        public static double kD = 0.02; // position or RPM target
     }
 
     public static class FeedforwardTuning {
         public static double kS = 0.03;  // static friction (small bump)
-        public static double kV = 1.285;  // scale from targetNorm to power (roughly 1.0 if perfect)
+        public static double kV = 1.0;  // scale from targetNorm to power (roughly 1.0 if perfect)
     }
 
     ///Constructor
@@ -140,10 +140,10 @@ public class AutoShooterFSM {
                     SpindexerRunTo(1);
                     if (stateTimer2.seconds() > 0.3) {
                         robot.kickerServo.setPosition(kickerRetract);
-                        if(stateTimer2.seconds()>0.6){
+                        if(stateTimer2.seconds()>0.7){
                             currentState = SHOOTERSTATE.SHOOTER_END;
                         }
-                    } else if (shooterTimer.seconds()>(8+ShooterWaitTime)) {
+                    } else if (shooterTimer.seconds()>(10+ShooterWaitTime)) {
                         currentState = SHOOTERSTATE.SHOOTER_END;
                     }
                     break;
@@ -157,9 +157,12 @@ public class AutoShooterFSM {
         public void RunShooter(double targetRPM){
             double currentRPM = robot.topShooterMotor.getVelocity() * tickToRPM;
 
+            double voltage  = robot.getBatteryVoltageRobust();
+            double maxRPMDynamic = shooterMaxRPM * voltage /REF_VOLTAGE;
+
             //Normalised current and max velocity to 0..1 for stable tuning
-            double normCurrentRPM = currentRPM/shooterMaxRPM;
-            double normTargetRPM = targetRPM /shooterMaxRPM; //Target velocity
+            double normCurrentRPM = clamp01(currentRPM/maxRPMDynamic);
+            double normTargetRPM = clamp01(targetRPM /maxRPMDynamic);//Target velocity
 
             //Feedforward calculations
             double ff = (kS * Math.signum(normTargetRPM)) + (kV * normTargetRPM);
@@ -228,5 +231,7 @@ public class AutoShooterFSM {
     public Action ShooterOff (){
         return new ShooterOff();
     }
+
+    private static double clamp01(double x) { return x<0?0:(x>1?1:x); }
 
 }
