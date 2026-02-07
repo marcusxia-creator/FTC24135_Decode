@@ -36,10 +36,11 @@ public class RedSideCloseAuto extends LinearOpMode {
         robot.init();
 
         turret = new AutoTurretDrive(robot);
-        intake = new AutoIntakeFSM(robot,2);
+        intake = new AutoIntakeFSM(robot);
         shooter = new AutoShooterFSM(robot);
 
         robot.spindexerServo.setPosition(spindexerSlot1);
+        robot.kickerServo.setPosition(kickerRetract);
 
         Action DriveToShoot1 = drive.actionBuilder(initialPose)
                 .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y),Math.toRadians(CloseShootingPosition_Heading))
@@ -50,6 +51,10 @@ public class RedSideCloseAuto extends LinearOpMode {
                 .build();
 
         Action IntakeSet1Drive2 = drive.actionBuilder(new Pose2d(IntakeSet3Position1_X, IntakeSet3Position1_Y,Math.toRadians(90)))
+                .strafeToLinearHeading(new Vector2d(IntakeSet3Position2_X,IntakeSet3Position2_Y),Math.toRadians(90))
+                .waitSeconds(0.5)
+                .strafeToLinearHeading(new Vector2d(IntakeSet3Position3_X,IntakeSet3Position3_Y),Math.toRadians(90))
+                .waitSeconds(0.5)
                 .strafeToLinearHeading(new Vector2d(IntakeSet3Position4_X,IntakeSet3Position4_Y),Math.toRadians(90))
                 .build();
 
@@ -62,7 +67,11 @@ public class RedSideCloseAuto extends LinearOpMode {
                 .build();
 
         Action IntakeSet2Drive2 = drive.actionBuilder(new Pose2d(Close_IntakeSet2Position1_X, Close_IntakeSet2Position1_Y,Math.toRadians(90)))
-                .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y),Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position2_X,Close_IntakeSet2Position2_Y),Math.toRadians(90))
+                .waitSeconds(0.5)
+                .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position3_X,Close_IntakeSet2Position3_Y),Math.toRadians(90))
+                .waitSeconds(0.5)
+                .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position4_X,Close_IntakeSet2Position4_Y),Math.toRadians(90))
                 .build();
 
         Action DriveToShoot3 = drive.actionBuilder(new Pose2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y,Math.toRadians(90)))
@@ -81,7 +90,7 @@ public class RedSideCloseAuto extends LinearOpMode {
                             shooter.ShooterOn(CloseShotPower),
                             DriveToShoot1
                         ),
-                        shooter.ShooterRun(CloseShotPower, 0.3,1),
+                        shooter.ShooterRun(CloseShotPower, 0.1,0),
                         shooter.ShooterOff(),
                         new ParallelAction(
                                 intake.IntakeRun(2),
@@ -92,9 +101,9 @@ public class RedSideCloseAuto extends LinearOpMode {
                         ),
                         new ParallelAction(
                                 DriveToShoot2,
-                                shooter.ShooterOn(FarShotPower)
+                                shooter.ShooterOn(CloseShotPower)
                         ),
-                        shooter.ShooterRun(FarShotPower, 0.3,1),
+                        shooter.ShooterRun(CloseShotPower, 0.1,0),
                         shooter.ShooterOff(),
                         new ParallelAction(
                                 intake.IntakeRun(2),
@@ -105,9 +114,9 @@ public class RedSideCloseAuto extends LinearOpMode {
                         ),
                         new ParallelAction(
                                 DriveToShoot3,
-                                shooter.ShooterOn(FarShotPower)
+                                shooter.ShooterOn(CloseShotPower)
                         ),
-                        shooter.ShooterRun(FarShotPower, 0.3,1),
+                        shooter.ShooterRun(CloseShotPower, 0.1,0),
                         shooter.ShooterOff()
                     )
             );

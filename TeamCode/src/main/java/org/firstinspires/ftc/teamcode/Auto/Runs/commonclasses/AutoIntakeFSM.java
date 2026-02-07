@@ -16,12 +16,10 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 public class AutoIntakeFSM {
     private final RobotHardware robot;
 
-    private final int targetGreenSlot;
     public static int shootingInitSlot;
 
-    public AutoIntakeFSM(RobotHardware robot, int targetGreenSlot) {
+    public AutoIntakeFSM(RobotHardware robot) {
         this.robot = robot;
-        this.targetGreenSlot = targetGreenSlot;
     }
 
     public static class IntakeRunMode implements Action {
