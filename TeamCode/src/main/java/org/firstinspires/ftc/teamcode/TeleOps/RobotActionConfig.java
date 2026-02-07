@@ -20,7 +20,7 @@ public class RobotActionConfig {
     public static double spindexerSlot5                 = 0.86;
     public static double spindexerFullPos               = 1.0;
     public static double spinderxerShootPos             = 0.08;
-    public static double[] spindexerPositions           = {spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5};
+    public static double[] spindexerPositions           = {spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5, spindexerFullPos};
 
     public static double angleResetPos                  = 0.0;
     public static double slotAngleDelta                 = 0.19;
@@ -32,8 +32,8 @@ public class RobotActionConfig {
     public static double spindexerServoPerSlotTime          = 0.15;    // per slot time
 
     //kicker
-    public static double kickerRetract                  = 0.05;  /// value - retract back for spindexer reversing
-    public static double kickerExtend                   = 0.30; /// value - into the spindexer for pushing the ball up
+    public static double kickerRetract                  = 0.37;  /// value - retract back for spindexer reversing
+    public static double kickerExtend                   = 0.68; /// value - into the spindexer for pushing the ball up
     //intake Speed
     public static double intakeSpeed                    = 0.75;
     public static double intakeStop                     = 0;
@@ -82,6 +82,12 @@ public class RobotActionConfig {
 
     public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, 9, -48.5, AngleUnit.DEGREES, 0);
     public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, 9, 48.5, AngleUnit.DEGREES, 0);
+
+    public static final Pose2D redCloseGoalPose         = new Pose2D(DistanceUnit.INCH, -66, 66, AngleUnit.DEGREES, 0);
+    public static final Pose2D redFarGoalPose           = new Pose2D(DistanceUnit.INCH, -66, 62, AngleUnit.DEGREES, 0);
+
+    public static final Pose2D blueCloseGoalPose        = new Pose2D(DistanceUnit.INCH, -66, -66, AngleUnit.DEGREES, 0);
+    public static final Pose2D blueFarGoalPose          = new Pose2D(DistanceUnit.INCH, -66, -62, AngleUnit.DEGREES, 0);
 
     public static double FAR_EDGE                 = 105.0;
     public static double FAR                      = 92.0;

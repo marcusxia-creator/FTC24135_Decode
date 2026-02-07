@@ -1,7 +1,29 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.CLOSE;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.FAR;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.FAR_EDGE;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.FAR_ZONE_HIGH;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.FAR_ZONE_LOW;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.MID;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.MidPoint;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.RPM0;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.RPM1;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.RPM2;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.RPM3;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.RPM4;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.RPM5;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.RPM6;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueCloseGoalPose;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueFarGoalPose;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.closeEdge;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redCloseGoalPose;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redFarGoalPose;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.util.LUT;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.Range;
@@ -9,6 +31,10 @@ import com.qualcomm.robotcore.util.Range;
 import org.apache.commons.math3.filter.KalmanFilter;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
+import java.security.cert.PKIXRevocationChecker;
+import java.util.Optional;
 
 @Config
 public class Turret {
@@ -24,6 +50,20 @@ public class Turret {
     public static double kP = 17, kI = 0, kD = 0.005, kS = 0.2, kV = 2; // turret motor drive pidcontroller
     public static double kP_motor = 17, kI_motor = 0, kD_motor = 0.005, kF = 2; // turret motor pidf
 
+    private final LUT<Integer, Pose2D> redTargetPose = new LUT<Integer, Pose2D>() {{
+        add(1, redCloseGoalPose);
+        add(2, redFarGoalPose);
+    }};
+
+    private final LUT<Integer, Pose2D> blueTargetPose = new LUT<Integer, Pose2D>() {{
+        add(1, blueCloseGoalPose);
+        add(2, blueFarGoalPose);
+    }};
+
+    private LUT<Integer, Pose2D> targetPose;
+
+    private Pose2D goalPose;
+
     private PIDController pidController;
     private Limelight limelight;
     PIDFCoefficients pidf = new PIDFCoefficients(
@@ -35,17 +75,23 @@ public class Turret {
     private double lastkP = Double.NaN, lastkI = Double.NaN, lastkD = Double.NaN;
     private double lastkPmotor = Double.NaN, lastkImotor = Double.NaN, lastkDmotor = Double.NaN, lastkF = Double.NaN;
 
-    public Turret (RobotHardware robot) {
+    public Turret (RobotHardware robot, boolean isRedAlliance) {
         this.robot = robot;
         pidController = new PIDController(kP, kI, kD);
         //this.limelight = limelight;
         this.robot.turretMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+
+        if (isRedAlliance) {
+            targetPose = redTargetPose;
+        }
+        if (!isRedAlliance) {
+            targetPose = blueTargetPose;
+        }
     }
 
     public int motorDriveTick() {
         return (int) Math.round(getTurretDriveAngle() * angleToTick);
     }
-
 
     public void updatePidFromDashboard() {
         // FTCLib PID (your own controller)
@@ -110,7 +156,20 @@ public class Turret {
      */
 
     public double getTargetAngle () {
-        return Math.toDegrees(Math.atan2((62-robot.pinpoint.getPosY(DistanceUnit.INCH)), (-66-robot.pinpoint.getPosX(DistanceUnit.INCH))));
+        return Math.toDegrees(Math.atan2((goalPose.getY(DistanceUnit.INCH)-robot.pinpoint.getPosY(DistanceUnit.INCH)), (goalPose.getX(DistanceUnit.INCH)-robot.pinpoint.getPosX(DistanceUnit.INCH))));
+    }
+
+    public void updateZoneForGoalPose(int zone) {
+        int normalizedZone;
+
+        if (zone <= 4) {
+            normalizedZone = 1;
+        }
+        else {
+            normalizedZone = 2;
+        }
+
+        goalPose = Optional.ofNullable(targetPose.get(normalizedZone)).orElse(targetPose.get(1));
     }
 
     private double floorMod(double x, double y){

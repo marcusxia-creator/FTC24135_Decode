@@ -125,8 +125,15 @@ public class FSMIntake {
 
             case INTAKE_STOP:
                 robot.intakeMotor.setPower(ejectSpeed);
-                double time = intakeTimer.seconds();
 
+                double time = intakeTimer.seconds();
+                if (time > spindexerServoPerSlotTime) {
+                    intakeStates = IntakeStates.INTAKE_IDLE;
+                }
+
+
+                /**
+                double time = intakeTimer.seconds();
                 // Keep your sequence logic for spindexer parking
                 if (time > spindexerServoPerSlotTime) {
 
@@ -166,7 +173,9 @@ public class FSMIntake {
                     }
                 }
                  */
+                /**
                 }
+                 **/
                 break;
 
             case INTAKE_REVERSE:

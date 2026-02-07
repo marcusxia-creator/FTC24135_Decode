@@ -70,6 +70,7 @@ public class FSMShooter {
         SHOOTER_IDLE,
         FLYWHEEL_RUNNING,
         KICKER_EXTEND,
+        SHOOT_READY,
         SEQUENCE_SHOOTING,
         KICKER_RETRACT,
         SHOOTER_STOP,
@@ -222,21 +223,28 @@ public class FSMShooter {
 
                 shooterState = SHOOTERSTATE.KICKER_EXTEND;
                 shootTimer.reset();
-                // IMPORTANT: flyWheelTimer should be reset when flywheel starts
                 flyWheelTimer.reset();
+                // IMPORTANT: flyWheelTimer should be reset when flywheel starts
                 break;
 
             case KICKER_EXTEND:
                 turret.driveTurretMotor();
-                    robot.kickerServo.setPosition(kickerExtend);
-                    /// use button Y to shoot.
-                    if ((gamepad_1.getButton(GamepadKeys.Button.Y)
-                            || gamepad_2.getButton(GamepadKeys.Button.Y))
-                            && isButtonDebounced()){
-                        spindexer.requestServoPosition(spinderxerShootPos);
-                        shooterState = SHOOTERSTATE.SEQUENCE_SHOOTING;
-                        shootTimer.reset();
-                    }
+                robot.kickerServo.setPosition(kickerExtend);
+                if (shootTimer.seconds() > 0.15) {
+                    double currentPosition = robot.spindexerServo.getPosition();
+                    spindexer.requestServoPosition(currentPosition - 0.05);
+                    shooterState = SHOOTERSTATE.SHOOT_READY;
+                }
+                break;
+            case SHOOT_READY:
+                /// use button Y to shoot.
+                if ((gamepad_1.getButton(GamepadKeys.Button.Y)
+                        || gamepad_2.getButton(GamepadKeys.Button.Y))
+                        && isButtonDebounced()){
+                    //spindexer.requestServoPosition(spinderxerShootPos);
+                    shooterState = SHOOTERSTATE.SEQUENCE_SHOOTING;
+                    shootTimer.reset();
+                }
                 break;
 
             case SEQUENCE_SHOOTING:
@@ -261,7 +269,7 @@ public class FSMShooter {
                     if (shootCounter < 3) {
                         spindexer.RunToNext();          // feed ball #2, #3
                     } else if (shootCounter == 3) {
-                        spindexer.requestServoPosition(spindexerSlot4); // your “end position”
+                        spindexer.requestServoPosition(spindexerFullPos); // your “end position”
                     } else {
                         shooterState = SHOOTERSTATE.SHOOTER_STOP;
                         shootTimer.reset();

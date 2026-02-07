@@ -19,8 +19,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
+import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 
 /**
  * Making the sequence shooting go slot 5-4-3 (intaking) 3-2-1 (shooting)
@@ -35,8 +35,8 @@ import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
  * Tuning LUT values when the hardware changes
  */
 @Config
-@TeleOp(name = "Red 🐧", group = "org.firstinspires.ftc.teamcode")
-public class BasicTeleOp_RED_ALLIANCE extends OpMode {
+@TeleOp(name = "Blue 🐧", group = "org.firstinspires.ftc.teamcode")
+public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     /// Enum states for robot action state
     public enum RobotActionState {
         Sequence_Shooting,
@@ -122,7 +122,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
         /// 3. turret---------------------------------------------------------------
         //turret = new TurretUpd(robot);
-        turret = new Turret(robot, true);
+        turret = new Turret(robot, false);
 
         /// 4.1. power calculator for shooter------------------------------------------------------------
         shooterPowerAngleCalculator = new LUTPowerCalculator(robot);

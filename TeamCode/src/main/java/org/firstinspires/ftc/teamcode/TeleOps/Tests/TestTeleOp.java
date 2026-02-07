@@ -92,7 +92,7 @@ public class TestTeleOp extends OpMode {
         robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
         aprilTagDetection = new AprilTagDetection(robot);
 
-        turret = new Turret(robot);
+        turret = new Turret(robot, true);
         turretUpd = new TurretUpd(robot);
 
         limelightTest = new LimelightTest(robot, turret);
