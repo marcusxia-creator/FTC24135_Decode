@@ -133,8 +133,6 @@ public class SpindexerUpd {
             } else {
                 voteBuffer.add(SLOT.Unknown);
             }
-        } else {
-            voteBuffer.add(SLOT.Empty);
         }
     }
 
@@ -145,14 +143,13 @@ public class SpindexerUpd {
         if (voteBuffer.isEmpty()) return;
         int greenVotes = Collections.frequency(voteBuffer, SLOT.Green);
         int purpleVotes = Collections.frequency(voteBuffer, SLOT.Purple);
-        int unKonwnVotes = Collections.frequency(voteBuffer, SLOT.Unknown);
+        //int unKonwnVotes = Collections.frequency(voteBuffer, SLOT.Unknown);
         int emptyVotes = Collections.frequency(voteBuffer, SLOT.Empty);
 
         SLOT winner;
-        if (greenVotes > purpleVotes && greenVotes > unKonwnVotes && greenVotes > emptyVotes) winner = SLOT.Green;
-        else if (purpleVotes > greenVotes && purpleVotes > unKonwnVotes && purpleVotes > emptyVotes) winner = SLOT.Purple;
-        else if (unKonwnVotes > greenVotes && unKonwnVotes > purpleVotes && unKonwnVotes > emptyVotes) winner = SLOT.Unknown;
-        else winner = SLOT.Empty;
+        if (greenVotes > purpleVotes && greenVotes > emptyVotes) winner = SLOT.Green;
+        else if (purpleVotes > greenVotes && purpleVotes > emptyVotes) winner = SLOT.Purple;
+        else winner = SLOT.Unknown;
 
         // Apply result to the current logical index
         slots[Math.floorMod(currentPos, 3)] = winner;
