@@ -52,7 +52,7 @@ public class SpindexerUpd {
         currentPos = n;
 
         // Logical safety: map n to 0, 1, or 2
-        int index = Math.floorMod(currentPos, 3);
+        int index = Math.floorMod(currentPos, 6);
         robot.spindexerServo.setPosition(RobotActionConfig.spindexerPositions[index]);
     }
 

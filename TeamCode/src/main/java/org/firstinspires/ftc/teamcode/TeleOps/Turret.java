@@ -48,7 +48,7 @@ public class Turret {
     private final double angleToTick = 1 / tickToAngle;
 
     public static double kP = 17, kI = 0, kD = 0.005, kS = 0.2, kV = 2; // turret motor drive pidcontroller
-    public static double kP_motor = 17, kI_motor = 0, kD_motor = 0.005, kF = 2; // turret motor pidf
+    public static double kP_motor = 30, kI_motor = 0, kD_motor = 0.005, kF = 2; // turret motor pidf
 
     private final LUT<Integer, Pose2D> redTargetPose = new LUT<Integer, Pose2D>() {{
         add(1, redCloseGoalPose);
@@ -122,6 +122,7 @@ public class Turret {
     }
 
     public void driveTurretMotor(){
+        //updatePidFromDashboard();
         int ticks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
         robot.turretMotor.setTargetPosition(ticks);
         robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -170,6 +171,10 @@ public class Turret {
         }
 
         goalPose = Optional.ofNullable(targetPose.get(normalizedZone)).orElse(targetPose.get(1));
+    }
+
+    public Pose2D getGoalPose() {
+        return goalPose;
     }
 
     private double floorMod(double x, double y){

@@ -39,7 +39,7 @@ public class RobotActionConfig {
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.7;
     //shooter timer
-    public static final long FEED_PERIOD_MS             = 500; // 0.6s per feed (tune)
+    public static final long FEED_PERIOD_MS             = 350; // 0.6s per feed (tune)
     public static final double SPOOLUP_SEC              = 1.25;
     //shooter adjustor
     public static double shooterAdjusterMax             = 0.59;
@@ -83,11 +83,11 @@ public class RobotActionConfig {
     public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, 9, -48.5, AngleUnit.DEGREES, 0);
     public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, 9, 48.5, AngleUnit.DEGREES, 0);
 
-    public static final Pose2D redCloseGoalPose         = new Pose2D(DistanceUnit.INCH, -66, 66, AngleUnit.DEGREES, 0);
-    public static final Pose2D redFarGoalPose           = new Pose2D(DistanceUnit.INCH, -66, 62, AngleUnit.DEGREES, 0);
+    public static final Pose2D redCloseGoalPose         = new Pose2D(DistanceUnit.INCH, -64, 66, AngleUnit.DEGREES, 0);
+    public static final Pose2D redFarGoalPose           = new Pose2D(DistanceUnit.INCH, -66, 66, AngleUnit.DEGREES, 0);
 
-    public static final Pose2D blueCloseGoalPose        = new Pose2D(DistanceUnit.INCH, -66, -66, AngleUnit.DEGREES, 0);
-    public static final Pose2D blueFarGoalPose          = new Pose2D(DistanceUnit.INCH, -66, -62, AngleUnit.DEGREES, 0);
+    public static final Pose2D blueCloseGoalPose        = new Pose2D(DistanceUnit.INCH, -64, -66, AngleUnit.DEGREES, 0);
+    public static final Pose2D blueFarGoalPose          = new Pose2D(DistanceUnit.INCH, -66, -66, AngleUnit.DEGREES, 0);
 
     public static double FAR_EDGE                 = 105.0;
     public static double FAR                      = 92.0;

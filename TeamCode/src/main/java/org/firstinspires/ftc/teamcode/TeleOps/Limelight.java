@@ -33,6 +33,10 @@ public class Limelight {
         if (apriltagID == 24) {
             robot.limelight.pipelineSwitch(0);
         }
+
+        if (apriltagID == 21 || apriltagID == 22 || apriltagID == 23) {
+            robot.limelight.pipelineSwitch(2);
+        }
     }
 
     /// start limelight
@@ -43,6 +47,19 @@ public class Limelight {
     /// Determine Limelight result
     public boolean llresult(){
         return robot.limelight.getLatestResult()!=null;
+    }
+
+    public int getGreenSlot() {
+        LLResult result = robot.limelight.getLatestResult();
+        List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+        for (LLResultTypes.FiducialResult fiducial : fiducials) {
+            int id = fiducial.getFiducialId(); // The ID number of the fiducial
+            if (id == 21) return 0;
+            if (id == 22) return 1;
+            if (id == 23) return 2;
+        }
+
+        return -1;
     }
 
     //============================================================

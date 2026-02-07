@@ -35,7 +35,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
  * Tuning LUT values when the hardware changes
  */
 @Config
-@TeleOp(name = "Red 🐧", group = "org.firstinspires.ftc.teamcode")
+@TeleOp(name = "---------RED--🐧----------", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     /// Enum states for robot action state
     public enum RobotActionState {
@@ -146,7 +146,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
         /// 9. limelight--------------------------------------------------------------
         limelight = new Limelight(robot);
-        limelight.initLimelight(24);
+        limelight.initLimelight(21);
         limelight.start();
 
         /// 10. start adjuster servo at position to avoid soft start
@@ -256,6 +256,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         int zone = shooterPowerAngleCalculator.getZone();
         turret.updateZoneForGoalPose(zone);
+
+        turret.driveTurretMotor();
 
         // =========================================================
         // 9. TELEMETRY
@@ -524,11 +526,13 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         //telemetry.addData("turret drive angle", turret.getTurretDriveAngleDeg());
         //telemetry.addData("turret motor angle", turret.getTurretMotorAngleDeg());
         telemetry.addData("motor PIDF coefficient", robot.turretMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
-        //telemetry.addData("current motor tick", turret.getCurrentTicks());
-        //telemetry.addData("target motor tick", turret.getTargetTicks());
+        telemetry.addData("current motor tick", turret.getCurrentTick());
+        telemetry.addData("target motor tick", turret.getTargetTick());
+        telemetry.addData("goal pose", turret.getGoalPose());
         telemetry.addLine("-----------------------------------------");
-        telemetry.addData("limelight output", "%,.1f",limelight.normalizedPose2D(DistanceUnit.INCH));
-        telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(24));
+        ///telemetry.addData("limelight output", "%,.1f",limelight.normalizedPose2D(DistanceUnit.INCH));
+        ///telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(24));
+        telemetry.addData("green slot position", limelight.getGreenSlot());
         telemetry.update();
     }
     public void telemetryManagerSimplified() {
