@@ -10,11 +10,15 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoIntakeFSM;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoTurretDrive;
 
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
@@ -50,12 +54,14 @@ public class RedSideCloseAuto extends LinearOpMode {
         aprilTagDetection.limelightStart();
 
         if (opModeInInit()) {
-            Actions.runBlocking(turret.TurretRun(90));
+            Actions.runBlocking(turret.TurretRun(0));
             robot.spindexerServo.setPosition(spindexerSlot1);
             robot.kickerServo.setPosition(kickerRetract);
             while (opModeInInit()&&!isStopRequested()) {
                 aprilTagDetection.limelightDetect();
                 targetGreen = aprilTagDetection.tagID;
+                telemetry.addData("Detected ID",targetGreen);
+                telemetry.update();
             }
         }
 
@@ -67,9 +73,9 @@ public class RedSideCloseAuto extends LinearOpMode {
 
         TrajectoryActionBuilder IntakeSet1Drive2Builder = IntakeSet1Drive1Builder.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(IntakeSet3Position2_X, IntakeSet3Position2_Y), Math.toRadians(90))
-                .waitSeconds(0.5)
+                .waitSeconds(0.1)
                 .strafeToLinearHeading(new Vector2d(IntakeSet3Position3_X, IntakeSet3Position3_Y), Math.toRadians(90))
-                .waitSeconds(0.5)
+                .waitSeconds(0.1)
                 .strafeToLinearHeading(new Vector2d(IntakeSet3Position4_X, IntakeSet3Position4_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot2Builder = IntakeSet1Drive2Builder.endTrajectory().fresh()
@@ -80,9 +86,9 @@ public class RedSideCloseAuto extends LinearOpMode {
 
         TrajectoryActionBuilder IntakeSet2Drive2Builder = IntakeSet2Drive1Builder.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position2_X, Close_IntakeSet2Position2_Y), Math.toRadians(90))
-                .waitSeconds(0.5)
+                .waitSeconds(0.1)
                 .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position3_X, Close_IntakeSet2Position3_Y), Math.toRadians(90))
-                .waitSeconds(0.5)
+                .waitSeconds(0.1)
                 .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot3Builder = IntakeSet2Drive2Builder.endTrajectory().fresh()
@@ -105,10 +111,9 @@ public class RedSideCloseAuto extends LinearOpMode {
                     new SequentialAction(
                         new ParallelAction(
                             turret.TurretRun(45),
-                            shooter.ShooterOn(CloseShotPower),
                             DriveToShoot1
                         ),
-                        shooter.ShooterRun(CloseShotPower, 0.1,0),
+                        shooter.ShooterRun(CloseShotPower, 0.5,0),
                         shooter.ShooterOff(),
                         new ParallelAction(
                                 intake.IntakeRun(targetGreen),
@@ -138,6 +143,16 @@ public class RedSideCloseAuto extends LinearOpMode {
                         shooter.ShooterOff()
                     )
             );
+
+            robot.pinpoint.update();
+            drive.localizer.update();
+
+            double x = drive.localizer.getPose().position.x;
+            double y = drive.localizer.getPose().position.y;
+            double heading = Math.toDegrees(drive.localizer.getPose().heading.toDouble());
+            PoseStorage.currentPose = new Pose2D(DistanceUnit.INCH,x,y, AngleUnit.DEGREES,heading);
+            PoseStorage.endPose = robot.pinpoint.getPosition();
+            PoseStorage.motifGreenPos = targetGreen;
         }
     }
 }

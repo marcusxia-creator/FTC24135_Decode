@@ -13,6 +13,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.*;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoIntakeFSM;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoTurretDrive;
@@ -41,6 +44,7 @@ public class RedSideFarAuto extends LinearOpMode {
 
         robot = new RobotHardware(hardwareMap);
         robot.init();
+        robot.pinpoint.setPosition(new Pose2D(DistanceUnit.INCH,64,7.5,AngleUnit.DEGREES,90));
 
         turret = new AutoTurretDrive(robot);
         intake = new AutoIntakeFSM(robot);
@@ -64,9 +68,9 @@ public class RedSideFarAuto extends LinearOpMode {
 
         TrajectoryActionBuilder IntakeSet1Drive2 = IntakeSet1Drive1.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position2_X,Far_IntakeSet2Position2_Y),Math.toRadians(90))
-                .waitSeconds(0.2)
+                .waitSeconds(0.1)
                 .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position3_X,Far_IntakeSet2Position3_Y),Math.toRadians(90))
-                .waitSeconds(0.2)
+                .waitSeconds(0.1)
                 .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position4_X,Far_IntakeSet2Position4_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot1 = IntakeSet1Drive2.endTrajectory().fresh()
@@ -78,9 +82,9 @@ public class RedSideFarAuto extends LinearOpMode {
 
         TrajectoryActionBuilder IntakeSet2Drive2 = IntakeSet2Drive1.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(IntakeSet1Position2_X,IntakeSet1Position2_Y),Math.toRadians(90))
-                .waitSeconds(0.2)
+                .waitSeconds(0.1)
                 .strafeToLinearHeading(new Vector2d(IntakeSet1Position3_X,IntakeSet1Position3_Y),Math.toRadians(90))
-                .waitSeconds(0.2)
+                .waitSeconds(0.1)
                 .strafeToLinearHeading(new Vector2d(IntakeSet1Position4_X,IntakeSet1Position4_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot2 = IntakeSet2Drive2.endTrajectory().fresh()
@@ -98,7 +102,7 @@ public class RedSideFarAuto extends LinearOpMode {
         if (opModeIsActive()) {
             Actions.runBlocking(
                 new SequentialAction(
-                    turret.TurretRun(66),
+                    turret.TurretRun(68),
                     shooter.ShooterOn(FarShotPower),
                     shooter.ShooterRun(FarShotPower, 2,0),
                     shooter.ShooterOff(),
@@ -131,8 +135,13 @@ public class RedSideFarAuto extends LinearOpMode {
                     turret.TurretRun(0)
                 )
             );
+            robot.pinpoint.update();
+            drive.localizer.update();
 
-            PoseStorage.currentPose = drive.localizer.getPose();
+
+            //PoseStorage.currentPose = new Pose2D(DistanceUnit.INCH,x,y,AngleUnit.DEGREES,heading);
+            PoseStorage.endPose = robot.pinpoint.getPosition();
+            PoseStorage.motifGreenPos = targetGreen;
         }
     }
 

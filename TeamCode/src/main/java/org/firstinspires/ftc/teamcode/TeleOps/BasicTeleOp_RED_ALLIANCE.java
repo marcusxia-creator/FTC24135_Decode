@@ -107,8 +107,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         /**
          * Transfer the pose 2D from Auto Ops
          */
-        Pose2D startingPose = new Pose2D(DistanceUnit.INCH, PoseStorage.currentPose.position.x, PoseStorage.currentPose.position.y, AngleUnit.RADIANS, PoseStorage.currentPose.heading.real);
-        robot.pinpoint.setPosition(startingPose);
+        //Pose2D startingPose = new Pose2D(DistanceUnit.MM, PoseStorage.currentPose.position.x*25.4, PoseStorage.currentPose.position.y*25.4, AngleUnit.DEGREES, Math.toDegrees(PoseStorage.currentPose.heading.real));
+        //Pose2D startingPose = PoseStorage.endPose;
+        //robot.pinpoint.setPosition(startingPose);
 
         /// 0. gamepad---------------------------------------------------------------
         gamepadCo1 = new GamepadEx(gamepad1);
@@ -526,10 +527,12 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Shooter RPM","%,.0f",robot.topShooterMotor.getVelocity()*SHOOTER_RPM_CONVERSION);
         telemetry.addLine("-----");
         //String MotifAvailable;
-        telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));
-
         telemetry.addData("Alliance", alliance);
+        telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.addData("Pose2D", robot.pinpoint.getPosition());
+        telemetry.addData("Starting Pose",PoseStorage.currentPose);
+        telemetry.addData("End Pose", PoseStorage.endPose);
+
         telemetry.addData("distance to goal", "%,.0f",shooterPowerAngleCalculator.getDistance());
         telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
         telemetry.addLine("Turret-----------------------------------");

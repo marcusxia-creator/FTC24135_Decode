@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.util.LUT;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -27,6 +28,7 @@ public class FSMShooter {
     public static SHOOTERSTATE shooterState;
     SORTSHOOTERSTATE sortShooterState;
     SHOOTERMOTORSTATE shootermotorstate;
+    TURRETSTATE turretState;
     SpindexerUpd spindexer;
     private final Turret turret;
     private final Limelight limelight;
@@ -99,6 +101,10 @@ public class FSMShooter {
         RUN,
         STOP
     }
+    public enum TURRETSTATE {
+        AIMING,
+        LOCKING
+    }
 
     //Constructor
     public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot,
@@ -122,6 +128,7 @@ public class FSMShooter {
         robot.topShooterMotor.setPower(0);
         robot.bottomShooterMotor.setPower(0);
         shootermotorstate = SHOOTERMOTORSTATE.STOP;
+        turretState = TURRETSTATE.AIMING;
     }
 
     private void updateTurretAutoAim(boolean aimEnabled) {
@@ -180,6 +187,14 @@ public class FSMShooter {
             robot.topShooterMotor.setPower(0);
             robot.bottomShooterMotor.setPower(0);
         }
+
+        if (turretState == TURRETSTATE.AIMING) {
+            turret.driveTurretMotor();
+        }
+        if (turretState == TURRETSTATE.LOCKING) {
+            robot.turretMotor.setTargetPosition(0);
+            robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
         //==========================================================
         // Handle stopping
         // If stop is requested, immediately transition to STOPPING
@@ -228,7 +243,7 @@ public class FSMShooter {
                 break;
 
             case FLYWHEEL_RUNNING:
-                turret.driveTurretMotor();
+                turretStateUpdate();
                 // Start flywheels (your motor control elsewhere should respond to this state)
                 shootermotorstate = SHOOTERMOTORSTATE.RUN;
 
@@ -239,7 +254,7 @@ public class FSMShooter {
                 break;
 
             case KICKER_EXTEND:
-                turret.driveTurretMotor();
+                turretStateUpdate();
                 robot.kickerServo.setPosition(kickerExtend);
                 if (shootTimer.seconds() > 0.15) {
                     double currentPosition = robot.spindexerServo.getPosition();
@@ -249,7 +264,7 @@ public class FSMShooter {
                 break;
             case SHOOT_READY:
                 /// use button Y to shoot.
-                turret.driveTurretMotor();
+                turretStateUpdate();
                 if ((gamepad_1.getButton(GamepadKeys.Button.Y)
                         || gamepad_2.getButton(GamepadKeys.Button.Y))
                         && isButtonDebounced()){
@@ -259,7 +274,7 @@ public class FSMShooter {
                 break;
 
             case SEQUENCE_SHOOTING:
-                turret.driveTurretMotor();
+                turretStateUpdate();
                 boolean flywheelReady =
                         flyWheelTimer.seconds() >= SPOOLUP_SEC ||
                                 (robot.topShooterMotor.getVelocity() * LUTPowerCalculator.tickToRPM) >= rpm * 0.95;
@@ -449,6 +464,22 @@ public class FSMShooter {
     public void requestGracefulStop() {
         // If you have a specific STOPPING state, use it here.
         stopRequested= true;
+    }
+
+    //============================================================
+    // helper - get turret state
+    //============================================================
+
+    public void turretStateUpdate() {
+        if (((gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.7 && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.7))
+        || (gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.7 && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.7) && isButtonDebounced()) {
+            if (turretState == TURRETSTATE.AIMING) {
+                turretState = TURRETSTATE.LOCKING;
+            }
+            else {
+                turretState = TURRETSTATE.AIMING;
+            }
+        }
     }
 
     //============================================================
