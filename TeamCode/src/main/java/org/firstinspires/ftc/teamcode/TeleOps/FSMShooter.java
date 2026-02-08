@@ -188,13 +188,6 @@ public class FSMShooter {
             robot.bottomShooterMotor.setPower(0);
         }
 
-        if (turretState == TURRETSTATE.AIMING) {
-            turret.driveTurretMotor();
-        }
-        if (turretState == TURRETSTATE.LOCKING) {
-            robot.turretMotor.setTargetPosition(0);
-            robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
         //==========================================================
         // Handle stopping
         // If stop is requested, immediately transition to STOPPING
@@ -215,10 +208,19 @@ public class FSMShooter {
         boolean aimEnabled =
                 shooterState == SHOOTERSTATE.FLYWHEEL_RUNNING ||
                         shooterState == SHOOTERSTATE.KICKER_EXTEND   ||
-                        shooterState == SHOOTERSTATE.SEQUENCE_SHOOTING;
+                        shooterState == SHOOTERSTATE.SEQUENCE_SHOOTING ||
+                        shooterState == SHOOTERSTATE.SHOOT_READY;
+        turretStateUpdate();
 
-        //;
-        
+        if (turretState == TURRETSTATE.AIMING && aimEnabled) {
+            turret.driveTurretMotor();
+        }
+        if (turretState == TURRETSTATE.LOCKING) {
+            robot.turretMotor.setTargetPosition(0);
+            robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.turretMotor.setPower(0.5);
+        }
+
         //==========================================================
         // Main FSM
         //==========================================================
@@ -243,7 +245,6 @@ public class FSMShooter {
                 break;
 
             case FLYWHEEL_RUNNING:
-                turretStateUpdate();
                 // Start flywheels (your motor control elsewhere should respond to this state)
                 shootermotorstate = SHOOTERMOTORSTATE.RUN;
 
@@ -254,7 +255,6 @@ public class FSMShooter {
                 break;
 
             case KICKER_EXTEND:
-                turretStateUpdate();
                 robot.kickerServo.setPosition(kickerExtend);
                 if (shootTimer.seconds() > 0.15) {
                     double currentPosition = robot.spindexerServo.getPosition();
@@ -264,7 +264,6 @@ public class FSMShooter {
                 break;
             case SHOOT_READY:
                 /// use button Y to shoot.
-                turretStateUpdate();
                 if ((gamepad_1.getButton(GamepadKeys.Button.Y)
                         || gamepad_2.getButton(GamepadKeys.Button.Y))
                         && isButtonDebounced()){
@@ -274,7 +273,6 @@ public class FSMShooter {
                 break;
 
             case SEQUENCE_SHOOTING:
-                turretStateUpdate();
                 boolean flywheelReady =
                         flyWheelTimer.seconds() >= SPOOLUP_SEC ||
                                 (robot.topShooterMotor.getVelocity() * LUTPowerCalculator.tickToRPM) >= rpm * 0.95;
