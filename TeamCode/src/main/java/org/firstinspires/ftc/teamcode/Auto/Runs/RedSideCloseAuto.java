@@ -58,6 +58,7 @@ public class RedSideCloseAuto extends LinearOpMode {
             Actions.runBlocking(turret.TurretRun(0));
             robot.spindexerServo.setPosition(spindexerSlot1);
             robot.kickerServo.setPosition(kickerRetract);
+            robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
             while (opModeInInit()&&!isStopRequested()) {
                 aprilTagDetection.limelightDetect();
                 targetGreen = aprilTagDetection.tagID;
@@ -93,7 +94,7 @@ public class RedSideCloseAuto extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot3Builder = IntakeSet2Drive2Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y - 10), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y - 16), Math.toRadians(90))
                 .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y), Math.toRadians(CloseShootingPosition_Heading));
 
         TrajectoryActionBuilder LeaveDriveBuilder = DriveToShoot3Builder.endTrajectory().fresh()
@@ -114,13 +115,13 @@ public class RedSideCloseAuto extends LinearOpMode {
             Actions.runBlocking(
                     new SequentialAction(
                         new ParallelAction(
-                            turret.TurretRun(52),
+                            turret.TurretRun(55),
                             DriveToShoot1
                         ),
-                        shooter.ShooterRun(CloseShotPower, 0.3,0),
+                        shooter.ShooterRun(CloseShotPower, 0.2,0),
                         shooter.ShooterOff(),
                         new ParallelAction(
-                                turret.TurretRun(52),
+                                turret.TurretRun(55),
                                 intake.IntakeRun(targetGreen),
                                 new SequentialAction(
                                         IntakeSet1Drive1,
@@ -134,7 +135,7 @@ public class RedSideCloseAuto extends LinearOpMode {
                         shooter.ShooterRun(CloseShotPower, 0.1,0),
                         shooter.ShooterOff(),
                         new ParallelAction(
-                                turret.TurretRun(52),
+                                turret.TurretRun(55),
                                 intake.IntakeRun(targetGreen),
                                 new SequentialAction(
                                         IntakeSet2Drive1,

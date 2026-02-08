@@ -32,7 +32,7 @@ public class Turret {
     private final double angleToTick = 1 / tickToAngle;
 
     public static double kP = 17, kI = 0, kD = 0.005, kS = 0.2, kV = 2; // turret motor drive pidcontroller
-    public static double kP_motor = 30, kI_motor = 0, kD_motor = 0.005, kF = 2; // turret motor pidf
+    public static double kP_motor = 20, kI_motor = 0, kD_motor = 0.005, kF = 2; // turret motor pidf
 
     private final LUT<Integer, Pose2D> redTargetPose = new LUT<Integer, Pose2D>() {{
         add(1, redCloseGoalPose);
@@ -59,6 +59,16 @@ public class Turret {
     private double lastkP = Double.NaN, lastkI = Double.NaN, lastkD = Double.NaN;
     private double lastkPmotor = Double.NaN, lastkImotor = Double.NaN, lastkDmotor = Double.NaN, lastkF = Double.NaN;
 
+
+    public void initTurret() {
+        robot.turretMotor.setTargetPosition(0);
+        robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.turretMotor.setPower(1);
+    }
+
+    public void resetTurretPosition() {
+        robot.turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
     public Turret (RobotHardware robot, boolean isRedAlliance) {
         this.robot = robot;
         pidController = new PIDController(kP, kI, kD);

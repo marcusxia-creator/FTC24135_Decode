@@ -22,8 +22,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
-import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
+import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 
 /**
  * Making the sequence shooting go slot 5-4-3 (intaking) 3-2-1 (shooting)
@@ -109,8 +109,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
          * Transfer the pose 2D from Auto Ops
          */
         Pose2d endPose = PoseStorage.currentPose;
-        double heading_Radient  = endPose.heading.toDouble();
-        Pose2D startingPose = new Pose2D(DistanceUnit.MM, PoseStorage.currentPose.position.x*25.4, PoseStorage.currentPose.position.y*25.4, AngleUnit.DEGREES, Math.toDegrees(heading_Radient));
+        double heading_Radiant = endPose.heading.toDouble();
+        Pose2D startingPose = new Pose2D(DistanceUnit.MM, PoseStorage.currentPose.position.x*25.4, PoseStorage.currentPose.position.y*25.4, AngleUnit.DEGREES, Math.toDegrees(heading_Radiant));
         robot.pinpoint.setPosition(startingPose);
 
         /// 0. gamepad---------------------------------------------------------------
@@ -146,7 +146,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         colorDetection = new ColorDetection(robot);
 
         /// 7. alliance selection-----------------------------------------------------------
-        alliance = Alliance.RED_ALLIANCE;
+        alliance = Alliance.BLUE_ALLIANCE;
         shooterPowerAngleCalculator.setAlliance(true);
 
         /// 8. robot state----------------------------------------------------------
@@ -162,12 +162,14 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
         robot.kickerServo.setPosition(kickerRetract);
 
-        double turretReverseTicks = turret.getCurrentTick();
-
     }
 
     @Override
     public void loop() {
+
+        /// NEW on interleague day
+        resetTurret();
+
         // ========================================================
         // WORKING FLOW:
         // 1.updateActionStateTransitions() decides when safe to enter
@@ -477,6 +479,17 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
     }
 
+    public void resetTurret() {
+
+        if (gamepadCo1.getButton(GamepadKeys.Button.LEFT_BUMPER) || gamepadCo2.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
+            turret.initTurret();
+        }
+
+        if (gamepadCo1.getButton(GamepadKeys.Button.RIGHT_BUMPER) || gamepadCo2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
+            turret.resetTurretPosition();
+        }
+    }
+
     private int updateXandY () {
         return shooterPowerAngleCalculator.getZone();
     }
@@ -535,20 +548,17 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Alliance", alliance);
         telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.addData("Pose2D", robot.pinpoint.getPosition());
+        telemetry.addData("Starting Pose",PoseStorage.currentPose);
         Pose2D pose = robot.pinpoint.getPosition();
-
         double xIn = pose.getX(DistanceUnit.INCH);
         double yIn = pose.getY(DistanceUnit.INCH);
         double headingDeg = Math.toDegrees(pose.getHeading(AngleUnit.RADIANS));
-
         telemetry.addData(
                 "Pose (in)",
                 "X: %.2f  Y: %.2f  H: %.1f°",
                 xIn, yIn, headingDeg
         );
-
         telemetry.addData("Starting Pose",PoseStorage.currentPose);
-        //telemetry.addData("Posestorage Pose Angle","H: %.1f°",PoseStorage.currentPose);
 
 
         telemetry.addData("distance to goal", "%,.0f",shooterPowerAngleCalculator.getDistance());

@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
-import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.*;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.BlueSidePositions.*;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -58,6 +58,7 @@ public class BlueSideFarAuto extends LinearOpMode {
             Actions.runBlocking(turret.TurretRun(-90));
             robot.spindexerServo.setPosition(spindexerSlot1);
             robot.kickerServo.setPosition(kickerRetract);
+            robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
             while (opModeInInit()&&!isStopRequested()) {
                 aprilTagDetection.limelightDetect();
                 targetGreen = aprilTagDetection.tagID;
@@ -93,12 +94,16 @@ public class BlueSideFarAuto extends LinearOpMode {
         TrajectoryActionBuilder DriveToShoot2 = IntakeSet2Drive2.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
 
+        TrajectoryActionBuilder DriveToLeave = DriveToShoot2.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y-10),Math.toRadians(FarShootingPosition_Heading));
+
         Action intakeSet1Drive1Action = IntakeSet1Drive1.build();
         Action intakeSet1Drive2Action = IntakeSet1Drive2.build();
         Action driveToShoot1Action    = DriveToShoot1.build();
         Action intakeSet2Drive1Action = IntakeSet2Drive1.build();
         Action intakeSet2Drive2Action = IntakeSet2Drive2.build();
         Action driveToShoot2Action    = DriveToShoot2.build();
+        Action driveToLeaveAction     = DriveToLeave.build();
 
         waitForStart();
 
@@ -134,12 +139,15 @@ public class BlueSideFarAuto extends LinearOpMode {
                                     shooter.ShooterOn(FarShotPower)
                             ),
                             shooter.ShooterRun(FarShotPower, 0.1, 0),
-                            shooter.ShooterOff(),
-                            turret.TurretRun(0)
+                            new ParallelAction(
+                                    shooter.ShooterOff(),
+                                    driveToLeaveAction
+                            )
                     )
             );
             robot.pinpoint.update();
             drive.localizer.update();
+
             PoseStorage.currentPose = drive.localizer.getPose();
             PoseStorage.motifGreenPos = targetGreen;
         }

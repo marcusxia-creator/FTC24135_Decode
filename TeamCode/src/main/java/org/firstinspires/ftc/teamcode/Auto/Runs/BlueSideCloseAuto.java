@@ -24,7 +24,7 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 @Autonomous(name = "BlueSideCloseAuto", group = "Autonomous")
 public class BlueSideCloseAuto extends LinearOpMode {
-    public static Pose2d initialPose = new Pose2d(-68, -52, Math.toRadians(45));
+    public static Pose2d initialPose = new Pose2d(-48, -58, Math.toRadians(45));
 
     public RobotHardware robot;
 
@@ -55,6 +55,7 @@ public class BlueSideCloseAuto extends LinearOpMode {
             Actions.runBlocking(turret.TurretRun(0));
             robot.spindexerServo.setPosition(spindexerSlot1);
             robot.kickerServo.setPosition(kickerRetract);
+            robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
             while (opModeInInit()&&!isStopRequested()) {
                 aprilTagDetection.limelightDetect();
                 targetGreen = aprilTagDetection.tagID;
@@ -90,7 +91,7 @@ public class BlueSideCloseAuto extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y), Math.toRadians(-90));
 
         TrajectoryActionBuilder DriveToShoot3Builder = IntakeSet2Drive2Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y + 10), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y + 14), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y), Math.toRadians(CloseShootingPosition_Heading));
 
         TrajectoryActionBuilder LeaveDriveBuilder = DriveToShoot3Builder.endTrajectory().fresh()

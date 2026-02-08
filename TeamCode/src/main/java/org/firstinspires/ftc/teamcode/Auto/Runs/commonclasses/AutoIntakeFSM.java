@@ -97,7 +97,7 @@ public class AutoIntakeFSM {
                             stateTimer.reset();
                             currentState = INTAKESTATE.INTAKE_PAUSE;
                         }
-                    } else if (intakeTimer.seconds() > 12) {
+                    } else if (intakeTimer.seconds() > 9) {
                         currentState = INTAKESTATE.INTAKE_END;
                     } else {
                         currentState = INTAKESTATE.INTAKE_RUN;
@@ -121,7 +121,7 @@ public class AutoIntakeFSM {
                     }
                     break;
                 case INTAKE_SPIN:
-                    if (stateTimer.seconds() > 0.2) {
+                    if (stateTimer.seconds() > 0.4) {
                         currentState = INTAKESTATE.INTAKE_RUN;
                     }
                     break;

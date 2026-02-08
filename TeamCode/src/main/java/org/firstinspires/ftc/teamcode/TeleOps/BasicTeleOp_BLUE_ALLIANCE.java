@@ -10,6 +10,7 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllian
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -107,9 +108,10 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         /**
          * Transfer the pose 2D from Auto Ops
          */
-        //Pose2D startingPose = new Pose2D(DistanceUnit.MM, PoseStorage.currentPose.position.x*25.4, PoseStorage.currentPose.position.y*25.4, AngleUnit.DEGREES, Math.toDegrees(PoseStorage.currentPose.heading.real));
-        //Pose2D startingPose = PoseStorage.endPose;
-        //robot.pinpoint.setPosition(startingPose);
+        Pose2d endPose = PoseStorage.currentPose;
+        double heading_Radiant = endPose.heading.toDouble();
+        Pose2D startingPose = new Pose2D(DistanceUnit.MM, PoseStorage.currentPose.position.x*25.4, PoseStorage.currentPose.position.y*25.4, AngleUnit.DEGREES, Math.toDegrees(heading_Radiant));
+        robot.pinpoint.setPosition(startingPose);
 
         /// 0. gamepad---------------------------------------------------------------
         gamepadCo1 = new GamepadEx(gamepad1);
@@ -159,10 +161,15 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         robot.shooterAdjusterServo.setPosition(0.49);
 
         robot.kickerServo.setPosition(kickerRetract);
+
     }
 
     @Override
     public void loop() {
+
+        /// NEW on interleague day
+        resetTurret();
+
         // ========================================================
         // WORKING FLOW:
         // 1.updateActionStateTransitions() decides when safe to enter
@@ -470,6 +477,17 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
 
 
 
+    }
+
+    public void resetTurret() {
+
+        if (gamepadCo1.getButton(GamepadKeys.Button.LEFT_BUMPER) || gamepadCo2.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
+            turret.initTurret();
+        }
+
+        if (gamepadCo1.getButton(GamepadKeys.Button.RIGHT_BUMPER) || gamepadCo2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
+            turret.resetTurretPosition();
+        }
     }
 
     private int updateXandY () {
