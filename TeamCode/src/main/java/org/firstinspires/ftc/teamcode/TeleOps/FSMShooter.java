@@ -66,6 +66,8 @@ public class FSMShooter {
 
     private long waitTimeMS = 350;
 
+    private boolean LRTriggerBoolean = false;
+
 
 
     /**
@@ -470,12 +472,12 @@ public class FSMShooter {
 
     public void turretStateUpdate() {
         if (((gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.7 && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.7))
-        || (gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.7 && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.7) && isButtonDebounced()) {
-            if (turretState == TURRETSTATE.AIMING) {
+        || (gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.7 && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.7) && isButtonDebounced() && !LRTriggerBoolean) {
+            LRTriggerBoolean = !LRTriggerBoolean;
+            if (turretState == TURRETSTATE.LOCKING){
+                turretState =  TURRETSTATE.AIMING;
+            } else{
                 turretState = TURRETSTATE.LOCKING;
-            }
-            else {
-                turretState = TURRETSTATE.AIMING;
             }
         }
     }

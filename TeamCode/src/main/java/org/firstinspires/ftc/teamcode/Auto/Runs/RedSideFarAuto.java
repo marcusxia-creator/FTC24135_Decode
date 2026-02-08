@@ -139,7 +139,7 @@ public class RedSideFarAuto extends LinearOpMode {
             drive.localizer.update();
 
 
-            //PoseStorage.currentPose = new Pose2D(DistanceUnit.INCH,x,y,AngleUnit.DEGREES,heading);
+            //PoseStorage.currentPose = drive.localizer.getPose().position.x;
             PoseStorage.endPose = robot.pinpoint.getPosition();
             PoseStorage.motifGreenPos = targetGreen;
         }
