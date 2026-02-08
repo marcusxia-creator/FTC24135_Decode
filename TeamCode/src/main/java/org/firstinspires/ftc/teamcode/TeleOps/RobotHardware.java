@@ -166,12 +166,12 @@ public class RobotHardware {
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+
         /// config turret motor
-        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        turretMotor.setTargetPositionTolerance(6);
+        turretMotor.setTargetPositionTolerance(3);
 
         /// set run mode of shooter Motor
         topShooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
@@ -223,7 +223,11 @@ public class RobotHardware {
         pinpoint.setOffsets(38.1, -184.15, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
-       // pinpoint.resetPosAndIMU();
+        pinpoint.resetPosAndIMU();
+    }
+
+    public void turretInit() {
+        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     private static double median(List<Double> xs) {

@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses;
 
 public class RedSidePositions {
     public static double CloseShotPower = 0.74;
-    public static double FarShotPower = 0.93;
+    public static double FarShotPower = 0.86;
 
     public static double IntakeSet1Position1_X = 36;
     public static double IntakeSet1Position1_Y = 24;
@@ -13,13 +13,13 @@ public class RedSidePositions {
     public static double IntakeSet1Position4_X = 36;
     public static double IntakeSet1Position4_Y = 59;
 
-    public static double Far_IntakeSet2Position1_X = 12.5;
+    public static double Far_IntakeSet2Position1_X = 13;
     public static double Far_IntakeSet2Position1_Y = 24;
-    public static double Far_IntakeSet2Position2_X = 12.5;
+    public static double Far_IntakeSet2Position2_X = 13;
     public static double Far_IntakeSet2Position2_Y = 30;
-    public static double Far_IntakeSet2Position3_X = 12.5;
+    public static double Far_IntakeSet2Position3_X = 13;
     public static double Far_IntakeSet2Position3_Y = 36;
-    public static double Far_IntakeSet2Position4_X = 12.5;
+    public static double Far_IntakeSet2Position4_X = 13;
     public static double Far_IntakeSet2Position4_Y = 59;
 
     public static double Close_IntakeSet2Position1_X = 14;

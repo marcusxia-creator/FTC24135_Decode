@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
@@ -530,7 +531,17 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.addData("Pose2D", robot.pinpoint.getPosition());
         telemetry.addData("Starting Pose",PoseStorage.currentPose);
-        telemetry.addData("End Pose", PoseStorage.endPose);
+        Pose2D pose = robot.pinpoint.getPosition();
+        double xIn = pose.getX(DistanceUnit.INCH);
+        double yIn = pose.getY(DistanceUnit.INCH);
+        double headingDeg = Math.toDegrees(pose.getHeading(AngleUnit.RADIANS));
+        telemetry.addData(
+                "Pose (in)",
+                "X: %.2f  Y: %.2f  H: %.1f°",
+                xIn, yIn, headingDeg
+        );
+        telemetry.addData("Starting Pose",PoseStorage.currentPose);
+
 
         telemetry.addData("distance to goal", "%,.0f",shooterPowerAngleCalculator.getDistance());
         telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());

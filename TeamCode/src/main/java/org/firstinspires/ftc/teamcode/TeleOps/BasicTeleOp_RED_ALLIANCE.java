@@ -10,6 +10,7 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllian
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -107,9 +108,10 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         /**
          * Transfer the pose 2D from Auto Ops
          */
-        //Pose2D startingPose = new Pose2D(DistanceUnit.MM, PoseStorage.currentPose.position.x*25.4, PoseStorage.currentPose.position.y*25.4, AngleUnit.DEGREES, Math.toDegrees(PoseStorage.currentPose.heading.real));
-        //Pose2D startingPose = PoseStorage.endPose;
-        //robot.pinpoint.setPosition(startingPose);
+        Pose2d endPose = PoseStorage.currentPose;
+        double heading_Radient  = endPose.heading.toDouble();
+        Pose2D startingPose = new Pose2D(DistanceUnit.MM, PoseStorage.currentPose.position.x*25.4, PoseStorage.currentPose.position.y*25.4, AngleUnit.DEGREES, Math.toDegrees(heading_Radient));
+        robot.pinpoint.setPosition(startingPose);
 
         /// 0. gamepad---------------------------------------------------------------
         gamepadCo1 = new GamepadEx(gamepad1);
@@ -159,6 +161,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.shooterAdjusterServo.setPosition(0.49);
 
         robot.kickerServo.setPosition(kickerRetract);
+
+        double turretReverseTicks = turret.getCurrentTick();
+
     }
 
     @Override
@@ -530,8 +535,21 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Alliance", alliance);
         telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.addData("Pose2D", robot.pinpoint.getPosition());
+        Pose2D pose = robot.pinpoint.getPosition();
+
+        double xIn = pose.getX(DistanceUnit.INCH);
+        double yIn = pose.getY(DistanceUnit.INCH);
+        double headingDeg = Math.toDegrees(pose.getHeading(AngleUnit.RADIANS));
+
+        telemetry.addData(
+                "Pose (in)",
+                "X: %.2f  Y: %.2f  H: %.1f°",
+                xIn, yIn, headingDeg
+        );
+
         telemetry.addData("Starting Pose",PoseStorage.currentPose);
-        telemetry.addData("End Pose", PoseStorage.endPose);
+        //telemetry.addData("Posestorage Pose Angle","H: %.1f°",PoseStorage.currentPose);
+
 
         telemetry.addData("distance to goal", "%,.0f",shooterPowerAngleCalculator.getDistance());
         telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());

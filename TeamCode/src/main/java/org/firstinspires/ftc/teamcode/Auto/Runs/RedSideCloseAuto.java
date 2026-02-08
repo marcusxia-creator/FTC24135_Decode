@@ -45,6 +45,7 @@ public class RedSideCloseAuto extends LinearOpMode {
 
         robot = new RobotHardware(hardwareMap);
         robot.init();
+        robot.turretInit();
 
         turret = new AutoTurretDrive(robot);
         intake = new AutoIntakeFSM(robot);

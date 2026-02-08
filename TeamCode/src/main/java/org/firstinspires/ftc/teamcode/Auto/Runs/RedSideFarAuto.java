@@ -44,6 +44,7 @@ public class RedSideFarAuto extends LinearOpMode {
 
         robot = new RobotHardware(hardwareMap);
         robot.init();
+        robot.turretInit();
         robot.pinpoint.setPosition(new Pose2D(DistanceUnit.INCH,64,7.5,AngleUnit.DEGREES,90));
 
         turret = new AutoTurretDrive(robot);
