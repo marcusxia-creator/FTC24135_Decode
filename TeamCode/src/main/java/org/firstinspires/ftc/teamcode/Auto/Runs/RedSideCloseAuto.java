@@ -96,6 +96,9 @@ public class RedSideCloseAuto extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y - 10), Math.toRadians(90))
                 .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y), Math.toRadians(CloseShootingPosition_Heading));
 
+        TrajectoryActionBuilder LeaveDriveBuilder = DriveToShoot3Builder.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y+16), Math.toRadians(CloseShootingPosition_Heading));
+
         Action DriveToShoot1 = DriveToShoot1Builder.build();
         Action IntakeSet1Drive1 = IntakeSet1Drive1Builder.build();
         Action IntakeSet1Drive2 = IntakeSet1Drive2Builder.build();
@@ -103,7 +106,7 @@ public class RedSideCloseAuto extends LinearOpMode {
         Action IntakeSet2Drive1 = IntakeSet2Drive1Builder.build();
         Action IntakeSet2Drive2 = IntakeSet2Drive2Builder.build();
         Action DriveToShoot3 = DriveToShoot3Builder.build();
-
+        Action LeaveDrive = LeaveDriveBuilder.build();
 
         waitForStart();
 
@@ -111,12 +114,13 @@ public class RedSideCloseAuto extends LinearOpMode {
             Actions.runBlocking(
                     new SequentialAction(
                         new ParallelAction(
-                            turret.TurretRun(45),
+                            turret.TurretRun(52),
                             DriveToShoot1
                         ),
-                        shooter.ShooterRun(CloseShotPower, 0.5,0),
+                        shooter.ShooterRun(CloseShotPower, 0.3,0),
                         shooter.ShooterOff(),
                         new ParallelAction(
+                                turret.TurretRun(52),
                                 intake.IntakeRun(targetGreen),
                                 new SequentialAction(
                                         IntakeSet1Drive1,
@@ -130,6 +134,7 @@ public class RedSideCloseAuto extends LinearOpMode {
                         shooter.ShooterRun(CloseShotPower, 0.1,0),
                         shooter.ShooterOff(),
                         new ParallelAction(
+                                turret.TurretRun(52),
                                 intake.IntakeRun(targetGreen),
                                 new SequentialAction(
                                         IntakeSet2Drive1,
@@ -137,20 +142,19 @@ public class RedSideCloseAuto extends LinearOpMode {
                                 )
                         ),
                         new ParallelAction(
-                                DriveToShoot3,
-                                shooter.ShooterOn(CloseShotPower)
+                            DriveToShoot3,
+                            shooter.ShooterOn(CloseShotPower)
                         ),
                         shooter.ShooterRun(CloseShotPower, 0.1,0),
-                        shooter.ShooterOff()
+                        new ParallelAction(
+                            shooter.ShooterOff(),
+                            LeaveDrive
+                        )
                     )
             );
-
             robot.pinpoint.update();
             drive.localizer.update();
-
-
             PoseStorage.currentPose = drive.localizer.getPose();
-            //PoseStorage.endPose = robot.pinpoint.getPosition();
             PoseStorage.motifGreenPos = targetGreen;
         }
     }

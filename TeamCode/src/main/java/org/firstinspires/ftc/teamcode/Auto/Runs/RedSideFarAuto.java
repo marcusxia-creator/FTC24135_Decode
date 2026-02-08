@@ -61,6 +61,8 @@ public class RedSideFarAuto extends LinearOpMode {
             while (opModeInInit()&&!isStopRequested()) {
                 aprilTagDetection.limelightDetect();
                 targetGreen = aprilTagDetection.tagID;
+                telemetry.addData("Detected ID",targetGreen);
+                telemetry.update();
             }
         }
 

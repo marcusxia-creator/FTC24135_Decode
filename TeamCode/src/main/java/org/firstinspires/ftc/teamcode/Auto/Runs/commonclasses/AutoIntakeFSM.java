@@ -88,7 +88,7 @@ public class AutoIntakeFSM {
                 case INTAKE_DETECT:
                     if (colorDetection.isBallPresent()) {
                         if (colorDetection.getColor() == AutoBallColors.GREEN) {
-                            currentGreenSlot = targetSlot + 1;
+                            currentGreenSlot = targetSlot;
                             targetSlot++;
                             stateTimer.reset();
                             currentState = INTAKESTATE.INTAKE_PAUSE;
@@ -97,14 +97,14 @@ public class AutoIntakeFSM {
                             stateTimer.reset();
                             currentState = INTAKESTATE.INTAKE_PAUSE;
                         }
-                    } else if (intakeTimer.seconds() > 10) {
+                    } else if (intakeTimer.seconds() > 12) {
                         currentState = INTAKESTATE.INTAKE_END;
                     } else {
                         currentState = INTAKESTATE.INTAKE_RUN;
                     }
                     break;
                 case INTAKE_PAUSE:
-                    robot.intakeMotor.setPower(0.3);
+                    robot.intakeMotor.setPower(0.4);
                     if (stateTimer.seconds() > 0.2) {
                         stateTimer.reset();
                         currentState = INTAKESTATE.INTAKE_INDEX;
@@ -121,7 +121,7 @@ public class AutoIntakeFSM {
                     }
                     break;
                 case INTAKE_SPIN:
-                    if (stateTimer.seconds() > 0.25) {
+                    if (stateTimer.seconds() > 0.2) {
                         currentState = INTAKESTATE.INTAKE_RUN;
                     }
                     break;

@@ -74,28 +74,28 @@ public class AutoShooterFSM {
             this.targetVelocity = ShotPower*shooterMaxRPM;
             this.ShooterWaitTime = ShooterWaitTime;
             this.currentState = SHOOTERSTATE.SHOOTER_INIT;
-            this.startingSlot = startingSlot + 1;
-            this.targetSlot = startingSlot + 1;
+            this.startingSlot = startingSlot;
+            this.targetSlot = startingSlot;
         }
 
         public void SpindexerRunTo(int slot) {
             if (slot == 0) {
-                robot.spindexerServo.setPosition(spindexerZeroPos);
-            }
-            if (slot == 1) {
                 robot.spindexerServo.setPosition(spindexerSlot1);
             }
-            if (slot == 2) {
+            if (slot == 1) {
                 robot.spindexerServo.setPosition(spindexerSlot2);
             }
-            if (slot == 3) {
+            if (slot == 2) {
                 robot.spindexerServo.setPosition(spindexerSlot3);
             }
-            if (slot == 4){
+            if (slot == 3){
                 robot.spindexerServo.setPosition(spindexerSlot4);
             }
-            if (slot == 5){
+            if (slot == 4){
                 robot.spindexerServo.setPosition(spindexerSlot5);
+            }
+            if (slot == 5) {
+                robot.spindexerServo.setPosition(spindexerFullPos);
             }
         }
 
@@ -119,7 +119,7 @@ public class AutoShooterFSM {
                     }
                     break;
                 case SHOOTER_SWITCH:
-                    if (targetSlot == 4 || targetSlot == (startingSlot + 3)) {
+                    if (targetSlot == 3) {
                         stateTimer2.reset();
                         currentState = SHOOTERSTATE.SHOOTER_RESET;
                     }
