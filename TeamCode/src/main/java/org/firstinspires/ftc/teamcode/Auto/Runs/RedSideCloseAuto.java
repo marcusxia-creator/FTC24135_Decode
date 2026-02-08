@@ -147,11 +147,9 @@ public class RedSideCloseAuto extends LinearOpMode {
             robot.pinpoint.update();
             drive.localizer.update();
 
-            double x = drive.localizer.getPose().position.x;
-            double y = drive.localizer.getPose().position.y;
-            double heading = Math.toDegrees(drive.localizer.getPose().heading.toDouble());
-            PoseStorage.currentPose = new Pose2D(DistanceUnit.INCH,x,y, AngleUnit.DEGREES,heading);
-            PoseStorage.endPose = robot.pinpoint.getPosition();
+
+            PoseStorage.currentPose = drive.localizer.getPose();
+            //PoseStorage.endPose = robot.pinpoint.getPosition();
             PoseStorage.motifGreenPos = targetGreen;
         }
     }
