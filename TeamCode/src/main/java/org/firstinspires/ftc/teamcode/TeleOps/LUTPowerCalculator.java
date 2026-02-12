@@ -72,6 +72,9 @@ public class LUTPowerCalculator {
         add(0, shooterAdjusterMax);
     }};
 
+    //===================================================
+    //Constructor
+    //===================================================
     public LUTPowerCalculator(RobotHardware robot) {
         this.robot = robot;
         this.pid = new PIDController(kP, kI, kD);
@@ -96,16 +99,10 @@ public class LUTPowerCalculator {
         else zone = 0;
     }
 
-    public int getRPM() {
-        updateDistanceAndZone();
-        rpmTarget = Optional.ofNullable(targetRPM.get(zone)).orElse(0);
-        return rpmTarget;
-    }
-
     public double getPower() {
         if (robot == null || robot.pinpoint == null || robot.topShooterMotor == null) return 0.0;
         updateDistanceAndZone();
-        int rpmTarget = Optional.ofNullable(targetRPM.get(zone)).orElse(0);
+        rpmTarget = Optional.ofNullable(targetRPM.get(zone)).orElse(0);
         // If not shooting, return 0 and reset PID so it doesn't "wind up"
         if (rpmTarget <= 0) {
             pid.reset();
@@ -145,6 +142,10 @@ public class LUTPowerCalculator {
     public double getDistance(){
         updateDistanceAndZone();
         return distance;
+    }
+
+    public int getRPM() {
+        return rpmTarget;
     }
 
     public double getMeasureRPM(){
