@@ -30,11 +30,11 @@ public class Turret {
 
     private final RobotHardware robot;
 
-    private final double tickToAngle = ((0.16867469879518 * 360) / 145.1);
-    private final double angleToTick = 1.0 / tickToAngle;
+    private final double tickToAngle = ((0.16867469879518 * 360) / 145.1);  //1 tick = 0.42 deg
+    private final double angleToTick = 1.0 / tickToAngle;                   //2.389 tick = 1deg
     private double conversionFactor = 39.3700787;
 
-    public static double kP = 17, kI = 0, kD = 0.005, kS = 0.2, kV = 2; // turret motor drive pidcontroller
+    public static double kP = 17, kI = 0, kD = 0.005, kS = 0.2, kV = 2;     // turret motor drive pidcontroller
     public static double kP_motor = 20, kI_motor = 0, kD_motor = 0.005, kF = 2; // turret motor pidf
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
 
