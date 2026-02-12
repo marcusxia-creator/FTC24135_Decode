@@ -135,13 +135,14 @@ public class RedSideFarAuto extends LinearOpMode {
                             shooter.ShooterOn(FarShotPower)
                     ),
                     shooter.ShooterRun(FarShotPower, 0.1, intake.getInitShotSlot()),
-                    shooter.ShooterOff(),
-                    turret.TurretRun(0)
+                    shooter.ShooterOff()
+                    //turret.TurretRun(0)
                 )
             );
             robot.pinpoint.update();
             drive.localizer.update();
             PoseStorage.currentPose = drive.localizer.getPose();
+            PoseStorage.turretEndTick = robot.turretMotor.getCurrentPosition();
             PoseStorage.motifGreenPos = targetGreen;
         }
     }

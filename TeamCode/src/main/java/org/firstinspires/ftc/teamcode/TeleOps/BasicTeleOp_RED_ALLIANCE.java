@@ -571,7 +571,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("motor PIDF coefficient", robot.turretMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
         telemetry.addData("target motor tick", turret.getTargetTick());
         telemetry.addData("current motor tick", turret.getCurrentTick());
-        telemetry.addData("turret auto end tick", PoseStorage.turretTick);
+        telemetry.addData("turret auto end tick", PoseStorage.turretEndTick);
         telemetry.addLine("-----------------------------------------");
         ///telemetry.addData("limelight output", "%,.1f",limelight.normalizedPose2D(DistanceUnit.INCH));
         ///telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(24));

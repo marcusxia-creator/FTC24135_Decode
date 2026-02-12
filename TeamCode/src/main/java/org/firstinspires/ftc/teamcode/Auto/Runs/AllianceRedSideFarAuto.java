@@ -170,7 +170,7 @@ public class AllianceRedSideFarAuto extends LinearOpMode {
             drive.localizer.update();
             PoseStorage.currentPose = drive.localizer.getPose();
             PoseStorage.motifGreenPos = targetGreen;
-            PoseStorage.turretTick = robot.turretMotor.getCurrentPosition();
+            PoseStorage.turretEndTick = robot.turretMotor.getCurrentPosition();
         }
     }
 
