@@ -59,10 +59,10 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private RobotDrive robotDrive;
     FSMShooter FSMShooter;
     FSMIntake FSMIntake;
-    //private TurretUpd turret;
+
     private Turret turret;
     private SpindexerManualControl spindexerManualControl;
-    //private Spindexer spindexer;
+
     private SpindexerUpd spindexer;
     public Limelight limelight;
     /// ----------------------------------------------------------------
@@ -146,8 +146,12 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         colorDetection = new ColorDetection(robot);
 
         /// 7. alliance selection-----------------------------------------------------------
-        alliance = Alliance.BLUE_ALLIANCE;
-        shooterPowerAngleCalculator.setAlliance(true);
+        alliance = Alliance.RED_ALLIANCE;
+        if (alliance == Alliance.RED_ALLIANCE) {
+            shooterPowerAngleCalculator.setAlliance(true);
+        }else{
+            shooterPowerAngleCalculator.setAlliance(false);
+        };
 
         /// 8. robot state----------------------------------------------------------
         actionStates = RobotActionState.Idle;
@@ -513,6 +517,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     // telemetry Manager
     //===========================================================
     public void telemetryManager(){
+        telemetry.addData("Alliance", alliance);
         telemetry.addData("loop frequency (Hz)", loopHz);
         telemetry.addData("voltage from robot", robot.getBatteryVoltageRobust());
         telemetry.addLine("-----");
@@ -523,7 +528,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("ShooterState", FSMShooter.shooterState);
         telemetry.addData("IntakeSafe", FSMIntake.canExit());
         telemetry.addData("ShooterSafe", FSMShooter.canExit());
-        telemetry.addLine("-----");
+        telemetry.addLine("--Spindexer-----------------------------------");
         telemetry.addData("Distance Sensor", robot.distanceSensor.getDistance(DistanceUnit.MM));
         telemetry.addData("Sensor Color", colorDetection.getStableColor());
         telemetry.addData("Sensor values", spindexer.colorValue);
@@ -532,12 +537,12 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Slot 2", spindexer.slots[2]);
         telemetry.addData("Current Pos", spindexer.currentPos);
         telemetry.addData("Current index", spindexer.index);
-        telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
-        telemetry.addLine("-----");
+        telemetry.addLine("--Shooter-----------------------------------");
+        telemetry.addData("distance to goal", "%,.0f",shooterPowerAngleCalculator.getDistance());
+        telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
         telemetry.addData("shooter power calculator", shooterPowerAngleCalculator.getPower());
-        telemetry.addData("Shooter Power", robot.topShooterMotor.getPower());
+        telemetry.addData("Shooter actual Power", robot.topShooterMotor.getPower());
         telemetry.addData("voltage from Shooter", FSMShooter.getVoltage());
-        telemetry.addData("power set point", FSMShooter.getPower_setpoint());
         shooterTargetRPM = shooterPowerAngleCalculator.getRPM();
         shooterRPM = shooterPowerAngleCalculator.getMeasureRPM();
         telemetry.addData("Shooter Target RPM",shooterTargetRPM);
@@ -545,7 +550,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Shooter RPM","%,.0f",robot.topShooterMotor.getVelocity()*SHOOTER_RPM_CONVERSION);
         telemetry.addLine("-----");
         //String MotifAvailable;
-        telemetry.addData("Alliance", alliance);
+
+        telemetry.addLine("--Robot Heading & Pose-----------------------------------");
         telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.addData("Pose2D", robot.pinpoint.getPosition());
         telemetry.addData("Starting Pose",PoseStorage.currentPose);
@@ -558,11 +564,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                 "X: %.2f  Y: %.2f  H: %.1f°",
                 xIn, yIn, headingDeg
         );
-        telemetry.addData("Starting Pose",PoseStorage.currentPose);
+        telemetry.addLine("-----");
 
-
-        telemetry.addData("distance to goal", "%,.0f",shooterPowerAngleCalculator.getDistance());
-        telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
         telemetry.addLine("Turret-----------------------------------");
         telemetry.addData("goal pose", turret.getGoalPose());
         telemetry.addData("turret target angle", turret.getTargetAngle());
