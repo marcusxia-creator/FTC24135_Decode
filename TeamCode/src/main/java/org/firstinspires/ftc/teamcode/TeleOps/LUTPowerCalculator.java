@@ -9,6 +9,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
+import org.firstinspires.ftc.teamcode.TeleOps.BasicTeleOp_RED_ALLIANCE.Alliance;
+
 
 import java.util.Optional;
 @Config
@@ -81,7 +83,7 @@ public class LUTPowerCalculator {
     }
 
     public void setAlliance(boolean isRedAlliance) {
-        actualGoalPose = isRedAlliance ? redGoalPose : blueGoalPose;
+        actualGoalPose = (isRedAlliance) ? redGoalPose : blueGoalPose;
     }
 
     private void updateDistanceAndZone() {
