@@ -38,7 +38,7 @@ public class FSMShooter {
     private double voltage;
     private double power;   //power lut power
     private double angle;   //shooter angle
-    private double power_setpoint; //not actually be used
+    private double power_setpoint=0; //not actually be used
     // shooting sequence config
     private int shootCounter; // counter for # ball shooting
     private long lastFeedTimeMs = 0; // shooting feed time interval time stamp
