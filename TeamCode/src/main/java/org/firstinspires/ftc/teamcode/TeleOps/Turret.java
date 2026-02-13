@@ -139,13 +139,13 @@ public class Turret {
 
         // NEW! Only configure RUN_TO_POSITION once (instead of every loop)
         if (!runToPositionConfigured || robot.turretMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
-            robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.turretMotor.setPower(1);
+
             runToPositionConfigured = true;
         }
-
         int ticks = (int) Math.round(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
         robot.turretMotor.setTargetPosition(ticks);
+        robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.turretMotor.setPower(1);
     }
 
     public void driveTurretPID() {
