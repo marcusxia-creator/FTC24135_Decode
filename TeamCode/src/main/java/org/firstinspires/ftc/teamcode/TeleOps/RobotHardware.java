@@ -15,11 +15,12 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.List;
 import java.util.ArrayList;
-
 
 import java.util.Collections;
 
@@ -134,12 +135,7 @@ public class RobotHardware {
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         imu = hardwareMap.get(IMU.class, "imu");
-
-        revHubOrientationOnRobot = new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.LEFT);
-
-        imu.initialize(new IMU.Parameters(revHubOrientationOnRobot));
+        external_imu = hardwareMap.get(BNO055IMU.class, "external_imu");
 
         LED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
         colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
@@ -208,15 +204,24 @@ public class RobotHardware {
     }
 
     public void initExternalIMU(){
-        external_imu = hardwareMap.get(BNO055IMU.class, "external_imu");
         BNO055IMU.Parameters myBNOIMUparameters = new BNO055IMU.Parameters();
-        myBNOIMUparameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        myBNOIMUparameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        myBNOIMUparameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample OpMode
-        myBNOIMUparameters.loggingEnabled      = true;
-        myBNOIMUparameters.loggingTag          = "IMU";
+        myBNOIMUparameters.angleUnit            = BNO055IMU.AngleUnit.DEGREES;
+        myBNOIMUparameters.accelUnit            = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        myBNOIMUparameters.calibrationDataFile  = "BNO055IMUCalibration.json"; // see the calibration sample OpMode
+        myBNOIMUparameters.loggingEnabled       = true;
+        myBNOIMUparameters.loggingTag           = "IMU";
         myBNOIMUparameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         external_imu.initialize(myBNOIMUparameters);
+    }
+    public void setExternal_imu(){
+        BNO055IMU.Parameters Oritention = new BNO055IMU.Parameters(new RevHubOrientationOnRobot(
+                AxesReference.INTRINSIC,
+                AxesOrder.ZYX,
+                BNO055IMU.AngleUnit.DEGREES,
+                90,
+                0,
+                0)
+        );
     }
 
     public void initPinpoint() {

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import static com.sun.tools.doclint.Entity.alpha;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueCloseGoalPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueFarGoalPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redCloseGoalPose;
@@ -64,25 +65,18 @@ public class Turret {
     private double lastkP = Double.NaN, lastkI = Double.NaN, lastkD = Double.NaN;
     private double lastkPmotor = Double.NaN, lastkImotor = Double.NaN, lastkDmotor = Double.NaN, lastkF = Double.NaN;
 
-
+    // NEW (does not rename anything): prevents mode spam/jumpy target angle
     private final double turretCenterOffsetLength = Math.hypot(turret_Center_Y_Offset, turret_Center_X_Offset);
-
-    // NEW (does not rename anything): prevents mode spam
     private boolean runToPositionConfigured = false;
-
-    public void initTurret() {
-        robot.turretMotor.setTargetPosition(0);
-        robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.turretMotor.setPower(1);
-        runToPositionConfigured = true;
-    }
-
-    public void resetTurretPosition() {
-        robot.turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        runToPositionConfigured = false;
-    }
+    private double filteredTargetAngle = 0;
+    private boolean firstAngleUpdate = true;
+    private double alpha = 0.2;
 
 
+
+    //--------------------------------------------
+    // Constructor
+    //--------------------------------------------
     public Turret (RobotHardware robot, boolean isRedAlliance) {
         this.robot = robot;
         pidController = new PIDController(kP, kI, kD);
@@ -98,6 +92,18 @@ public class Turret {
 
         // TODO : Optional: ready the turret immediately
         //initTurret();
+    }
+
+    public void initTurret() {
+        robot.turretMotor.setTargetPosition(0);
+        robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.turretMotor.setPower(1);
+        runToPositionConfigured = true;
+    }
+
+    public void resetTurretPosition() {
+        robot.turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        runToPositionConfigured = false;
     }
 
     public int motorDriveTick() {
@@ -129,23 +135,15 @@ public class Turret {
     }
 
     public void driveTurretMotor(){
-        /** OLD METHOD
+        /** OLD METHOD*/
         //updatePidFromDashboard();
-        int ticks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
+        if (!runToPositionConfigured || robot.turretMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
+            runToPositionConfigured = true;
+        }
+        int ticks = (int) Math.round(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
         robot.turretMotor.setTargetPosition(ticks);
         robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.turretMotor.setPower(1);
-        */
-
-        // NEW! Only configure RUN_TO_POSITION once (instead of every loop)
-        if (!runToPositionConfigured || robot.turretMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
-            robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.turretMotor.setPower(1);
-            runToPositionConfigured = true;
-        }
-
-        int ticks = (int) Math.round(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
-        robot.turretMotor.setTargetPosition(ticks);
     }
 
     public void driveTurretPID() {
@@ -154,12 +152,24 @@ public class Turret {
         int targetTicks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
         int currentTicks = robot.turretMotor.getCurrentPosition();
         int errorTicks = targetTicks - currentTicks;
-        // Feedforward should NOT be based on absolute targetTicks (too large).
-        // Use direction + error assist.
-        double ff = (kS * Math.signum(errorTicks)) + (kV * errorTicks);
+
         double power = pidController.calculate(currentTicks, targetTicks);
+        // NEW -- Turn error into a bounded "move command" [-1..1] using tanh
+        double errGain = 1.0 / (90*angleToTick);              // ~1 at ~300 ticks error (tune)
+        double velCmd  = Math.tanh(errGain * errorTicks); // [-1..1]
+
+        // NEW -- Feedforward should NOT be based on absolute targetTicks (too large).
+        // Use direction + error assist.
+        double ff =0.0;
+        if (Math.abs(errorTicks)>5){
+            ff = (kS * Math.signum(errorTicks)) + (kV * velCmd);
+        }
         double output = power + ff;
-        robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
+        // NEW -- Soft-limit (smooth saturation) instead of hard clip
+        double maxPower = 0.95;                     // turret safety cap (tune)
+        double satGain  = 2.0;                     // higher = saturates sooner
+        double cmd = maxPower * Math.tanh(satGain * output);
+        robot.turretMotor.setPower(Range.clip(cmd, -1.0, 1.0));
     }
 
     public int getTargetTick () {
@@ -171,16 +181,64 @@ public class Turret {
     }
 
     public double getTargetAngle () {
+
         // NEW -- Fail-safe: if goalPose somehow isn't set, don't spin
         if (goalPose == null) return robot.pinpoint.getHeading(AngleUnit.DEGREES);
         double turretYaw = THETA + robot.pinpoint.getHeading(AngleUnit.RADIANS);
+
         double turretYOffSet = Math.sin(turretYaw) * (turretCenterOffsetLength * conversionFactor);
         double turretXOffSet = Math.cos(turretYaw) * (turretCenterOffsetLength * conversionFactor);
+
         double turretcentX = robot.pinpoint.getPosX(DistanceUnit.INCH) + turretXOffSet;
         double turretcentY = robot.pinpoint.getPosY(DistanceUnit.INCH) + turretYOffSet;
-        return Math.toDegrees(Math.atan2((goalPose.getY(DistanceUnit.INCH)-turretcentY), (goalPose.getX(DistanceUnit.INCH)-turretcentX)));
+
         //FIXME OLD
+        //return Math.toDegrees(Math.atan2((goalPose.getY(DistanceUnit.INCH)-turretcentY), (goalPose.getX(DistanceUnit.INCH)-turretcentX)));
         //return Math.toDegrees(Math.atan2((goalPose.getY(DistanceUnit.INCH)-robot.pinpoint.getPosY(DistanceUnit.INCH)), (goalPose.getX(DistanceUnit.INCH)-robot.pinpoint.getPosX(DistanceUnit.INCH))));
+
+        //New
+        double rawAngle = Math.toDegrees(
+                Math.atan2(
+                        (goalPose.getY(DistanceUnit.INCH) - turretcentY),
+                        (goalPose.getX(DistanceUnit.INCH) - turretcentX)
+                )
+        );
+
+        // ---- Normalize to [-180, 180] ----
+        rawAngle = AngleUnit.normalizeDegrees(rawAngle);
+
+        // ---- First run initialization ----
+        if (firstAngleUpdate) {
+            filteredTargetAngle  = rawAngle;
+            firstAngleUpdate = false;
+            return rawAngle;
+        }
+
+        // ---- Compute shortest angular difference ----
+        double delta = AngleUnit.normalizeDegrees(rawAngle - filteredTargetAngle );
+
+        // ---- Deadband tolerance (2 degrees) ----
+        if (Math.abs(delta) < 1.0) {
+            return filteredTargetAngle;   // ignore jitter
+        }
+
+        // Exponential smoothing (0.2–0.3 recommended)
+        if (Math.abs(delta) > 8) {
+            alpha = 0.8;      // moving fast → respond fast
+        }
+        else if (Math.abs(delta) > 3) {
+            alpha = 0.5;      // medium movement
+        }
+        else {
+            alpha = 0.2;      // small jitter → heavy smoothing
+        }
+
+        filteredTargetAngle =
+                AngleUnit.normalizeDegrees(
+                        filteredTargetAngle + alpha * delta
+                );
+
+        return filteredTargetAngle;
     }
 
     public void updateZoneForGoalPose(int zone) {
