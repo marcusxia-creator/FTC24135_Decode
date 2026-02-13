@@ -123,11 +123,25 @@ public class Turret {
         robot.turretMotor.setPower(1);
     }
 
+    public void driveTurretIMU() {
+        double targetAngle = (Range.clip(getTurretDriveAngle(), -180, 180));
+        double currentAngle = robot.external_imu.getAngularOrientation().firstAngle;
+        double ff = (kS * Math.signum(targetAngle)) + (kV * targetAngle);
+        double power = pidController.calculate(currentAngle, targetAngle);
+        double output = power + ff;
+        robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
+    }
+
+    public void resetEncoderByIMU() {
+        //double targetTick
+    }
+
     public void driveTurretPID() {
         int targetTicks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
         int currentTicks = robot.turretMotor.getCurrentPosition();
-        double ff = (kS * Math.signum(targetTicks)) + (kV * targetTicks);
-        double power = pidController.calculate(robot.turretMotor.getCurrentPosition(), targetTicks);
+        int error = targetTicks - currentTicks;
+        double ff = (kS * Math.signum(error)) + (kV * error);
+        double power = pidController.calculate(currentTicks, targetTicks);
         double output = power + ff;
         robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
     }
@@ -151,7 +165,8 @@ public class Turret {
      */
 
     public double getTargetAngle () {
-        return Math.toDegrees(Math.atan2((goalPose.getY(DistanceUnit.INCH)-robot.pinpoint.getPosY(DistanceUnit.INCH)), (goalPose.getX(DistanceUnit.INCH)-robot.pinpoint.getPosX(DistanceUnit.INCH))));
+        return Math.toDegrees(Math.atan2(
+                (goalPose.getY(DistanceUnit.INCH)-robot.pinpoint.getPosY(DistanceUnit.INCH)), (goalPose.getX(DistanceUnit.INCH)-robot.pinpoint.getPosX(DistanceUnit.INCH))));
     }
 
     public void updateZoneForGoalPose(int zone) {

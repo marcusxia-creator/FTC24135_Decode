@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
@@ -17,8 +18,18 @@ public class AutoTurretDrive {
     public final double tickToAngle = ((0.16867469879518 * 360) / 145.1);
     public final double angleToTick = 1 / tickToAngle;
 
+    private static double kP_motor = 20, kI_motor = 0, kD_motor = 0.005, kF = 2;
+
+    PIDFCoefficients pidf = new PIDFCoefficients(
+            kP_motor,      // P
+            kI_motor,      // I
+            kD_motor,      // D
+            kF               // F
+    );
+
     public AutoTurretDrive(RobotHardware robot) {
         this.robot = robot;
+        this.robot.turretMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
     }
 
     public double floorMod(double x, double y){
@@ -37,7 +48,6 @@ public class AutoTurretDrive {
             robot.turretMotor.setTargetPosition(ticks);
             robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.turretMotor.setPower(1);
-
         }
 
         @Override

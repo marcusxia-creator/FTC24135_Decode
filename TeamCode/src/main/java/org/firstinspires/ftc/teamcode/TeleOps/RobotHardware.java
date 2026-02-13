@@ -12,10 +12,15 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.ImuOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -208,15 +213,17 @@ public class RobotHardware {
     }
 
     public void initExternalIMU(){
-        external_imu = hardwareMap.get(BNO055IMU.class, "external_imu");
+
+        /**
         BNO055IMU.Parameters myBNOIMUparameters = new BNO055IMU.Parameters();
-        myBNOIMUparameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        myBNOIMUparameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         myBNOIMUparameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         myBNOIMUparameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample OpMode
         myBNOIMUparameters.loggingEnabled      = true;
         myBNOIMUparameters.loggingTag          = "IMU";
         myBNOIMUparameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         external_imu.initialize(myBNOIMUparameters);
+         */
     }
 
     public void initPinpoint() {

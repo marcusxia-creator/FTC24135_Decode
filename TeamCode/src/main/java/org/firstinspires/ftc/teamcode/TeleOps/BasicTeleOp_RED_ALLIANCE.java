@@ -167,9 +167,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     @Override
     public void loop() {
 
-        /// NEW on interleague day
-        resetTurret();
-
         // ========================================================
         // WORKING FLOW:
         // 1.updateActionStateTransitions() decides when safe to enter
@@ -204,6 +201,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         // 1. INPUT UPDATE (read buttons + combos)
         // =========================================================
+        robot.pinpoint.update();
+
+
         gamepadCo1.readButtons();
         gamepadCo2.readButtons();
 
@@ -215,7 +215,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         // 2. CONTINUOUS SENSOR / HOUSEKEEPING UPDATES
         // =========================================================
-        robot.pinpoint.update();
         ballColor = BallColor.fromHue(colorDetection.getHue());
         updateLoopFrequency();
 
@@ -259,6 +258,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         int zone = shooterPowerAngleCalculator.getZone();
         turret.updateZoneForGoalPose(zone);
         FSMShooter.updateZoneForGoalPose(zone);
+
+        //turret.driveTurretPID();
+
 
         // =========================================================
         // 7. SUBSYSTEM FSMs (ALWAYS RUN)
@@ -515,6 +517,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     public void telemetryManager(){
         telemetry.addData("loop frequency (Hz)", loopHz);
         telemetry.addData("voltage from robot", robot.getBatteryVoltageRobust());
+        telemetry.addLine("-----");
+        telemetry.addData("pinpoint imu yaw", robot.pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.addLine("-----");
         telemetry.addData("Action State", actionStates);
         telemetry.addData("Requested", requestedActionState);
