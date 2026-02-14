@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.SHOOTER_R
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerRetract;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.trimStep;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -427,12 +428,21 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                 ((gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN))
                         && isButtonDebounced());
 
+        boolean trimLeft = ((gamepadCo1.getButton(GamepadKeys.Button.LEFT_BUMPER) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN))
+                && isButtonDebounced());
+
+        boolean trimRight = ((gamepadCo1.getButton(GamepadKeys.Button.RIGHT_BUMPER) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN))
+                && isButtonDebounced());
+
         boolean sortPressed = gamepadInput.getOperatorLbXComboPressed(); // combo - LB+X for sorted shooting. Assume this is edge-based already
         if (seqShootPressed) requestedActionState = RobotActionState.Sequence_Shooting;
         if (sortPressed)     requestedActionState = RobotActionState.Sort_Shooting;
         if (intakePressed)   requestedActionState = RobotActionState.Intaking;
         //if (reversePressed)  requestedActionState = RobotActionState.Reverse_Intake; // add enum if needed
         if (idlePressed)     requestedActionState = RobotActionState.Idle;
+
+        if (trimLeft) FSMShooter.turret.trim+=trimStep;
+        if (trimRight) FSMShooter.turret.trim-=trimStep;
 
         // Dpad down pose reset stays immediate (that's fine)
         if (dpDown) {

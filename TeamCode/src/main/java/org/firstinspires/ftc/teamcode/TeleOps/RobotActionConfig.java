@@ -55,6 +55,8 @@ public class RobotActionConfig {
 
     public static double getDistanceThreshold           =0.02;
 
+    public static double trimStep                       =1;
+
 
     public static double a                              = 0.0001320186;
     public static double b                              = -0.01961813;

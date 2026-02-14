@@ -26,6 +26,8 @@ public class Turret {
     turret is continuously running and is separate from the shooter control
      */
 
+    public double trim = 0;
+
     private final RobotHardware robot;
 
     private final double tickToAngle = ((0.16867469879518 * 360) / 145.1);
@@ -107,7 +109,7 @@ public class Turret {
 
     public void driveTurretMotor(){
         //updatePidFromDashboard();
-        int ticks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
+        int ticks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick+trim);
         robot.turretMotor.setTargetPosition(ticks);
         robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.turretMotor.setPower(1);
