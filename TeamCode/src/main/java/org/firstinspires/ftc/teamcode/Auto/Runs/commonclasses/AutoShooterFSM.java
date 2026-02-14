@@ -131,7 +131,7 @@ public class AutoShooterFSM {
                     break;
                 case SHOOTER_LAUNCH:
                     SpindexerRunTo(targetSlot);
-                    if (stateTimer2.seconds() > 0.5) {
+                    if (stateTimer2.seconds() > 0.6) {
                         stateTimer.reset();
                         currentState = SHOOTERSTATE.SHOOTER_SWITCH;
                     }

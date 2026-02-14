@@ -88,10 +88,11 @@ public class RobotActionConfig {
     ///public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, 9, 48.5, AngleUnit.DEGREES, 0);
 
     //-64 66 works
-    public static final Pose2D redCloseGoalPose         = new Pose2D(DistanceUnit.INCH, -63, 66, AngleUnit.DEGREES, 0);
+            //-63 66 previous
+    public static final Pose2D redCloseGoalPose         = new Pose2D(DistanceUnit.INCH, -65, 66, AngleUnit.DEGREES, 0);
     public static final Pose2D redFarGoalPose           = new Pose2D(DistanceUnit.INCH, -66, 66, AngleUnit.DEGREES, 0);
 
-    public static final Pose2D blueCloseGoalPose        = new Pose2D(DistanceUnit.INCH, -63, -66, AngleUnit.DEGREES, 0);
+    public static final Pose2D blueCloseGoalPose        = new Pose2D(DistanceUnit.INCH, -65, -66, AngleUnit.DEGREES, 0);
     public static final Pose2D blueFarGoalPose          = new Pose2D(DistanceUnit.INCH, -66, -66, AngleUnit.DEGREES, 0);
 
     public static double FAR_EDGE                 = 105.0;
@@ -107,7 +108,7 @@ public class RobotActionConfig {
 
     public static int RPM0            = 3900;
     public static int RPM1            = 3350;
-    public static int RPM2            = 3500;
+    public static int RPM2            = 3350;
     public static int RPM3            = 3650;
     public static int RPM4            = 3800;
     public static int RPM5            = 3900;

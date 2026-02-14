@@ -22,13 +22,13 @@ public class BlueSidePositions {
     public static double Far_IntakeSet2Position4_X = 13;
     public static double Far_IntakeSet2Position4_Y = -59;
 
-    public static double Close_IntakeSet2Position1_X = 13;
+    public static double Close_IntakeSet2Position1_X = 16;
     public static double Close_IntakeSet2Position1_Y = -32;
-    public static double Close_IntakeSet2Position2_X = 13;
+    public static double Close_IntakeSet2Position2_X = 16;
     public static double Close_IntakeSet2Position2_Y = -48;
-    public static double Close_IntakeSet2Position3_X = 13;
+    public static double Close_IntakeSet2Position3_X = 16;
     public static double Close_IntakeSet2Position3_Y = -64;
-    public static double Close_IntakeSet2Position4_X = 13;
+    public static double Close_IntakeSet2Position4_X = 16;
     public static double Close_IntakeSet2Position4_Y = -78;
 
     public static double IntakeSet3Position1_X = -12;
@@ -39,6 +39,16 @@ public class BlueSidePositions {
     public static double IntakeSet3Position3_Y = -52;
     public static double IntakeSet3Position4_X = -12;
     public static double IntakeSet3Position4_Y = -66;
+
+
+    public static double IntakeHPPosition1_X = 58;
+    public static double IntakeHPPosition1_Y = -40;
+    public static double IntakeHPPosition2_X = 58;
+    public static double IntakeHPPosition2_Y = -46;
+    public static double IntakeHPPosition3_X = 58;
+    public static double IntakeHPPosition3_Y = -52;
+    public static double IntakeHPPosition4_X = 58;
+    public static double IntakeHPPosition4_Y = -66;
 
     public static double FarShootingPosition_X = 58;
     public static double FarShootingPosition_Y = -12;

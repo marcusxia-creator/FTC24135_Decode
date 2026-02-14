@@ -322,17 +322,19 @@ public class FSMShooter {
                 break;
 
             case KICKER_RETRACT:
-                if (shootTimer.seconds() > 0.4) {
+
                     //=========================================================================
                     // this is the place to reset the spindexer counter
                     // meanwhile spindexer return back to spinderxerPositions[0] - slot 1 position
                     //==========================================================================
-                    spindexer.RuntoPosition(0); // reset counter in spindexer
-                }
                 //=========================================================
                 // when slot back to 0 position,then the kicker Retract
                 //=========================================================
-                if (shootTimer.seconds() > 1.0){
+                if (shootTimer.seconds() > 0.4){
+                    spindexer.RuntoPosition(0); // reset counter in spindexer
+                }
+
+                if (shootTimer.seconds() > 1.6) {
                     robot.kickerServo.setPosition(kickerRetract);
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.SHOOTER_IDLE;
