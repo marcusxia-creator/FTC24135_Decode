@@ -93,8 +93,6 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     public static double shooterRPM;
     public static int shooterTargetRPM;
 
-    double deltaTrim;
-
     /// ----------------------------------------------------------------
     @Override
     public void init() {
@@ -438,8 +436,8 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         //if (reversePressed)  requestedActionState = RobotActionState.Reverse_Intake; // add enum if needed
         if (idlePressed)     requestedActionState = RobotActionState.Idle;
 
-        if (trimLeft) FSMShooter.turret.trim+=trimStep;
-        if (trimRight) FSMShooter.turret.trim-=trimStep;
+        if (trimLeft) FSMShooter.deltaTrim=trimStep;
+        if (trimRight) FSMShooter.deltaTrim=-trimStep;
 
         // Dpad down pose reset stays immediate (that's fine)
         if (dpDown) {

@@ -27,6 +27,7 @@ public class Turret {
      */
 
     public double trim = 0;
+    public double deltaTrim;
 
     private final RobotHardware robot;
 

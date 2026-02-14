@@ -30,7 +30,7 @@ public class FSMShooter {
     SHOOTERMOTORSTATE shootermotorstate;
     TURRETSTATE turretState;
     SpindexerUpd spindexer;
-    public final Turret turret;
+    private final Turret turret;
     private final Limelight limelight;
 
     Spindexer.SLOT targetColour = Spindexer.SLOT.Purple;
@@ -57,6 +57,9 @@ public class FSMShooter {
     private static final double MOVE_TO_CLEARANCE_TIME_S = 0.2;  // tune
     private static final double KICKER_RETRACT_TIME_S     = 0.25;  // tune
     private static final double PARK_TO_ZERO_TIME_S       = 0.50;  // tune
+
+    public double deltaTrim;
+    public double lockPos;
 
 
     LUT<Integer, Long> timeStamp = new LUT<Integer, Long>() {{
@@ -215,11 +218,12 @@ public class FSMShooter {
         turretStateUpdate();
 
         if (turretState == TURRETSTATE.AIMING && aimEnabled) {
+            turret.deltaTrim=deltaTrim;
             turret.driveTurretMotor();
         }
         if (turretState == TURRETSTATE.LOCKING) {
-            robot.turretMotor.setTargetPosition(0);
-            robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.turretMotor.setVelocity(deltaTrim);
+            robot.turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.turretMotor.setPower(0.5);
         }
 
