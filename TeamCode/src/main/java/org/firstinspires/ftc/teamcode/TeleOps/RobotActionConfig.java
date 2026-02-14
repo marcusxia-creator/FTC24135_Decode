@@ -39,8 +39,8 @@ public class RobotActionConfig {
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.7;
     //shooter timer
-    public static final long FEED_PERIOD_MS_CLOSE       = 350; // (tune)
-    public static final long FEED_PERIOD_MS_FAR         = 500;
+    public static final long FEED_PERIOD_MS_CLOSE       = 200; // 250
+    public static final long FEED_PERIOD_MS_FAR         = 250; // 400
 
     public static final double SPOOLUP_SEC              = 1.25;
     //shooter adjustor
@@ -104,14 +104,14 @@ public class RobotActionConfig {
     public static double FAR_ZONE_MID               = 144;
     public static double FAR_ZONE_FAR               = 167.0;
 
-    public static int RPM0            = 3900;
-    public static int RPM1            = 3350;
-    public static int RPM2            = 3350;
-    public static int RPM3            = 3650;
-    public static int RPM4            = 3800;
-    public static int RPM5            = 3900;
-    public static int RPM6            = 4400;
-    public static int RPM7            = 4600;
+    public static int RPM0            = 3700; ///all minus 200 rpm with upgraded hardware
+    public static int RPM1            = 3150;
+    public static int RPM2            = 3150;
+    public static int RPM3            = 3450;
+    public static int RPM4            = 3600;
+    public static int RPM5            = 3700;
+    public static int RPM6            = 4300;
+    public static int RPM7            = 4550;
 
     public static final double farPower                 = 0.78;     // 3920 - 0.8  @ 12.73
     public static final double midPower                 = 0.73;     // 3360 - 0.70 @ 12.82

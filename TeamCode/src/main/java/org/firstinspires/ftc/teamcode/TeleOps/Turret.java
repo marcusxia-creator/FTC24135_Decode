@@ -10,6 +10,7 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.turret_Ce
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.util.LUT;
+import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.Range;
@@ -30,11 +31,16 @@ public class Turret {
 
     private final RobotHardware robot;
 
+    public static double txToTickMultiplier = 10;
     private final double tickToAngle = ((0.16867469879518 * 360) / 145.1);
     private final double angleToTick = 1.0 / tickToAngle;
     private double conversionFactor = 39.3700787;
 
-    public static double kP = 17, kI = 0, kD = 0.005, kS = 0.2, kV = 2; // turret motor drive pidcontroller
+    //0.00001 0 0.005 0.2 2
+    //kp 0.004
+    //ks 0.0001
+    //kv 0.005
+    public static double kP = 0.002, kI = 0, kD = 0.0003, kS = 0.0001, kV = 0.005; // turret motor drive pidcontroller
     public static double kP_motor = 20, kI_motor = 0, kD_motor = 0.005, kF = 2; // turret motor pidf
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
 
@@ -158,6 +164,25 @@ public class Turret {
         // Use direction + error assist.
         double ff = (kS * Math.signum(errorTicks)) + (kV * errorTicks);
         double power = pidController.calculate(currentTicks, targetTicks);
+        double output = power + ff;
+        robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
+    }
+
+    public void driveTurretLimelight() {
+        LLResult llResult = robot.limelight.getLatestResult();
+        int targetTicks;
+        int currentTicks = robot.turretMotor.getCurrentPosition();
+        if (llResult != null && llResult.isValid()) {
+            targetTicks = (int) (llResult.getTx() * txToTickMultiplier);
+        }
+        else {
+            targetTicks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
+        }
+
+        int errorTicks = targetTicks - currentTicks;
+        double ff = (kS * Math.signum(errorTicks) + (kV * errorTicks));
+        double power = pidController.calculate(currentTicks, targetTicks);
+
         double output = power + ff;
         robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
     }

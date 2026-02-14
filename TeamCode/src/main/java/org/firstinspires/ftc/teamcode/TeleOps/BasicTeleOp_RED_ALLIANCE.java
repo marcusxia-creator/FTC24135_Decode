@@ -264,6 +264,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         turret.updateZoneForGoalPose(zone);
         FSMShooter.updateZoneForGoalPose(zone);
 
+        ///turret.driveTurretPID();
+        ///turret.updatePidFromDashboard();
+
         // =========================================================
         // 7. SUBSYSTEM FSMs (ALWAYS RUN)
         // =========================================================

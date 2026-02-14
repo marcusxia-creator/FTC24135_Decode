@@ -215,7 +215,7 @@ public class FSMShooter {
         turretStateUpdate();
 
         if (turretState == TURRETSTATE.AIMING && aimEnabled) {
-            turret.driveTurretMotor();
+            turret.driveTurretPID();
         }
         if (turretState == TURRETSTATE.LOCKING) {
             robot.turretMotor.setTargetPosition(0);
@@ -295,7 +295,7 @@ public class FSMShooter {
                     if (shootCounter < 3) {
                         spindexer.RunToNext();          // feed ball #2, #3
                     } else if (shootCounter == 3) {
-                        spindexer.requestServoPosition(spindexerFullPos); // your “end position”
+                        spindexer.requestServoPosition(spindexerSlot5); // your “end position”
                     } else {
                         shooterState = SHOOTERSTATE.SHOOTER_STOP;
                         shootTimer.reset();
@@ -327,11 +327,11 @@ public class FSMShooter {
                 // when slot back to 0 position,then the kicker Retract
                 //=========================================================
                 if (shootTimer.seconds() > 0.4){
-                    spindexer.RuntoPosition(0); // reset counter in spindexer
+                    robot.kickerServo.setPosition(kickerRetract);
                 }
 
-                if (shootTimer.seconds() > 1.6) {
-                    robot.kickerServo.setPosition(kickerRetract);
+                if (shootTimer.seconds() > 0.8) {
+                    spindexer.RuntoPosition(0); // reset counter in spindexer
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.SHOOTER_IDLE;
                 }

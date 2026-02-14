@@ -126,18 +126,20 @@ public class FSMIntake {
             case INTAKE_STOP:
                 robot.intakeMotor.setPower(ejectSpeed);
 
+                /**
                 double time = intakeTimer.seconds();
                 if (time > spindexerServoPerSlotTime) {
                     intakeStates = IntakeStates.INTAKE_IDLE;
                 }
+                 */
 
 
-                /**
+
                 double time = intakeTimer.seconds();
                 // Keep your sequence logic for spindexer parking
                 if (time > spindexerServoPerSlotTime) {
 
-                    double targetPos =spindexerSlot1;
+                    double targetPos =spindexerSlot2;
                     double currentPos = robot.spindexerServo.getPosition();
                     double maxStep = 0.05; // max movement per loop
 
@@ -148,7 +150,7 @@ public class FSMIntake {
                     );
                     robot.spindexerServo.setPosition(currentPos + step);
                     if (Math.abs(error) < 0.01) {
-                        spindexer.RuntoPosition(0); // go to slot1 position and reset the spindexer counter
+                        spindexer.RuntoPosition(1); // go to slot1 position and reset the spindexer counter
 
                         intakeStates = IntakeStates.INTAKE_IDLE;
                     }
@@ -173,9 +175,9 @@ public class FSMIntake {
                     }
                 }
                  */
-                /**
+
                 }
-                 **/
+
                 break;
 
             case INTAKE_REVERSE:
