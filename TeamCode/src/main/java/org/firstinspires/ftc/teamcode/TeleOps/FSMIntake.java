@@ -104,25 +104,13 @@ public class FSMIntake {
                 break;
 
             case INTAKE_RUNTONEXT:
-                /**
                 // ✅ Instead of a fixed delay, wait until the servo finishes the incremental move
-                // This avoids starting intake early when the servo is slow / jammed.
-                if (!spindexer.isServoBusy()) {
-                    intakeStates = IntakeStates.INTAKE_START;
-                } else {
-                    // optional: add timeout -> unjam or fallback
-                    //if (intakeTimer.seconds() > 0.6) { spindexer.unJam(); intakeStates = IntakeStates.INTAKE_START; }
-                }
-                break;
-                 */
-
                 // OLD - Small delay to allow the servo to physically move before starting the motor again
                 if (intakeTimer.seconds() > spindexerServoPerSlotTime) {
                     intakeStates = IntakeStates.INTAKE_START;
                 }
                  break;
-
-
+                
             case INTAKE_STOP:
                 robot.intakeMotor.setPower(ejectSpeed);
                 double time = intakeTimer.seconds();
