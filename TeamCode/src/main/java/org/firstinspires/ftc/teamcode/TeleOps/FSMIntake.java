@@ -110,7 +110,7 @@ public class FSMIntake {
                     intakeStates = IntakeStates.INTAKE_START;
                 }
                  break;
-                
+
             case INTAKE_STOP:
                 robot.intakeMotor.setPower(ejectSpeed);
                 double time = intakeTimer.seconds();
