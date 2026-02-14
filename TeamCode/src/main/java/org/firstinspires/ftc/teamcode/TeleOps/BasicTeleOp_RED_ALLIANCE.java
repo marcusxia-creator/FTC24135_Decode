@@ -104,7 +104,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.initIMU();                    //Initialize control hub IMU
         robot.initPinpoint();               //Initialize pinpoint
         robot.initExternalIMU();            //Initialize external IMU
-
         /**
          * Transfer the pose 2D from Auto Ops
          */
@@ -574,10 +573,11 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("turret target angle", turret.getTargetAngle());
         telemetry.addData("turret drive angle", turret.getTurretDriveAngle());
         telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
-        telemetry.addData("motor PIDF coefficient", robot.turretMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
         telemetry.addData("target motor tick", turret.getTargetTick());
         telemetry.addData("current motor tick", turret.getCurrentTick());
         telemetry.addData("turret auto end tick", PoseStorage.turretEndTick);
+        telemetry.addData("turret shooting mode", FSMShooter.turretState);
+        telemetry.addData("turret power", robot.turretMotor.getPower());
         telemetry.addLine("-----------------------------------------");
         ///telemetry.addData("limelight output", "%,.1f",limelight.normalizedPose2D(DistanceUnit.INCH));
         ///telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(24));

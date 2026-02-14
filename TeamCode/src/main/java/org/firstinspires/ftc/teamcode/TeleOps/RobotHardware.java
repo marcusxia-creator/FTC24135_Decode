@@ -168,10 +168,10 @@ public class RobotHardware {
 
 
         /// config turret motor
-        turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        turretMotor.setTargetPositionTolerance(3);
+        //turretMotor.setTargetPositionTolerance(3);
 
         /// set run mode of shooter Motor
         topShooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
