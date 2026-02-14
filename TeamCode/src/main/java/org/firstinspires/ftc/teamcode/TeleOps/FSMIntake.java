@@ -125,16 +125,6 @@ public class FSMIntake {
 
             case INTAKE_STOP:
                 robot.intakeMotor.setPower(ejectSpeed);
-
-                /**
-                double time = intakeTimer.seconds();
-                if (time > spindexerServoPerSlotTime) {
-                    intakeStates = IntakeStates.INTAKE_IDLE;
-                }
-                 */
-
-
-
                 double time = intakeTimer.seconds();
                 // Keep your sequence logic for spindexer parking
                 if (time > spindexerServoPerSlotTime) {
@@ -154,28 +144,6 @@ public class FSMIntake {
 
                         intakeStates = IntakeStates.INTAKE_IDLE;
                     }
-                /**
-                //=========================================
-                //New Method
-                //=========================================
-                    // Request park/slot1 (whatever you want as the final park)
-                    // If "slot1" means the servo position 0.19 etc, make it a logical slot index
-                    // OR provide a park method. Here we’ll assume you want logical slot 0.
-                    if (!stopMoveRequested) {
-                        spindexer.RuntoPosition(0);     // request ONCE
-                        stopMoveRequested = true;
-                        intakeTimer.reset();
-                    }
-
-                    // Wait until the servo has reached the target
-                    if (!spindexer.isServoBusy()) {
-                        robot.intakeMotor.setPower(0);
-                        intakeStates = IntakeStates.INTAKE_IDLE;
-                        stopMoveRequested = false;      // reset for next time
-                    }
-                }
-                 */
-
                 }
 
                 break;
