@@ -42,6 +42,7 @@ public class AutoIntakeFSM {
 
         private final ElapsedTime stateTimer = new ElapsedTime();
         private final ElapsedTime intakeTimer = new ElapsedTime();
+        private final double maxRunTime;
 
         private INTAKESTATE currentState;
 
@@ -50,12 +51,13 @@ public class AutoIntakeFSM {
         private final int targetGreenSlot;
 
         /// Constructor
-        public IntakeRunMode(RobotHardware robot, int targetGreenSlot) {
+        public IntakeRunMode(RobotHardware robot, int targetGreenSlot, double maxRunTime) {
             this.robot = robot;
             this.targetGreenSlot = targetGreenSlot;
             this.currentState = INTAKESTATE.INTAKE_INIT;
             this.colorDetection = new AutoColorDetection(robot);
             this.ballColors = AutoBallColors.UNKNOWN;
+            this.maxRunTime = maxRunTime;
         }
 
         public void SpindexerRunTo(int slot) {
@@ -97,7 +99,7 @@ public class AutoIntakeFSM {
                             stateTimer.reset();
                             currentState = INTAKESTATE.INTAKE_PAUSE;
                         }
-                    } else if (intakeTimer.seconds() > 9) {
+                    } else if (intakeTimer.seconds() > maxRunTime) {
                         currentState = INTAKESTATE.INTAKE_END;
                     } else {
                         currentState = INTAKESTATE.INTAKE_RUN;
@@ -156,8 +158,8 @@ public class AutoIntakeFSM {
         }
     }
 
-    public Action IntakeRun (int targetGreenSlot) {
-        return new IntakeRunMode(robot, targetGreenSlot);
+    public Action IntakeRun (int targetGreenSlot, double maxTime) {
+        return new IntakeRunMode(robot, targetGreenSlot, maxTime);
     }
 
     public int getInitShotSlot () {

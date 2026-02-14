@@ -122,7 +122,7 @@ public class RedSideCloseAuto extends LinearOpMode {
                         shooter.ShooterOff(),
                         new ParallelAction(
                                 turret.TurretRun(55),
-                                intake.IntakeRun(targetGreen),
+                                intake.IntakeRun(targetGreen,8),
                                 new SequentialAction(
                                         IntakeSet1Drive1,
                                         IntakeSet1Drive2
@@ -136,7 +136,7 @@ public class RedSideCloseAuto extends LinearOpMode {
                         shooter.ShooterOff(),
                         new ParallelAction(
                                 turret.TurretRun(55),
-                                intake.IntakeRun(targetGreen),
+                                intake.IntakeRun(targetGreen,8),
                                 new SequentialAction(
                                         IntakeSet2Drive1,
                                         IntakeSet2Drive2

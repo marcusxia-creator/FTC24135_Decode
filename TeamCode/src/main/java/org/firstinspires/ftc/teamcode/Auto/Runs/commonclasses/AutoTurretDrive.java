@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses;
 
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -9,27 +10,23 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.Range;
 
+import com.arcrobotics.ftclib.controller.PIDController;
+
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 @Config
 public class AutoTurretDrive {
     private final RobotHardware robot;
+    private PIDController pidController;
 
     public final double tickToAngle = ((0.16867469879518 * 360) / 145.1);
     public final double angleToTick = 1 / tickToAngle;
 
-    public static double kP_motor = 20, kI_motor = 0, kD_motor = 0.005, kF = 2;
-
-    PIDFCoefficients pidf = new PIDFCoefficients(
-            kP_motor,      // P
-            kI_motor,      // I
-            kD_motor,      // D
-            kF               // F
-    );
+    public static double kP = 0.002, kI = 0, kD = 0.0003, kS = 0.0001, kV = 0.005;
 
     public AutoTurretDrive(RobotHardware robot) {
         this.robot = robot;
-        this.robot.turretMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        pidController = new PIDController(kP, kI, kD);
     }
 
     public double floorMod(double x, double y){
@@ -44,11 +41,13 @@ public class AutoTurretDrive {
         }
 
         public void runToPos (int targetAngle) {
-            int ticks = (int)(Range.clip(targetAngle, -180, 180) * angleToTick);
-            robot.turretMotor.setTargetPosition(ticks);
-            robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.turretMotor.setPower(1);
-
+            int targetTicks = (int) (Range.clip(targetAngle,-180, 180) * angleToTick);
+            int currentTicks = robot.turretMotor.getCurrentPosition();
+            int errorTicks = targetTicks - currentTicks;
+            double ff = (kS * Math.signum(errorTicks)) + (kV * errorTicks);
+            double power = pidController.calculate(currentTicks, targetTicks);
+            double output = power + ff;
+            robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
         }
 
         @Override
