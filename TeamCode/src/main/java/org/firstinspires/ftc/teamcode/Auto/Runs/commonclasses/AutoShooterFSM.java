@@ -106,7 +106,7 @@ public class AutoShooterFSM {
                 case SHOOTER_INIT:
                     robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
                     robot.kickerServo.setPosition(kickerRetract);
-                    SpindexerRunTo(targetSlot);
+                    SpindexerRunTo(startingSlot);
                     shooterTimer.reset();
                     stateTimer.reset();
                     currentState = SHOOTERSTATE.SHOOTER_RUN;
@@ -114,26 +114,26 @@ public class AutoShooterFSM {
                 case SHOOTER_RUN:
                     if (stateTimer.seconds() > ShooterWaitTime) {
                         robot.kickerServo.setPosition(kickerExtend);
-                        if (stateTimer.seconds() > ShooterWaitTime + 0.2) {
+                        if (stateTimer.seconds() > ShooterWaitTime + 0.6) {
                             stateTimer2.reset();
                             currentState = SHOOTERSTATE.SHOOTER_SWITCH;
                         }
                     }
                     break;
                 case SHOOTER_SWITCH:
-                    if (targetSlot == startingSlot + 3) {
-                        stateTimer2.reset();
-                        currentState = SHOOTERSTATE.SHOOTER_RESET;
-                    }
-                    else {
+                    if (targetSlot <= (startingSlot + 3)) {
                         targetSlot++;
                         stateTimer2.reset();
                         currentState = SHOOTERSTATE.SHOOTER_LAUNCH;
                     }
+                    else {
+                        stateTimer2.reset();
+                        currentState = SHOOTERSTATE.SHOOTER_RESET;
+                    }
                     break;
                 case SHOOTER_LAUNCH:
                     SpindexerRunTo(targetSlot);
-                    if (stateTimer2.seconds() > 0.3) {
+                    if (stateTimer2.seconds() > shootSpeed) {
                         stateTimer.reset();
                         currentState = SHOOTERSTATE.SHOOTER_SWITCH;
                     }
@@ -182,7 +182,7 @@ public class AutoShooterFSM {
             }
             else {
                 ///Dashboard Telemetry
-                telemetryPacket.put("Init Starting Slot",startingSlot);
+                telemetryPacket.put("Actual Init Starting Slot",startingSlot);
                 telemetryPacket.put("FSM Shooter State", currentState);
                 ///Run Shooter & FSM
                 RunShooter(targetVelocity);
@@ -197,7 +197,7 @@ public class AutoShooterFSM {
     }
 
     public Action ShootCloseZone (double ShotPower, double ShooterWaitTime, int startingSlot){
-        return new ShooterRunMode(robot, ShotPower,0.1, ShooterWaitTime, startingSlot);
+        return new ShooterRunMode(robot, ShotPower,0.2, ShooterWaitTime, startingSlot);
     }
 
     ///Shooter Speed

@@ -116,7 +116,7 @@ public class BlueSideFarAuto extends LinearOpMode {
                             shooter.ShootFarZone(FarShotPower, 2,0),
                             shooter.ShooterOff(),
                             new ParallelAction(
-                                    intake.IntakeRun(targetGreen, 12),
+                                    intake.IntakeRun(targetGreen, 12,1),
                                     new SequentialAction(
                                             intakeSet1Drive1Action,
                                             intakeSet1Drive2Action
@@ -129,7 +129,7 @@ public class BlueSideFarAuto extends LinearOpMode {
                             shooter.ShootFarZone(FarShotPower, 0.1,0),
                             shooter.ShooterOff(),
                             new ParallelAction(
-                                    intake.IntakeRun(targetGreen, 12),
+                                    intake.IntakeRun(targetGreen, 12,0),
                                     new SequentialAction(
                                             intakeSet2Drive1Action,
                                             intakeSet2Drive2Action
