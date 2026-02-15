@@ -65,15 +65,17 @@ public class AutoShooterFSM {
 
         private final int startingSlot;
         private int targetSlot;
+        private final double shootSpeed;
         private double ShooterWaitTime;
         private double targetVelocity;
         public SHOOTERSTATE currentState;
 
-        public ShooterRunMode(RobotHardware robot, double ShotPower, double ShooterWaitTime, int startingSlot) {
+        public ShooterRunMode(RobotHardware robot, double ShotPower, double shootSpeed, double ShooterWaitTime, int startingSlot) {
             this.robot = robot;
             this.targetVelocity = ShotPower*shooterMaxRPM;
             this.ShooterWaitTime = ShooterWaitTime;
             this.currentState = SHOOTERSTATE.SHOOTER_INIT;
+            this.shootSpeed = shootSpeed;
             this.startingSlot = startingSlot;
             this.targetSlot = startingSlot;
         }
@@ -103,8 +105,8 @@ public class AutoShooterFSM {
             switch (currentState) {
                 case SHOOTER_INIT:
                     robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
-                    SpindexerRunTo(targetSlot);
                     robot.kickerServo.setPosition(kickerRetract);
+                    SpindexerRunTo(startingSlot);
                     shooterTimer.reset();
                     stateTimer.reset();
                     currentState = SHOOTERSTATE.SHOOTER_RUN;
@@ -112,32 +114,32 @@ public class AutoShooterFSM {
                 case SHOOTER_RUN:
                     if (stateTimer.seconds() > ShooterWaitTime) {
                         robot.kickerServo.setPosition(kickerExtend);
-                        if (stateTimer.seconds() > ShooterWaitTime + 0.2) {
+                        if (stateTimer.seconds() > ShooterWaitTime + 0.6) {
                             stateTimer2.reset();
                             currentState = SHOOTERSTATE.SHOOTER_SWITCH;
                         }
                     }
                     break;
                 case SHOOTER_SWITCH:
-                    if (targetSlot == 3) {
-                        stateTimer2.reset();
-                        currentState = SHOOTERSTATE.SHOOTER_RESET;
-                    }
-                    else {
+                    if (targetSlot <= (startingSlot + 3)) {
                         targetSlot++;
                         stateTimer2.reset();
                         currentState = SHOOTERSTATE.SHOOTER_LAUNCH;
                     }
+                    else {
+                        stateTimer2.reset();
+                        currentState = SHOOTERSTATE.SHOOTER_RESET;
+                    }
                     break;
                 case SHOOTER_LAUNCH:
                     SpindexerRunTo(targetSlot);
-                    if (stateTimer2.seconds() > 0.6) {
+                    if (stateTimer2.seconds() > shootSpeed) {
                         stateTimer.reset();
                         currentState = SHOOTERSTATE.SHOOTER_SWITCH;
                     }
                     break;
                 case SHOOTER_RESET:
-                    SpindexerRunTo(1);
+                    SpindexerRunTo(0);
                     if (stateTimer2.seconds() > 0.4) {
                         robot.kickerServo.setPosition(kickerRetract);
                         if(stateTimer2.seconds()>0.8){
@@ -156,22 +158,17 @@ public class AutoShooterFSM {
 
         public void RunShooter(double targetRPM){
             double currentRPM = robot.topShooterMotor.getVelocity() * tickToRPM;
-
             double voltage  = robot.getBatteryVoltageRobust();
             double maxRPMDynamic = shooterMaxRPM * voltage /REF_VOLTAGE;
-
             //Normalised current and max velocity to 0..1 for stable tuning
             double normCurrentRPM = clamp01(currentRPM/maxRPMDynamic);
             double normTargetRPM = clamp01(targetRPM /maxRPMDynamic);//Target velocity
-
             //Feedforward calculations
             double ff = (kS * Math.signum(normTargetRPM)) + (kV * normTargetRPM);
             //PID calculations
             double pidPower = pidController.calculate(normCurrentRPM, normTargetRPM);
-
             //Shooter total power
             double power = ff + pidPower;
-
             robot.topShooterMotor.setPower(power);
             robot.bottomShooterMotor.setPower(power);
         }
@@ -184,6 +181,10 @@ public class AutoShooterFSM {
                 return false;
             }
             else {
+                ///Dashboard Telemetry
+                telemetryPacket.put("Actual Init Starting Slot",startingSlot);
+                telemetryPacket.put("FSM Shooter State", currentState);
+                ///Run Shooter & FSM
                 RunShooter(targetVelocity);
                 FSMShooterRun();
                 return true;
@@ -191,8 +192,12 @@ public class AutoShooterFSM {
         }
     }
 
-    public Action ShooterRun(double ShotPower, double ShooterWaitTime, int startingSlot){
-        return new ShooterRunMode(robot, ShotPower, ShooterWaitTime, startingSlot);
+    public Action ShootFarZone(double ShotPower, double ShooterWaitTime, int startingSlot){
+        return new ShooterRunMode(robot, ShotPower,0.3,ShooterWaitTime, startingSlot);
+    }
+
+    public Action ShootCloseZone (double ShotPower, double ShooterWaitTime, int startingSlot){
+        return new ShooterRunMode(robot, ShotPower,0.2, ShooterWaitTime, startingSlot);
     }
 
     ///Shooter Speed
@@ -207,7 +212,6 @@ public class AutoShooterFSM {
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             double currentVel = robot.topShooterMotor.getVelocity()*tickToRPM;
             double power = pidController.calculate(currentVel, targetVelocity);
-
             robot.topShooterMotor.setPower(power);
             robot.bottomShooterMotor.setPower(power);
             return false;

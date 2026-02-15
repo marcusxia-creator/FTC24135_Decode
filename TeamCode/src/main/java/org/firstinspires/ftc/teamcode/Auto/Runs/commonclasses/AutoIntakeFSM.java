@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -9,14 +10,17 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AutoBallColors;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AutoColorDetection;
 
+import org.firstinspires.ftc.teamcode.TeleOps.FSMIntake;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
+@Config
 public class AutoIntakeFSM {
     private final RobotHardware robot;
 
-    public static int shootingInitSlot;
+    public static int currentGreenSlot;
+    public static int shootingInitSlot = 0;
 
     public AutoIntakeFSM(RobotHardware robot) {
         this.robot = robot;
@@ -47,13 +51,14 @@ public class AutoIntakeFSM {
         private INTAKESTATE currentState;
 
         private int targetSlot = 0;
-        public int currentGreenSlot;
+        private final int currentGreenSlot;
         private final int targetGreenSlot;
 
         /// Constructor
-        public IntakeRunMode(RobotHardware robot, int targetGreenSlot, double maxRunTime) {
+        public IntakeRunMode(RobotHardware robot, int targetGreenSlot, int currentGreenSlot, double maxRunTime) {
             this.robot = robot;
             this.targetGreenSlot = targetGreenSlot;
+            this.currentGreenSlot = currentGreenSlot;
             this.currentState = INTAKESTATE.INTAKE_INIT;
             this.colorDetection = new AutoColorDetection(robot);
             this.ballColors = AutoBallColors.UNKNOWN;
@@ -76,7 +81,6 @@ public class AutoIntakeFSM {
             colorDetection.updateDetection();
             switch (currentState) {
                 case INTAKE_INIT:
-                    currentGreenSlot = -1;
                     colorDetection.detectInit();
                     intakeTimer.reset();
                     SpindexerRunTo(0);
@@ -89,16 +93,9 @@ public class AutoIntakeFSM {
                     break;
                 case INTAKE_DETECT:
                     if (colorDetection.isBallPresent()) {
-                        if (colorDetection.getColor() == AutoBallColors.GREEN) {
-                            currentGreenSlot = targetSlot;
-                            targetSlot++;
-                            stateTimer.reset();
-                            currentState = INTAKESTATE.INTAKE_PAUSE;
-                        }else {
-                            targetSlot++;
-                            stateTimer.reset();
-                            currentState = INTAKESTATE.INTAKE_PAUSE;
-                        }
+                        targetSlot++;
+                        stateTimer.reset();
+                        currentState = INTAKESTATE.INTAKE_PAUSE;
                     } else if (intakeTimer.seconds() > maxRunTime) {
                         currentState = INTAKESTATE.INTAKE_END;
                     } else {
@@ -130,7 +127,7 @@ public class AutoIntakeFSM {
                 case INTAKE_UNJAM:
                     SpindexerRunTo(0);
                     robot.intakeMotor.setPower(ejectSpeed);
-                    if (stateTimer.seconds() > 0.3) {
+                    if (stateTimer.seconds() > 0.5) {
                         currentState = INTAKESTATE.INTAKE_END;
                     }
                     break;
@@ -151,15 +148,17 @@ public class AutoIntakeFSM {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            telemetryPacket.put("FSM Intake State", currentState);
-            FSMIntakeRun();
             updateShootingInitSlot();
+            FSMIntakeRun();
+            telemetryPacket.put("FSM Intake State", currentState);
+            telemetryPacket.put("Calc Shooting Int Slot", shootingInitSlot);
+            telemetryPacket.put("Detected Green Slot", currentGreenSlot);
             return currentState != INTAKESTATE.INTAKE_END;
         }
     }
 
-    public Action IntakeRun (int targetGreenSlot, double maxTime) {
-        return new IntakeRunMode(robot, targetGreenSlot, maxTime);
+    public Action IntakeRun (int targetGreenSlot, double maxTime, int currentGreenSlot) {
+        return new IntakeRunMode(robot, targetGreenSlot, currentGreenSlot, maxTime);
     }
 
     public int getInitShotSlot () {

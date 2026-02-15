@@ -10,9 +10,6 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoIntakeFSM;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM;
@@ -118,11 +115,11 @@ public class RedSideCloseAuto extends LinearOpMode {
                             turret.TurretRun(55),
                             DriveToShoot1
                         ),
-                        shooter.ShooterRun(CloseShotPower, 0.2,0),
+                        shooter.ShootCloseZone(CloseShotPower, 0.2,0),
                         shooter.ShooterOff(),
                         new ParallelAction(
                                 turret.TurretRun(55),
-                                intake.IntakeRun(targetGreen,8),
+                                intake.IntakeRun(targetGreen,8,2),
                                 new SequentialAction(
                                         IntakeSet1Drive1,
                                         IntakeSet1Drive2
@@ -132,11 +129,11 @@ public class RedSideCloseAuto extends LinearOpMode {
                                 DriveToShoot2,
                                 shooter.ShooterOn(CloseShotPower)
                         ),
-                        shooter.ShooterRun(CloseShotPower, 0.1,0),
+                        shooter.ShootCloseZone(CloseShotPower, 0.1,0),
                         shooter.ShooterOff(),
                         new ParallelAction(
                                 turret.TurretRun(55),
-                                intake.IntakeRun(targetGreen,8),
+                                intake.IntakeRun(targetGreen,8,1),
                                 new SequentialAction(
                                         IntakeSet2Drive1,
                                         IntakeSet2Drive2
@@ -146,7 +143,7 @@ public class RedSideCloseAuto extends LinearOpMode {
                             DriveToShoot3,
                             shooter.ShooterOn(CloseShotPower)
                         ),
-                        shooter.ShooterRun(CloseShotPower, 0.1,0),
+                        shooter.ShootCloseZone(CloseShotPower, 0.1,0),
                         new ParallelAction(
                             shooter.ShooterOff(),
                             LeaveDrive

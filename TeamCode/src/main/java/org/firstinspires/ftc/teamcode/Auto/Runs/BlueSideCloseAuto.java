@@ -115,11 +115,11 @@ public class BlueSideCloseAuto extends LinearOpMode {
                                     turret.TurretRun(-52),
                                     DriveToShoot1
                             ),
-                            shooter.ShooterRun(CloseShotPower, 0.3,0),
+                            shooter.ShootFarZone(CloseShotPower, 0.3,0),
                             shooter.ShooterOff(),
                             new ParallelAction(
                                     turret.TurretRun(-52),
-                                    intake.IntakeRun(targetGreen, 8),
+                                    intake.IntakeRun(targetGreen, 8,2),
                                     new SequentialAction(
                                             IntakeSet1Drive1,
                                             IntakeSet1Drive2
@@ -129,11 +129,11 @@ public class BlueSideCloseAuto extends LinearOpMode {
                                     DriveToShoot2,
                                     shooter.ShooterOn(CloseShotPower)
                             ),
-                            shooter.ShooterRun(CloseShotPower, 0.1,0),
+                            shooter.ShootFarZone(CloseShotPower, 0.1,0),
                             shooter.ShooterOff(),
                             new ParallelAction(
                                     turret.TurretRun(-52),
-                                    intake.IntakeRun(targetGreen, 8),
+                                    intake.IntakeRun(targetGreen, 8,1),
                                     new SequentialAction(
                                             IntakeSet2Drive1,
                                             IntakeSet2Drive2
@@ -143,7 +143,7 @@ public class BlueSideCloseAuto extends LinearOpMode {
                                     DriveToShoot3,
                                     shooter.ShooterOn(CloseShotPower)
                             ),
-                            shooter.ShooterRun(CloseShotPower, 0.1,0),
+                            shooter.ShootFarZone(CloseShotPower, 0.1,0),
                             new ParallelAction(
                                     shooter.ShooterOff(),
                                     LeaveDrive
