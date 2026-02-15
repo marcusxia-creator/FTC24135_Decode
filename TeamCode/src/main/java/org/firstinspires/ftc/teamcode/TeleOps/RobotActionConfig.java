@@ -40,13 +40,13 @@ public class RobotActionConfig {
     public static double ejectSpeed                     = -0.7;
     //shooter timer
     public static final long FEED_PERIOD_MS_CLOSE       = 200; // 250
-    public static final long FEED_PERIOD_MS_FAR         = 250; // 400
+    public static final long FEED_PERIOD_MS_FAR         = 300; // 400 250
 
     public static final double SPOOLUP_SEC              = 1.25;
     //shooter adjustor
     public static double shooterAdjusterMax             = 0.48;
     public static double shooterAdjusterMin             = 0.06;
-    public static double shooterAdjusterMid             = 0.4;
+    public static double shooterAdjusterMid             = 0.35;
     public static double shooterFactorThreshold         = 0.95;
     //drive train power
     public static double powerFactor                    = 1;
@@ -96,7 +96,7 @@ public class RobotActionConfig {
     public static double FAR_EDGE                 = 105.0;
     public static double FAR                      = 92.0;
     public static double MidPoint                 = 82.0;
-    public static double MID                      = 72.0;
+    public static double MID                      = 68.0; ///72.0
     public static double CLOSE                    = 57.0;
     public static double closeEdge                = 36.0;
 
