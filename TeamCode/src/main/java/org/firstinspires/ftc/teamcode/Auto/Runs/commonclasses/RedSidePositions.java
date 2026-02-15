@@ -1,8 +1,12 @@
 package org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses;
 
+import com.acmerobotics.roadrunner.Pose2d;
+
 public class RedSidePositions {
     public static double CloseShotPower = 0.7;
     public static double FarShotPower = 0.86;
+
+    private final Pose2d redGoalPose  = new Pose2d(-70,70,-45);
 
     public static double IntakeSet1Position1_X = 36;
     public static double IntakeSet1Position1_Y = 24;

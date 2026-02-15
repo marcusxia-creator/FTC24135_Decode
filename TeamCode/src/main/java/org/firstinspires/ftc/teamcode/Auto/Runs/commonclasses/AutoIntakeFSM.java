@@ -151,9 +151,10 @@ public class AutoIntakeFSM {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            telemetryPacket.put("FSM Intake State", currentState);
             FSMIntakeRun();
             updateShootingInitSlot();
+            telemetryPacket.put("FSM Intake State", currentState);
+            telemetryPacket.put("Shooting Int Slot",shootingInitSlot);
             return currentState != INTAKESTATE.INTAKE_END;
         }
     }

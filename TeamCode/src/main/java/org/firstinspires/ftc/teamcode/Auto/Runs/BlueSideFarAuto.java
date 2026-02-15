@@ -61,8 +61,9 @@ public class BlueSideFarAuto extends LinearOpMode {
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
             while (opModeInInit()&&!isStopRequested()) {
                 aprilTagDetection.limelightDetect();
-                targetGreen = aprilTagDetection.tagID;
-                telemetry.addData("Detected ID",targetGreen);
+                targetGreen = aprilTagDetection.findGreenSlot();
+                telemetry.addData("Detected ID",aprilTagDetection.tagID);
+                telemetry.addData("Target Green Slot",targetGreen);
                 telemetry.update();
             }
         }
@@ -112,7 +113,7 @@ public class BlueSideFarAuto extends LinearOpMode {
                     new SequentialAction(
                             turret.TurretRun(-68),
                             shooter.ShooterOn(FarShotPower),
-                            shooter.ShooterRun(FarShotPower, 2,0),
+                            shooter.ShootFarZone(FarShotPower, 2,0),
                             shooter.ShooterOff(),
                             new ParallelAction(
                                     intake.IntakeRun(targetGreen, 12),
@@ -125,7 +126,7 @@ public class BlueSideFarAuto extends LinearOpMode {
                                     driveToShoot1Action,
                                     shooter.ShooterOn(FarShotPower)
                             ),
-                            shooter.ShooterRun(FarShotPower, 0.1,0),
+                            shooter.ShootFarZone(FarShotPower, 0.1,0),
                             shooter.ShooterOff(),
                             new ParallelAction(
                                     intake.IntakeRun(targetGreen, 12),
@@ -138,7 +139,7 @@ public class BlueSideFarAuto extends LinearOpMode {
                                     driveToShoot2Action,
                                     shooter.ShooterOn(FarShotPower)
                             ),
-                            shooter.ShooterRun(FarShotPower, 0.1, 0),
+                            shooter.ShootFarZone(FarShotPower, 0.1, 0),
                             new ParallelAction(
                                     shooter.ShooterOff(),
                                     driveToLeaveAction

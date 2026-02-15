@@ -115,7 +115,7 @@ public class BlueSideCloseAuto extends LinearOpMode {
                                     turret.TurretRun(-52),
                                     DriveToShoot1
                             ),
-                            shooter.ShooterRun(CloseShotPower, 0.3,0),
+                            shooter.ShootFarZone(CloseShotPower, 0.3,0),
                             shooter.ShooterOff(),
                             new ParallelAction(
                                     turret.TurretRun(-52),
@@ -129,7 +129,7 @@ public class BlueSideCloseAuto extends LinearOpMode {
                                     DriveToShoot2,
                                     shooter.ShooterOn(CloseShotPower)
                             ),
-                            shooter.ShooterRun(CloseShotPower, 0.1,0),
+                            shooter.ShootFarZone(CloseShotPower, 0.1,0),
                             shooter.ShooterOff(),
                             new ParallelAction(
                                     turret.TurretRun(-52),
@@ -143,7 +143,7 @@ public class BlueSideCloseAuto extends LinearOpMode {
                                     DriveToShoot3,
                                     shooter.ShooterOn(CloseShotPower)
                             ),
-                            shooter.ShooterRun(CloseShotPower, 0.1,0),
+                            shooter.ShootFarZone(CloseShotPower, 0.1,0),
                             new ParallelAction(
                                     shooter.ShooterOff(),
                                     LeaveDrive

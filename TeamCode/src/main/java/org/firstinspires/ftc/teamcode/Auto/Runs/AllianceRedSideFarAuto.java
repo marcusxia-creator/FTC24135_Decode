@@ -61,8 +61,9 @@ public class AllianceRedSideFarAuto extends LinearOpMode {
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
             while (opModeInInit()&&!isStopRequested()) {
                 aprilTagDetection.limelightDetect();
-                targetGreen = aprilTagDetection.tagID;
-                telemetry.addData("Detected ID",targetGreen);
+                targetGreen = aprilTagDetection.findGreenSlot();
+                telemetry.addData("Detected ID",aprilTagDetection.tagID);
+                telemetry.addData("Target Green Slot",targetGreen);
                 telemetry.update();
             }
         }
@@ -123,7 +124,7 @@ public class AllianceRedSideFarAuto extends LinearOpMode {
                 new SequentialAction(
                     turret.TurretRun(68),
                     shooter.ShooterOn(FarShotPower),
-                    shooter.ShooterRun(FarShotPower, 2,0),
+                    shooter.ShootFarZone(FarShotPower, 2,0),
                     shooter.ShooterOff(),
                     new ParallelAction(
                         intake.IntakeRun(targetGreen,12),
@@ -136,7 +137,7 @@ public class AllianceRedSideFarAuto extends LinearOpMode {
                             driveToShoot1Action,
                             shooter.ShooterOn(FarShotPower)
                     ),
-                    shooter.ShooterRun(FarShotPower, 0.1,0),
+                    shooter.ShootFarZone(FarShotPower, 0.1,0),
                     shooter.ShooterOff(),
                     new ParallelAction(
                         intake.IntakeRun(targetGreen,8),
@@ -149,7 +150,7 @@ public class AllianceRedSideFarAuto extends LinearOpMode {
                             driveToShoot2Action,
                             shooter.ShooterOn(FarShotPower)
                     ),
-                    shooter.ShooterRun(FarShotPower, 0.1, 0),
+                    shooter.ShootFarZone(FarShotPower, 0.1, 0),
                     shooter.ShooterOff(),
                     new ParallelAction(
                             intake.IntakeRun(targetGreen,8),
@@ -162,7 +163,7 @@ public class AllianceRedSideFarAuto extends LinearOpMode {
                             driveToShoot3Action,
                             shooter.ShooterOn(FarShotPower)
                     ),
-                    shooter.ShooterRun(FarShotPower, 0.1, 0),
+                    shooter.ShootFarZone(FarShotPower, 0.1, 0),
                     shooter.ShooterOff()
                 )
             );
