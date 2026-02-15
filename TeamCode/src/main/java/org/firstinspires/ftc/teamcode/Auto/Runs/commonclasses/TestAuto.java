@@ -45,7 +45,7 @@ public class TestAuto extends LinearOpMode {
             Actions.runBlocking(
                 new SequentialAction(
                     turret.TurretRun(72),
-                    intake.IntakeRun(targetGreenSlot),
+                    //intake.IntakeRun(targetGreenSlot),
                     shooter.ShooterRun(FarShotPower,1.5,intake.getInitShotSlot()),
                     shooter.ShooterOff()
                 )

@@ -214,13 +214,14 @@ public class FSMShooter {
                         shooterState == SHOOTERSTATE.SHOOT_READY;
         turretStateUpdate();
 
-        int targetTick = turret.getTargetTick();
-
         if (turretState == TURRETSTATE.AIMING && aimEnabled) {
-            turret.driveTurretPID();
+            int currentTick = turret.getCurrentTick();
+            int targetTick = turret.getTargetTick();
+            turret.driveTurretPID(currentTick, targetTick);
         }
         if (turretState == TURRETSTATE.LOCKING) {
-            //robot.turretMotor.setPower(0);
+            robot.turretMotor.setPower(0);
+            ///turret.driveTurretPID(turret.getCurrentTick(), turret.getTargetTick());
         }
 
         //==========================================================

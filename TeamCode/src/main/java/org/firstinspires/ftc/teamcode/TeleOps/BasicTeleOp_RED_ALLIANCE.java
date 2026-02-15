@@ -487,6 +487,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
     public void resetTurret() {
 
+        /**
         if (gamepadCo1.getButton(GamepadKeys.Button.LEFT_BUMPER) || gamepadCo2.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
             turret.initTurret();
         }
@@ -494,6 +495,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         if (gamepadCo1.getButton(GamepadKeys.Button.RIGHT_BUMPER) || gamepadCo2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
             turret.resetTurretPosition();
         }
+         */
     }
 
     private int updateXandY () {

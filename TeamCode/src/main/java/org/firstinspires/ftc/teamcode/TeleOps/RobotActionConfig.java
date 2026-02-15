@@ -87,10 +87,10 @@ public class RobotActionConfig {
 
     //-64 66 works
             //-63 66 previous
-    public static final Pose2D redCloseGoalPose         = new Pose2D(DistanceUnit.INCH, -65, 66, AngleUnit.DEGREES, 0);
+    public static final Pose2D redCloseGoalPose         = new Pose2D(DistanceUnit.INCH, -60, 64, AngleUnit.DEGREES, 0);
     public static final Pose2D redFarGoalPose           = new Pose2D(DistanceUnit.INCH, -66, 62, AngleUnit.DEGREES, 0);
 
-    public static final Pose2D blueCloseGoalPose        = new Pose2D(DistanceUnit.INCH, -65, -66, AngleUnit.DEGREES, 0);
+    public static final Pose2D blueCloseGoalPose        = new Pose2D(DistanceUnit.INCH, -60, -64, AngleUnit.DEGREES, 0);
     public static final Pose2D blueFarGoalPose          = new Pose2D(DistanceUnit.INCH, -66, -62, AngleUnit.DEGREES, 0);
 
     public static double FAR_EDGE                 = 105.0;

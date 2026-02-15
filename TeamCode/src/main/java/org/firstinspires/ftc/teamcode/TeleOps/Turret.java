@@ -76,6 +76,7 @@ public class Turret {
     // NEW (does not rename anything): prevents mode spam
     private boolean runToPositionConfigured = false;
 
+    /**
     public void initTurret() {
         robot.turretMotor.setTargetPosition(0);
         robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -87,6 +88,7 @@ public class Turret {
         robot.turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         runToPositionConfigured = false;
     }
+     **/
 
 
     public Turret (RobotHardware robot, boolean isRedAlliance) {
@@ -94,7 +96,7 @@ public class Turret {
         pidController = new PIDController(kP, kI, kD);
 
         // Set motor PIDF once using your existing pidf field
-        this.robot.turretMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        ///this.robot.turretMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
 
         // KEEP logic but simplify
         targetPose = isRedAlliance ? redTargetPose : blueTargetPose;
@@ -154,16 +156,14 @@ public class Turret {
         robot.turretMotor.setPower(1);
     }
 
-    public void driveTurretPID() {
+    public void driveTurretPID(int currentTick, int targetTick) {
         //updatePidFromDashboard();
 
-        int targetTicks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
-        int currentTicks = robot.turretMotor.getCurrentPosition();
-        int errorTicks = targetTicks - currentTicks;
+        int errorTicks = targetTick - currentTick;
         // Feedforward should NOT be based on absolute targetTicks (too large).
         // Use direction + error assist.
         double ff = (kS * Math.signum(errorTicks)) + (kV * errorTicks);
-        double power = pidController.calculate(currentTicks, targetTicks);
+        double power = pidController.calculate(currentTick, targetTick);
         double output = power + ff;
         robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
     }
