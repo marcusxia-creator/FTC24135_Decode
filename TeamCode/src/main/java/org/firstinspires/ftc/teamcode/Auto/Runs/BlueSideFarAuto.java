@@ -113,10 +113,10 @@ public class BlueSideFarAuto extends LinearOpMode {
                     new SequentialAction(
                             turret.TurretRun(-68),
                             shooter.ShooterOn(FarShotPower),
-                            shooter.ShootFarZone(FarShotPower, 2,0),
+                            shooter.ShootFarZone(FarShotPower, 2,0,targetGreen),
                             shooter.ShooterOff(),
                             new ParallelAction(
-                                    intake.IntakeRun(targetGreen, 12,1),
+                                    intake.IntakeRun(12),
                                     new SequentialAction(
                                             intakeSet1Drive1Action,
                                             intakeSet1Drive2Action
@@ -126,10 +126,10 @@ public class BlueSideFarAuto extends LinearOpMode {
                                     driveToShoot1Action,
                                     shooter.ShooterOn(FarShotPower)
                             ),
-                            shooter.ShootFarZone(FarShotPower, 0.1,0),
+                            shooter.ShootFarZone(FarShotPower, 0.1,1,targetGreen),
                             shooter.ShooterOff(),
                             new ParallelAction(
-                                    intake.IntakeRun(targetGreen, 12,0),
+                                    intake.IntakeRun(12),
                                     new SequentialAction(
                                             intakeSet2Drive1Action,
                                             intakeSet2Drive2Action
@@ -139,7 +139,7 @@ public class BlueSideFarAuto extends LinearOpMode {
                                     driveToShoot2Action,
                                     shooter.ShooterOn(FarShotPower)
                             ),
-                            shooter.ShootFarZone(FarShotPower, 0.1, 0),
+                            shooter.ShootFarZone(FarShotPower, 0.1, 0,targetGreen),
                             new ParallelAction(
                                     shooter.ShooterOff(),
                                     driveToLeaveAction

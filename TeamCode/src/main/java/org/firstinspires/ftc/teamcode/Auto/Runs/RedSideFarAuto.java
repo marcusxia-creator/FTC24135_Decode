@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoIntakeFSM;
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoLimelightDetection;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoTurretDrive;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM;
@@ -28,15 +29,15 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 public class RedSideFarAuto extends LinearOpMode {
     public static Pose2d initialPose = new Pose2d(64, 7.5, Math.toRadians(90));
 
-    public int targetGreen;
-
     public RobotHardware robot;
 
     public AutoIntakeFSM intake;
     public AutoShooterFSM shooter;
     public AutoTurretDrive turret;
+
     public AprilTagDetection aprilTagDetection;
 
+    public int targetGreen;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -109,10 +110,10 @@ public class RedSideFarAuto extends LinearOpMode {
                 new SequentialAction(
                     turret.TurretRun(68),
                     shooter.ShooterOn(FarShotPower),
-                    shooter.ShootFarZone(FarShotPower, 2,0),
+                    shooter.ShootFarZone(FarShotPower, 2, 0,targetGreen),
                     shooter.ShooterOff(),
                     new ParallelAction(
-                        intake.IntakeRun(targetGreen,15,1),
+                        intake.IntakeRun(15),
                         new SequentialAction(
                             intakeSet1Drive1Action,
                             intakeSet1Drive2Action
@@ -122,10 +123,10 @@ public class RedSideFarAuto extends LinearOpMode {
                             driveToShoot1Action,
                             shooter.ShooterOn(FarShotPower)
                     ),
-                    shooter.ShootFarZone(FarShotPower, 0.1,intake.getInitShotSlot()),
+                    shooter.ShootFarZone(FarShotPower, 0.1,1,targetGreen),
                     shooter.ShooterOff(),
                     new ParallelAction(
-                        intake.IntakeRun(targetGreen,12,0),
+                        intake.IntakeRun(12),
                         new SequentialAction(
                             intakeSet2Drive1Action,
                             intakeSet2Drive2Action
@@ -135,9 +136,8 @@ public class RedSideFarAuto extends LinearOpMode {
                             driveToShoot2Action,
                             shooter.ShooterOn(FarShotPower)
                     ),
-                    shooter.ShootFarZone(FarShotPower, 0.1, intake.getInitShotSlot()),
+                    shooter.ShootFarZone(FarShotPower, 0.1, 0,targetGreen),
                     shooter.ShooterOff()
-                    //turret.TurretRun(0)
                 )
             );
             robot.pinpoint.update();

@@ -44,12 +44,12 @@ Control hub servo:
                 port 2: Empty
                 port 3: Empty
                 port 4: Empty
-                port 5: Empty
+                port 5: Kicker_Servo
 
 Expansion hub servo:
                 port 0: Spindexer_Servo
                 port 1: Shooter_Adjuster_Servo
-                port 2: Kicker_Servo
+                port 2: Empty
                 port 3: goBilda_LED_Light
                 port 4: Empty
                 port 5: Empty
