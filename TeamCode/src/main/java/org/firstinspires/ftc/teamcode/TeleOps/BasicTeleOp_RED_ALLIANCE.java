@@ -547,6 +547,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("shooter power calculator", shooterPowerAngleCalculator.getPower());
         telemetry.addData("Shooter actual Power", robot.topShooterMotor.getPower());
         telemetry.addData("voltage from Shooter", FSMShooter.getVoltage());
+        telemetry.addData("Turret Trim", FSMShooter.trim);
         shooterTargetRPM = shooterPowerAngleCalculator.getRPM();
         shooterRPM = shooterPowerAngleCalculator.getMeasureRPM();
         telemetry.addData("Shooter Target RPM",shooterTargetRPM);

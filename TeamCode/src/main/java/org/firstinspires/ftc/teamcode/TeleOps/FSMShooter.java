@@ -68,6 +68,8 @@ public class FSMShooter {
 
     private boolean LRTriggerBoolean = false;
 
+    public double trim;
+
 
 
     /**
@@ -131,6 +133,7 @@ public class FSMShooter {
         robot.bottomShooterMotor.setPower(0);
         shootermotorstate = SHOOTERMOTORSTATE.STOP;
         turretState = TURRETSTATE.AIMING;
+        trim=0;
     }
 
     private void updateTurretAutoAim(boolean aimEnabled) {
@@ -214,13 +217,28 @@ public class FSMShooter {
                         shooterState == SHOOTERSTATE.SHOOT_READY;
         turretStateUpdate();
 
+        //Triming/manual control
+        int trimInput=0;
+        if ((gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
+                || gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER))
+                && isButtonDebounced()){
+            trimInput+=1;
+        }
+        if ((gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER)
+                || gamepad_2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+                && isButtonDebounced()){
+            trimInput-=1;
+        }
+
+
         if (turretState == TURRETSTATE.AIMING && aimEnabled) {
+            trim=Range.clip(trim+trimInput*trimStep,-400,400);
             int currentTick = turret.getCurrentTick();
-            int targetTick = turret.getTargetTick();
+            int targetTick = (int)(turret.getTargetTick()+trim);
             turret.driveTurretPID(currentTick, targetTick);
         }
         if (turretState == TURRETSTATE.LOCKING) {
-            robot.turretMotor.setPower(0);
+            robot.turretMotor.setVelocity(trimInput*adjSpeed);
             ///turret.driveTurretPID(turret.getCurrentTick(), turret.getTargetTick());
         }
 
