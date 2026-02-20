@@ -15,12 +15,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.Range;
 
-import org.apache.commons.math3.filter.KalmanFilter;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
-import java.security.cert.PKIXRevocationChecker;
 import java.util.Optional;
 
 @Config
@@ -40,7 +38,7 @@ public class Turret {
     //kp 0.004
     //ks 0.0001
     //kv 0.005
-    public static double kP = 0.003, kI = 0, kD = 0.0003, kS = 0.0001, kV = 0.004; // turret motor drive pidcontroller
+    public static double kPTurret = 0.003, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.0001, kVTurret = 0.004; // turret motor drive pidcontroller
     public static double kP_motor = 20, kI_motor = 0, kD_motor = 0.005, kF = 2; // turret motor pidf
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
 
@@ -59,8 +57,8 @@ public class Turret {
     private Pose2D goalPose;
 
     private PIDController pidController;
-    private Limelight limelight;
 
+    // Motor Intrinsic PIDF constants
     PIDFCoefficients pidf = new PIDFCoefficients(
             kP_motor,      // P
             kI_motor,      // I
@@ -76,24 +74,9 @@ public class Turret {
     // NEW (does not rename anything): prevents mode spam
     private boolean runToPositionConfigured = false;
 
-    /**
-    public void initTurret() {
-        robot.turretMotor.setTargetPosition(0);
-        robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.turretMotor.setPower(1);
-        runToPositionConfigured = true;
-    }
-
-    public void resetTurretPosition() {
-        robot.turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        runToPositionConfigured = false;
-    }
-     **/
-
-
     public Turret (RobotHardware robot, boolean isRedAlliance) {
         this.robot = robot;
-        pidController = new PIDController(kP, kI, kD);
+        pidController = new PIDController(kPTurret, kITurret, kDTurret);
         pidController.setTolerance(5.0);
 
 
@@ -116,9 +99,9 @@ public class Turret {
 
     public void updatePidFromDashboard() {
         // FTCLib PID (your own controller)
-        if (kP != lastkP || kI != lastkI || kD != lastkD) {
-            pidController.setPID(kP, kI, kD);
-            lastkP = kP; lastkI = kI; lastkD = kD;
+        if (kPTurret != lastkP || kITurret != lastkI || kDTurret != lastkD) {
+            pidController.setPID(kPTurret, kITurret, kDTurret);
+            lastkP = kPTurret; lastkI = kITurret; lastkD = kDTurret;
         }
 
         // Motor controller PIDF (RUN_USING_ENCODER) — only if you really need it
@@ -164,7 +147,7 @@ public class Turret {
         int errorTicks = targetTick - currentTick;
         // Feedforward should NOT be based on absolute targetTicks (too large).
         // Use direction + error assist.
-        double ff = (kS * Math.signum(errorTicks)) + (kV * errorTicks);
+        double ff = (kSTurret * Math.signum(errorTicks)) + (kVTurret * errorTicks);
         double power = pidController.calculate(currentTick, targetTick);
         double output = power + ff;
         robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
@@ -182,7 +165,7 @@ public class Turret {
         }
 
         int errorTicks = targetTicks - currentTicks;
-        double ff = (kS * Math.signum(errorTicks) + (kV * errorTicks));
+        double ff = (kSTurret * Math.signum(errorTicks) + (kVTurret * errorTicks));
         double power = pidController.calculate(currentTicks, targetTicks);
 
         double output = power + ff;

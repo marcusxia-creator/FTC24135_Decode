@@ -5,23 +5,23 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class SpindexerManualControl {
     RobotHardware robot;
     SpindexerUpd spindexer;
-    GamepadInput gamepadInput;
+    GamepadComboInput gamepadComboInput;
     ElapsedTime debounceTimer = new ElapsedTime();
-    public SpindexerManualControl(RobotHardware robot, SpindexerUpd spindexer, GamepadInput gamepadInput){
+    public SpindexerManualControl(RobotHardware robot, SpindexerUpd spindexer, GamepadComboInput gamepadComboInput){
         this.robot=robot;
         this.spindexer=spindexer;
-        this.gamepadInput=gamepadInput;
+        this.gamepadComboInput = gamepadComboInput;
     }
     public void loop() {
         /**
-        if(gamepadInput.getDriverBackSinglePressed()) {
+        if(gamepadComboInput.getDriverBackSinglePressed()) {
             spindexer.unJam();
         }
         */
-        if(gamepadInput.getDriverLbSinglePressed()|| gamepadInput.getOperatorLbSinglePressed()){
+        if(gamepadComboInput.getDriverLbSinglePressed()|| gamepadComboInput.getOperatorLbSinglePressed()){
             spindexer.RuntoPosition(spindexer.currentPos-1);
         }
-        if((gamepadInput.getDriverRbSinglePressed() || gamepadInput.getOperatorRbSinglePressed())){
+        if((gamepadComboInput.getDriverRbSinglePressed() || gamepadComboInput.getOperatorRbSinglePressed())){
             spindexer.RuntoPosition(spindexer.currentPos+1);
         }
     }

@@ -5,19 +5,19 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.TeleOps.BasicTeleOp_RED_ALLIANCE;
-import org.firstinspires.ftc.teamcode.TeleOps.GamepadInput;
+import org.firstinspires.ftc.teamcode.TeleOps.GamepadComboInput;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig;
 
 public class ButtonControl {
-    private final GamepadInput gamepadInput;
+    private final GamepadComboInput gamepadComboInput;
     private final BasicTeleOp_RED_ALLIANCE redMainLoop;
     private final GamepadEx gamepad_1;
     private final GamepadEx gamepad_2;
     private ElapsedTime debounceTimer = new ElapsedTime();
     // add constructor for blueMainLoop
     BasicTeleOp_RED_ALLIANCE.RobotActionState actionStates = BasicTeleOp_RED_ALLIANCE.RobotActionState.Idle;
-    public ButtonControl(GamepadInput gamepadInput, BasicTeleOp_RED_ALLIANCE redMainLoop, GamepadEx gamepad1, GamepadEx gamepad2) {
-        this.gamepadInput = gamepadInput;
+    public ButtonControl(GamepadComboInput gamepadComboInput, BasicTeleOp_RED_ALLIANCE redMainLoop, GamepadEx gamepad1, GamepadEx gamepad2) {
+        this.gamepadComboInput = gamepadComboInput;
         this.redMainLoop = redMainLoop;
         gamepad_1 = gamepad1;
         gamepad_2 = gamepad2;

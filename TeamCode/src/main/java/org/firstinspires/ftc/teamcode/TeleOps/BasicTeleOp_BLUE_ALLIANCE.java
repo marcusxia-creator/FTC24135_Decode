@@ -55,7 +55,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     /// robot and subsystem
     private RobotHardware robot;
     private GamepadEx gamepadCo1, gamepadCo2;
-    private GamepadInput gamepadInput;
+    private GamepadComboInput gamepadComboInput;
     private RobotDrive robotDrive;
     FSMShooter FSMShooter;
     FSMIntake FSMIntake;
@@ -116,7 +116,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         /// 0. gamepad---------------------------------------------------------------
         gamepadCo1 = new GamepadEx(gamepad1);
         gamepadCo2 = new GamepadEx(gamepad2);
-        gamepadInput = new GamepadInput(gamepadCo1,gamepadCo2);
+        gamepadComboInput = new GamepadComboInput(gamepadCo1,gamepadCo2);
 
         /// 1. robot drive-------------------------------------------------------------
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
@@ -126,7 +126,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         spindexer = new SpindexerUpd(robot, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, 0); //Change inits for comp
 
         // spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
-        spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
+        spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadComboInput);
 
         /// 3. turret---------------------------------------------------------------
         //turret = new TurretUpd(robot);
@@ -136,7 +136,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
 
         /// 4. shooter-------------------------------------------------------------
-        FSMShooter = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, shooterPowerAngleCalculator,gamepadInput, turret, limelight);
+        FSMShooter = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, shooterPowerAngleCalculator, gamepadComboInput, turret, limelight);
         FSMShooter.Init();
 
         /// 5. intake------------------------------------------------------------
@@ -205,7 +205,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         gamepadCo2.readButtons();
 
         /// combo button LB+ & RB+ config and update
-        gamepadInput.update(); // for combined button combo
+        gamepadComboInput.update(); // for combined button combo
         /// Changes the action state base on which button is pressed
         buttonUpdate(); // sets requestedActionState ONLY
 
@@ -429,7 +429,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
                 ((gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN))
                         && isButtonDebounced());
 
-        boolean sortPressed = gamepadInput.getOperatorLbXComboPressed(); // combo - LB+X for sorted shooting. Assume this is edge-based already
+        boolean sortPressed = gamepadComboInput.getOperatorLbXComboPressed(); // combo - LB+X for sorted shooting. Assume this is edge-based already
         if (seqShootPressed) requestedActionState = RobotActionState.Sequence_Shooting;
         if (sortPressed)     requestedActionState = RobotActionState.Sort_Shooting;
         if (intakePressed)   requestedActionState = RobotActionState.Intaking;

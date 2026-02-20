@@ -4,7 +4,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.ButtonReader;
 
-public class GamepadInput {
+public class GamepadComboInput {
 
     // Driver = gamepad1, Operator = gamepad2
     private final GamepadEx driverGp;
@@ -33,7 +33,7 @@ public class GamepadInput {
     private boolean oLbXComboConsumed       = false;
     private boolean oBackSingleConsumed     = false;
 
-    public GamepadInput(GamepadEx driverGp, GamepadEx operatorGp) {
+    public GamepadComboInput(GamepadEx driverGp, GamepadEx operatorGp) {
         this.driverGp   = driverGp;
         this.operatorGp = operatorGp;
 

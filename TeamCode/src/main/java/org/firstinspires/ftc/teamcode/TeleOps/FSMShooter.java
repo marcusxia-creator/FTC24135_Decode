@@ -3,19 +3,16 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.util.LUT;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
 import java.util.Optional;
 
 public class FSMShooter {
     private final RobotHardware robot;
-    private final GamepadInput gamepadInput;
+    private final GamepadComboInput gamepadComboInput;
     private LUTPowerCalculator shooterPowerLUT;
     private final GamepadEx gamepad_1;
     private final GamepadEx gamepad_2;
@@ -113,13 +110,13 @@ public class FSMShooter {
     //Constructor
     public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot,
                       SpindexerUpd spindexer, LUTPowerCalculator shooterPowerLUT,
-                      GamepadInput gamepadInput, Turret turret, Limelight limelight) {
+                      GamepadComboInput gamepadComboInput, Turret turret, Limelight limelight) {
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
         this.robot = robot;
         this.spindexer = spindexer;
         this.shooterPowerLUT = shooterPowerLUT;
-        this.gamepadInput = gamepadInput;
+        this.gamepadComboInput = gamepadComboInput;
         /// New!!
         this.turret = turret;
         this.limelight = limelight;

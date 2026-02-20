@@ -9,7 +9,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
-import org.firstinspires.ftc.teamcode.TeleOps.BasicTeleOp_RED_ALLIANCE.Alliance;
 
 
 import java.util.Optional;
@@ -36,13 +35,13 @@ public class LUTPowerCalculator {
 
     // --------- Tune these ----------
     // PID
-    public static double kP = 2;   // start ~1.5 to 4.0 (normalized units)
-    public static double kI = 0.0;
-    public static double kD = 0.02;
+    public static double kPShooter = 2;   // start ~1.5 to 4.0 (normalized units)
+    public static double kIShooter = 0.0;
+    public static double kDShooter = 0.02;
 
     // Feedforward
-    public static double kS = 0.03;  // static friction (small bump)
-    public static double kV = 1.0;  // scale from targetNorm to power (roughly 1.0 if perfect)
+    public static double kSShooter = 0.03;  // static friction (small bump)
+    public static double kVShooter = 1.0;  // scale from targetNorm to power (roughly 1.0 if perfect)
     // --------------------------------
 
     /**
@@ -79,7 +78,7 @@ public class LUTPowerCalculator {
     //===================================================
     public LUTPowerCalculator(RobotHardware robot) {
         this.robot = robot;
-        this.pid = new PIDController(kP, kI, kD);
+        this.pid = new PIDController(kPShooter, kIShooter, kDShooter);
     }
 
     public void setAlliance(boolean isRedAlliance) {
@@ -126,7 +125,7 @@ public class LUTPowerCalculator {
         currentNorm = clamp01(currentNorm);
 
         // Feedforward: baseline power
-        double ff = (kS * Math.signum(targetNorm)) + (kV * targetNorm);
+        double ff = (kSShooter * Math.signum(targetNorm)) + (kVShooter * targetNorm);
 
         // PID correction (FTCLib PIDController uses (measured, setpoint))
         double pidOut = pid.calculate(currentNorm, targetNorm);
