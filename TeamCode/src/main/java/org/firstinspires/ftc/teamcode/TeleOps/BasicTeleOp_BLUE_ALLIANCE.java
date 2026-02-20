@@ -103,7 +103,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         robot.init();                       //Initialize all motors and servos
         robot.initIMU();                    //Initialize control hub IMU
         robot.initPinpoint();               //Initialize pinpoint
-        robot.initExternalIMU();            //Initialize external IMU
+        //robot.initExternalIMU();            //Initialize external IMU
 
         /**
          * Transfer the pose 2D from Auto Ops
@@ -154,11 +154,11 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
 
         /// 9. limelight--------------------------------------------------------------
         limelight = new Limelight(robot);
-        limelight.initLimelight(21);
+        limelight.initLimelight(25);
         limelight.start();
 
         /// 10. start adjuster servo at position to avoid soft start
-        robot.shooterAdjusterServo.setPosition(0.49);
+        robot.shooterAdjusterServo.setPosition(0.48);
 
         robot.kickerServo.setPosition(kickerRetract);
 
@@ -166,9 +166,6 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
 
     @Override
     public void loop() {
-
-        /// NEW on interleague day
-        resetTurret();
 
         // ========================================================
         // WORKING FLOW:
@@ -259,6 +256,9 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         int zone = shooterPowerAngleCalculator.getZone();
         turret.updateZoneForGoalPose(zone);
         FSMShooter.updateZoneForGoalPose(zone);
+
+        //Turret PIDF Config
+        turret.updatePidFromDashboard();
 
         // =========================================================
         // 7. SUBSYSTEM FSMs (ALWAYS RUN)
@@ -458,41 +458,25 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     }
     ///  - LED Update
     private void updateLED() {
-        if (Math.abs(turret.getTargetTick() - turret.getCurrentTick())<5){
-            /// +/- 2deg for 5 tick
-            robot.LED.setPosition(0.277);
+
+        if (shooterPowerAngleCalculator.getZone() == 0 && Math.abs(turret.getTargetTick() - turret.getCurrentTick())<10 && !limelight.llresult()) {
+            //Distance outside shooting zone and no limelight, white alert
+            robot.LED.setPosition(1.0); // white color
+        } else if (shooterPowerAngleCalculator.getZone() == 0 && limelight.llresult() && Math.abs(turret.getTargetTick() - turret.getCurrentTick())<10){
+            robot.LED.setPosition(0.333); // orange
+        } else if (shooterPowerAngleCalculator.getZone() > 0 && limelight.llresult() && Math.abs(turret.getTargetTick() - turret.getCurrentTick())<10){
+            robot.LED.setPosition(0.5); // green
+        } else if (shooterPowerAngleCalculator.getZone() > 0 && limelight.llresult() && Math.abs(turret.getTargetTick() - turret.getCurrentTick())>10) {
+            robot.LED.setPosition(0.388); // yellow
+        } else if (shooterPowerAngleCalculator.getZone() > 0 && !limelight.llresult() && Math.abs(turret.getTargetTick() - turret.getCurrentTick())<10) {
+            robot.LED.setPosition(0.288); // red
+        } else { //Default black
+            robot.LED.setPosition(0.0);
         }
-        else {
-            if (shooterPowerAngleCalculator.getZone() == 0) {
-                //Distance outside shooting zone, red alert
-                robot.LED.setPosition(0.28);
-            } else if (shooterPowerAngleCalculator.getZone() > 0 && limelight.llresult()) {
-                robot.LED.setPosition(1.0);
-            } else if (shooterPowerAngleCalculator.getZone() > 0 && !limelight.llresult()) {
-                robot.LED.setPosition(0.388);
-            } else { //Default black
-                robot.LED.setPosition(0.0);
-            }
-        }
-
-
-
     }
 
-    public void resetTurret() {
 
-        /**
-        if (gamepadCo1.getButton(GamepadKeys.Button.LEFT_BUMPER) || gamepadCo2.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
-            turret.initTurret();
-        }
-
-        if (gamepadCo1.getButton(GamepadKeys.Button.RIGHT_BUMPER) || gamepadCo2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
-            turret.resetTurretPosition();
-        }
-         */
-    }
-
-    private int updateXandY () {
+    private int updateZone () {
         return shooterPowerAngleCalculator.getZone();
     }
 
@@ -575,7 +559,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         telemetry.addData("goal pose", turret.getGoalPose());
         telemetry.addLine("-----------------------------------------");
         ///telemetry.addData("limelight output", "%,.1f",limelight.normalizedPose2D(DistanceUnit.INCH));
-        ///telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(24));
+        telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(25));
         telemetry.addData("green slot position", limelight.getGreenSlot());
         telemetry.update();
     }
