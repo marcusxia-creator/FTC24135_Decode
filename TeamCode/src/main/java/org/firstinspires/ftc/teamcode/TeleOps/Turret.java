@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import static com.sun.tools.doclint.Entity.alpha;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueCloseGoalPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueFarGoalPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redCloseGoalPose;
@@ -15,12 +14,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.Range;
 
-import org.apache.commons.math3.filter.KalmanFilter;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
-import java.security.cert.PKIXRevocationChecker;
 import java.util.Optional;
 
 @Config
@@ -35,7 +32,7 @@ public class Turret {
     private final double angleToTick = 1.0 / tickToAngle;                   //2.389 tick = 1deg
     private double conversionFactor = 39.3700787;
 
-    public static double kP = 17, kI = 0, kD = 0.005, kS = 0.2, kV = 2;     // turret motor drive pidcontroller
+    public static double kPTurret = 0.004, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.0002, kVTurret = 0.004;     // turret motor drive pidcontroller
     public static double kP_motor = 20, kI_motor = 0, kD_motor = 0.005, kF = 2; // turret motor pidf
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
 
@@ -79,7 +76,7 @@ public class Turret {
     //--------------------------------------------
     public Turret (RobotHardware robot, boolean isRedAlliance) {
         this.robot = robot;
-        pidController = new PIDController(kP, kI, kD);
+        pidController = new PIDController(kPTurret, kITurret, kDTurret);
 
         // Set motor PIDF once using your existing pidf field
         this.robot.turretMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
@@ -112,9 +109,9 @@ public class Turret {
 
     public void updatePidFromDashboard() {
         // FTCLib PID (your own controller)
-        if (kP != lastkP || kI != lastkI || kD != lastkD) {
-            pidController.setPID(kP, kI, kD);
-            lastkP = kP; lastkI = kI; lastkD = kD;
+        if (kPTurret != lastkP || kITurret != lastkI || kDTurret != lastkD) {
+            pidController.setPID(kPTurret, kITurret, kDTurret);
+            lastkP = kPTurret; lastkI = kITurret; lastkD = kDTurret;
         }
 
         // Motor controller PIDF (RUN_USING_ENCODER) — only if you really need it
@@ -162,7 +159,7 @@ public class Turret {
         // Use direction + error assist.
         double ff =0.0;
         if (Math.abs(errorTicks)>5){
-            ff = (kS * Math.signum(errorTicks)) + (kV * velCmd);
+            ff = (kSTurret * Math.signum(errorTicks)) + (kVTurret * velCmd);
         }
         double output = power + ff;
         // NEW -- Soft-limit (smooth saturation) instead of hard clip
