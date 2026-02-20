@@ -68,6 +68,8 @@ public class FSMShooter {
 
     private boolean LRTriggerBoolean = false;
 
+    public double trim;
+
 
 
     /**
@@ -127,32 +129,12 @@ public class FSMShooter {
         robot.topShooterMotor.setPower(0);
         robot.bottomShooterMotor.setPower(0);
         shooterState = SHOOTERSTATE.SHOOTER_IDLE;
-        robot.topShooterMotor.setPower(0);
-        robot.bottomShooterMotor.setPower(0);
         shootermotorstate = SHOOTERMOTORSTATE.STOP;
         turretState = TURRETSTATE.AIMING;
+        trim =0;
     }
 
-    private void updateTurretAutoAim(boolean aimEnabled) {
-        if (!aimEnabled) {
-            //turret.resetVisionAssist(); // clear tx offset so it doesn't linger
-            //turret.update();            // still hold/aim based on base target
-            return;
-        }
 
-        // 1) tell Limelight the camera yaw (turret-mounted camera)
-        double yawDeg = turret.getTurretMotorAngle() + robot.pinpoint.getHeading(AngleUnit.DEGREES);
-        robot.limelight.updateRobotOrientation(yawDeg);
-
-        // 2) read tx (your Limelight.getTargetX returns 0 if invalid)
-        //double txDeg = limelight.getTargetXForTag(24);
-        double txDeg = 0.0;
-        // 3) feed tx to turret assist
-        //turret.updateVisionTx(txDeg);
-
-        // 4) drive turret motor
-        //turret.update();
-    }
 
     public void SequenceShooterLoop() {
         //===========================================================
@@ -175,7 +157,7 @@ public class FSMShooter {
         //==========================================================
         // Set shooter adjuster angle
         //==========================================================
-        angle = Range.clip(shooterPowerLUT.getShooterAngle(), 0.06, 0.49); // get shooter adjuster angle.
+        angle = Range.clip(shooterPowerLUT.getShooterAngle(), 0.12, 0.49); // get shooter adjuster angle.
 
         //==========================================================
         //Control shooter run/NOT
@@ -214,6 +196,33 @@ public class FSMShooter {
                         shooterState == SHOOTERSTATE.SHOOT_READY;
         turretStateUpdate();
 
+        //========================================================
+        // NEW Turret Trim
+        // Triming/manual control
+        //========================================================
+        int trimInput=0;
+        if ((gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
+                || gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER))
+                && isButtonDebounced()){
+            trimInput+=1;
+        }
+        if ((gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER)
+                || gamepad_2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+                && isButtonDebounced()){
+            trimInput-=1;
+        }
+
+        if (turretState == TURRETSTATE.AIMING && aimEnabled) {
+            trim=Range.clip(trim+trimInput*trimStep,-400,400);
+            int currentTick = turret.getCurrentTick();
+            int targetTick = (int) (turret.getTargetTick() + trim);
+            turret.driveTurretPID(currentTick, targetTick);
+        }
+        else {
+            robot.turretMotor.setVelocity(trimInput*adjSpeed);
+            ///turret.driveTurretPID(turret.getCurrentTick(), turret.getTargetTick());
+        }
+        /** Depreciated!!
         if (turretState == TURRETSTATE.AIMING && aimEnabled) {
             int currentTick = turret.getCurrentTick();
             int targetTick = turret.getTargetTick();
@@ -223,6 +232,12 @@ public class FSMShooter {
             robot.turretMotor.setPower(0);
             ///turret.driveTurretPID(turret.getCurrentTick(), turret.getTargetTick());
         }
+         */
+        //=====================================
+        // TODO - Update Zone for shooting interval - not in use, - update the MS in main loop right now.
+        //=====================================
+        ///int zone  = shooterPowerLUT.getZone();
+        ///updateZoneForGoalPose(zone);
 
         //==========================================================
         // Main FSM

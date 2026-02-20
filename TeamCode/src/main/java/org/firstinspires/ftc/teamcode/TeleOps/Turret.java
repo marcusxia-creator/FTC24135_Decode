@@ -94,6 +94,8 @@ public class Turret {
     public Turret (RobotHardware robot, boolean isRedAlliance) {
         this.robot = robot;
         pidController = new PIDController(kP, kI, kD);
+        pidController.setTolerance(5.0);
+
 
         // Set motor PIDF once using your existing pidf field
         ///this.robot.turretMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
@@ -108,7 +110,7 @@ public class Turret {
         //initTurret();
     }
 
-    public int motorDriveTick() {
+    public int getMotorDriveTick() {
         return (int) Math.round(getTurretDriveAngle() * angleToTick);
     }
 
