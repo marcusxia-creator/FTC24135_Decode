@@ -20,7 +20,7 @@ public class AutoIntakeFSM {
     private final RobotHardware robot;
 
     public static int currentGreenSlot;
-    public static int shootingInitSlot = 0;
+    public static int shootingInitSlot;
 
     public AutoIntakeFSM(RobotHardware robot) {
         this.robot = robot;
@@ -51,14 +51,10 @@ public class AutoIntakeFSM {
         private INTAKESTATE currentState;
 
         private int targetSlot = 0;
-        private final int currentGreenSlot;
-        private final int targetGreenSlot;
 
         /// Constructor
-        public IntakeRunMode(RobotHardware robot, int targetGreenSlot, int currentGreenSlot, double maxRunTime) {
+        public IntakeRunMode(RobotHardware robot, double maxRunTime) {
             this.robot = robot;
-            this.targetGreenSlot = targetGreenSlot;
-            this.currentGreenSlot = currentGreenSlot;
             this.currentState = INTAKESTATE.INTAKE_INIT;
             this.colorDetection = new AutoColorDetection(robot);
             this.ballColors = AutoBallColors.UNKNOWN;
@@ -138,17 +134,8 @@ public class AutoIntakeFSM {
             }
         }
 
-        private void updateShootingInitSlot() {
-            if (currentGreenSlot == -1) {
-                shootingInitSlot = 0;
-            } else {
-                shootingInitSlot = Math.floorMod(currentGreenSlot - targetGreenSlot, 3);
-            }
-        }
-
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            updateShootingInitSlot();
             FSMIntakeRun();
             telemetryPacket.put("FSM Intake State", currentState);
             telemetryPacket.put("Calc Shooting Int Slot", shootingInitSlot);
@@ -157,11 +144,7 @@ public class AutoIntakeFSM {
         }
     }
 
-    public Action IntakeRun (int targetGreenSlot, double maxTime, int currentGreenSlot) {
-        return new IntakeRunMode(robot, targetGreenSlot, currentGreenSlot, maxTime);
-    }
-
-    public int getInitShotSlot () {
-        return shootingInitSlot;
+    public Action IntakeRun (double maxTime) {
+        return new IntakeRunMode(robot, maxTime);
     }
 }
