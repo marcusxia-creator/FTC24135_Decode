@@ -103,7 +103,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.init();                       //Initialize all motors and servos
         robot.initIMU();                    //Initialize control hub IMU
         robot.initPinpoint();               //Initialize pinpoint
-        robot.initExternalIMU();            //Initialize external IMU
+        //robot.initExternalIMU();            //Initialize external IMU
         /**
          * Transfer the pose 2D from Auto Ops
          */
@@ -585,6 +585,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         ///telemetry.addData("limelight output", "%,.1f",limelight.normalizedPose2D(DistanceUnit.INCH));
         ///telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(24));
         telemetry.addData("green slot position", limelight.getGreenSlot());
+        telemetry.addData("limelight TX", limelight.getTargetXForTag(24));
         telemetry.update();
     }
     public void telemetryManagerSimplified() {

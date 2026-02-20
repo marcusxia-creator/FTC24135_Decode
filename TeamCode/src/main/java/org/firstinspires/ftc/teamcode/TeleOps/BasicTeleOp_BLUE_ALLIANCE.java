@@ -103,7 +103,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         robot.init();                       //Initialize all motors and servos
         robot.initIMU();                    //Initialize control hub IMU
         robot.initPinpoint();               //Initialize pinpoint
-        robot.initExternalIMU();            //Initialize external IMU
+        //robot.initExternalIMU();            //Initialize external IMU
 
         /**
          * Transfer the pose 2D from Auto Ops

@@ -230,14 +230,13 @@ public class FSMShooter {
             trimInput-=1;
         }
 
-
         if (turretState == TURRETSTATE.AIMING && aimEnabled) {
             trim=Range.clip(trim+trimInput*trimStep,-400,400);
             int currentTick = turret.getCurrentTick();
-            int targetTick = (int)(turret.getTargetTick()+trim);
+            int targetTick = (int) (turret.getTargetTick() + trim);
             turret.driveTurretPID(currentTick, targetTick);
         }
-        if (turretState == TURRETSTATE.LOCKING) {
+        else {
             robot.turretMotor.setVelocity(trimInput*adjSpeed);
             ///turret.driveTurretPID(turret.getCurrentTick(), turret.getTargetTick());
         }
