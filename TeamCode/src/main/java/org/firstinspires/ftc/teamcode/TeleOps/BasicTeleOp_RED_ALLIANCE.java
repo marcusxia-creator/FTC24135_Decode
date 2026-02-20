@@ -129,7 +129,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
 
         /// 3. turret---------------------------------------------------------------
-        //turret = new TurretUpd(robot);
         turret = new Turret(robot, true);
 
         /// 4.1. power calculator for shooter------------------------------------------------------------

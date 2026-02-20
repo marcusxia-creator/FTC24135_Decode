@@ -59,7 +59,6 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     private RobotDrive robotDrive;
     FSMShooter FSMShooter;
     FSMIntake FSMIntake;
-    //private TurretUpd turret;
     private Turret turret;
     private SpindexerManualControl spindexerManualControl;
     //private Spindexer spindexer;
@@ -129,7 +128,6 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadInput);
 
         /// 3. turret---------------------------------------------------------------
-        //turret = new TurretUpd(robot);
         turret = new Turret(robot, false);
 
         /// 4.1. power calculator for shooter------------------------------------------------------------
