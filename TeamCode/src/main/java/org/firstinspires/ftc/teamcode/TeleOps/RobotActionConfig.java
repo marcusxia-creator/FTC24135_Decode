@@ -45,8 +45,8 @@ public class RobotActionConfig {
     public static final double SPOOLUP_SEC              = 1.25;
     //shooter adjustor
     public static double shooterAdjusterMax             = 0.48;
-    public static double shooterAdjusterMin             = 0.06;
-    public static double shooterAdjusterMid             = 0.35;
+    public static double shooterAdjusterMin             = 0.14; //new 0.14 ; old : 0.06
+    public static double shooterAdjusterMid             = 0.35; //new 0.35
     public static double shooterFactorThreshold         = 0.95;
     //drive train power
     public static double powerFactor                    = 1;

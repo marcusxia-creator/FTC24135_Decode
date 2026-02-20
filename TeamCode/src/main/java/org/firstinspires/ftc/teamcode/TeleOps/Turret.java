@@ -40,7 +40,7 @@ public class Turret {
     //kp 0.004
     //ks 0.0001
     //kv 0.005
-    public static double kP = 0.002, kI = 0, kD = 0.0003, kS = 0.0001, kV = 0.005; // turret motor drive pidcontroller
+    public static double kP = 0.001, kI = 0, kD = 0.0003, kS = 0.0001, kV = 0.002; // turret motor drive pidcontroller
     public static double kP_motor = 20, kI_motor = 0, kD_motor = 0.005, kF = 2; // turret motor pidf
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
 
