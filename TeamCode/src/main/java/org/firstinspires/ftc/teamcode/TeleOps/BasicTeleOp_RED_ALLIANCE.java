@@ -170,9 +170,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     @Override
     public void loop() {
 
-        /// NEW on interleague day
-        resetTurret();
-
         // ========================================================
         // WORKING FLOW:
         // 1.updateActionStateTransitions() decides when safe to enter
