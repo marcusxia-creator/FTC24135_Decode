@@ -165,6 +165,11 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
         /// 11. start kicker servo at position to avoid soft start
         robot.kickerServo.setPosition(kickerRetract);
+
+        telemetry.addData("start pose", PoseStorage.currentPose);
+        telemetry.addData("pinpoint", robot.pinpoint.getPosition());
+
+        telemetry.update();
     }
 
     @Override

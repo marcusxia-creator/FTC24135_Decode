@@ -105,7 +105,7 @@ public class RedSideFarAuto extends LinearOpMode {
 
         waitForStart();
 
-        if (opModeIsActive()) {
+        if (!isStopRequested()) {
             Actions.runBlocking(
                 new SequentialAction(
                     turret.TurretRun(68),
@@ -142,6 +142,7 @@ public class RedSideFarAuto extends LinearOpMode {
             );
             robot.pinpoint.update();
             drive.localizer.update();
+
             PoseStorage.currentPose = drive.localizer.getPose();
             PoseStorage.turretEndTick = robot.turretMotor.getCurrentPosition();
             PoseStorage.motifGreenPos = targetGreen;

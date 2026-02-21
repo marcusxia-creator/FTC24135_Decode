@@ -129,7 +129,7 @@ public class AutoShooterFSM {
                     currentState = SHOOTERSTATE.SHOOTER_RUN;
                     break;
                 case SHOOTER_RUN:
-                    if (stateTimer.seconds() > ShooterWaitTime) {
+                    if (stateTimer.seconds() > ShooterWaitTime+0.3) {
                         robot.kickerServo.setPosition(kickerExtend);
                         if (stateTimer.seconds() > ShooterWaitTime + 0.6) {
                             stateTimer2.reset();
@@ -157,9 +157,9 @@ public class AutoShooterFSM {
                     break;
                 case SHOOTER_RESET:
                     SpindexerRunTo(0);
-                    if (stateTimer2.seconds() > 0.6) {
+                    if (stateTimer2.seconds() > 0.4) {
                         robot.kickerServo.setPosition(kickerRetract);
-                        if(stateTimer2.seconds()>1.0){
+                        if(stateTimer2.seconds()>0.7){
                             currentState = SHOOTERSTATE.SHOOTER_END;
                         }
                     }
