@@ -200,7 +200,7 @@ public class Turret {
             return true;
         }
         int delta = currentTick - startingTick;
-        boolean nearStart = Math.abs(delta) < 350;
+        boolean nearStart = Math.abs(delta) < 435;
 
         double baseDir = (startingTick < 0) ? 1.0 : -1.0;
         double dir = nearStart ? baseDir : -baseDir;
