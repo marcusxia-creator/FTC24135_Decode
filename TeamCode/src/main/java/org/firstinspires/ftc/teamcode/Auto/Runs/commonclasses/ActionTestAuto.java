@@ -12,16 +12,13 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
 //import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 @Config
-@Autonomous(name = "TestAuto", group = "Autonomous")
-public class TestAuto extends LinearOpMode {
+@Autonomous(name = "ActionTestAuto", group = "Autonomous")
+public class ActionTestAuto extends LinearOpMode {
     public static Pose2d initialPose = new Pose2d(64, -8, Math.toRadians(0));
 
     public RobotHardware robot;

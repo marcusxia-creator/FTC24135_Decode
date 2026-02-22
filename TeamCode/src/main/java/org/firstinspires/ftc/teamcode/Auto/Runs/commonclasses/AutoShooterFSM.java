@@ -212,7 +212,7 @@ public class AutoShooterFSM {
     }
 
     public Action ShootCloseZone (double ShotPower, double ShooterWaitTime, int currentGreen, int targetGreen){
-        return new ShooterRunMode(robot, ShotPower,0.1, ShooterWaitTime, currentGreen, targetGreen);
+        return new ShooterRunMode(robot, ShotPower,0.15, ShooterWaitTime, currentGreen, targetGreen);
     }
 
     ///Shooter Speed

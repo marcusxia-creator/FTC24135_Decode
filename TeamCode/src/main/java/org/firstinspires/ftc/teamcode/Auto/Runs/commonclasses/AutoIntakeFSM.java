@@ -83,7 +83,8 @@ public class AutoIntakeFSM {
                     currentState = INTAKESTATE.INTAKE_RUN;
                     break;
                 case INTAKE_RUN:
-                    robot.intakeMotor.setPower(0.75);
+                    robot.kickerServo.setPosition(kickerRetract);
+                    robot.intakeMotor.setPower(0.85);
                     stateTimer.reset();
                     currentState = INTAKESTATE.INTAKE_DETECT;
                     break;
@@ -116,14 +117,14 @@ public class AutoIntakeFSM {
                     }
                     break;
                 case INTAKE_SPIN:
-                    if (stateTimer.seconds() > 0.4) {
+                    if (stateTimer.seconds() > 0.3) {
                         currentState = INTAKESTATE.INTAKE_RUN;
                     }
                     break;
                 case INTAKE_UNJAM:
                     SpindexerRunTo(0);
                     robot.intakeMotor.setPower(ejectSpeed);
-                    if (stateTimer.seconds() > 0.5) {
+                    if (stateTimer.seconds() > 0.3) {
                         currentState = INTAKESTATE.INTAKE_END;
                     }
                     break;
