@@ -197,7 +197,7 @@ public class FSMShooter {
         // NEW Turret Trim
         // Triming/manual control
         //========================================================
-        int trimInput=0;
+        /*int trimInput=0;
         if ((gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
                 || gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER))
                 && isButtonDebounced()){
@@ -209,7 +209,17 @@ public class FSMShooter {
             trimInput-=1;
         }
 
+         */
+        int trimInput=0;
         if (turretState == TURRETSTATE.AIMING && aimEnabled) {
+            if (gamepadComboInput.getDriverLbSinglePressed() || gamepadComboInput.getOperatorLbSinglePressed()){
+                trimInput+=1;
+            }
+            if ((gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER)
+                    || gamepad_2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+                    && isButtonDebounced()){
+                trimInput-=1;
+            }
             trim=Range.clip(trim+trimInput*trimStep,-400,400);
             int currentTick = turret.getCurrentTick();
             int targetTick = (int) (turret.getTargetTick() + trim);

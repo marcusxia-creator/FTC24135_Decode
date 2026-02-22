@@ -217,24 +217,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         // 1. INPUT UPDATE (read buttons + combos)
         // =========================================================
-        if (resetTurret) {
-
-            // call the method and capture its return
-            boolean resetDone = turret.turretReset();
-
-            // automatically jump out when finished
-            if (resetDone) {
-                resetTurret = false;   // leave reset mode
-                turretStatus = false;  // turret idle (or set true if you want tracking)
-            }
-
-        }
-        else if (turretStatus) {
-            turret.driveTurretMotor();
-        }
-        else {
-            robot.turretMotor.setPower(0);
-        }
 
         gamepadCo1.readButtons();
         gamepadCo2.readButtons();
@@ -300,8 +282,22 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // 7. SUBSYSTEM FSMs (ALWAYS RUN)
         // =========================================================
         FSMIntake.loop();
-        FSMShooter.SequenceShooterLoop();
-
+        // =========================================================
+        // 7.1 SHOOTER & TURRET CONTROL (BUTTON CONTROLLED)
+        // =========================================================
+        /// When gamepad back pressed, reset turret.
+        /// Otherwise, normal shooter and turret drive
+        if (gamepadCo1.getButton(GamepadKeys.Button.BACK) && isButtonDebounced()) {
+            resetTurret = true;
+        }
+        if (resetTurret){
+            if (turret.turretReset()){
+                resetTurret = false;
+            }
+        }
+        else {
+            FSMShooter.SequenceShooterLoop();
+        }
         // =========================================================
         // 8. LED STATUS (non-blocking)
         // =========================================================
@@ -448,7 +444,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     // Assign button for FSM states -
     //===========================================================
 
-    private void buttonUpdate() {
+    public void buttonUpdate() {
         boolean seqShootPressed =
                 (gamepadCo1.getButton(GamepadKeys.Button.X) || gamepadCo2.getButton(GamepadKeys.Button.X))
                         && isButtonDebounced();
@@ -467,12 +463,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         boolean turretReset =
                 ((gamepadComboInput.getDriverBackSinglePressed()));
 
-        if (turretReset){
-            resetTurret = !resetTurret;
-            if (resetTurret) {
-                turretStatus = false;
-            }
-        }
+
         boolean sortPressed = gamepadComboInput.getOperatorLbXComboPressed(); // combo - LB+X for sorted shooting. Assume this is edge-based already
         if (seqShootPressed) requestedActionState = RobotActionState.Sequence_Shooting;
         if (sortPressed)     requestedActionState = RobotActionState.Sort_Shooting;
@@ -550,6 +541,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     // telemetry Manager
     //===========================================================
     public void telemetryManager(){
+        telemetry.addData("Limit Switch Log", switchTickLog.toString());
         telemetry.addData("Alliance", alliance);
         telemetry.addData("loop frequency (Hz)", loopHz);
         telemetry.addData("voltage from robot", robot.getBatteryVoltageRobust());

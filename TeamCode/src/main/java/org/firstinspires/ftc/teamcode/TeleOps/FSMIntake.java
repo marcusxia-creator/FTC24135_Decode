@@ -104,7 +104,6 @@ public class FSMIntake {
                 break;
 
             case INTAKE_RUNTONEXT:
-                // ✅ Instead of a fixed delay, wait until the servo finishes the incremental move
                 // OLD - Small delay to allow the servo to physically move before starting the motor again
                 if (intakeTimer.seconds() > spindexerServoPerSlotTime) {
                     intakeStates = IntakeStates.INTAKE_START;

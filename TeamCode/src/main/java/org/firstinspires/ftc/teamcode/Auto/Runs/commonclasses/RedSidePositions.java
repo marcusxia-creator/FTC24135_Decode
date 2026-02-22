@@ -8,13 +8,13 @@ public class RedSidePositions {
 
     private final Pose2d redGoalPose  = new Pose2d(-70,70,-45);
 
-    public static double IntakeSet1Position1_X = 36;
+    public static double IntakeSet1Position1_X = 34;
     public static double IntakeSet1Position1_Y = 24;
-    public static double IntakeSet1Position2_X = 36;
+    public static double IntakeSet1Position2_X = 34;
     public static double IntakeSet1Position2_Y = 30;
-    public static double IntakeSet1Position3_X = 36;
+    public static double IntakeSet1Position3_X = 34;
     public static double IntakeSet1Position3_Y = 36;
-    public static double IntakeSet1Position4_X = 36;
+    public static double IntakeSet1Position4_X = 34;
     public static double IntakeSet1Position4_Y = 58;
 
     public static double Far_IntakeSet2Position1_X = 12.5;
