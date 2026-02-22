@@ -15,7 +15,6 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -24,6 +23,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Making the sequence shooting go slot 5-4-3 (intaking) 3-2-1 (shooting)
@@ -38,7 +40,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
  * Tuning LUT values when the hardware changes
  */
 @Config
-@TeleOp(name = "---------BLUE--🐧----------", group = "org.firstinspires.ftc.teamcode")
+@TeleOp(name = "---------RED--🐧----------", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     /// Enum states for robot action state
     public enum RobotActionState {
@@ -59,10 +61,10 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     private RobotDrive robotDrive;
     FSMShooter FSMShooter;
     FSMIntake FSMIntake;
-    //private TurretUpd turret;
+
     private Turret turret;
     private SpindexerManualControl spindexerManualControl;
-    //private Spindexer spindexer;
+
     private SpindexerUpd spindexer;
     public Limelight limelight;
     /// ----------------------------------------------------------------
@@ -93,6 +95,13 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     public static double shooterRPM;
     public static int shooterTargetRPM;
 
+    private boolean turretStatus = false;
+    private boolean resetTurret = false;
+    private int startingTick;
+
+
+    public List<String> switchTickLog = new ArrayList<>();
+
     /// ----------------------------------------------------------------
     @Override
     public void init() {
@@ -103,7 +112,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         robot.init();                       //Initialize all motors and servos
         robot.initIMU();                    //Initialize control hub IMU
         robot.initPinpoint();               //Initialize pinpoint
-        //robot.initExternalIMU();            //Initialize external IMU
+        //robot.initExternalIMU();            //Initialize external IMU - no external IMU being used.
 
         /**
          * Transfer the pose 2D from Auto Ops
@@ -147,26 +156,34 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
 
         /// 7. alliance selection-----------------------------------------------------------
         alliance = Alliance.BLUE_ALLIANCE;
-        shooterPowerAngleCalculator.setAlliance(false);
+        if (alliance == Alliance.RED_ALLIANCE) {
+            shooterPowerAngleCalculator.setAlliance(true);
+        }else{
+            shooterPowerAngleCalculator.setAlliance(false);
+        };
 
         /// 8. robot state----------------------------------------------------------
         actionStates = RobotActionState.Idle;
 
         /// 9. limelight--------------------------------------------------------------
         limelight = new Limelight(robot);
-        limelight.initLimelight(25);
+        limelight.initLimelight(24);
         limelight.start();
 
         /// 10. start adjuster servo at position to avoid soft start
         robot.shooterAdjusterServo.setPosition(0.48);
 
+        /// 11. start kicker servo at position to avoid soft start
         robot.kickerServo.setPosition(kickerRetract);
 
+        telemetry.addData("start pose", PoseStorage.currentPose);
+        telemetry.addData("pinpoint", robot.pinpoint.getPosition());
+
+        telemetry.update();
     }
 
     @Override
     public void loop() {
-
         // ========================================================
         // WORKING FLOW:
         // 1.updateActionStateTransitions() decides when safe to enter
@@ -201,6 +218,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         // =========================================================
         // 1. INPUT UPDATE (read buttons + combos)
         // =========================================================
+
         gamepadCo1.readButtons();
         gamepadCo2.readButtons();
 
@@ -215,7 +233,6 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         robot.pinpoint.update();
         ballColor = BallColor.fromHue(colorDetection.getHue());
         updateLoopFrequency();
-
 
         // =========================================================
         // 3. DRIVE (always responsive)
@@ -250,6 +267,8 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
                 break;
         }
 
+
+
         // =========================================================
         // 6. ZONE STATUS
         // =========================================================
@@ -264,8 +283,23 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         // 7. SUBSYSTEM FSMs (ALWAYS RUN)
         // =========================================================
         FSMIntake.loop();
-        FSMShooter.SequenceShooterLoop();
-
+        // =========================================================
+        // 7.1 SHOOTER & TURRET CONTROL (BUTTON CONTROLLED)
+        // =========================================================
+        /// When gamepad back pressed, reset turret.
+        /// Otherwise, normal shooter and turret drive
+        if (gamepadCo1.getButton(GamepadKeys.Button.BACK) || gamepadCo2.getButton(GamepadKeys.Button.BACK) && isButtonDebounced()) {
+            resetTurret = true;
+            startingTick = robot.turretMotor.getCurrentPosition();
+        }
+        if (resetTurret){
+            if (turret.turretReset(startingTick)){
+                resetTurret = false;
+            }
+        }
+        else {
+            FSMShooter.SequenceShooterLoop();
+        }
         // =========================================================
         // 8. LED STATUS (non-blocking)
         // =========================================================
@@ -412,7 +446,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     // Assign button for FSM states -
     //===========================================================
 
-    private void buttonUpdate() {
+    public void buttonUpdate() {
         boolean seqShootPressed =
                 (gamepadCo1.getButton(GamepadKeys.Button.X) || gamepadCo2.getButton(GamepadKeys.Button.X))
                         && isButtonDebounced();
@@ -430,6 +464,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
                         && isButtonDebounced());
         boolean turretReset =
                 ((gamepadComboInput.getDriverBackSinglePressed()));
+
 
         boolean sortPressed = gamepadComboInput.getOperatorLbXComboPressed(); // combo - LB+X for sorted shooting. Assume this is edge-based already
         if (seqShootPressed) requestedActionState = RobotActionState.Sequence_Shooting;
@@ -475,6 +510,13 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         } else { //Default black
             robot.LED.setPosition(0.0);
         }
+
+        if(FSMShooter.turret.isLimitPressed()){
+            switchTickLog.add(Integer.toString(robot.turretMotor.getCurrentPosition()));
+            if(switchTickLog.size()>=10){
+                switchTickLog.remove(0);
+            }
+        }
     }
 
 
@@ -501,6 +543,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     // telemetry Manager
     //===========================================================
     public void telemetryManager(){
+        telemetry.addData("Alliance", alliance);
         telemetry.addData("loop frequency (Hz)", loopHz);
         telemetry.addData("voltage from robot", robot.getBatteryVoltageRobust());
         telemetry.addLine("-----");
@@ -511,7 +554,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         telemetry.addData("ShooterState", FSMShooter.shooterState);
         telemetry.addData("IntakeSafe", FSMIntake.canExit());
         telemetry.addData("ShooterSafe", FSMShooter.canExit());
-        telemetry.addLine("-----");
+        telemetry.addLine("--Spindexer-----------------------------------");
         telemetry.addData("Distance Sensor", robot.distanceSensor.getDistance(DistanceUnit.MM));
         telemetry.addData("Sensor Color", colorDetection.getStableColor());
         telemetry.addData("Sensor values", spindexer.colorValue);
@@ -520,12 +563,12 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         telemetry.addData("Slot 2", spindexer.slots[2]);
         telemetry.addData("Current Pos", spindexer.currentPos);
         telemetry.addData("Current index", spindexer.index);
-        telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
-        telemetry.addLine("-----");
+        telemetry.addLine("--Shooter-----------------------------------");
+        telemetry.addData("distance to goal", "%,.0f",shooterPowerAngleCalculator.getDistance());
+        telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
         telemetry.addData("shooter power calculator", shooterPowerAngleCalculator.getPower());
-        telemetry.addData("Shooter Power", robot.topShooterMotor.getPower());
+        telemetry.addData("Shooter actual Power", robot.topShooterMotor.getPower());
         telemetry.addData("voltage from Shooter", FSMShooter.getVoltage());
-        telemetry.addData("power set point", FSMShooter.getPower_setpoint());
         shooterTargetRPM = shooterPowerAngleCalculator.getRPM();
         shooterRPM = shooterPowerAngleCalculator.getMeasureRPM();
         telemetry.addData("Shooter Target RPM",shooterTargetRPM);
@@ -533,7 +576,8 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         telemetry.addData("Shooter RPM","%,.0f",robot.topShooterMotor.getVelocity()*SHOOTER_RPM_CONVERSION);
         telemetry.addLine("-----");
         //String MotifAvailable;
-        telemetry.addData("Alliance", alliance);
+
+        telemetry.addLine("--Robot Heading & Pose-----------------------------------");
         telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.addData("Pose2D", robot.pinpoint.getPosition());
         telemetry.addData("Starting Pose",PoseStorage.currentPose);
@@ -546,22 +590,24 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
                 "X: %.2f  Y: %.2f  H: %.1f°",
                 xIn, yIn, headingDeg
         );
-        telemetry.addData("Starting Pose",PoseStorage.currentPose);
+        telemetry.addLine("-----");
 
-
-        telemetry.addData("distance to goal", "%,.0f",shooterPowerAngleCalculator.getDistance());
-        telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
         telemetry.addLine("Turret-----------------------------------");
+        telemetry.addData("Limit Switch State", robot.limitSwitch.getState());
+        telemetry.addData("Limit Switch Log", switchTickLog.toString());
+        telemetry.addData("goal pose", turret.getGoalPose());
         telemetry.addData("turret target angle", turret.getTargetAngle());
         telemetry.addData("turret drive angle", turret.getTurretDriveAngle());
         telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
-        telemetry.addData("motor PIDF coefficient", robot.turretMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
-        telemetry.addData("current motor tick", turret.getCurrentTick());
         telemetry.addData("target motor tick", turret.getTargetTick());
-        telemetry.addData("goal pose", turret.getGoalPose());
+        telemetry.addData("current motor tick", turret.getCurrentTick());
+        telemetry.addData("turret auto end tick", PoseStorage.turretEndTick);
+        telemetry.addData("turret offset tick", turret.getTurretOffsetTick());
+        telemetry.addData("turret shooting mode", FSMShooter.turretState);
+        telemetry.addData("turret power", robot.turretMotor.getPower());
         telemetry.addLine("-----------------------------------------");
-        ///telemetry.addData("limelight output", "%,.1f",limelight.normalizedPose2D(DistanceUnit.INCH));
-        telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(25));
+        telemetry.addData("Switch tick logs", "["+String.join(", ", switchTickLog));
+        telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(24));
         telemetry.addData("green slot position", limelight.getGreenSlot());
         telemetry.update();
     }
