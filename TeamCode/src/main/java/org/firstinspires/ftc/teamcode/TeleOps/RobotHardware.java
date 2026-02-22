@@ -9,11 +9,13 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -84,6 +86,7 @@ public class RobotHardware {
     public DcMotorEx bottomShooterMotor;
 
     private RevHubOrientationOnRobot revHubOrientationOnRobot;
+    public DigitalChannel limitSwitch;
 
     //public ColorSensor colorSensor;// Color Sensor
     ///for debug colorSensor
@@ -144,6 +147,9 @@ public class RobotHardware {
         LED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
         colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
         distanceSensor = hardwareMap.get(DistanceSensor.class, "Color_Sensor");
+
+        limitSwitch = hardwareMap.get(DigitalChannel.class, "Limit_Switch");
+        limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         limelight = hardwareMap.get(Limelight3A.class, "LimeLight3A");
 

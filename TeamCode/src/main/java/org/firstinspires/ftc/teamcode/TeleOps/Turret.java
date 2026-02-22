@@ -13,6 +13,7 @@ import com.arcrobotics.ftclib.util.LUT;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -29,6 +30,7 @@ public class Turret {
 
     private final RobotHardware robot;
 
+    private ElapsedTime pressedTimer = new ElapsedTime();
     public static double txToTickMultiplier = 10;
     private final double tickToAngle = ((0.16867469879518 * 360) / 145.1);
     private final double angleToTick = 1.0 / tickToAngle;
@@ -212,5 +214,23 @@ public class Turret {
 
     private double floorMod(double x, double y){
         return x-(Math.floor(x/y) * y);
+    }
+
+    public void turretReset(){
+        int currentTick = robot.turretMotor.getCurrentPosition();
+        if (currentTick < 0){
+            robot.turretMotor.setPower(0.5);
+        }
+        if (currentTick > 0){
+            robot.turretMotor.setPower(-0.5);
+        }
+        if (isLimitPressed()){
+            robot.turretMotor.setPower(0);
+            robot.turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+    }
+    public boolean isLimitPressed (){
+        return robot.limitSwitch.getState();
     }
 }

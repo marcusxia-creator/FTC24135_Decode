@@ -33,6 +33,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.TurretUpd;
 @TeleOp (name = "TestTeleOp", group = "org.firstinspires.ftc.teamcode")
 public class TurretTestTeleOp extends OpMode {
     private RobotHardware robot;
+    private Turret turret;
     private GamepadEx gamepad_1;
     private GamepadEx gamepad_2;
     private double servoposition;
@@ -40,7 +41,6 @@ public class TurretTestTeleOp extends OpMode {
     private ElapsedTime debounceTimer = new ElapsedTime();
     private RobotDrive robotDrive;
     private LUTPowerCalculator powerCalculator;
-    private Turret turret;
     private TurretUpd turretUpd;
 
     private BallColor ballColor;
@@ -126,6 +126,7 @@ public class TurretTestTeleOp extends OpMode {
         if (gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER) && isButtonDebounced()) {
             targetTick -= 50;
         }
+
 
         robot.turretMotor.setTargetPosition(Range.clip(targetTick, -400, 400));
         robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);

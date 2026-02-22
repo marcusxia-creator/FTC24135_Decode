@@ -428,6 +428,8 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         boolean dpDown =
                 ((gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN))
                         && isButtonDebounced());
+        boolean turretReset =
+                ((gamepadComboInput.getDriverBackSinglePressed()));
 
         boolean sortPressed = gamepadComboInput.getOperatorLbXComboPressed(); // combo - LB+X for sorted shooting. Assume this is edge-based already
         if (seqShootPressed) requestedActionState = RobotActionState.Sequence_Shooting;

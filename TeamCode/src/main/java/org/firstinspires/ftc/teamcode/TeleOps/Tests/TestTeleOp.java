@@ -37,6 +37,7 @@ public class TestTeleOp extends OpMode {
     private double servoposition;
     private static double speed;
     private ElapsedTime debounceTimer = new ElapsedTime();
+    private ElapsedTime pressedTimer = new ElapsedTime();
     private RobotDrive robotDrive;
     private LUTPowerCalculator powerCalculator;
     private Turret turret;
@@ -65,6 +66,7 @@ public class TestTeleOp extends OpMode {
     private boolean finetune = false;
     private boolean pidstatus = false;
     private boolean turretStatus = false;
+    private boolean resetTurret = false;
 
     public static double adjusterServoPosition = 0.49;
 
@@ -104,14 +106,11 @@ public class TestTeleOp extends OpMode {
 
         colorDetection = new ColorDetection(robot);
         pidController = new PIDController(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
-
-        robot.shooterAdjusterServo.setPosition(adjusterServoPosition);
     }
 
     @Override
 
     public void loop() {
-
         /// Robot pinpoint
         robot.pinpoint.update();
         robotDrive.DriveLoop();
@@ -125,6 +124,7 @@ public class TestTeleOp extends OpMode {
         //targetShooterRPM = shooterPowerLUT.getPower();
 
         /// PID Controller and power status
+
 
         if (shootermotorstate == SHOOTERMOTORSTATE.RUN && pidstatus){
             shooterPower = pidController.calculate(currentShooterRPM, Range.clip(targetShooterRPM,0,5500));
@@ -145,8 +145,16 @@ public class TestTeleOp extends OpMode {
         if (turretStatus){
             turret.driveTurretMotor();
         }
-        else{
+        else if (resetTurret){
+            turret.turretReset();
+        }
+        else {
             robot.turretMotor.setPower(0);
+        }
+
+
+        if (gamepad_1.getButton(GamepadKeys.Button.BACK) && isButtonDebounced()){
+            resetTurret = !resetTurret;
         }
 
         /** run kicker servoposition*/
@@ -287,8 +295,7 @@ public class TestTeleOp extends OpMode {
         else {
             robot.LED.setPosition(1.0);
         }
-
-
+        telemetry.addData("Limit Switch", robot.limitSwitch.getState());
         telemetry.addData("Kicker Postion", robot.kickerServo.getPosition());
         telemetry.addData("Spindexer Position", robot.spindexerServo.getPosition());
         telemetry.addData("Shooter Adjuster Postion", robot.shooterAdjusterServo.getPosition());
@@ -329,6 +336,17 @@ public class TestTeleOp extends OpMode {
         if (debounceTimer.seconds() > DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             return true;
+        }
+        return false;
+    }
+    private boolean isLimitSwitchPressed(){
+        boolean switchState = robot.limitSwitch.getState();
+        if (switchState){
+            if (pressedTimer.seconds() >= 0.2){
+                return true;
+            }
+        } else{
+            pressedTimer.reset();
         }
         return false;
     }
