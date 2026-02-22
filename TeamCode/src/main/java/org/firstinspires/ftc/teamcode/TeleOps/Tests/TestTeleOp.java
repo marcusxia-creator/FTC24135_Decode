@@ -54,6 +54,7 @@ public class TestTeleOp extends OpMode {
     public static double tickToRPM = (60/28); // for (tick/s) * 60 (s/min) /28 (tick per rotation)
     public SHOOTERMOTORSTATE shootermotorstate;
     public double adjusterservoposition;
+    private int startingTicks;
 
 
     private LimelightTest limelightTest;
@@ -146,7 +147,7 @@ public class TestTeleOp extends OpMode {
             turret.driveTurretMotor();
         }
         else if (resetTurret){
-            turret.turretReset();
+            turret.turretReset(startingTicks);
         }
         else {
             robot.turretMotor.setPower(0);

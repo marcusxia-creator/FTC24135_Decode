@@ -97,6 +97,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
     private boolean turretStatus = false;
     private boolean resetTurret = false;
+    private int startingTick;
 
 
     public List<String> switchTickLog = new ArrayList<>();
@@ -289,9 +290,10 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         /// Otherwise, normal shooter and turret drive
         if (gamepadCo1.getButton(GamepadKeys.Button.BACK) && isButtonDebounced()) {
             resetTurret = true;
+            int startingTick = robot.turretMotor.getCurrentPosition();
         }
         if (resetTurret){
-            if (turret.turretReset()){
+            if (turret.turretReset(startingTick)){
                 resetTurret = false;
             }
         }
@@ -541,6 +543,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     // telemetry Manager
     //===========================================================
     public void telemetryManager(){
+        telemetry.addData("Limit Switch State", robot.limitSwitch.getState());
         telemetry.addData("Limit Switch Log", switchTickLog.toString());
         telemetry.addData("Alliance", alliance);
         telemetry.addData("loop frequency (Hz)", loopHz);

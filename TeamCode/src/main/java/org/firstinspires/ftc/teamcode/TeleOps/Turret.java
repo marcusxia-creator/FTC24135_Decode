@@ -216,7 +216,7 @@ public class Turret {
         return x-(Math.floor(x/y) * y);
     }
 
-    public boolean turretReset(){
+    public boolean turretReset(int startingTick){
         int currentTick = robot.turretMotor.getCurrentPosition();
         if (isLimitPressed()){
             robot.turretMotor.setPower(0);
@@ -224,12 +224,12 @@ public class Turret {
             robot.turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             return true;
         }
-        if (currentTick < 0){
-            robot.turretMotor.setPower(0.5);
-        }
-        if (currentTick > 0){
-            robot.turretMotor.setPower(-0.5);
-        }
+        int delta = currentTick - startingTick;
+        boolean nearStart = Math.abs(delta) < 350;
+
+        double baseDir = (startingTick < 0) ? 1.0 : -1.0;
+        double dir = nearStart ? baseDir : -baseDir;
+        robot.turretMotor.setPower(0.25*dir);
         return false;
     }
     public boolean isLimitPressed (){
