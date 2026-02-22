@@ -70,29 +70,18 @@ public class Turret {
     private double lastkP = Double.NaN, lastkI = Double.NaN, lastkD = Double.NaN;
     private double lastkPmotor = Double.NaN, lastkImotor = Double.NaN, lastkDmotor = Double.NaN, lastkF = Double.NaN;
 
-
     private final double turretCenterOffsetLength = Math.hypot(turret_Center_Y_Offset, turret_Center_X_Offset);
-
-    // NEW (does not rename anything): prevents mode spam
-    private boolean runToPositionConfigured = false;
 
     public Turret (RobotHardware robot, boolean isRedAlliance) {
         this.robot = robot;
         pidController = new PIDController(kPTurret, kITurret, kDTurret);
         pidController.setTolerance(5.0);
 
-
-        // Set motor PIDF once using your existing pidf field
-        ///this.robot.turretMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-
         // KEEP logic but simplify
         targetPose = isRedAlliance ? redTargetPose : blueTargetPose;
 
         // Prevent goalPose null before updateZoneForGoalPose() is called
         goalPose = Optional.ofNullable(targetPose.get(1)).orElse(redCloseGoalPose);
-
-        // TODO : Optional: ready the turret immediately
-        //initTurret();
     }
 
     public int getMotorDriveTick() {
@@ -124,28 +113,14 @@ public class Turret {
     }
 
     public void driveTurretMotor(){
-        /** OLD METHOD
         //updatePidFromDashboard();
         int ticks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
-        robot.turretMotor.setTargetPosition(ticks);
-        robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.turretMotor.setPower(1);
-        */
-
-        // NEW! Only configure RUN_TO_POSITION once (instead of every loop)
-        if (!runToPositionConfigured || robot.turretMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
-
-            runToPositionConfigured = true;
-        }
-        int ticks = (int) Math.round(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
         robot.turretMotor.setTargetPosition(ticks);
         robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.turretMotor.setPower(1);
     }
 
     public void driveTurretPID(int currentTick, int targetTick) {
-        //updatePidFromDashboard();
-
         int errorTicks = targetTick - currentTick;
         // Feedforward should NOT be based on absolute targetTicks (too large).
         // Use direction + error assist.
