@@ -72,6 +72,9 @@ public class Turret {
 
     private final double turretCenterOffsetLength = Math.hypot(turret_Center_Y_Offset, turret_Center_X_Offset);
 
+    private final int zeroedTick = 0;
+    private int turretDeltaTick = 0;
+
     public Turret (RobotHardware robot, boolean isRedAlliance) {
         this.robot = robot;
         pidController = new PIDController(kPTurret, kITurret, kDTurret);
@@ -195,10 +198,12 @@ public class Turret {
         int currentTick = robot.turretMotor.getCurrentPosition();
         if (isLimitPressed()){
             robot.turretMotor.setPower(0);
-            robot.turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            ///robot.turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            turretDeltaTick = currentTick - zeroedTick;
             return true;
         }
+
         int delta = currentTick - startingTick;
         boolean nearStart = Math.abs(delta) < 435;
 
@@ -207,6 +212,11 @@ public class Turret {
         robot.turretMotor.setPower(0.25*dir);
         return false;
     }
+
+    public int getTurretOffsetTick() {
+        return turretDeltaTick;
+    }
+
     public boolean isLimitPressed (){
         return robot.limitSwitch.getState();
     }

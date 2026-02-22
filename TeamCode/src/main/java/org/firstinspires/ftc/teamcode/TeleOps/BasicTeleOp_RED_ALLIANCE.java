@@ -288,7 +288,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         /// When gamepad back pressed, reset turret.
         /// Otherwise, normal shooter and turret drive
-        if (gamepadCo1.getButton(GamepadKeys.Button.BACK) && isButtonDebounced()) {
+        if (gamepadCo1.getButton(GamepadKeys.Button.BACK) || gamepadCo2.getButton(GamepadKeys.Button.BACK) && isButtonDebounced()) {
             resetTurret = true;
             int startingTick = robot.turretMotor.getCurrentPosition();
         }
@@ -543,8 +543,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     // telemetry Manager
     //===========================================================
     public void telemetryManager(){
-        telemetry.addData("Limit Switch State", robot.limitSwitch.getState());
-        telemetry.addData("Limit Switch Log", switchTickLog.toString());
         telemetry.addData("Alliance", alliance);
         telemetry.addData("loop frequency (Hz)", loopHz);
         telemetry.addData("voltage from robot", robot.getBatteryVoltageRobust());
@@ -595,6 +593,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addLine("-----");
 
         telemetry.addLine("Turret-----------------------------------");
+        telemetry.addData("Limit Switch State", robot.limitSwitch.getState());
+        telemetry.addData("Limit Switch Log", switchTickLog.toString());
         telemetry.addData("goal pose", turret.getGoalPose());
         telemetry.addData("turret target angle", turret.getTargetAngle());
         telemetry.addData("turret drive angle", turret.getTurretDriveAngle());
@@ -602,6 +602,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("target motor tick", turret.getTargetTick());
         telemetry.addData("current motor tick", turret.getCurrentTick());
         telemetry.addData("turret auto end tick", PoseStorage.turretEndTick);
+        telemetry.addData("turret offset tick", turret.getTurretOffsetTick());
         telemetry.addData("turret shooting mode", FSMShooter.turretState);
         telemetry.addData("turret power", robot.turretMotor.getPower());
         telemetry.addLine("-----------------------------------------");
