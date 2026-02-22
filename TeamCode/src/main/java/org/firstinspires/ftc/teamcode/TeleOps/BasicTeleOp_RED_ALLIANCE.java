@@ -290,7 +290,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         /// Otherwise, normal shooter and turret drive
         if (gamepadCo1.getButton(GamepadKeys.Button.BACK) || gamepadCo2.getButton(GamepadKeys.Button.BACK) && isButtonDebounced()) {
             resetTurret = true;
-            int startingTick = robot.turretMotor.getCurrentPosition();
+            startingTick = robot.turretMotor.getCurrentPosition();
         }
         if (resetTurret){
             if (turret.turretReset(startingTick)){
