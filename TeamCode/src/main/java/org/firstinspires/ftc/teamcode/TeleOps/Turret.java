@@ -216,19 +216,21 @@ public class Turret {
         return x-(Math.floor(x/y) * y);
     }
 
-    public void turretReset(){
+    public boolean turretReset(){
         int currentTick = robot.turretMotor.getCurrentPosition();
+        if (isLimitPressed()){
+            robot.turretMotor.setPower(0);
+            robot.turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            return true;
+        }
         if (currentTick < 0){
             robot.turretMotor.setPower(0.5);
         }
         if (currentTick > 0){
             robot.turretMotor.setPower(-0.5);
         }
-        if (isLimitPressed()){
-            robot.turretMotor.setPower(0);
-            robot.turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
+        return false;
     }
     public boolean isLimitPressed (){
         return robot.limitSwitch.getState();

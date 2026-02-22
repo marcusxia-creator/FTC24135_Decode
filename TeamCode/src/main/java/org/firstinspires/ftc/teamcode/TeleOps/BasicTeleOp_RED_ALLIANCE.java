@@ -92,6 +92,10 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     public static double shooterRPM;
     public static int shooterTargetRPM;
 
+    private boolean turretStatus = false;
+    private boolean resetTurret = false;
+
+
     /// ----------------------------------------------------------------
     @Override
     public void init() {
@@ -174,7 +178,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
     @Override
     public void loop() {
-
         // ========================================================
         // WORKING FLOW:
         // 1.updateActionStateTransitions() decides when safe to enter
@@ -209,6 +212,25 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         // 1. INPUT UPDATE (read buttons + combos)
         // =========================================================
+        if (resetTurret) {
+
+            // call the method and capture its return
+            boolean resetDone = turret.turretReset();
+
+            // automatically jump out when finished
+            if (resetDone) {
+                resetTurret = false;   // leave reset mode
+                turretStatus = false;  // turret idle (or set true if you want tracking)
+            }
+
+        }
+        else if (turretStatus) {
+            turret.driveTurretMotor();
+        }
+        else {
+            robot.turretMotor.setPower(0);
+        }
+
         gamepadCo1.readButtons();
         gamepadCo2.readButtons();
 
@@ -223,7 +245,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.pinpoint.update();
         ballColor = BallColor.fromHue(colorDetection.getHue());
         updateLoopFrequency();
-
 
         // =========================================================
         // 3. DRIVE (always responsive)
@@ -438,7 +459,15 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         boolean dpDown =
                 ((gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN))
                         && isButtonDebounced());
+        boolean turretReset =
+                ((gamepadComboInput.getDriverBackSinglePressed()));
 
+        if (turretReset){
+            resetTurret = !resetTurret;
+            if (resetTurret) {
+                turretStatus = false;
+            }
+        }
         boolean sortPressed = gamepadComboInput.getOperatorLbXComboPressed(); // combo - LB+X for sorted shooting. Assume this is edge-based already
         if (seqShootPressed) requestedActionState = RobotActionState.Sequence_Shooting;
         if (sortPressed)     requestedActionState = RobotActionState.Sort_Shooting;
