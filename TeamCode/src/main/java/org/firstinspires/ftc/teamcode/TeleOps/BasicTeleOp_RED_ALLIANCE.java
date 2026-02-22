@@ -24,6 +24,9 @@ import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Making the sequence shooting go slot 5-4-3 (intaking) 3-2-1 (shooting)
  * Put blue alliance code (Turret, LUT, ect)
@@ -95,6 +98,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private boolean turretStatus = false;
     private boolean resetTurret = false;
 
+
+    public List<String> switchTickLog = new ArrayList<>();
 
     /// ----------------------------------------------------------------
     @Override
@@ -512,6 +517,13 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         } else { //Default black
             robot.LED.setPosition(0.0);
         }
+
+        if(FSMShooter.turret.isLimitPressed()){
+            switchTickLog.add(Integer.toString(robot.turretMotor.getCurrentPosition()));
+            if(switchTickLog.size()>=10){
+                switchTickLog.remove(0);
+            }
+        }
     }
 
 
@@ -598,6 +610,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("turret shooting mode", FSMShooter.turretState);
         telemetry.addData("turret power", robot.turretMotor.getPower());
         telemetry.addLine("-----------------------------------------");
+        telemetry.addData("Switch tick logs", "["+String.join(", ", switchTickLog));
         telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(24));
         telemetry.addData("green slot position", limelight.getGreenSlot());
         telemetry.update();

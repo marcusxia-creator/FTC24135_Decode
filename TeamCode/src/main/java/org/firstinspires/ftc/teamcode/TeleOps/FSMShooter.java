@@ -27,7 +27,7 @@ public class FSMShooter {
     SHOOTERMOTORSTATE shootermotorstate;
     TURRETSTATE turretState;
     SpindexerUpd spindexer;
-    private final Turret turret;
+    public final Turret turret;
     private final Limelight limelight;
 
     Spindexer.SLOT targetColour = Spindexer.SLOT.Purple;
