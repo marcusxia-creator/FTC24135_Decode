@@ -52,6 +52,12 @@ public class GamepadComboInput {
     private boolean dpadLeftPressedAny, dpadRightPressedAny, dpadDownPressedAny;
     private boolean backSinglePressedAny, lbSinglePressedAny, rbSinglePressedAny;
 
+    private double triggerThreshold = 0.7;
+    private boolean bothTriggersNowAny;
+    private boolean bothTriggersRisingEdgeAny;
+    private boolean bothTriggersPrevAny = false;
+    private boolean bothTriggersFallingEdgeAny =false;
+
     public GamepadComboInput(GamepadEx driverGp, GamepadEx operatorGp) {
         this.driverGp = driverGp;
         this.operatorGp = operatorGp;
@@ -149,6 +155,19 @@ public class GamepadComboInput {
         lbSinglePressedAny = driverLbSinglePressed || operatorLbSinglePressed;
         rbSinglePressedAny = driverRbSinglePressed || operatorRbSinglePressed;
 
+        boolean driverBoth = (driverGp.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)  > triggerThreshold) &&
+                (driverGp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > triggerThreshold);
+
+        boolean operatorBoth = (operatorGp.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)  > triggerThreshold) &&
+                (operatorGp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > triggerThreshold);
+
+        bothTriggersNowAny = driverBoth || operatorBoth;
+
+        bothTriggersRisingEdgeAny  = bothTriggersNowAny && !bothTriggersPrevAny;   // press edge
+        bothTriggersFallingEdgeAny = !bothTriggersNowAny && bothTriggersPrevAny;   // release edge
+
+        bothTriggersPrevAny = bothTriggersNowAny;
+
     }
 
     private void readAll() {
@@ -173,6 +192,9 @@ public class GamepadComboInput {
         oDpl.readValue();
         oDpr.readValue();
         oDpd.readValue();
+    }
+    public void setTriggerThreshold(double threshold) {
+        triggerThreshold = threshold;
     }
 
     public boolean getDriverLbBComboPressed() {
@@ -248,5 +270,9 @@ public class GamepadComboInput {
     public boolean getrbSinglePressedAny() {
         return rbSinglePressedAny;
     }
-
+    public boolean getBothTriggersPressedAny() { return bothTriggersNowAny; }
+    public boolean getBothTriggersRisingEdgeAny() { return bothTriggersRisingEdgeAny; }
+    public boolean getBothTriggersReleasedAny() {
+        return bothTriggersFallingEdgeAny;
+    }
 }
