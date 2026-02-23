@@ -208,7 +208,6 @@ public class FSMShooter {
         }
         else {
             robot.turretMotor.setVelocity(trimInput*adjSpeed);
-            ///turret.driveTurretPID(turret.getCurrentTick(), turret.getTargetTick());
         }
         //=====================================
         // TODO - Update Zone for shooting interval - not in use, - update the MS in main loop right now.
@@ -370,6 +369,7 @@ public class FSMShooter {
 
             if (noBall) {
                 stopClearancePos = spindexerPositions[0];
+                clearanceChosen = true;
             } else {
                 double next = spindexer.findNextHigherSlot(holdSpindexerPos, spindexerPositions);
                 if (next < 0) {
@@ -470,14 +470,6 @@ public class FSMShooter {
 
     public double getPower() {
         return power;
-    }
-
-    public boolean isButtonDebounced() {
-        if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
-            debounceTimer.reset();
-            return true;
-        }
-        return false;
     }
 
 }
