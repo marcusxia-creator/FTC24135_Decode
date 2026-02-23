@@ -197,9 +197,8 @@ public class Turret {
     public boolean turretReset(int startingTick){
         int currentTick = robot.turretMotor.getCurrentPosition();
         if (isLimitPressed()){
-            robot.turretMotor.setPower(0);
             robot.turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.turretMotor.setPower(0);
             turretDeltaTick = currentTick - zeroedTick;
             return true;
         }
