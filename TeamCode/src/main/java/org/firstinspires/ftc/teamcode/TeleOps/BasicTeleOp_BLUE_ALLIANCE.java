@@ -288,7 +288,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         // =========================================================
         /// When gamepad back pressed, reset turret.
         /// Otherwise, normal shooter and turret drive
-        if (gamepadCo1.getButton(GamepadKeys.Button.BACK) || gamepadCo2.getButton(GamepadKeys.Button.BACK) && isButtonDebounced()) {
+        if ((gamepadCo1.getButton(GamepadKeys.Button.BACK) || gamepadCo2.getButton(GamepadKeys.Button.BACK)) && isButtonDebounced()) {
             resetTurret = true;
             startingTick = robot.turretMotor.getCurrentPosition();
         }
