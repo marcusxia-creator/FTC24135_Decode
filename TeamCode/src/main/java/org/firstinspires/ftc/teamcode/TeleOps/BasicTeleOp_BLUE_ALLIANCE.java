@@ -584,7 +584,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         telemetry.addData("turret power", robot.turretMotor.getPower());
         telemetry.addLine("-----------------------------------------");
         telemetry.addData("Switch tick logs", "["+String.join(", ", switchTickLog));
-        telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(24));
+        telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(25));
         telemetry.addData("green slot position", limelight.getGreenSlot());
         telemetry.update();
     }
