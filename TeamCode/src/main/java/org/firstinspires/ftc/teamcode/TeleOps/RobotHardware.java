@@ -9,15 +9,18 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -91,10 +94,13 @@ public class RobotHardware {
     public ColorSensor colorSensor;
     public DistanceSensor distanceSensor;
 
-    ///public DigitalChannel limitSwitch;// Limit Switch
+    public DigitalChannel limitSwitch;// Limit Switch
 
     public IMU imu; //IMU
     public BNO055IMU external_imu;
+    // NEW: Variable to store the initial IMU heading offset for external IMU
+    private double externalImuHeadingOffset = 0;
+
     public GoBildaPinpointDriver pinpoint;
 
     public HardwareMap hardwareMap;
@@ -141,6 +147,9 @@ public class RobotHardware {
         colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
         distanceSensor = hardwareMap.get(DistanceSensor.class, "Color_Sensor");
 
+        limitSwitch = hardwareMap.get(DigitalChannel .class, "Limit_Switch");
+        limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+
         limelight = hardwareMap.get(Limelight3A.class, "LimeLight3A");
 
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
@@ -164,10 +173,10 @@ public class RobotHardware {
 
 
         /// config turret motor
-        turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        turretMotor.setTargetPositionTolerance(3);
+        //turretMotor.setTargetPositionTolerance(3);
 
         /// set run mode of shooter Motor
         topShooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
@@ -212,23 +221,60 @@ public class RobotHardware {
         myBNOIMUparameters.loggingTag           = "IMU";
         myBNOIMUparameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         external_imu.initialize(myBNOIMUparameters);
+        // --- NEW: Reset external IMU yaw to a desired 'zero' ---
+        // Call this *after* the IMU has been initialized.
+        // If you want the IMU to *report* 90 degrees when facing forward (its default 0),
+        // you would subtract its initial reading from 90.
+        // If you want to make its current heading *become* 90 degrees, you'd calculate the difference.
+        // For simplicity, let's assume you want its *current* forward-facing direction to be 90 degrees.
+        resetExternalImuYaw(90); // Call this to set the "zero" of the IMU to 90
     }
-    public void setExternal_imu(){
-        BNO055IMU.Parameters Oritention = new BNO055IMU.Parameters(new RevHubOrientationOnRobot(
-                AxesReference.INTRINSIC,
-                AxesOrder.ZYX,
-                BNO055IMU.AngleUnit.DEGREES,
-                90,
-                0,
-                0)
-        );
+    /**
+     * Reads the current raw yaw from the external BNO055 IMU.
+     * @return Current yaw angle in degrees (-180 to 180).
+     */
+    public double getExternalImuRawYaw() {
+        Orientation angles = external_imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        return angles.firstAngle; // 'firstAngle' corresponds to Yaw in ZYX order
+    }
+
+    /**
+     * Resets the external IMU's reported yaw to a specified value (e.g., 0 or 90).
+     * This calculates an offset so subsequent calls to getExternalImuYaw()
+     * start from this specified angle.
+     * @param targetYaw The desired yaw angle (e.g., 0.0 or 90.0) for the current robot orientation.
+     */
+    public void resetExternalImuYaw(double targetYaw) {
+        // Calculate the difference between the target yaw and the current raw yaw.
+        // This offset will be added to future readings.
+        // If current raw is 5 and target is 0, offset is -5.
+        // If current raw is 5 and target is 90, offset is 85.
+        externalImuHeadingOffset = targetYaw - getExternalImuRawYaw();
+    }
+
+    /**
+     * Gets the external IMU's yaw angle, adjusted by the stored offset.
+     * @return The adjusted yaw angle in degrees.
+     */
+    public double getExternalImuYaw() {
+        double rawYaw = getExternalImuRawYaw();
+        double adjustedYaw = rawYaw + externalImuHeadingOffset;
+
+        // Optional: Normalize the angle to be within -180 to 180 degrees
+        // (BNO055IMU usually reports this by default, but good practice for sums)
+        if (adjustedYaw > 180) {
+            adjustedYaw -= 360;
+        } else if (adjustedYaw <= -180) {
+            adjustedYaw += 360;
+        }
+        return adjustedYaw;
     }
 
     public void initPinpoint() {
         pinpoint.setOffsets(38.1, -184.15, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
-        pinpoint.resetPosAndIMU();
+        //pinpoint.resetPosAndIMU();// disable the pose and imu reset due to the pose2d transfer consideration
     }
 
     public void turretInit() {

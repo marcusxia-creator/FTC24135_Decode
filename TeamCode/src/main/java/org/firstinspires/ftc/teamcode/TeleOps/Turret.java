@@ -10,6 +10,7 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.turret_Ce
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.util.LUT;
+import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.Range;
@@ -32,7 +33,7 @@ public class Turret {
     private final double angleToTick = 1.0 / tickToAngle;                   //2.389 tick = 1deg
     private double conversionFactor = 39.3700787;
 
-    public static double kPTurret = 0.004, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.0002, kVTurret = 0.004;     // turret motor drive pidcontroller
+    public static double kPTurret = 0.004, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.02, kVTurret = 0.2;     // turret motor drive pidcontroller
     public static double kP_motor = 20, kI_motor = 0, kD_motor = 0.005, kF = 2; // turret motor pidf
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
 
@@ -51,7 +52,6 @@ public class Turret {
     private Pose2D goalPose;
 
     private PIDController pidController;
-    private Limelight limelight;
 
     PIDFCoefficients pidf = new PIDFCoefficients(
             kP_motor,      // P
@@ -64,22 +64,36 @@ public class Turret {
 
     // NEW (does not rename anything): prevents mode spam/jumpy target angle
     private final double turretCenterOffsetLength = Math.hypot(turret_Center_Y_Offset, turret_Center_X_Offset);
-    private boolean runToPositionConfigured = false;
+
     private double filteredTargetAngle = 0;
     private boolean firstAngleUpdate = true;
     private double alpha = 0.2;
 
+    // ---- Limelight filtering + prediction state ----
+    private double txFilt = 0.0;
+    private double txRateFilt = 0.0;     // deg/s
+    private double lastTxFilt = 0.0;
+    private long lastUpdateNs = 0;
 
+    // ---- target smoothing ----
+    private double targetTicksFilt = 0.0;
+    private int targetTicks;
 
-    //--------------------------------------------
+    // ---- tunables (Dashboard these) ----
+    public static double MAX_LAT_MS = 40;     // reject frames older than this
+    public static double TX_ALPHA = 0.30;     // EMA for tx (0.2-0.4 good)
+    public static double RATE_ALPHA = 0.25;   // EMA for rate
+    public static double TX_OUTLIER_DEG = 8;  // clamp sudden jumps
+    public static double TARGET_SLEW_TICKS_PER_S = 400; // max target change speed
+    public static int   DEADBAND_TICKS = 5;   // "close enough" band
+
+    //==================================================
     // Constructor
-    //--------------------------------------------
+    //==================================================
     public Turret (RobotHardware robot, boolean isRedAlliance) {
         this.robot = robot;
         pidController = new PIDController(kPTurret, kITurret, kDTurret);
-
-        // Set motor PIDF once using your existing pidf field
-        this.robot.turretMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        pidController.setTolerance(5);
 
         // KEEP logic but simplify
         targetPose = isRedAlliance ? redTargetPose : blueTargetPose;
@@ -87,26 +101,27 @@ public class Turret {
         // Prevent goalPose null before updateZoneForGoalPose() is called
         goalPose = Optional.ofNullable(targetPose.get(1)).orElse(redCloseGoalPose);
 
-        // TODO : Optional: ready the turret immediately
-        //initTurret();
     }
+    //==================================================
+    // Reset Turret
+    //==================================================
+    public boolean turretReset(int startingTick){
+        int currentTick = robot.turretMotor.getCurrentPosition();
+        if (isLimitPressed()){
+            robot.turretMotor.setPower(0);
+            robot.turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            return true;
+        }
+        int delta = currentTick - startingTick;
+        boolean nearStart = Math.abs(delta) < 350;
 
-    public void initTurret() {
-        robot.turretMotor.setTargetPosition(0);
-        robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.turretMotor.setPower(1);
-        runToPositionConfigured = true;
+        double baseDir = (startingTick < 0) ? 1.0 : -1.0;
+        double dir = nearStart ? baseDir : -baseDir;
+        robot.turretMotor.setPower(0.25*dir);
+        return false;
     }
-
-    public void resetTurretPosition() {
-        robot.turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        runToPositionConfigured = false;
-    }
-
-    public int motorDriveTick() {
-        return (int) Math.round(getTurretDriveAngle() * angleToTick);
-    }
-
+    // for pid tuning with dashboard
     public void updatePidFromDashboard() {
         // FTCLib PID (your own controller)
         if (kPTurret != lastkP || kITurret != lastkI || kDTurret != lastkD) {
@@ -123,28 +138,20 @@ public class Turret {
         }
     }
 
+    /// get turret drive angle
     public double getTurretDriveAngle () {
         return -(floorMod(robot.pinpoint.getHeading(AngleUnit.DEGREES) - getTargetAngle()+180, 360)-180);
     }
 
+    /// read turret motor drive angle
     public double getTurretMotorAngle(){
         return (robot.turretMotor.getCurrentPosition() * tickToAngle);
     }
 
-    public void driveTurretMotor(){
-        /** OLD METHOD*/
-        //updatePidFromDashboard();
-        if (!runToPositionConfigured || robot.turretMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
-            runToPositionConfigured = true;
-        }
-        int ticks = (int) Math.round(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
-        robot.turretMotor.setTargetPosition(ticks);
-        robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.turretMotor.setPower(1);
-    }
-
+    /// read turret motor drive PID
     public void driveTurretPID() {
-        //updatePidFromDashboard();
+        // update pidf from dashboard
+        updatePidFromDashboard();
 
         int targetTicks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
         int currentTicks = robot.turretMotor.getCurrentPosition();
@@ -167,6 +174,56 @@ public class Turret {
         double satGain  = 2.0;                     // higher = saturates sooner
         double cmd = maxPower * Math.tanh(satGain * output);
         robot.turretMotor.setPower(Range.clip(cmd, -1.0, 1.0));
+    }
+
+    //====================================
+    // Limelight Tx correction
+    //====================================
+    /// read turret motor drive PID+ limelight Tx correction.
+    public void driveTurretLimelight() {
+
+        int currentTicks = robot.turretMotor.getCurrentPosition();
+
+        // --- Decide target from Limelight or fallback ---
+        int desiredTargetTicks;
+
+        LLResult r = robot.limelight.getLatestResult();
+        boolean useLL = updateTxEstimate(r);
+
+        if (useLL) {
+            // txFilt is now filtered + latency-compensated
+            desiredTargetTicks = (int)Math.round(txFilt * angleToTick) + getTargetTick();
+        } else {
+            desiredTargetTicks = (int)Math.round(
+                    Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick
+            );
+        }
+
+        // --- Smooth target so it doesn't jump ---
+        if (desiredTargetTicks < 100.0) {
+            targetTicks = slewTargetTicks(desiredTargetTicks);
+        } else {
+            targetTicks = desiredTargetTicks;
+        }
+
+        int errorTicks = targetTicks - currentTicks;
+
+        // --- deadband hold (prevents micro jitter near center) ---
+        if (Math.abs(errorTicks) <= DEADBAND_TICKS) {
+            robot.turretMotor.setPower(0.0);
+            return;
+        }
+
+        // --- PID output ---
+        double pid = pidController.calculate(currentTicks, targetTicks);
+
+        // --- Feedforward: keep it simple + safe ---
+        // kS for stiction + a small proportional "assist" (NOT kV*errorTicks unless you really know your units)
+        double ff = kSTurret * Math.signum(errorTicks);
+
+        double out = pid + ff;
+        robot.turretMotor.setPower(Range.clip(out, -1.0, 1.0));
+
     }
 
     public int getTargetTick () {
@@ -238,6 +295,60 @@ public class Turret {
         return filteredTargetAngle;
     }
 
+    /// Limelight utility
+    private boolean updateTxEstimate(LLResult r) {
+        if (r == null || !r.isValid()) return false;
+
+        double latMs = r.getCaptureLatency() + r.getTargetingLatency();
+        if (latMs > MAX_LAT_MS) return false;
+
+        long now = System.nanoTime();
+        double dt = (lastUpdateNs == 0) ? 0.02 : (now - lastUpdateNs) * 1e-9; // seconds
+        lastUpdateNs = now;
+        if (dt <= 1e-4) dt = 0.02;
+
+        double tx = r.getTx(); // degrees
+
+        // outlier clamp (prevents "one bad frame" whip)
+        double delta = tx - txFilt;
+        if (Math.abs(delta) > TX_OUTLIER_DEG) {
+            tx = txFilt + Math.signum(delta) * TX_OUTLIER_DEG;
+        }
+
+        // EMA filter on Tx
+        txFilt = TX_ALPHA * tx + (1.0 - TX_ALPHA) * txFilt;
+
+        // estimate rate (deg/s) + filter rate
+        double instRate = (txFilt - lastTxFilt) / dt;
+        lastTxFilt = txFilt;
+        txRateFilt = RATE_ALPHA * instRate + (1.0 - RATE_ALPHA) * txRateFilt;
+
+        // Predict forward by vision latency (simple, very effective)
+        double latSec = latMs * 1e-3;
+        double txPred = txFilt + txRateFilt * latSec;
+
+        // Store back into txFilt as "effective aiming tx"
+        txFilt = txPred;
+        return true;
+    }
+
+    private int slewTargetTicks(int desiredTicks) {
+        long now = System.nanoTime();
+        double dt = (lastUpdateNs == 0) ? 0.02 : (now - lastUpdateNs) * 1e-9;
+        if (dt <= 1e-4) dt = 0.02;
+
+        double maxStep = TARGET_SLEW_TICKS_PER_S * dt; // ticks per loop
+        double err = desiredTicks - targetTicksFilt;
+
+        if (Math.abs(err) > maxStep) {
+            targetTicksFilt += Math.signum(err) * maxStep;
+        } else {
+            targetTicksFilt = desiredTicks;
+        }
+        return (int)Math.round(targetTicksFilt);
+    }
+
+    ///  Helper
     public void updateZoneForGoalPose(int zone) {
         int normalizedZone;
 
@@ -257,5 +368,9 @@ public class Turret {
 
     private double floorMod(double x, double y){
         return x-(Math.floor(x/y) * y);
+    }
+
+    public boolean isLimitPressed (){
+        return robot.limitSwitch.getState();
     }
 }

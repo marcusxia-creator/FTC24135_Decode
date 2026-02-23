@@ -61,7 +61,7 @@ public class RedSideFarAuto extends LinearOpMode {
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
             while (opModeInInit()&&!isStopRequested()) {
                 aprilTagDetection.limelightDetect();
-                targetGreen = aprilTagDetection.tagID;
+                targetGreen = aprilTagDetection.findGreenSlot();
                 telemetry.addData("Detected ID",targetGreen);
                 telemetry.update();
             }

@@ -15,7 +15,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public class PoseStorage {
     public static Pose2d currentPose = new Pose2d(0,0, 0);
-   // public static Pose2D endPose = new Pose2D(DistanceUnit.INCH,0,0, AngleUnit.DEGREES,0);
     public static int heading = 0;
     public static int turretEndTick = 0;
     public static int motifGreenPos;

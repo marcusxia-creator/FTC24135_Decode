@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
@@ -40,10 +41,12 @@ public class FSMIntake {
     private boolean reversing = false;
     SpindexerUpd spindexer;
     private boolean stopMoveRequested = false;
+    ColorDetection colorDetection;
+
 
     boolean recorded;
 
-    public FSMIntake(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, SpindexerUpd spindexer) {
+    public FSMIntake(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, SpindexerUpd spindexer, ColorDetection colorDetection) {
         this.robot = robot;
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
@@ -71,28 +74,21 @@ public class FSMIntake {
 
                 // Wait for ball to be detected in the intake mouth
                 if (robot.distanceSensor.getDistance(DistanceUnit.MM) < BALL_PRESENT_THRESHOLD_MM) {
+                    colorDetection.startDetection();
                     intakeTimer.reset();
                     intakeStates = IntakeStates.INTAKE_CAPTURE;
                 }
                 break;
 
             case INTAKE_CAPTURE:
-                if (intakeTimer.seconds() < 0.05) {
-                    spindexer.clearVoteBuffer();
-                }
-                //nned to make this longer
-                else if (intakeTimer.seconds() < 0.10) {
-                    // Collect as many samples as possible in 200ms
-                    spindexer.addVoteSample(robot.colorSensor, robot.distanceSensor);
-                }
-                else {
-                    // Decide the color of the current slot
+                colorDetection.updateDetection();
+                if (colorDetection.isColorStable()) {
+                    spindexer.setStableColor(colorDetection.getStableColor());
                     spindexer.finalizeCurrentSlot();
 
-                    // CHECK: Are all 3 slots filled with something other than Empty?
-                    // We check for Green OR Purple. If count is 3, we are full.
                     if (spindexer.count(SpindexerUpd.SLOT.Empty) == 0) {
                         intakeTimer.reset();
+                        stopMoveRequested = true;
                         intakeStates = IntakeStates.INTAKE_STOP;
                     } else {
                         // Move to next physical slot and wait for next ball
@@ -100,82 +96,41 @@ public class FSMIntake {
                         intakeTimer.reset();
                         intakeStates = IntakeStates.INTAKE_RUNTONEXT;
                     }
+                } else if (intakeTimer.seconds() > 1.0) {
+                    // Option A: Assume it's a ball anyway and move on
+                    // Option B: Reverse to clear the "bad" object
+                    intakeTimer.reset();
+                    intakeStates = IntakeStates.INTAKE_REVERSE;
                 }
                 break;
 
             case INTAKE_RUNTONEXT:
-                /**
-                // ✅ Instead of a fixed delay, wait until the servo finishes the incremental move
-                // This avoids starting intake early when the servo is slow / jammed.
-                if (!spindexer.isServoBusy()) {
-                    intakeStates = IntakeStates.INTAKE_START;
-                } else {
-                    // optional: add timeout -> unjam or fallback
-                    //if (intakeTimer.seconds() > 0.6) { spindexer.unJam(); intakeStates = IntakeStates.INTAKE_START; }
-                }
-                break;
-                 */
-
                 // OLD - Small delay to allow the servo to physically move before starting the motor again
                 if (intakeTimer.seconds() > spindexerServoPerSlotTime) {
                     intakeStates = IntakeStates.INTAKE_START;
                 }
                  break;
 
-
             case INTAKE_STOP:
                 robot.intakeMotor.setPower(ejectSpeed);
-
-                double time = intakeTimer.seconds();
-                if (time > spindexerServoPerSlotTime) {
-                    intakeStates = IntakeStates.INTAKE_IDLE;
-                }
-
-
-                /**
                 double time = intakeTimer.seconds();
                 // Keep your sequence logic for spindexer parking
-                if (time > spindexerServoPerSlotTime) {
-
-                    double targetPos =spindexerSlot1;
-                    double currentPos = robot.spindexerServo.getPosition();
-                    double maxStep = 0.05; // max movement per loop
-
-                    double error = targetPos - currentPos;
-                    double step = Math.copySign(
-                            Math.min(Math.abs(error), maxStep),
-                            error
-                    );
-                    robot.spindexerServo.setPosition(currentPos + step);
-                    if (Math.abs(error) < 0.01) {
-                        spindexer.RuntoPosition(0); // go to slot1 position and reset the spindexer counter
-
-                        intakeStates = IntakeStates.INTAKE_IDLE;
-                    }
-                /**
-                //=========================================
-                //New Method
-                //=========================================
-                    // Request park/slot1 (whatever you want as the final park)
-                    // If "slot1" means the servo position 0.19 etc, make it a logical slot index
-                    // OR provide a park method. Here we’ll assume you want logical slot 0.
-                    if (!stopMoveRequested) {
-                        spindexer.RuntoPosition(0);     // request ONCE
-                        stopMoveRequested = true;
-                        intakeTimer.reset();
-                    }
-
-                    // Wait until the servo has reached the target
-                    if (!spindexer.isServoBusy()) {
-                        robot.intakeMotor.setPower(0);
-                        intakeStates = IntakeStates.INTAKE_IDLE;
-                        stopMoveRequested = false;      // reset for next time
-                    }
+                double targetPos =spindexerSlot2;
+                double currentPos = robot.spindexerServo.getPosition();
+                double maxStep = 0.05; // max movement per loop
+                double error = targetPos - currentPos;
+                double step = Math.copySign(
+                        Math.min(Math.abs(error), maxStep),
+                        error
+                );
+                robot.spindexerServo.setPosition(currentPos + step);
+                if (Math.abs(error) < 0.01) {
+                    spindexer.RuntoPosition(1); // go to slot1 position and reset the spindexer counter
+                    stopMoveRequested = false;
                 }
-                 */
-                /**
+                if (time > spindexerServoPerSlotTime && !stopMoveRequested){
+                    intakeStates = IntakeStates.INTAKE_IDLE;
                 }
-                 **/
                 break;
 
             case INTAKE_REVERSE:

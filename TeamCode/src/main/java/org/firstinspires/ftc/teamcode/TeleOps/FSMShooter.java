@@ -9,13 +9,11 @@ import com.qualcomm.robotcore.util.Range;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
 import java.util.Optional;
 
 public class FSMShooter {
     private final RobotHardware robot;
-    private final GamepadInput gamepadInput;
+    private final GamepadComboInput gamepadInput;
     private LUTPowerCalculator shooterPowerLUT;
     private final GamepadEx gamepad_1;
     private final GamepadEx gamepad_2;
@@ -31,9 +29,6 @@ public class FSMShooter {
     TURRETSTATE turretState;
     SpindexerUpd spindexer;
     private final Turret turret;
-    private final Limelight limelight;
-
-    Spindexer.SLOT targetColour = Spindexer.SLOT.Purple;
 
     private double voltage;
     private double power;   //power lut power
@@ -68,7 +63,7 @@ public class FSMShooter {
 
     private boolean LRTriggerBoolean = false;
 
-
+    public double trim;
 
     /**
      * BUTTON FOR SHOOTING
@@ -111,7 +106,7 @@ public class FSMShooter {
     //Constructor
     public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot,
                       SpindexerUpd spindexer, LUTPowerCalculator shooterPowerLUT,
-                      GamepadInput gamepadInput, Turret turret, Limelight limelight) {
+                      GamepadComboInput gamepadInput, Turret turret) {
         this.gamepad_1 = gamepad_1;
         this.gamepad_2 = gamepad_2;
         this.robot = robot;
@@ -120,7 +115,6 @@ public class FSMShooter {
         this.gamepadInput = gamepadInput;
         /// New!!
         this.turret = turret;
-        this.limelight = limelight;
     }
 
     public void Init() {
@@ -131,27 +125,7 @@ public class FSMShooter {
         robot.bottomShooterMotor.setPower(0);
         shootermotorstate = SHOOTERMOTORSTATE.STOP;
         turretState = TURRETSTATE.AIMING;
-    }
-
-    private void updateTurretAutoAim(boolean aimEnabled) {
-        if (!aimEnabled) {
-            //turret.resetVisionAssist(); // clear tx offset so it doesn't linger
-            //turret.update();            // still hold/aim based on base target
-            return;
-        }
-
-        // 1) tell Limelight the camera yaw (turret-mounted camera)
-        double yawDeg = turret.getTurretMotorAngle() + robot.pinpoint.getHeading(AngleUnit.DEGREES);
-        robot.limelight.updateRobotOrientation(yawDeg);
-
-        // 2) read tx (your Limelight.getTargetX returns 0 if invalid)
-        //double txDeg = limelight.getTargetXForTag(24);
-        double txDeg = 0.0;
-        // 3) feed tx to turret assist
-        //turret.updateVisionTx(txDeg);
-
-        // 4) drive turret motor
-        //turret.update();
+        trim = 0;
     }
 
     public void SequenceShooterLoop() {
@@ -213,9 +187,20 @@ public class FSMShooter {
                         shooterState == SHOOTERSTATE.SEQUENCE_SHOOTING ||
                         shooterState == SHOOTERSTATE.SHOOT_READY;
         turretStateUpdate();
-
+        int trimInput=0;
         if (turretState == TURRETSTATE.AIMING && aimEnabled) {
-            turret.driveTurretMotor();
+            ///  New Turret Trim
+            if (gamepadInput.getDriverLbSinglePressed() || gamepadInput.getOperatorLbSinglePressed()){
+                trimInput+=1;
+            }
+            if ((gamepadInput.getDriverRbSinglePressed() || gamepadInput.getOperatorRbSinglePressed())
+                    && isButtonDebounced()){
+                trimInput-=1;
+            }
+            trim=Range.clip(trim+trimInput*trimStep,-400,400);
+            int currentTick = turret.getCurrentTick();
+            int targetTick = (int) (turret.getTargetTick() + trim);
+            turret.driveTurretPID();
         }
         if (turretState == TURRETSTATE.LOCKING) {
             robot.turretMotor.setTargetPosition(0);
@@ -327,11 +312,11 @@ public class FSMShooter {
                 // when slot back to 0 position,then the kicker Retract
                 //=========================================================
                 if (shootTimer.seconds() > 0.4){
-                    spindexer.RuntoPosition(0); // reset counter in spindexer
+                    robot.kickerServo.setPosition(kickerRetract); // retract kicker
                 }
 
-                if (shootTimer.seconds() > 1.6) {
-                    robot.kickerServo.setPosition(kickerRetract);
+                if (shootTimer.seconds() > 0.8) {
+                    spindexer.RuntoPosition(0); // reset counter in spindexer
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.SHOOTER_IDLE;
                 }
@@ -348,36 +333,6 @@ public class FSMShooter {
         }
     }
 
-    public void SortShooterLoop() {
-        voltage = robot.getBatteryVoltageRobust();
-        //speed = shooterPowerAngleCalculator.getPower();
-        power = shooterPowerLUT.getPower();
-        //ShooterPowerControl();
-        switch(sortShooterState) {
-            case SHOOTER_IDLE:
-                //Idle state for shooter
-                robot.topShooterMotor.setPower(0);
-                shootTimer.reset();
-                break;
-            case FLYWHEEL_RUNNING:
-                if (shootTimer.seconds() > 0.5) {
-                    sortShooterState = SORTSHOOTERSTATE.SORT_SHOOTING;
-                }
-                shootTimer.reset();
-                break;
-            case SORT_SHOOTING:
-                if (shootTimer.seconds() > 0.1) {
-                    robot.spindexerServo.setPosition(spindexerSlot2);
-                    shootTimer.reset();
-                }
-                break;
-            case SHOOTER_STOP:
-                //stop flywheel
-                robot.topShooterMotor.setPower(0);
-                shooterState=SHOOTERSTATE.SHOOTER_IDLE;
-                break;
-        }
-    }
     //=========================================================
     // HANDLE STOPPING
     //=========================================================

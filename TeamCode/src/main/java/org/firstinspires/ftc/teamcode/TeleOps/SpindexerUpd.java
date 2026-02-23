@@ -12,6 +12,7 @@ import android.graphics.Color;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +27,7 @@ public class SpindexerUpd {
     public int prevPos;
     public int index;
     public double colorValue;
+    public SLOT stableColor;
 
     private final List<SLOT> voteBuffer = new ArrayList<>();
 
@@ -77,19 +79,21 @@ public class SpindexerUpd {
     }
 
     ///  New!! method to run servo to specific position
+    /// -  this method need to use updateServoStep() method.
+    /// - updateServoSetp() method needs to be called every loop in shooter & intake
     public void requestServoPosition(double pos) {
         servoTargetPos = clamp01(pos);
         servoBusy = true;
     }
 
     //==================================================
-    // Update Servo Step
+    // Update Servo Step when requestServoPosition() is called.
+    // Update Servo Step - Incremental Servo Stepping
     //==================================================
     /**
      * Call this EVERY loop() (or every FSM update tick).
      * Returns true when the servo has reached the target (within tolerance).
      */
-
 
     public boolean updateServoStep() {
         if (!servoBusy) return true;
@@ -113,47 +117,22 @@ public class SpindexerUpd {
     }
 
     //==================================================
-    // --- COLOR SENSING (MAJORITY VOTE) ---
+    // --- COLOR Detection Methods (Continuous Count) ---
     //==================================================
-    public void clearVoteBuffer() {
-        voteBuffer.clear();
-    }
-
-    public void addVoteSample(ColorSensor colorSensor, DistanceSensor distanceSensor) {
-        float[] hsvValues = new float[3];
-        Color.RGBToHSV(colorSensor.red() * 8, colorSensor.green() * 8, colorSensor.blue() * 8, hsvValues);
-        colorValue = hsvValues[0];
-
-        if (distanceSensor.getDistance(DistanceUnit.MM) < BALL_PRESENT_THRESHOLD_MM) {
-            if ((greenRangeLow[0] < hsvValues[0] && hsvValues[0] < greenRangeLow[1]) ||
-                    (greenRangeHigh[0] < hsvValues[0] && hsvValues[0] < greenRangeHigh[1])) {
-                voteBuffer.add(SLOT.Green);
-            } else if ((purpleRangeLow[0] < hsvValues[0] && hsvValues[0] < purpleRangeLow[1]) ||
-                    (purpleRangeHigh[0] < hsvValues[0] && hsvValues[0] < purpleRangeHigh[1])) {
-                voteBuffer.add(SLOT.Purple);
-            } else {
-                voteBuffer.add(SLOT.Unknown);
-            }
-        }
+    public void setStableColor(BallColor color){
+        if (color == BallColor.GREEN){
+        stableColor = SLOT.Green;}
+        else if (color == BallColor.PURPLE){
+            stableColor = SLOT.Purple;}
+        else {stableColor = SLOT.Unknown;}
     }
 
     /**
      * Simplification: No calculateSlot needed. We just use currentPos % 3.
      */
     public void finalizeCurrentSlot() {
-        if (voteBuffer.isEmpty()) return;
-        int greenVotes = Collections.frequency(voteBuffer, SLOT.Green);
-        int purpleVotes = Collections.frequency(voteBuffer, SLOT.Purple);
-        //int unKonwnVotes = Collections.frequency(voteBuffer, SLOT.Unknown);
-        int emptyVotes = Collections.frequency(voteBuffer, SLOT.Empty);
-
-        SLOT winner;
-        if (greenVotes > purpleVotes && greenVotes > emptyVotes) winner = SLOT.Green;
-        else if (purpleVotes > greenVotes && purpleVotes > emptyVotes) winner = SLOT.Purple;
-        else winner = SLOT.Unknown;
-
         // Apply result to the current logical index
-        slots[Math.floorMod(currentPos, 3)] = winner;
+        slots[Math.floorMod(currentPos, 3)] = stableColor;
     }
 
     //==================================================

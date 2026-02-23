@@ -5,9 +5,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class SpindexerManualControl {
     RobotHardware robot;
     SpindexerUpd spindexer;
-    GamepadInput gamepadInput;
+    GamepadComboInput gamepadInput;
     ElapsedTime debounceTimer = new ElapsedTime();
-    public SpindexerManualControl(RobotHardware robot, SpindexerUpd spindexer, GamepadInput gamepadInput){
+    public SpindexerManualControl(RobotHardware robot, SpindexerUpd spindexer, GamepadComboInput gamepadInput){
         this.robot=robot;
         this.spindexer=spindexer;
         this.gamepadInput=gamepadInput;

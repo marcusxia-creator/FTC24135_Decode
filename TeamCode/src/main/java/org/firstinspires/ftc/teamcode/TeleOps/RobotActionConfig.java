@@ -127,4 +127,8 @@ public class RobotActionConfig {
 
     public static final double aimingAngleThrehold      = 5;
     public static final double turretCameraRadius       = 0.1778;// for limelight aiming angle correction
+
+    public static final double trimStep                 = 10;
+    public static final double adjSpeed                 = 1500;
+    public static final double pressTime                = 0.2;
 }
