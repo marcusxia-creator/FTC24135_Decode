@@ -35,9 +35,9 @@ public class RobotActionConfig {
     public static double kickerRetract                  = 0.37;  /// UPdate 2/23 value - retract back for spindexer reversing
     public static double kickerExtend                   = 0.64; /// Update 2/23 value - into the spindexer for pushing the ball up
     //intake Speed
-    public static double intakeSpeed                    = 0.80;
+    public static double intakeSpeed                    = 0.70;
     public static double intakeStop                     = 0;
-    public static double ejectSpeed                     = -0.7;
+    public static double ejectSpeed                     = -0.6;
     //shooter timer
     public static final long FEED_PERIOD_MS_CLOSE       = 200; // 250
     public static final long FEED_PERIOD_MS_FAR         = 300; // 400 250
