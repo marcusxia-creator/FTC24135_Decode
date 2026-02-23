@@ -300,7 +300,7 @@ public class FSMShooter {
             case SEQUENCE_SHOOTING:
                 boolean flywheelReady =
                         flyWheelTimer.seconds() >= SPOOLUP_SEC ||
-                                (robot.topShooterMotor.getVelocity() * LUTPowerCalculator.tickToRPM) >= rpm * 0.95;
+                        (robot.topShooterMotor.getVelocity() * LUTPowerCalculator.tickToRPM) >= rpm * 0.95;
                 if (!flywheelReady) break;
                 // make a timer to feed balls
                 long now = System.currentTimeMillis();
@@ -341,25 +341,23 @@ public class FSMShooter {
                 break;
 
             case KICKER_RETRACT:
-
-                    //=========================================================================
-                    // this is the place to reset the spindexer counter
-                    // meanwhile spindexer return back to spinderxerPositions[0] - slot 1 position
-                    //==========================================================================
-                //=========================================================
-                // when slot back to 0 position,then the kicker Retract
-                //=========================================================
-                if (shootTimer.seconds() > 0.4){
+                //=========================================================================
+                // Since Ended at Slot Position, the kicker Retract First, then Slot back to zero 
+                // this is the place to reset the spindexer counter
+                // meanwhile spindexer return back to spinderxerPositions[0] - slot 1 position
+                //==========================================================================
+                if (shootTimer.seconds() > 0.1){
                     robot.kickerServo.setPosition(kickerRetract);
                 }
-
-                if (shootTimer.seconds() > 0.8) {
+                if (shootTimer.seconds() > 0.4) {
                     spindexer.RuntoPosition(0); // reset counter in spindexer
+                }
+                if (shootTimer.seconds() > 0.95) {
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.SHOOTER_IDLE;
                 }
                 break;
-
+                
             case SHOOTER_GRACE_STOPPING:
                 handleStoppingState();
                 break;
