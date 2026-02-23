@@ -27,7 +27,6 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.Turret;
-import org.firstinspires.ftc.teamcode.TeleOps.TurretUpd;
 
 @Config
 @TeleOp (name = "TestTeleOp", group = "org.firstinspires.ftc.teamcode")
@@ -41,7 +40,6 @@ public class TurretTestTeleOp extends OpMode {
     private ElapsedTime debounceTimer = new ElapsedTime();
     private RobotDrive robotDrive;
     private LUTPowerCalculator powerCalculator;
-    private TurretUpd turretUpd;
 
     private BallColor ballColor;
     private ColorDetection colorDetection;
@@ -95,7 +93,6 @@ public class TurretTestTeleOp extends OpMode {
         //aprilTagDetection = new AprilTagDetection(robot);
 
         turret = new Turret(robot, true);
-        turretUpd = new TurretUpd(robot);
 
         limelightTest = new LimelightTest(robot, turret);
         limelightTest.initLimelight(24);

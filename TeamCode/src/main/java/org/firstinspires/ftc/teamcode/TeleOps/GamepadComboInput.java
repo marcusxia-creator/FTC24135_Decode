@@ -50,7 +50,7 @@ public class GamepadComboInput {
     // Any-pad helpers
     private boolean aPressedAny, bPressedAny, xPressedAny, yPressedAny;
     private boolean dpadLeftPressedAny, dpadRightPressedAny, dpadDownPressedAny;
-    private boolean backSinglePressedAny;
+    private boolean backSinglePressedAny, lbSinglePressedAny, rbSinglePressedAny;
 
     public GamepadComboInput(GamepadEx driverGp, GamepadEx operatorGp) {
         this.driverGp = driverGp;
@@ -146,6 +146,9 @@ public class GamepadComboInput {
         dpadDownPressedAny = driverDpadDownPressed || operatorDpadDownPressed;
 
         backSinglePressedAny = driverBackSinglePressed || operatorBackSinglePressed;
+        lbSinglePressedAny = driverLbSinglePressed || operatorLbSinglePressed;
+        rbSinglePressedAny = driverRbSinglePressed || operatorRbSinglePressed;
+
     }
 
     private void readAll() {
@@ -239,4 +242,11 @@ public class GamepadComboInput {
     public boolean getBackSinglePressedAny() {
         return backSinglePressedAny;
     }
+    public boolean getLbSinglePressedAny() {
+        return lbSinglePressedAny;
+    }
+    public boolean getrbSinglePressedAny() {
+        return rbSinglePressedAny;
+    }
+
 }

@@ -34,8 +34,6 @@ public class FSMIntake {
     public static ElapsedTime intakeTimer = new ElapsedTime();
 
     private final RobotHardware robot;
-    private final GamepadEx gamepad_1;
-    private final GamepadEx gamepad_2;
     private double intakeRPM;
     private boolean reversing = false;
     SpindexerUpd spindexer;
@@ -43,10 +41,8 @@ public class FSMIntake {
 
     boolean recorded;
 
-    public FSMIntake(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot, SpindexerUpd spindexer) {
+    public FSMIntake(RobotHardware robot, SpindexerUpd spindexer) {
         this.robot = robot;
-        this.gamepad_1 = gamepad_1;
-        this.gamepad_2 = gamepad_2;
         this.spindexer = spindexer;
     }
 
@@ -125,10 +121,10 @@ public class FSMIntake {
                             Math.min(Math.abs(error), maxStep),
                             error
                     );
-                    robot.spindexerServo.setPosition(currentPos + step);
-                    if (Math.abs(error) < 0.01) {
+                    double nextPos = currentPos + step;
+                    robot.spindexerServo.setPosition(nextPos);
+                    if (Math.abs(targetPos - nextPos) < 0.01) {
                         spindexer.RuntoPosition(1); // go to slot1 position and reset the spindexer counter
-
                         intakeStates = IntakeStates.INTAKE_IDLE;
                     }
                 }
@@ -192,7 +188,8 @@ public class FSMIntake {
 
     public void requestGracefulStop() {
         // Only request STOP if we are not already stopping/idle
-        if (intakeStates != IntakeStates.INTAKE_IDLE && intakeStates != IntakeStates.INTAKE_STOP) {
+        if (intakeStates == IntakeStates.INTAKE_IDLE) return;
+        if (intakeStates != IntakeStates.INTAKE_STOP) {
             intakeTimer.reset();
             intakeStates = IntakeStates.INTAKE_STOP;
         }

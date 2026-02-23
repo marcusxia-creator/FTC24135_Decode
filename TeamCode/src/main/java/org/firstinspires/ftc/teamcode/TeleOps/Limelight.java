@@ -18,7 +18,6 @@ import java.util.List;
 public class Limelight {
 
     private RobotHardware robot;
-    private TurretUpd turret;
     private double conversionFactor;
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
     private final double turretCenterOffsetLength = Math.hypot(turret_Center_Y_Offset, turret_Center_X_Offset);

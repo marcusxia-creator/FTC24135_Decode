@@ -84,9 +84,10 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     /// ----------------------------------------------------------------
     /// For robot action state
     public RobotActionState actionStates;
-
     private RobotActionState requestedActionState = RobotActionState.Idle;
     private RobotActionState activeActionState = RobotActionState.Idle;
+    private RobotActionState pendingActionState = null;
+    private boolean stopRequestedForPending = false;
 
     /// For alliance colour
     public static Alliance alliance;
@@ -138,18 +139,17 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadComboInput);
 
         /// 3. turret---------------------------------------------------------------
-        //turret = new TurretUpd(robot);
         turret = new Turret(robot, false);
 
         /// 4.1. power calculator for shooter------------------------------------------------------------
         shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
 
         /// 4. shooter-------------------------------------------------------------
-        FSMShooter = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, shooterPowerAngleCalculator, gamepadComboInput, turret, limelight);
+        FSMShooter = new FSMShooter(robot, spindexer, shooterPowerAngleCalculator, gamepadComboInput, turret);
         FSMShooter.Init();
 
         /// 5. intake------------------------------------------------------------
-        FSMIntake = new FSMIntake(gamepadCo1, gamepadCo2, robot, spindexer);
+        FSMIntake = new FSMIntake(robot, spindexer);
 
         /// 6. color detection------------------------------------------------------------
         colorDetection = new ColorDetection(robot);
@@ -167,7 +167,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
 
         /// 9. limelight--------------------------------------------------------------
         limelight = new Limelight(robot);
-        limelight.initLimelight(24);
+        limelight.initLimelight(25);
         limelight.start();
 
         /// 10. start adjuster servo at position to avoid soft start
@@ -240,20 +240,12 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         robotDrive.DriveLoop();
 
         // =========================================================
-        // 4. NEW! - ACTION STATE TRANSITION MANAGER (GRACEFUL)
-        // =========================================================
-        updateActionStateTransitions();
-
-        // =========================================================
-        // FIXME: 5. MODIFIED - PER-ACTION "EXTRAS" (NO FSM STATE FORCING HERE)
+        // FIXME: 5.
+        //  4. MODIFIED - PER-ACTION "EXTRAS" (NO FSM STATE FORCING HERE)
         // =========================================================
         switch (activeActionState){
             case Sequence_Shooting:
                 //turret.driveTurretMotor();
-                break;
-            case Sort_Shooting:
-                //turret.driveTurretMotor();
-                //FSMShooter.SortShooterLoop();
                 break;
             case Intaking:
                 // empty as the FSM handles this,intake FSM already running
@@ -267,10 +259,8 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
                 break;
         }
 
-
-
         // =========================================================
-        // 6. ZONE STATUS
+        // 5. ZONE STATUS
         // =========================================================
         int zone = shooterPowerAngleCalculator.getZone();
         turret.updateZoneForGoalPose(zone);
@@ -280,26 +270,33 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         turret.updatePidFromDashboard();
 
         // =========================================================
-        // 7. SUBSYSTEM FSMs (ALWAYS RUN)
+        // 6. SUBSYSTEM FSMs (ALWAYS RUN)
         // =========================================================
         FSMIntake.loop();
         // =========================================================
-        // 7.1 SHOOTER & TURRET CONTROL (BUTTON CONTROLLED)
+        // 6.1 SHOOTER & TURRET CONTROL (BUTTON CONTROLLED)
         // =========================================================
         /// When gamepad back pressed, reset turret.
         /// Otherwise, normal shooter and turret drive
-        if (gamepadCo1.getButton(GamepadKeys.Button.BACK) || gamepadCo2.getButton(GamepadKeys.Button.BACK) && isButtonDebounced()) {
+        if (gamepadComboInput.getBackSinglePressedAny()) {
             resetTurret = true;
-            startingTick = robot.turretMotor.getCurrentPosition();
+            startingTick = robot.turretMotor.getCurrentPosition(); // latch once on press
         }
-        if (resetTurret){
-            if (turret.turretReset(startingTick)){
+
+        if (resetTurret) {
+            if (turret.turretReset(startingTick)) {
                 resetTurret = false;
             }
-        }
-        else {
+        } else {
             FSMShooter.SequenceShooterLoop();
         }
+
+        // =========================================================
+        // 7. NEW! - ACTION STATE TRANSITION MANAGER (GRACEFUL)
+        // Refine the order to reduce one loop delay.
+        // =========================================================
+        updateActionStateTransitions();
+
         // =========================================================
         // 8. LED STATUS (non-blocking)
         // =========================================================
@@ -325,38 +322,47 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     // =========================================================
     private void updateActionStateTransitions() {
 
-        if (requestedActionState == activeActionState) return;
+        // If no transition in progress, see if we need to start one
+        if (pendingActionState == null) {
+            if (requestedActionState == activeActionState) return;
 
-        // Decide which subsystems must be "safe" before switching
+            pendingActionState = requestedActionState;   // LATCH target
+            stopRequestedForPending = false; //
+        }
+
+        // If driver changed their mind mid-transition, you have 2 choices:
+        // A) ignore until commit (most stable)
+        // B) allow retargeting only when safe (optional)
+        // We'll do A: ignore changes until commit.
+
         boolean intakeSafe  = FSMIntake.canExit();
         boolean shooterSafe = FSMShooter.canExit();
 
-        // Example policy:
-        // - Switching INTO Intaking requires shooter safe (so you don't intake while shooting)
-        // - Switching INTO Shooting requires intake safe (so you don't stop intake mid-park)
-        // - Switching INTO Idle requires both safe, or you can force a "stop request" first (recommended)
+        // 2) OPTIONAL: allow retargeting only when shooter is safe
+        if (pendingActionState != null && shooterSafe) {
+            pendingActionState = requestedActionState;
+        }
         // ------------------------------------------------------------
         // 1) If we are NOT safe yet, request graceful stop(s)
         //    (this will not hard-cut; it triggers each FSM's stop sequence)
         // ------------------------------------------------------------
-
         //TODO: if specific stop needed. uncomment the function below
-        // requestGracefulstopIfNeeded - only for switching from intaking to shooting
-        requestGracefulStopsIfNeeded(activeActionState, requestedActionState);
+        // Request graceful stops once
+        if (!stopRequestedForPending) {
+            requestGracefulStopsIfNeeded(activeActionState, pendingActionState);
+            stopRequestedForPending = true;
+        }
 
         // ------------------------------------------------------------
         // 2) Decide if we are allowed to switch into the requested state
         // ------------------------------------------------------------
         boolean canSwitch = false;
 
-        switch (requestedActionState) {
+        switch (pendingActionState) {
             case Intaking:
                 canSwitch = shooterSafe;
                 break;
             case Sequence_Shooting:
-                canSwitch = intakeSafe;  // wait until intake finishes its current sequence
-                break;
-            case Sort_Shooting:
                 canSwitch = intakeSafe;  // wait until intake finishes its current sequence
                 break;
             case Idle:
@@ -370,14 +376,15 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         // ------------------------------------------------------------
         if (canSwitch) {
             // commit the switch
-            activeActionState = requestedActionState;
+            activeActionState = pendingActionState;
+            pendingActionState = null;          // clear transition
+            stopRequestedForPending = false;
             onEnterActionState(activeActionState);
         }
     }
     // =========================================================
-    // TODO: not use, but if needed, Greacefulstop() stop the fms before naturally finish
     // CHECK SAFE EXIT
-    // NOT SAFE, REQUEST TO GRACEFULSTOP - FSMShooter.requestGracefulStop()
+    // ONLY SHOOTER STOPPED, IT CAN SAFE EXIT / SWITCH
     // NOT SAFE, REQUEST TO GRACEFULSTOP - FSMIntake.requestGracefulStop()
     //===========================================================
     private void requestGracefulStopsIfNeeded(RobotActionState current, RobotActionState target) {
@@ -388,18 +395,8 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
                 }
                 break;
 
-            case Sort_Shooting:
-                // We are trying to start shooting → intake must finish gracefully first
-                if (!FSMIntake.canExit()) {
-                    FSMIntake.requestGracefulStop(); // sets INTAKE_STOP if needed
-                }
-                break;
-
             case Intaking:
                 // We are trying to intake → shooter must finish gracefully first
-                if (!FSMShooter.canExit()) {
-                    //FSMShooter.requestGracefulStop(); // you implement: STOPPING or set IDLE safely
-                }
                 break;
 
             case Idle:
@@ -407,9 +404,6 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
                 // Going idle → stop both gracefully
                 if (!FSMIntake.canExit()) {
                     FSMIntake.requestGracefulStop();
-                }
-                if (!FSMShooter.canExit()) {
-                    //FSMShooter.requestGracefulStop();
                 }
                 break;
         }
@@ -422,11 +416,6 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         switch (s) {
             case Sequence_Shooting:
                 FSMShooter.shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
-                break;
-
-            case Sort_Shooting:
-                FSMIntake.intakeStates  = IntakeStates.INTAKE_STOP; // or IDLE
-                // FSMShooter.sortShooterState = ...
                 break;
 
             case Intaking:
@@ -447,52 +436,43 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     //===========================================================
 
     public void buttonUpdate() {
-        boolean seqShootPressed =
-                (gamepadCo1.getButton(GamepadKeys.Button.X) || gamepadCo2.getButton(GamepadKeys.Button.X))
-                        && isButtonDebounced();
-        boolean intakePressed =
-                (gamepadCo1.getButton(GamepadKeys.Button.DPAD_LEFT) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_LEFT))
-                        && isButtonDebounced();
-        boolean reversePressed =
-                (gamepadCo1.getButton(GamepadKeys.Button.DPAD_RIGHT) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_RIGHT))
-                        && isButtonDebounced();
-        boolean idlePressed =
-                (gamepadCo1.getButton(GamepadKeys.Button.B) || gamepadCo2.getButton(GamepadKeys.Button.B))
-                        && isButtonDebounced();
-        boolean dpDown =
-                ((gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN))
-                        && isButtonDebounced());
-        boolean turretReset =
-                ((gamepadComboInput.getDriverBackSinglePressed()));
+        boolean idlePressed     = gamepadComboInput.getBPressedAny();
+        boolean seqShootPressed = gamepadComboInput.getXPressedAny();
 
+        boolean intakePressed   = gamepadComboInput.getDpadLeftPressedAny();
 
-        boolean sortPressed = gamepadComboInput.getOperatorLbXComboPressed(); // combo - LB+X for sorted shooting. Assume this is edge-based already
-        if (seqShootPressed) requestedActionState = RobotActionState.Sequence_Shooting;
-        if (sortPressed)     requestedActionState = RobotActionState.Sort_Shooting;
-        if (intakePressed)   requestedActionState = RobotActionState.Intaking;
-        //if (reversePressed)  requestedActionState = RobotActionState.Reverse_Intake; // add enum if needed
-        if (idlePressed)     requestedActionState = RobotActionState.Idle;
+        boolean reversePressed  = gamepadComboInput.getDpadRightPressedAny(); // available if you add enum/action, right now it is the same as B idle pressed
+        boolean dpDownPressed   = gamepadComboInput.getDpadDownPressedAny();
 
-        // Dpad down pose reset stays immediate (that's fine)
-        if (dpDown) {
-            if (alliance == Alliance.RED_ALLIANCE) {
-                robot.pinpoint.setPosition(redAllianceResetPose);
-            }
-            if (alliance == Alliance.BLUE_ALLIANCE) {
-                robot.pinpoint.setPosition(blueAllianceResetPose);
-            }
+        boolean aPressed        = gamepadComboInput.getAPressedAny();         // available
+        boolean yPressed        = gamepadComboInput.getYPressedAny();         // available
+
+        // ==========================
+        // Action State Priority
+        // ==========================
+        if (idlePressed) {
+            requestedActionState = RobotActionState.Idle;
+
+        } else if (seqShootPressed) {
+            requestedActionState = RobotActionState.Sequence_Shooting;
+
+        } else if (intakePressed) {
+            requestedActionState = RobotActionState.Intaking;
         }
+
+        // ==========================
+        // Pose reset (DPAD_DOWN)
+        // ==========================
+        if (dpDownPressed) {
+            robot.pinpoint.setPosition(
+                    alliance == Alliance.RED_ALLIANCE ? redAllianceResetPose : blueAllianceResetPose
+            );
+        }
+
     }
 
     ///  helper functions
-    /// - button debounce
-    public boolean isButtonDebounced() {
-        if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
-            debounceTimer.reset();
-            return true;
-        }
-        return false;
-    }
+
     ///  - LED Update
     private void updateLED() {
 
@@ -510,7 +490,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         } else { //Default black
             robot.LED.setPosition(0.0);
         }
-
+        // add the limit swith logging.
         if(FSMShooter.turret.isLimitPressed()){
             switchTickLog.add(Integer.toString(robot.turretMotor.getCurrentPosition()));
             if(switchTickLog.size()>=10){
@@ -519,23 +499,20 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         }
     }
 
-
+    /// update zone
     private int updateZone () {
         return shooterPowerAngleCalculator.getZone();
     }
 
     ///  - Frequency Updates
     private void updateLoopFrequency() {
-
         long now = System.currentTimeMillis();
-
         if (lastLoopTime != 0) {
             long dtMs = now - lastLoopTime;
             if (dtMs > 0) {
                 loopHz = 1000.0 / dtMs;
             }
         }
-
         lastLoopTime = now;
     }
 

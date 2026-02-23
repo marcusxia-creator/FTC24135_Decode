@@ -14,8 +14,7 @@ public class FSMShooter {
     private final RobotHardware robot;
     private final GamepadComboInput gamepadComboInput;
     private LUTPowerCalculator shooterPowerLUT;
-    private final GamepadEx gamepad_1;
-    private final GamepadEx gamepad_2;
+
 
     private ElapsedTime shootTimer = new ElapsedTime();
     private ElapsedTime flyWheelTimer = new ElapsedTime();
@@ -28,7 +27,6 @@ public class FSMShooter {
     TURRETSTATE turretState;
     SpindexerUpd spindexer;
     public final Turret turret;
-    private final Limelight limelight;
 
     Spindexer.SLOT targetColour = Spindexer.SLOT.Purple;
 
@@ -108,18 +106,16 @@ public class FSMShooter {
     }
 
     //Constructor
-    public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot,
+    public FSMShooter(RobotHardware robot,
                       SpindexerUpd spindexer, LUTPowerCalculator shooterPowerLUT,
-                      GamepadComboInput gamepadComboInput, Turret turret, Limelight limelight) {
-        this.gamepad_1 = gamepad_1;
-        this.gamepad_2 = gamepad_2;
+                      GamepadComboInput gamepadComboInput, Turret turret) {
+
         this.robot = robot;
         this.spindexer = spindexer;
         this.shooterPowerLUT = shooterPowerLUT;
         this.gamepadComboInput = gamepadComboInput;
         /// New!!
         this.turret = turret;
-        this.limelight = limelight;
     }
 
     public void Init() {
@@ -197,27 +193,12 @@ public class FSMShooter {
         // NEW Turret Trim
         // Triming/manual control
         //========================================================
-        /*int trimInput=0;
-        if ((gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
-                || gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER))
-                && isButtonDebounced()){
-            trimInput+=1;
-        }
-        if ((gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER)
-                || gamepad_2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-                && isButtonDebounced()){
-            trimInput-=1;
-        }
-
-         */
         int trimInput=0;
         if (turretState == TURRETSTATE.AIMING && aimEnabled) {
-            if (gamepadComboInput.getDriverLbSinglePressed() || gamepadComboInput.getOperatorLbSinglePressed()){
+            if (gamepadComboInput.getLbSinglePressedAny()){
                 trimInput+=1;
             }
-            if ((gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER)
-                    || gamepad_2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-                    && isButtonDebounced()){
+            if (gamepadComboInput.getrbSinglePressedAny()){
                 trimInput-=1;
             }
             trim=Range.clip(trim+trimInput*trimStep,-400,400);
@@ -229,17 +210,6 @@ public class FSMShooter {
             robot.turretMotor.setVelocity(trimInput*adjSpeed);
             ///turret.driveTurretPID(turret.getCurrentTick(), turret.getTargetTick());
         }
-        /** Depreciated!!
-        if (turretState == TURRETSTATE.AIMING && aimEnabled) {
-            int currentTick = turret.getCurrentTick();
-            int targetTick = turret.getTargetTick();
-            turret.driveTurretPID(currentTick, targetTick);
-        }
-        if (turretState == TURRETSTATE.LOCKING) {
-            robot.turretMotor.setPower(0);
-            ///turret.driveTurretPID(turret.getCurrentTick(), turret.getTargetTick());
-        }
-         */
         //=====================================
         // TODO - Update Zone for shooting interval - not in use, - update the MS in main loop right now.
         //=====================================
@@ -289,9 +259,7 @@ public class FSMShooter {
                 break;
             case SHOOT_READY:
                 /// use button Y to shoot.
-                if ((gamepad_1.getButton(GamepadKeys.Button.Y)
-                        || gamepad_2.getButton(GamepadKeys.Button.Y))
-                        && isButtonDebounced()){
+                if (gamepadComboInput.getYPressedAny()){
                     shooterState = SHOOTERSTATE.SEQUENCE_SHOOTING;
                     shootTimer.reset();
                 }
@@ -371,36 +339,6 @@ public class FSMShooter {
         }
     }
 
-    public void SortShooterLoop() {
-        voltage = robot.getBatteryVoltageRobust();
-        //speed = shooterPowerAngleCalculator.getPower();
-        power = shooterPowerLUT.getPower();
-        //ShooterPowerControl();
-        switch(sortShooterState) {
-            case SHOOTER_IDLE:
-                //Idle state for shooter
-                robot.topShooterMotor.setPower(0);
-                shootTimer.reset();
-                break;
-            case FLYWHEEL_RUNNING:
-                if (shootTimer.seconds() > 0.5) {
-                    sortShooterState = SORTSHOOTERSTATE.SORT_SHOOTING;
-                }
-                shootTimer.reset();
-                break;
-            case SORT_SHOOTING:
-                if (shootTimer.seconds() > 0.1) {
-                    robot.spindexerServo.setPosition(spindexerSlot2);
-                    shootTimer.reset();
-                }
-                break;
-            case SHOOTER_STOP:
-                //stop flywheel
-                robot.topShooterMotor.setPower(0);
-                shooterState=SHOOTERSTATE.SHOOTER_IDLE;
-                break;
-        }
-    }
     //=========================================================
     // HANDLE STOPPING
     //=========================================================
