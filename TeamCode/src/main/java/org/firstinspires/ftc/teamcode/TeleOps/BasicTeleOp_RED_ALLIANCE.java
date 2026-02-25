@@ -278,7 +278,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             resetTurret = true;
             startingTick = robot.turretMotor.getCurrentPosition(); // latch once on press
         }
-
         if (resetTurret) {
             if (turret.turretReset(startingTick)) {
                 resetTurret = false;
@@ -472,16 +471,13 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     ///  - LED Update
     private void updateLED() {
 
-        if (shooterPowerAngleCalculator.getZone() == 0 && Math.abs(turret.getTargetTick() - turret.getCurrentTick())<10 && !limelight.llresult()) {
+        if (limelight.getTargetXForTag(24) == 0) {
+            robot.LED.setPosition(0.5); // green}
             //Distance outside shooting zone and no limelight, white alert
-            robot.LED.setPosition(1.0); // white color
-        } else if (shooterPowerAngleCalculator.getZone() == 0 && limelight.llresult() && Math.abs(turret.getTargetTick() - turret.getCurrentTick())<10){
-            robot.LED.setPosition(0.333); // orange
-        } else if (shooterPowerAngleCalculator.getZone() > 0 && limelight.llresult() && Math.abs(turret.getTargetTick() - turret.getCurrentTick())<10){
-            robot.LED.setPosition(0.5); // green
-        } else if (shooterPowerAngleCalculator.getZone() > 0 && limelight.llresult() && Math.abs(turret.getTargetTick() - turret.getCurrentTick())>10) {
-            robot.LED.setPosition(0.388); // yellow
-        } else if (shooterPowerAngleCalculator.getZone() > 0 && !limelight.llresult() && Math.abs(turret.getTargetTick() - turret.getCurrentTick())<10) {
+        } else if (limelight.getTargetXForTag(24) < 20 && limelight.getTargetXForTag(24) > 0) {
+            robot.LED.setPosition(0.388); // orange
+        }
+        else if (limelight.getTargetXForTag(24) < 0){
             robot.LED.setPosition(0.288); // red
         } else { //Default black
             robot.LED.setPosition(0.0);
