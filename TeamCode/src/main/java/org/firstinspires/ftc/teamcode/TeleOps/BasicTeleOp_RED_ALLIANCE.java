@@ -476,7 +476,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         if (limelight.getTargetXForTag(24) == 0) {
             robot.LED.setPosition(0.5); // green}
             //Distance outside shooting zone and no limelight, white alert
-        } else if (limelight.getTargetXForTag(24) < 20 && limelight.getTargetXForTag(24) > 0) {
+        } else if (limelight.getTargetXForTag(24) < 20 && limelight.getTargetXForTag(24) >= 5) {
             robot.LED.setPosition(0.388); // orange
         }
         else if (Double.isNaN(limelight.getTargetXForTag(24))){
