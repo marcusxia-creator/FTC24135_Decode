@@ -7,6 +7,8 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllia
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerRetract;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
 
+import static java.lang.Double.isNaN;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -477,7 +479,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         } else if (limelight.getTargetXForTag(24) < 20 && limelight.getTargetXForTag(24) > 0) {
             robot.LED.setPosition(0.388); // orange
         }
-        else if (limelight.getTargetXForTag(24) < 0){
+        else if (Double.isNaN(limelight.getTargetXForTag(24))){
             robot.LED.setPosition(0.288); // red
         } else { //Default black
             robot.LED.setPosition(0.0);

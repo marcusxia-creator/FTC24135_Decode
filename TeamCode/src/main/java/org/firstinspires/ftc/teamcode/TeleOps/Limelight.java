@@ -67,7 +67,7 @@ public class Limelight {
     //============================================================
     public double getTargetXForTag(int tagId) {
         LLResult r = robot.limelight.getLatestResult();
-        if (r == null || !r.isValid() || r.getFiducialResults() == null) return -1.0;
+        if (r == null || !r.isValid() || r.getFiducialResults() == null) return Double.NaN;
 
         for (LLResultTypes.FiducialResult f : r.getFiducialResults()) {
             if (f.getFiducialId() == tagId) {

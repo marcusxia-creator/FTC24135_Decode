@@ -212,6 +212,7 @@ public class Turret {
         boolean nearStart = Math.abs(delta) < 435;
 
         double baseDir = (startingTick < 0) ? 1.0 : -1.0;
+        double turretOffsetTick = baseDir*18;
         double dir = nearStart ? baseDir : -baseDir;
         robot.turretMotor.setPower(0.5*dir);
         return false;
