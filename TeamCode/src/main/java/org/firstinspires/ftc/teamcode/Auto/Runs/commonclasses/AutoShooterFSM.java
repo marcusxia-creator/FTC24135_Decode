@@ -121,7 +121,7 @@ public class AutoShooterFSM {
         public void FSMShooterRun() {
             switch (currentState) {
                 case SHOOTER_INIT:
-                    robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
+                    //robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
                     robot.kickerServo.setPosition(kickerRetract);
                     SpindexerRunTo(startingSlot);
                     shooterTimer.reset();
@@ -159,7 +159,7 @@ public class AutoShooterFSM {
                     SpindexerRunTo(0);
                     if (stateTimer2.seconds() > 0.5) {
                         robot.kickerServo.setPosition(kickerRetract);
-                        if(stateTimer2.seconds()>0.9){
+                        if(stateTimer2.seconds()>0.8){
                             currentState = SHOOTERSTATE.SHOOTER_END;
                         }
                     }

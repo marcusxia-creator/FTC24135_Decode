@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.shooterAd
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.spindexerSlot1;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -22,11 +23,13 @@ public class ActionTestAuto extends LinearOpMode {
     public static Pose2d initialPose = new Pose2d(64, -8, Math.toRadians(0));
 
     public RobotHardware robot;
+    public AprilTagDetection aprilTagDetection;
+
     public AutoShooterFSM shooter;
     public AutoIntakeFSM intake;
     public AutoTurretDrive turret;
+    public AutoLimelightDetection limelightDetection;
     public MecanumDrive drive;
-    public AprilTagDetection aprilTagDetection;
 
     public int targetGreen;
 
@@ -37,12 +40,14 @@ public class ActionTestAuto extends LinearOpMode {
         robot.init();
         robot.turretInit();
 
+        aprilTagDetection = new AprilTagDetection(robot);
+        aprilTagDetection.limelightStart();
+
         turret = new AutoTurretDrive(robot);
         intake = new AutoIntakeFSM(robot);
         shooter = new AutoShooterFSM(robot);
+        limelightDetection  = new AutoLimelightDetection(robot, aprilTagDetection);
 
-        aprilTagDetection = new AprilTagDetection(robot);
-        aprilTagDetection.limelightStart();
 
         if (opModeInInit()) {
             Actions.runBlocking(turret.TurretRun(90));

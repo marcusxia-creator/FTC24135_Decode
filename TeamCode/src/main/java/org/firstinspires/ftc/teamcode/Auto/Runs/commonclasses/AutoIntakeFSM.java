@@ -19,9 +19,6 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 public class AutoIntakeFSM {
     private final RobotHardware robot;
 
-    public static int currentGreenSlot;
-    public static int shootingInitSlot;
-
     public AutoIntakeFSM(RobotHardware robot) {
         this.robot = robot;
     }
@@ -84,7 +81,7 @@ public class AutoIntakeFSM {
                     break;
                 case INTAKE_RUN:
                     robot.kickerServo.setPosition(kickerRetract);
-                    robot.intakeMotor.setPower(0.85);
+                    robot.intakeMotor.setPower(0.75);
                     stateTimer.reset();
                     currentState = INTAKESTATE.INTAKE_DETECT;
                     break;
@@ -100,7 +97,7 @@ public class AutoIntakeFSM {
                     }
                     break;
                 case INTAKE_PAUSE:
-                    robot.intakeMotor.setPower(0.3);
+                    robot.intakeMotor.setPower(0.45);
                     if (stateTimer.seconds() > 0.2) {
                         stateTimer.reset();
                         currentState = INTAKESTATE.INTAKE_INDEX;
@@ -139,8 +136,6 @@ public class AutoIntakeFSM {
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             FSMIntakeRun();
             telemetryPacket.put("FSM Intake State", currentState);
-            telemetryPacket.put("Calc Shooting Int Slot", shootingInitSlot);
-            telemetryPacket.put("Detected Green Slot", currentGreenSlot);
             return currentState != INTAKESTATE.INTAKE_END;
         }
     }

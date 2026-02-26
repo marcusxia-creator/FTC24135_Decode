@@ -16,6 +16,7 @@ public class TurretMotorTest extends OpMode {
     private int startingTick = 0;
     private boolean yPrev = false;
     Turret turret;
+    private int turretLSzero;
 
     @Override
     public void init() {
@@ -63,6 +64,7 @@ public class TurretMotorTest extends OpMode {
 
         if (resetTurret) {
             if (turret.turretReset(startingTick)) {
+                turretLSzero = turretMotor.getCurrentPosition();
                 resetTurret = false; // done
             }
         }

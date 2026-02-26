@@ -111,10 +111,13 @@ public class AutoTurretDrive {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            getTargetAngle();
             runToAutoAim();
-            return false;
+            telemetryPacket.put("Turret Target Angle", getTargetAngle());
+            return true;
         }
     }
 
      */
+
 }

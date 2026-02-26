@@ -69,34 +69,34 @@ public class RedSideCloseAuto extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y), Math.toRadians(CloseShootingPosition_Heading));
 
         TrajectoryActionBuilder IntakeSet1Drive1Builder = DriveToShoot1Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(IntakeSet3Position1_X, IntakeSet3Position1_Y), Math.toRadians(90));
+                .splineToConstantHeading(new Vector2d(IntakeSet3Position1_X, IntakeSet3Position1_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder IntakeSet1Drive2Builder = IntakeSet1Drive1Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(IntakeSet3Position2_X, IntakeSet3Position2_Y), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(IntakeSet3Position2_X, IntakeSet3Position2_Y), Math.toRadians(90))
                 .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(IntakeSet3Position3_X, IntakeSet3Position3_Y), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(IntakeSet3Position3_X, IntakeSet3Position3_Y), Math.toRadians(90))
                 .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(IntakeSet3Position4_X, IntakeSet3Position4_Y), Math.toRadians(90));
+                .splineToConstantHeading(new Vector2d(IntakeSet3Position4_X, IntakeSet3Position4_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot2Builder = IntakeSet1Drive2Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y), Math.toRadians(CloseShootingPosition_Heading));
+                .splineToConstantHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y), Math.toRadians(CloseShootingPosition_Heading));
 
         TrajectoryActionBuilder IntakeSet2Drive1Builder = DriveToShoot2Builder.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position1_X, Close_IntakeSet2Position1_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder IntakeSet2Drive2Builder = IntakeSet2Drive1Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position2_X, Close_IntakeSet2Position2_Y), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position2_X, Close_IntakeSet2Position2_Y), Math.toRadians(90))
                 .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position3_X, Close_IntakeSet2Position3_Y), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position3_X, Close_IntakeSet2Position3_Y), Math.toRadians(90))
                 .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y), Math.toRadians(90));
+                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot3Builder = IntakeSet2Drive2Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y - 16), Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y), Math.toRadians(CloseShootingPosition_Heading));
+                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y - 16), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y), Math.toRadians(CloseShootingPosition_Heading));
 
         TrajectoryActionBuilder LeaveDriveBuilder = DriveToShoot3Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y+16), Math.toRadians(CloseShootingPosition_Heading));
+                .splineToConstantHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y+16), Math.toRadians(CloseShootingPosition_Heading));
 
         Action DriveToShoot1 = DriveToShoot1Builder.build();
         Action IntakeSet1Drive1 = IntakeSet1Drive1Builder.build();
