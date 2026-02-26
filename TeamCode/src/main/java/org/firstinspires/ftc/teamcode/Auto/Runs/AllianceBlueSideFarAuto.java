@@ -72,40 +72,40 @@ public class AllianceBlueSideFarAuto extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(IntakeSet1Position1_X, IntakeSet1Position1_Y), Math.toRadians(-90));
 
         TrajectoryActionBuilder IntakeSet1Drive2 = IntakeSet1Drive1.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(IntakeSet1Position4_X,IntakeSet1Position4_Y),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(IntakeSet1Position2_X,IntakeSet1Position2_Y),Math.toRadians(-90))
                 .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(IntakeSet1Position2_X,IntakeSet1Position2_Y),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(IntakeSet1Position3_X,IntakeSet1Position3_Y),Math.toRadians(-90))
                 .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(IntakeSet1Position4_X,IntakeSet1Position4_Y),Math.toRadians(-90));
+                .splineToConstantHeading(new Vector2d(IntakeSet1Position4_X,IntakeSet1Position4_Y),Math.toRadians(-90));
 
         TrajectoryActionBuilder DriveToShoot1 = IntakeSet1Drive2.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
 
         TrajectoryActionBuilder IntakeSet2Drive1 = DriveToShoot1.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(IntakeHPPosition1_X, IntakeHPPosition1_Y), Math.toRadians(-90));
+                .splineToConstantHeading(new Vector2d(IntakeHPPosition1_X, IntakeHPPosition1_Y), Math.toRadians(-90));
 
         TrajectoryActionBuilder IntakeSet2Drive2 = IntakeSet2Drive1.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(-90))
                 .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(IntakeHPPosition2_X,IntakeHPPosition2_Y),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(IntakeHPPosition2_X,IntakeHPPosition2_Y),Math.toRadians(-90))
                 .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(-90));
+                .splineToConstantHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(-90));
 
         TrajectoryActionBuilder DriveToShoot2 = IntakeSet2Drive2.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
+                .splineToConstantHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
 
         TrajectoryActionBuilder IntakeSet3Drive1 = DriveToShoot2.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(IntakeHPPosition1_X, IntakeHPPosition1_Y), Math.toRadians(-90));
+                .splineToConstantHeading(new Vector2d(IntakeHPPosition1_X, IntakeHPPosition1_Y), Math.toRadians(-90));
 
         TrajectoryActionBuilder IntakeSet3Drive2 = IntakeSet3Drive1.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(IntakeHPPosition2_X,IntakeHPPosition2_Y),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(-90))
                 .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(IntakeHPPosition3_X,IntakeHPPosition3_Y),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(IntakeHPPosition2_X,IntakeHPPosition2_Y),Math.toRadians(-90))
                 .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(-90));
+                .splineToConstantHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(-90));
 
         TrajectoryActionBuilder DriveToShoot3 = IntakeSet2Drive2.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
+                .splineToConstantHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
 
         Action intakeSet1Drive1Action = IntakeSet1Drive1.build();
         Action intakeSet1Drive2Action = IntakeSet1Drive2.build();
@@ -122,7 +122,7 @@ public class AllianceBlueSideFarAuto extends LinearOpMode {
         if (opModeIsActive()) {
             Actions.runBlocking(
                 new SequentialAction(
-                    turret.TurretRun(-68),
+                    turret.TurretRun(-67),
                     shooter.ShooterOn(FarShotPower),
                     shooter.ShootFarZone(FarShotPower, 2,0,targetGreen),
                     shooter.ShooterOff(),
