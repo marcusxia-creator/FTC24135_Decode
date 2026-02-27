@@ -77,7 +77,7 @@ public class FSMShooter {
 
     public static double degToTicks = 2.5;   // tune
     public static int txMaxTicks = 400;
-    public static double txDeadbandDeg = 0.4;
+    public static double txDeadbandDeg = 3;
 
 
 
@@ -211,7 +211,6 @@ public class FSMShooter {
         int trimInput=0;
         /// New
         offset = turret.getTurretOffsetTick(); // turrest reset zero drift offset value
-        int txAdjust = getTxAdjustTicks();
 
         if (turretState == TURRETSTATE.AIMING && aimEnabled) {
             if (gamepadComboInput.getLbSinglePressedAny()){
@@ -223,9 +222,9 @@ public class FSMShooter {
             trim=Range.clip(trim+trimInput*trimStep,-400,400);
             int currentTick = turret.getCurrentTick();
 
+            int txAdjust = getTxAdjustTicks();
 
-
-            int targetTick = (int) (turret.getTargetTick() + trim + offset);
+            int targetTick = (int) (turret.getTargetTick() + trim + offset +txAdjust);
             turret.driveTurretPID(currentTick, targetTick);
         }
         else {
