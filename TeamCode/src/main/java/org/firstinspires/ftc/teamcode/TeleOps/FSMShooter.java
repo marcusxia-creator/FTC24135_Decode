@@ -63,18 +63,30 @@ public class FSMShooter {
 
     private boolean LRTriggerBoolean = false;
 
-    public double trim;
+    public double trim = 0;
 
+    // ============================
+    // Limelight Tx input (from OpMode loop)
+    // ============================
+    private boolean llHasTarget = false;
+    private double llTxDeg = 0.0;
+
+    // optional smoothing
+    private boolean txInit = false;
+    private double txFilt = 0.0;
+    public static double txAlpha = 0.25;   // tune 0.15~0.35
+
+    public static double degToTicks = 2.5;   // tune
+    public static int txMaxTicks = 400;
+    public static double txDeadbandDeg = 0.4;
 
 
     /**
      * BUTTON FOR SHOOTING
-     * * Button X/Square is local key, --- SHOOTER_IDLE STATE---
+     * * Button X/Square is global key, --- SHOOTER_IDLE STATE---
      *   Press 'X/Square' to start spinning the flywheel
-     * * Button X/Square is local key, --- FLYWHEEL STATE---
-     *   Cancle the FLYWHEEL within 1 second
-     * * Button Y/Triangle is local key, --- RAMPUP STATE---
-     *   Press 'Y/Triangle' to toggle ramp up to launch ball to shooter
+     * * Button Y/Triangle is local key, --- SHOOT STATE---
+     *   Press 'Y/Triangle' to toggle spindexer run to launch ball to shooter
      */
 
 
@@ -194,6 +206,8 @@ public class FSMShooter {
         // Triming/manual control
         //========================================================
         int trimInput=0;
+        int homeTick = turret.getTurretHomeTick();
+
         if (turretState == TURRETSTATE.AIMING && aimEnabled) {
             if (gamepadComboInput.getLbSinglePressedAny()){
                 trimInput+=1;
@@ -203,7 +217,8 @@ public class FSMShooter {
             }
             trim=Range.clip(trim+trimInput*trimStep,-400,400);
             int currentTick = turret.getCurrentTick();
-            int targetTick = (int) (turret.getTargetTick() + trim);
+            int txAdjust = getTxAdjustTicks();
+            int targetTick = (int) (turret.getTargetTick() + trim + homeTick+txAdjust);
             turret.driveTurretPID(currentTick, targetTick);
         }
         else {
@@ -472,4 +487,33 @@ public class FSMShooter {
         return power;
     }
 
+    //==========================================================
+    //helper - reset trim
+    //=========================================================
+    public void resetTrim (){
+        trim = 0;
+    }
+    //=========================================================
+    //limelight tx adjust
+    //=========================================================
+    public void setLimelightTx(boolean hasTarget, double txDeg) {
+        llHasTarget = hasTarget;
+        llTxDeg = txDeg;
+
+        // smooth only when we have a target
+        if (hasTarget) {
+            if (!txInit) { txFilt = txDeg; txInit = true; }
+            txFilt = txAlpha * txDeg + (1.0 - txAlpha) * txFilt;
+        }
+    }
+
+    private int getTxAdjustTicks() {
+        if (!llHasTarget) return 0;
+
+        double tx = txFilt; // or llTxDeg if you don't want smoothing
+        if (Math.abs(tx) < txDeadbandDeg) tx = 0.0;
+
+        int adjust = (int) Math.round(tx * degToTicks);
+        return Range.clip(adjust, -txMaxTicks, txMaxTicks);
+    }
 }
