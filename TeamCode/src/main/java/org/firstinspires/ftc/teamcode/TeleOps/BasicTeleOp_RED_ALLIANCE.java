@@ -283,8 +283,11 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         if (resetTurret) {
             if (turret.turretReset(startingTick)) {
                 resetTurret = false;
+                FSMShooter.resetTrim();
             }
         } else {
+            Limelight.TxSnapshot snap = limelight.getTxForTag(24);
+            FSMShooter.setLimelightTx(snap.hasTarget, snap.txDeg);
             FSMShooter.SequenceShooterLoop();
         }
 
@@ -473,21 +476,28 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     ///  - LED Update
     private void updateLED() {
 
-        if (limelight.getTargetXForTag(24) == 0) {
-            robot.LED.setPosition(0.5); // green}
-            //Distance outside shooting zone and no limelight, white alert
-        } else if (limelight.getTargetXForTag(24) < 20 && limelight.getTargetXForTag(24) >= 5) {
-            robot.LED.setPosition(0.388); // orange
+        double tx = limelight.getTargetXForTag(24);  // call ONCE
+
+        if (Double.isNaN(tx)) {
+            robot.LED.setPosition(0.288); // red (no tag)
         }
-        else if (Double.isNaN(limelight.getTargetXForTag(24))){
-            robot.LED.setPosition(0.288); // red
-        } else { //Default black
-            robot.LED.setPosition(0.0);
+        else if (tx == 0.0) {
+            robot.LED.setPosition(0.5);   // green (in deadband)
         }
-        // add the limit swith logging.
-        if(FSMShooter.turret.isLimitPressed()){
+        else if (tx >= 5.0 && tx < 20.0) {
+            robot.LED.setPosition(0.388); // purple (your desired 5~20) <-- set to your purple value
+        }
+        else if (tx <= -5.0 && tx > -20.0) {
+            robot.LED.setPosition(0.722);  // yellow (your desired -20~-5) <-- set to your yellow value
+        }
+        else {
+            robot.LED.setPosition(0.0);   // default black (outside these ranges)
+        }
+
+        // limit switch logging
+        if (FSMShooter.turret.isLimitPressed()) {
             switchTickLog.add(Integer.toString(robot.turretMotor.getCurrentPosition()));
-            if(switchTickLog.size()>=10){
+            if (switchTickLog.size() >= 10) {
                 switchTickLog.remove(0);
             }
         }
