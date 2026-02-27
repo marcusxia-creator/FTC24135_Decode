@@ -152,10 +152,7 @@ public class FSMShooter {
         trim =0;
     }
 
-
-
     public void SequenceShooterLoop() {
-        offset = turret.getTurretOffsetTick();
         //===========================================================
         //✅ Add STOPPING to shooter enum
         //✅ Add stopRequested, holdSpindexerPos, shooterTimer
@@ -223,6 +220,10 @@ public class FSMShooter {
         /// New
         offset = turret.getTurretOffsetTick(); // turrest reset zero drift offset value
 
+        //get limelight tx adjust
+        Limelight.TxSnapshot snap = limelight.getTxForTag(24);
+        setLimelightTx(snap.hasTarget, snap.txDeg);
+
         if (turretState == TURRETSTATE.AIMING && aimEnabled) {
             if (gamepadComboInput.getLbSinglePressedAny()){
                 trimInput+=1;
@@ -232,10 +233,6 @@ public class FSMShooter {
             }
             trim=Range.clip(trim+trimInput*trimStep,-400,400);
             int currentTick = turret.getCurrentTick();
-
-            //get limelight tx adjust
-            //Limelight.TxSnapshot snap = limelight.getTxForTag(24);
-            setLimelightTx(snap.hasTarget, snap.txDeg);
 
             int txAdjust = getTxAdjustTicks();
 
