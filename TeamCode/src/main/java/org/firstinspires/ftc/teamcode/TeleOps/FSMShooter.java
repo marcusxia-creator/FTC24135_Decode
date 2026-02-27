@@ -14,6 +14,8 @@ public class FSMShooter {
     private final RobotHardware robot;
     private final GamepadComboInput gamepadComboInput;
     private LUTPowerCalculator shooterPowerLUT;
+    private final Limelight limelight;
+
 
 
     private ElapsedTime shootTimer = new ElapsedTime();
@@ -73,11 +75,19 @@ public class FSMShooter {
     // optional smoothing
     private boolean txInit = false;
     private double txFilt = 0.0;
-    public static double txAlpha = 0.25;   // tune 0.15~0.35
+
+    private double lastValidTx = 0.0;
+    private long lastValidTimeMs = 0;
 
     public static double degToTicks = 2.5;   // tune
-    public static int txMaxTicks = 400;
+    public static int txMaxTicks = 50;
     public static double txDeadbandDeg = 3;
+
+    // Tunables (Dashboard if you like)
+    public static double txAlpha = 0.30;// yours
+    // since this is trim, keep smaller
+    public static long txHoldMs = 80;
+    public static long txFadeMs = 100;
 
 
 
@@ -122,7 +132,7 @@ public class FSMShooter {
     //Constructor
     public FSMShooter(RobotHardware robot,
                       SpindexerUpd spindexer, LUTPowerCalculator shooterPowerLUT,
-                      GamepadComboInput gamepadComboInput, Turret turret) {
+                      GamepadComboInput gamepadComboInput, Turret turret, Limelight limelight) {
 
         this.robot = robot;
         this.spindexer = spindexer;
@@ -130,6 +140,7 @@ public class FSMShooter {
         this.gamepadComboInput = gamepadComboInput;
         /// New!!
         this.turret = turret;
+        this.limelight = limelight;
     }
 
     public void Init() {
@@ -221,6 +232,10 @@ public class FSMShooter {
             }
             trim=Range.clip(trim+trimInput*trimStep,-400,400);
             int currentTick = turret.getCurrentTick();
+
+            //get limelight tx adjust
+            Limelight.TxSnapshot snap = limelight.getTxForTag(24);
+            setLimelightTx(snap.hasTarget, snap.txDeg);
 
             int txAdjust = getTxAdjustTicks();
 
@@ -505,16 +520,22 @@ public class FSMShooter {
     //=========================================================
     public void setLimelightTx(boolean hasTarget, double txDeg) {
         llHasTarget = hasTarget;
-        llTxDeg = txDeg;
+        llTxDeg = hasTarget ? txDeg : Double.NaN;
 
-        // smooth only when we have a target
-        if (hasTarget) {
-            if (!txInit) { txFilt = txDeg; txInit = true; }
-            txFilt = txAlpha * txDeg + (1.0 - txAlpha) * txFilt;
-        }
+        long now = System.currentTimeMillis();
+        if (!hasTarget) return;
+
+
+        // smooth only when valid
+        if (!txInit) { txFilt = txDeg; txInit = true; }
+        txFilt = txAlpha * txDeg + (1.0 - txAlpha) * txFilt;
+
+        // store last valid filtered tx
+        lastValidTx = txFilt;
+        lastValidTimeMs = now;
     }
 
-    private int getTxAdjustTicks() {
+    private int getTxAdjustTicksSimp() {
         if (!llHasTarget) return 0;
 
         double tx = txFilt; // or llTxDeg if you don't want smoothing
@@ -523,5 +544,32 @@ public class FSMShooter {
         int adjust = (int) Math.round(tx * degToTicks);
         return Range.clip(adjust, -txMaxTicks, txMaxTicks);
     }
+
+    private int getTxAdjustTicks() {
+        long now = System.currentTimeMillis();
+
+        double txToUse;
+
+        if (llHasTarget) {
+            txToUse = txFilt;
+        } else {
+            long lostMs = now - lastValidTimeMs;
+
+            if (lostMs <= txHoldMs) {
+                txToUse = lastValidTx;                 // hold
+            } else if (lostMs <= txHoldMs + txFadeMs) {
+                double t = (lostMs - txHoldMs) / (double) txFadeMs; // 0..1
+                txToUse = lastValidTx * (1.0 - t);     // fade to 0
+            } else {
+                txToUse = 0.0;
+            }
+        }
+
+        if (Math.abs(txToUse) < txDeadbandDeg) txToUse = 0.0;
+
+        int adjust = (int) Math.round(txToUse * degToTicks);
+        return Range.clip(adjust, -txMaxTicks, txMaxTicks);
+    }
+
 
 }
