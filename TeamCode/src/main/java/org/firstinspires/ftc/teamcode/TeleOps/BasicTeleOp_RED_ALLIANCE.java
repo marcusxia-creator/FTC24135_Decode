@@ -485,10 +485,10 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             robot.LED.setPosition(0.5);   // green (in deadband)
         }
         else if (tx >= 5.0 && tx < 20.0) {
-            robot.LED.setPosition(0.388); // purple (your desired 5~20) <-- set to your purple value
+            robot.LED.setPosition(0.388); // yellow (your desired 5~20) <-- set to your purple value
         }
         else if (tx <= -5.0 && tx > -20.0) {
-            robot.LED.setPosition(0.722);  // yellow (your desired -20~-5) <-- set to your yellow value
+            robot.LED.setPosition(0.722);  // purple (your desired -20~-5) <-- set to your yellow value
         }
         else {
             robot.LED.setPosition(0.0);   // default black (outside these ranges)
