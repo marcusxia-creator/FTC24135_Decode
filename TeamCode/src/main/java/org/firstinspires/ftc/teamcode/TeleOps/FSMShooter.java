@@ -61,10 +61,23 @@ public class FSMShooter {
 
     private long waitTimeMS = 350;
 
-    private boolean LRTriggerBoolean = false;
-
     public double trim;
     public int offset = 0;
+
+    // ============================
+    // Limelight Tx input (from OpMode loop)
+    // ============================
+    private boolean llHasTarget = false;
+    private double llTxDeg = 0.0;
+
+    // optional smoothing
+    private boolean txInit = false;
+    private double txFilt = 0.0;
+    public static double txAlpha = 0.25;   // tune 0.15~0.35
+
+    public static double degToTicks = 2.5;   // tune
+    public static int txMaxTicks = 400;
+    public static double txDeadbandDeg = 0.4;
 
 
 
@@ -196,6 +209,10 @@ public class FSMShooter {
         // Triming/manual control
         //========================================================
         int trimInput=0;
+        /// New
+        offset = turret.getTurretOffsetTick(); // turrest reset zero drift offset value
+        int txAdjust = getTxAdjustTicks();
+
         if (turretState == TURRETSTATE.AIMING && aimEnabled) {
             if (gamepadComboInput.getLbSinglePressedAny()){
                 trimInput+=1;
@@ -205,6 +222,9 @@ public class FSMShooter {
             }
             trim=Range.clip(trim+trimInput*trimStep,-400,400);
             int currentTick = turret.getCurrentTick();
+
+
+
             int targetTick = (int) (turret.getTargetTick() + trim + offset);
             turret.driveTurretPID(currentTick, targetTick);
         }
@@ -474,6 +494,35 @@ public class FSMShooter {
 
     public double getPower() {
         return power;
+    }
+
+    //==========================================================
+    //helper - reset trim
+    //=========================================================
+    public void resetTrim() { trim = 0; }
+
+    //=========================================================
+    //limelight tx adjust
+    //=========================================================
+    public void setLimelightTx(boolean hasTarget, double txDeg) {
+        llHasTarget = hasTarget;
+        llTxDeg = txDeg;
+
+        // smooth only when we have a target
+        if (hasTarget) {
+            if (!txInit) { txFilt = txDeg; txInit = true; }
+            txFilt = txAlpha * txDeg + (1.0 - txAlpha) * txFilt;
+        }
+    }
+
+    private int getTxAdjustTicks() {
+        if (!llHasTarget) return 0;
+
+        double tx = txFilt; // or llTxDeg if you don't want smoothing
+        if (Math.abs(tx) < txDeadbandDeg) tx = 0.0;
+
+        int adjust = (int) Math.round(tx * degToTicks);
+        return Range.clip(adjust, -txMaxTicks, txMaxTicks);
     }
 
 }
