@@ -234,7 +234,7 @@ public class FSMShooter {
             int currentTick = turret.getCurrentTick();
 
             //get limelight tx adjust
-            Limelight.TxSnapshot snap = limelight.getTxForTag(24);
+            //Limelight.TxSnapshot snap = limelight.getTxForTag(24);
             setLimelightTx(snap.hasTarget, snap.txDeg);
 
             int txAdjust = getTxAdjustTicks();
