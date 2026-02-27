@@ -64,6 +64,7 @@ public class FSMShooter {
     private boolean LRTriggerBoolean = false;
 
     public double trim;
+    public int offset = 0;
 
 
 
@@ -130,6 +131,7 @@ public class FSMShooter {
 
 
     public void SequenceShooterLoop() {
+        offset = turret.getTurretOffsetTick();
         //===========================================================
         //✅ Add STOPPING to shooter enum
         //✅ Add stopRequested, holdSpindexerPos, shooterTimer
@@ -203,7 +205,7 @@ public class FSMShooter {
             }
             trim=Range.clip(trim+trimInput*trimStep,-400,400);
             int currentTick = turret.getCurrentTick();
-            int targetTick = (int) (turret.getTargetTick() + trim);
+            int targetTick = (int) (turret.getTargetTick() + trim + offset);
             turret.driveTurretPID(currentTick, targetTick);
         }
         else {
