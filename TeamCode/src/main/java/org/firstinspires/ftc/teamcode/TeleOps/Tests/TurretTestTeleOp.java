@@ -29,7 +29,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.Turret;
 
 @Config
-@TeleOp (name = "TestTeleOp", group = "org.firstinspires.ftc.teamcode")
+@TeleOp (name = "TurretTestTeleOp", group = "org.firstinspires.ftc.teamcode")
 public class TurretTestTeleOp extends OpMode {
     private RobotHardware robot;
     private Turret turret;

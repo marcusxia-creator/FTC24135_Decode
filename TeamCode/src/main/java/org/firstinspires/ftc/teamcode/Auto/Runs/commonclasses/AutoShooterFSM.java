@@ -157,9 +157,9 @@ public class AutoShooterFSM {
                     break;
                 case SHOOTER_RESET:
                     SpindexerRunTo(0);
-                    if (stateTimer2.seconds() > 0.4) {
+                    if (stateTimer2.seconds() > 0.65) {
                         robot.kickerServo.setPosition(kickerRetract);
-                        if(stateTimer2.seconds()>0.8){
+                        if(stateTimer2.seconds()>0.95){
                             currentState = SHOOTERSTATE.SHOOTER_END;
                         }
                     }
@@ -212,7 +212,7 @@ public class AutoShooterFSM {
     }
 
     public Action ShootCloseZone (double ShotPower, double ShooterWaitTime, int currentGreen, int targetGreen){
-        return new ShooterRunMode(robot, ShotPower,0.15, ShooterWaitTime, currentGreen, targetGreen);
+        return new ShooterRunMode(robot, ShotPower,0.35, ShooterWaitTime, currentGreen, targetGreen);
     }
 
     ///Shooter Speed
