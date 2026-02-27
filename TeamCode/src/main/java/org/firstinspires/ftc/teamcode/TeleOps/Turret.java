@@ -72,8 +72,10 @@ public class Turret {
 
     private final double turretCenterOffsetLength = Math.hypot(turret_Center_Y_Offset, turret_Center_X_Offset);
 
-    private final int zeroedTick = 0;
-    private int turretDeltaTick = 0;
+    private int triggerTick = 0;         // limitswitch reset 0 position.
+    private int homeTick = 0;           // turret home - soft zero tick position.
+    private int turretDeltaTick = 0;    // zeroed position to stop position.
+    private int turretOffsetTick;       // soft reset 0 position.
 
     public Turret (RobotHardware robot, boolean isRedAlliance) {
         this.robot = robot;
@@ -133,25 +135,6 @@ public class Turret {
         robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
     }
 
-    public void driveTurretLimelight() {
-        LLResult llResult = robot.limelight.getLatestResult();
-        int targetTicks;
-        int currentTicks = robot.turretMotor.getCurrentPosition();
-        if (llResult != null && llResult.isValid()) {
-            targetTicks = (int) (llResult.getTx() * txToTickMultiplier);
-        }
-        else {
-            targetTicks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
-        }
-
-        int errorTicks = targetTicks - currentTicks;
-        double ff = (kSTurret * Math.signum(errorTicks) + (kVTurret * errorTicks));
-        double power = pidController.calculate(currentTicks, targetTicks);
-
-        double output = power + ff;
-        robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
-    }
-
     public int getTargetTick () {
         return (int)Math.round(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
     }
@@ -195,27 +178,45 @@ public class Turret {
     }
 
     public boolean turretReset(int startingTick){
+        // 1. get tick for direction
+
         int currentTick = robot.turretMotor.getCurrentPosition();
+        // 2. Calculate distance to target (delta)
+        int delta = currentTick - homeTick;
+        double baseDir = (startingTick < 0) ? 1.0 : -1.0;
+        // 3. Check for physical reset triggers (Limit Switch or Stalling)
         if (isLimitPressed()){
-            robot.turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            triggerTick = robot.turretMotor.getCurrentPosition();
             robot.turretMotor.setPower(0);
-            turretDeltaTick = currentTick - zeroedTick;
+            robot.turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            // Calculate your offsets now that we are physically at the switch
+            homeTick = (int) (22 * baseDir);
             return true;
         }
 
-        int delta = currentTick - startingTick;
-        boolean nearStart = Math.abs(delta) < 435;
-
-        double baseDir = (startingTick < 0) ? 1.0 : -1.0;
-        double dir = nearStart ? baseDir : -baseDir;
-        robot.turretMotor.setPower(0.25*dir);
+        // Use your PID to get close, then creep the last bit
+        if (Math.abs(delta) > 50) {
+            driveTurretPID(currentTick, homeTick);
+        } else {
+            // Creep at 0.2 power to ensure we don't slam the switch
+            double creepPower = 0.2 * Math.signum(delta);
+            robot.turretMotor.setPower(creepPower);
+        }
         return false;
     }
 
+
+    // getter - zerotick, offsettick, zerodeltatick.
     public int getTurretOffsetTick() {
+        return turretOffsetTick;
+    }
+    public int getTurretHomeTick() {
+        return homeTick;
+    }
+    public int getTurretZeroDeltaTick() {
         return turretDeltaTick;
     }
-
     public boolean isLimitPressed (){
         return robot.limitSwitch.getState();
     }
