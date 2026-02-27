@@ -76,7 +76,28 @@ public class Limelight {
                 return tx;
             }
         }
-        return -1.0;
+        return Double.NaN;
+    }
+
+    // NEW - get Tx Snapshot from Limelight
+    public TxSnapshot getTxForTag(int tagId) {
+        LLResult r = robot.limelight.getLatestResult();
+        if (r == null || !r.isValid() || r.getFiducialResults() == null) {
+            return new TxSnapshot(false, 0.0);
+        }
+
+        for (LLResultTypes.FiducialResult f : r.getFiducialResults()) {
+            if (f.getFiducialId() == tagId) {
+                double tx = f.getTargetXDegrees();
+
+                // optional deadband like you already do
+                if (Math.abs(tx) < aimingAngleThrehold) tx = 0.0;
+
+                return new TxSnapshot(true, tx);
+            }
+        }
+
+        return new TxSnapshot(false, 0.0);
     }
 
     //============================================================
@@ -128,6 +149,19 @@ public class Limelight {
             this.turretXOffset = turretXOffSet;
             this.turretYOffset = turretYOffset;
             TargetX = targetX;
+        }
+    }
+
+    //======================================
+    //limelight Tx for angle result
+    //======================================
+    public static class TxSnapshot {
+        public final boolean hasTarget;
+        public final double txDeg;
+
+        public TxSnapshot(boolean hasTarget, double txDeg) {
+            this.hasTarget = hasTarget;
+            this.txDeg = txDeg;
         }
     }
 
