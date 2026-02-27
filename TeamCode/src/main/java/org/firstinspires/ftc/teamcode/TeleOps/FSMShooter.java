@@ -86,8 +86,8 @@ public class FSMShooter {
     // Tunables (Dashboard if you like)
     public static double txAlpha = 0.30;// yours
     // since this is trim, keep smaller
-    public static long txHoldMs = 80;
-    public static long txFadeMs = 100;
+    public static long txHoldMs = 120;
+    public static long txFadeMs = 200;
 
 
 
