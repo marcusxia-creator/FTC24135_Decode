@@ -61,7 +61,7 @@ public class AllianceRedSideFarAuto extends LinearOpMode {
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
             while (opModeInInit()&&!isStopRequested()) {
                 aprilTagDetection.limelightDetect();
-                targetGreen = aprilTagDetection.findGreenSlot();
+                targetGreen = aprilTagDetection.findGreenSlotStandard();
                 telemetry.addData("Detected ID",aprilTagDetection.tagID);
                 telemetry.addData("Target Green Slot",targetGreen);
                 telemetry.update();
@@ -74,9 +74,7 @@ public class AllianceRedSideFarAuto extends LinearOpMode {
         TrajectoryActionBuilder IntakeSet1Drive2 = IntakeSet1Drive1.endTrajectory().fresh()
                 .splineToConstantHeading(new Vector2d(IntakeSet1Position2_X,IntakeSet1Position2_Y),Math.toRadians(90))
                 .waitSeconds(0.1)
-                .splineToConstantHeading(new Vector2d(IntakeSet1Position3_X,IntakeSet1Position3_Y),Math.toRadians(90))
-                .waitSeconds(0.1)
-                .splineToConstantHeading(new Vector2d(IntakeSet1Position4_X,IntakeSet1Position4_Y),Math.toRadians(90));
+                .splineToConstantHeading(new Vector2d(IntakeSet1Position3_X,IntakeSet1Position3_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot1 = IntakeSet1Drive2.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
@@ -85,10 +83,6 @@ public class AllianceRedSideFarAuto extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(IntakeHPPosition1_X, IntakeHPPosition1_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder IntakeSet2Drive2 = IntakeSet2Drive1.endTrajectory().fresh()
-                .splineToConstantHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(90))
-                .waitSeconds(0.1)
-                .splineToConstantHeading(new Vector2d(IntakeHPPosition2_X,IntakeHPPosition2_Y),Math.toRadians(90))
-                .waitSeconds(0.1)
                 .splineToConstantHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot2 = IntakeSet2Drive2.endTrajectory().fresh()
@@ -98,14 +92,10 @@ public class AllianceRedSideFarAuto extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(IntakeHPPosition1_X, IntakeHPPosition1_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder IntakeSet3Drive2 = IntakeSet3Drive1.endTrajectory().fresh()
-                .splineToConstantHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(90))
-                .waitSeconds(0.1)
-                .splineToConstantHeading(new Vector2d(IntakeHPPosition2_X,IntakeHPPosition2_Y),Math.toRadians(90))
-                .waitSeconds(0.1)
                 .splineToConstantHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot3 = IntakeSet2Drive2.endTrajectory().fresh()
-                .splineToConstantHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
+                .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
 
         Action intakeSet1Drive1Action = IntakeSet1Drive1.build();
         Action intakeSet1Drive2Action = IntakeSet1Drive2.build();
@@ -122,22 +112,23 @@ public class AllianceRedSideFarAuto extends LinearOpMode {
         if (opModeIsActive()) {
             Actions.runBlocking(
                 new SequentialAction(
-                    turret.TurretRun(67),
-                    shooter.ShooterOn(FarShotPower),
-                    shooter.ShootFarZone(FarShotPower, 2,0,targetGreen),
+                    turret.TurretRun(FarTurretAngle1),
+                    shooter.ShooterOn(FarShotPower1),
+                    shooter.ShootFarZone(FarShotPower1, 2,0,targetGreen),
                     shooter.ShooterOff(),
                     new ParallelAction(
-                        intake.IntakeRun(12),
+                        intake.IntakeRun(10),
                         new SequentialAction(
                             intakeSet1Drive1Action,
                             intakeSet1Drive2Action
                         )
                     ),
                     new ParallelAction(
+                            turret.TurretRun(FarTurretAngle2),
                             driveToShoot1Action,
-                            shooter.ShooterOn(FarShotPower)
+                            shooter.ShooterOn(FarShotPower2)
                     ),
-                    shooter.ShootFarZone(FarShotPower, 0.1,0,targetGreen),
+                    shooter.ShootFarZone(FarShotPower2, 0.1,0,targetGreen),
                     shooter.ShooterOff(),
                     new ParallelAction(
                         intake.IntakeRun(8),
@@ -147,10 +138,11 @@ public class AllianceRedSideFarAuto extends LinearOpMode {
                         )
                     ),
                     new ParallelAction(
+                            turret.TurretRun(FarTurretAngle2),
                             driveToShoot2Action,
-                            shooter.ShooterOn(FarShotPower)
+                            shooter.ShooterOn(FarShotPower2)
                     ),
-                    shooter.ShootFarZone(FarShotPower, 0.1, 0,targetGreen),
+                    shooter.ShootFarZone(FarShotPower2, 0.1, 0,targetGreen),
                     shooter.ShooterOff(),
                     new ParallelAction(
                             intake.IntakeRun(8),
@@ -161,9 +153,9 @@ public class AllianceRedSideFarAuto extends LinearOpMode {
                     ),
                     new ParallelAction(
                             driveToShoot3Action,
-                            shooter.ShooterOn(FarShotPower)
+                            shooter.ShooterOn(FarShotPower2)
                     ),
-                    shooter.ShootFarZone(FarShotPower, 0.1, 0,targetGreen),
+                    shooter.ShootFarZone(FarShotPower2, 0.1, 0,targetGreen),
                     shooter.ShooterOff()
                 )
             );

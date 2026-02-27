@@ -1,20 +1,26 @@
 package org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 
+@Config
 public class RedSidePositions {
     public static double CloseShotPower = 0.7;
-    public static double FarShotPower = 0.85;
+    public static double FarShotPower1 = 0.845; //Farther Value
+    public static double FarShotPower2 = 0.83; // Closer Value
 
-    private final Pose2d redGoalPose  = new Pose2d(-70,70,-45);
+    public static int CloseTurretAngle = 55;
+    public static int FarTurretAngle1 = 63; // Farther Value
+    public static int FarTurretAngle2 = 65; //Closer Value
 
-    public static double IntakeSet1Position1_X = 34;
+
+    public static double IntakeSet1Position1_X = 37;
     public static double IntakeSet1Position1_Y = 24;
-    public static double IntakeSet1Position2_X = 34;
+    public static double IntakeSet1Position2_X = 37;
     public static double IntakeSet1Position2_Y = 30;
-    public static double IntakeSet1Position3_X = 34;
+    public static double IntakeSet1Position3_X = 37;
     public static double IntakeSet1Position3_Y = 36;
-    public static double IntakeSet1Position4_X = 34;
+    public static double IntakeSet1Position4_X = 37;
     public static double IntakeSet1Position4_Y = 58;
 
     public static double Far_IntakeSet2Position1_X = 12.5;

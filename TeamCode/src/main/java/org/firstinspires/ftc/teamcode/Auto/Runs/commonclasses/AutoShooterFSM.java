@@ -121,7 +121,7 @@ public class AutoShooterFSM {
         public void FSMShooterRun() {
             switch (currentState) {
                 case SHOOTER_INIT:
-                    //robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
+                    robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
                     robot.kickerServo.setPosition(kickerRetract);
                     SpindexerRunTo(startingSlot);
                     shooterTimer.reset();
@@ -157,7 +157,7 @@ public class AutoShooterFSM {
                     break;
                 case SHOOTER_RESET:
                     SpindexerRunTo(0);
-                    if (stateTimer2.seconds() > 0.5) {
+                    if (stateTimer2.seconds() > 0.4) {
                         robot.kickerServo.setPosition(kickerRetract);
                         if(stateTimer2.seconds()>0.8){
                             currentState = SHOOTERSTATE.SHOOTER_END;
@@ -208,7 +208,7 @@ public class AutoShooterFSM {
     }
 
     public Action ShootFarZone(double ShotPower, double ShooterWaitTime, int currentGreen, int targetGreen){
-        return new ShooterRunMode(robot, ShotPower,0.5,ShooterWaitTime,currentGreen,targetGreen);
+        return new ShooterRunMode(robot, ShotPower,0.55,ShooterWaitTime,currentGreen,targetGreen);
     }
 
     public Action ShootCloseZone (double ShotPower, double ShooterWaitTime, int currentGreen, int targetGreen){

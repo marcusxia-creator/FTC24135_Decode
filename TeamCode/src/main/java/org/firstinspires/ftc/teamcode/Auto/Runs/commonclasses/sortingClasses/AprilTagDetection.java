@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses;
 
-import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
@@ -32,13 +30,43 @@ public class AprilTagDetection {
         }
     }
 
-    public int findGreenSlot () {
+    public int findGreenSlotStandard() {
         if (tagID == 21) {
             return 0;
         } else if (tagID == 22) {
             return 1;
         } else if (tagID == 23) {
             return 2;
+        } else {
+            return -1;
+        }
+    }
+
+    public int findGreenSlotCloseRed () {
+        if (tagID == 21) {
+            ///Actual Tag ID = 22
+            return 1;
+        } else if (tagID == 22) {
+            ///Actual Tag ID = 23
+            return 2;
+        } else if (tagID == 23) {
+            ///Actual Tag ID = 21
+            return 0;
+        } else {
+            return -1;
+        }
+    }
+
+    public int findGreenSlotCloseBlue () {
+        if (tagID == 21) {
+            ///Actual Tag ID = 23
+            return 2;
+        } else if (tagID == 22) {
+            ///Actual Tag ID = 21
+            return 0;
+        } else if (tagID == 23) {
+            ///Actual Tag ID = 22
+            return 1;
         } else {
             return -1;
         }

@@ -63,7 +63,7 @@ public class AutoLimelightDetection {
                     }
                 case DETECTION_DETECT:
                     aprilTagDetection.limelightDetect();
-                    targetGreenSlot = aprilTagDetection.findGreenSlot();
+                    targetGreenSlot = aprilTagDetection.findGreenSlotStandard();
                     tagID = aprilTagDetection.tagID;
                     stateTimer.reset();
                     currentState = DETECTION_STATE.DETECTION_RUN;

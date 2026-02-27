@@ -18,7 +18,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoIntakeFSM;
-import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoLimelightDetection;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoTurretDrive;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM;
@@ -62,7 +61,7 @@ public class RedSideFarAuto extends LinearOpMode {
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
             while (opModeInInit()&&!isStopRequested()) {
                 aprilTagDetection.limelightDetect();
-                targetGreen = aprilTagDetection.findGreenSlot();
+                targetGreen = aprilTagDetection.findGreenSlotStandard();
                 telemetry.addData("Detected ID",aprilTagDetection.tagID);
                 telemetry.addData("Target Green Slot",targetGreen);
                 telemetry.update();
@@ -75,9 +74,7 @@ public class RedSideFarAuto extends LinearOpMode {
         TrajectoryActionBuilder IntakeSet1Drive2 = IntakeSet1Drive1.endTrajectory().fresh()
                 .splineToConstantHeading(new Vector2d(IntakeSet1Position2_X,IntakeSet1Position2_Y),Math.toRadians(90))
                 .waitSeconds(0.1)
-                .splineToConstantHeading(new Vector2d(IntakeSet1Position3_X,IntakeSet1Position3_Y),Math.toRadians(90))
-                .waitSeconds(0.1)
-                .splineToConstantHeading(new Vector2d(IntakeSet1Position4_X,IntakeSet1Position4_Y),Math.toRadians(90));
+                .splineToConstantHeading(new Vector2d(IntakeSet1Position3_X,IntakeSet1Position3_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot1 = IntakeSet1Drive2.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
@@ -88,9 +85,7 @@ public class RedSideFarAuto extends LinearOpMode {
         TrajectoryActionBuilder IntakeSet2Drive2 = IntakeSet2Drive1.endTrajectory().fresh()
                 .splineToConstantHeading(new Vector2d(Far_IntakeSet2Position2_X,Far_IntakeSet2Position2_Y),Math.toRadians(90))
                 .waitSeconds(0.1)
-                .splineToConstantHeading(new Vector2d(Far_IntakeSet2Position3_X,Far_IntakeSet2Position3_Y),Math.toRadians(90))
-                .waitSeconds(0.1)
-                .splineToConstantHeading(new Vector2d(Far_IntakeSet2Position4_X,Far_IntakeSet2Position4_Y),Math.toRadians(90));
+                .splineToConstantHeading(new Vector2d(Far_IntakeSet2Position3_X,Far_IntakeSet2Position3_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot2 = IntakeSet2Drive2.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
@@ -107,12 +102,12 @@ public class RedSideFarAuto extends LinearOpMode {
         if (!isStopRequested()) {
             Actions.runBlocking(
                 new SequentialAction(
-                    turret.TurretRun(67),
-                    shooter.ShooterOn(FarShotPower),
-                    shooter.ShootFarZone(FarShotPower, 2, 0,targetGreen),
+                    turret.TurretRun(FarTurretAngle1),
+                    shooter.ShooterOn(FarShotPower1),
+                    shooter.ShootFarZone(FarShotPower1, 1.2, 0,targetGreen),
                     shooter.ShooterOff(),
                     new ParallelAction(
-                        intake.IntakeRun(15),
+                        intake.IntakeRun(12),
                         new SequentialAction(
                             intakeSet1Drive1Action,
                             intakeSet1Drive2Action
@@ -120,13 +115,13 @@ public class RedSideFarAuto extends LinearOpMode {
                     ),
                     new ParallelAction(
                             driveToShoot1Action,
-                            shooter.ShooterOn(FarShotPower),
-                            turret.TurretRun(67)
+                            shooter.ShooterOn(FarShotPower2),
+                            turret.TurretRun(FarTurretAngle2)
                     ),
-                    shooter.ShootFarZone(FarShotPower, 0.1,0,targetGreen),
+                    shooter.ShootFarZone(FarShotPower2, 0,0,targetGreen),
                     shooter.ShooterOff(),
                     new ParallelAction(
-                        intake.IntakeRun(12),
+                        intake.IntakeRun(8),
                         new SequentialAction(
                             intakeSet2Drive1Action,
                             intakeSet2Drive2Action
@@ -134,10 +129,10 @@ public class RedSideFarAuto extends LinearOpMode {
                     ),
                     new ParallelAction(
                             driveToShoot2Action,
-                            turret.TurretRun(67),
-                            shooter.ShooterOn(FarShotPower)
+                            turret.TurretRun(FarTurretAngle2),
+                            shooter.ShooterOn(FarShotPower2)
                     ),
-                    shooter.ShootFarZone(FarShotPower, 0.1, 1,targetGreen),
+                    shooter.ShootFarZone(FarShotPower2, 0, 1,targetGreen),
                     shooter.ShooterOff()
                 )
             );
