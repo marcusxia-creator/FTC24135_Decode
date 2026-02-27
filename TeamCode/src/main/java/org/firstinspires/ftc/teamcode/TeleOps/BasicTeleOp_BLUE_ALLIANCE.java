@@ -141,11 +141,16 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         /// 3. turret---------------------------------------------------------------
         turret = new Turret(robot, false);
 
+        /// 9. limelight--------------------------------------------------------------
+        limelight = new Limelight(robot);
+        limelight.initLimelight(25);
+        limelight.start();
+
         /// 4.1. power calculator for shooter------------------------------------------------------------
         shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
 
         /// 4. shooter-------------------------------------------------------------
-        FSMShooter = new FSMShooter(robot, spindexer, shooterPowerAngleCalculator, gamepadComboInput, turret);
+        FSMShooter = new FSMShooter(robot, spindexer, shooterPowerAngleCalculator, gamepadComboInput, turret, limelight);
         FSMShooter.Init();
 
         /// 5. intake------------------------------------------------------------
@@ -162,13 +167,10 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
             shooterPowerAngleCalculator.setAlliance(false);
         };
 
-        /// 8. robot state----------------------------------------------------------
+        /// 8. robot  tate----------------------------------------------------------
         actionStates = RobotActionState.Idle;
 
-        /// 9. limelight--------------------------------------------------------------
-        limelight = new Limelight(robot);
-        limelight.initLimelight(25);
-        limelight.start();
+
 
         /// 10. start adjuster servo at position to avoid soft start
         robot.shooterAdjusterServo.setPosition(0.48);
