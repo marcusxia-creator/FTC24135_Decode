@@ -75,6 +75,7 @@ public class Turret {
     private final int zeroedTick = 0;
     private int turretDeltaTick = 0;
     private int turretLSZeroTick;
+    private int turretOffsetTick = 0;            // offset tick after turret reset
 
     public Turret (RobotHardware robot, boolean isRedAlliance) {
         this.robot = robot;
@@ -202,9 +203,6 @@ public class Turret {
             robot.turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             turretLSZeroTick = robot.turretMotor.getCurrentPosition();
-        }
-        if (robot.turretMotor.getVelocity() < 10) {
-            turretDeltaTick = currentTick-turretLSZeroTick;
             return true;
         }
 
@@ -212,14 +210,14 @@ public class Turret {
         boolean nearStart = Math.abs(delta) < 435;
 
         double baseDir = (startingTick < 0) ? 1.0 : -1.0;
-        double turretOffsetTick = baseDir*18;
+        turretOffsetTick = (int) baseDir*18;
         double dir = nearStart ? baseDir : -baseDir;
         robot.turretMotor.setPower(0.5*dir);
         return false;
     }
 
     public int getTurretOffsetTick() {
-        return turretDeltaTick;
+        return turretOffsetTick;
     }
 
     public boolean isLimitPressed (){
