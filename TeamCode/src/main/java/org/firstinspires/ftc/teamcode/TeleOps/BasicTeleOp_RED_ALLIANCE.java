@@ -281,6 +281,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         if (resetTurret) {
             if (turret.turretReset(startingTick)) {
                 resetTurret = false;
+                FSMShooter.resetTrim();
             }
         } else {
             Limelight.TxSnapshot snap = limelight.getTxForTag(24);
