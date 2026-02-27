@@ -287,7 +287,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             }
         } else {
             Limelight.TxSnapshot snap = limelight.getTxForTag(24);
-            FSMShooter.setLimelightTx(snap.hasTarget, snap.txDeg);
+            //FSMShooter.setLimelightTx(snap.hasTarget, snap.txDeg);
             FSMShooter.SequenceShooterLoop();
         }
 
