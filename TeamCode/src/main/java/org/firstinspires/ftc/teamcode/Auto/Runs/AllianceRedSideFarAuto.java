@@ -72,27 +72,25 @@ public class AllianceRedSideFarAuto extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(IntakeSet1Position1_X, IntakeSet1Position1_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder IntakeSet1Drive2 = IntakeSet1Drive1.endTrajectory().fresh()
-                .splineToConstantHeading(new Vector2d(IntakeSet1Position2_X,IntakeSet1Position2_Y),Math.toRadians(90))
-                .waitSeconds(0.1)
-                .splineToConstantHeading(new Vector2d(IntakeSet1Position3_X,IntakeSet1Position3_Y),Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(IntakeSet1Position2_X,IntakeSet1Position2_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot1 = IntakeSet1Drive2.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
 
         TrajectoryActionBuilder IntakeSet2Drive1 = DriveToShoot1.endTrajectory().fresh()
-                .splineToConstantHeading(new Vector2d(IntakeHPPosition1_X, IntakeHPPosition1_Y), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(IntakeHPPosition1_X, IntakeHPPosition1_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder IntakeSet2Drive2 = IntakeSet2Drive1.endTrajectory().fresh()
-                .splineToConstantHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot2 = IntakeSet2Drive2.endTrajectory().fresh()
-                .splineToConstantHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
+                .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
 
         TrajectoryActionBuilder IntakeSet3Drive1 = DriveToShoot2.endTrajectory().fresh()
-                .splineToConstantHeading(new Vector2d(IntakeHPPosition1_X, IntakeHPPosition1_Y), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(IntakeHPPosition1_X, IntakeHPPosition1_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder IntakeSet3Drive2 = IntakeSet3Drive1.endTrajectory().fresh()
-                .splineToConstantHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot3 = IntakeSet2Drive2.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
@@ -117,7 +115,7 @@ public class AllianceRedSideFarAuto extends LinearOpMode {
                     shooter.ShootFarZone(FarShotPower1, 2,0,targetGreen),
                     shooter.ShooterOff(),
                     new ParallelAction(
-                        intake.IntakeRun(10),
+                        intake.IntakeRun(6),
                         new SequentialAction(
                             intakeSet1Drive1Action,
                             intakeSet1Drive2Action
@@ -131,7 +129,7 @@ public class AllianceRedSideFarAuto extends LinearOpMode {
                     shooter.ShootFarZone(FarShotPower2, 0.1,0,targetGreen),
                     shooter.ShooterOff(),
                     new ParallelAction(
-                        intake.IntakeRun(8),
+                        intake.IntakeRun(6),
                         new SequentialAction(
                             intakeSet2Drive1Action,
                             intakeSet2Drive2Action
@@ -145,7 +143,7 @@ public class AllianceRedSideFarAuto extends LinearOpMode {
                     shooter.ShootFarZone(FarShotPower2, 0.1, 0,targetGreen),
                     shooter.ShooterOff(),
                     new ParallelAction(
-                            intake.IntakeRun(8),
+                            intake.IntakeRun(6),
                             new SequentialAction(
                                     intakeSet3Drive1Action,
                                     intakeSet3Drive2Action

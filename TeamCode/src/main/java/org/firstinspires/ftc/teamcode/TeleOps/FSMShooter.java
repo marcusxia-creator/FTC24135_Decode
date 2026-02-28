@@ -218,7 +218,7 @@ public class FSMShooter {
         //========================================================
         int trimInput=0;
         /// New
-        offset = turret.getTurretOffsetTick(); // turrest reset zero drift offset value
+        //offset = turret.getTurretOffsetTick(); // turrest reset zero drift offset value
 
         //get limelight tx adjust
         Limelight.TxSnapshot snap = limelight.getTxForTag(24);
@@ -234,7 +234,8 @@ public class FSMShooter {
             trim=Range.clip(trim+trimInput*trimStep,-400,400);
             int currentTick = turret.getCurrentTick();
 
-            int txAdjust = getTxAdjustTicks();
+            //int txAdjust = getTxAdjustTicks();
+            int txAdjust = 0;
 
             int targetTick = (int) (turret.getTargetTick() + trim + offset +txAdjust);
             turret.driveTurretPID(currentTick, targetTick);
@@ -564,7 +565,7 @@ public class FSMShooter {
 
         if (Math.abs(txToUse) < txDeadbandDeg) txToUse = 0.0;
 
-        int adjust = (int) Math.round(txToUse * degToTicks);
+        int adjust = (int) Math.round(-1*txToUse * degToTicks);
         return Range.clip(adjust, -txMaxTicks, txMaxTicks);
     }
 
