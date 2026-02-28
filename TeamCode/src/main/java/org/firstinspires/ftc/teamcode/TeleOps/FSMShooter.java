@@ -234,8 +234,7 @@ public class FSMShooter {
             trim=Range.clip(trim+trimInput*trimStep,-400,400);
             int currentTick = turret.getCurrentTick();
 
-            //int txAdjust = getTxAdjustTicks();
-            int txAdjust = 0;
+            int txAdjust = getTxAdjustTicks();
 
             int targetTick = (int) (turret.getTargetTick() + trim + offset +txAdjust);
             turret.driveTurretPID(currentTick, targetTick);
