@@ -143,7 +143,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
 
         /// 9. limelight--------------------------------------------------------------
         limelight = new Limelight(robot);
-        limelight.initLimelight(25);
+        limelight.initLimelight(20);
         limelight.start();
 
         /// 4.1. power calculator for shooter------------------------------------------------------------
@@ -291,7 +291,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
                 FSMShooter.resetTrim();
             }
         } else {
-            Limelight.TxSnapshot snap = limelight.getTxForTag(25);
+            Limelight.TxSnapshot snap = limelight.getTxForTag(20);
             //FSMShooter.setLimelightTx(snap.hasTarget, snap.txDeg);
             FSMShooter.SequenceShooterLoop();
         }
@@ -481,7 +481,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     ///  - LED Update
     private void updateLED() {
 
-        double tx = limelight.getTargetXForTag(24);  // call ONCE
+        double tx = limelight.getTargetXForTag(20);  // call ONCE
 
         if (Double.isNaN(tx)) {
             robot.LED.setPosition(0.288); // red (no tag)
@@ -593,7 +593,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         telemetry.addData("turret power", robot.turretMotor.getPower());
         telemetry.addLine("-----------------------------------------");
         telemetry.addData("Switch tick logs", "["+String.join(", ", switchTickLog));
-        telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(25));
+        telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(20));
         telemetry.addData("green slot position", limelight.getGreenSlot());
         telemetry.update();
     }

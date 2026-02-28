@@ -33,6 +33,10 @@ public class Limelight {
             robot.limelight.pipelineSwitch(0);
         }
 
+        if (apriltagID == 20) {
+            robot.limelight.pipelineSwitch(1);
+        }
+
         if (apriltagID == 21 || apriltagID == 22 || apriltagID == 23) {
             robot.limelight.pipelineSwitch(2);
         }
