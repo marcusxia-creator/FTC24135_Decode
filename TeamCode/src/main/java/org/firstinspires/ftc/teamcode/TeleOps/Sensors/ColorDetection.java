@@ -12,15 +12,17 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 public class ColorDetection {
     private RobotHardware robot;
     // For state tracking
-    private BallColor lastColor = BallColor.UNKNOWN;
-    private BallColor stableColor = BallColor.UNKNOWN;
-    private int stableCount = 0;
+    private BallColor lastColor                     = BallColor.UNKNOWN;
+    private BallColor stableColor                   = BallColor.UNKNOWN;
+    private int stableCount                         = 0;
 
     private ElapsedTime timer = new ElapsedTime();
 
     // Parameters
-    private final int REQUIRED_STABLE_COUNT = 5; // number of consistent readings (~0.1s if called every 20ms)
-    private final double TIMEOUT_S = 1.0;        // maximum time allowed to detect color
+    private final int REQUIRED_STABLE_COUNT         = 3;    // number of consistent readings (~0.1s if called every 20ms)
+    private final double TIMEOUT_S                  = 0.5;  // maximum time allowed to detect color
+
+    //  Constructor
     public ColorDetection(RobotHardware robot) {
         this.robot = robot;
     }
@@ -38,17 +40,19 @@ public class ColorDetection {
 
     /** call this loop inside color detection place*/
     public void updateDetection(){
-
+        /**
         float[] hsv = new float[3];
         Color.RGBToHSV(
                 robot.colorSensor.red() * 8,
                 robot.colorSensor.green() * 8,
                 robot.colorSensor.blue() * 8,
                 hsv
-        );
-        float hue = hsv[0];
-        float value = hsv[2];
+            );
+         float hue = hsv[0];
+         float value = hsv[2];
+         */
 
+        float hue = getHue();
         BallColor currentColor = BallColor.fromHue(hue);
 
         /**Stability Check*/
