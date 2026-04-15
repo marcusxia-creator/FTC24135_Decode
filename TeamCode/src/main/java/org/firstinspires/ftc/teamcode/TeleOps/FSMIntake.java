@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
@@ -38,6 +39,7 @@ public class FSMIntake {
     private boolean reversing = false;
     SpindexerUpd spindexer;
     private boolean stopMoveRequested = false;
+    private ColorDetection colorDetection;
 
     boolean recorded;
 
@@ -66,13 +68,17 @@ public class FSMIntake {
                 HandleIntaking(jammed); // This manages motor power internally
 
                 // Wait for ball to be detected in the intake mouth
-                if (robot.distanceSensor.getDistance(DistanceUnit.MM) < BALL_PRESENT_THRESHOLD_MM) {
+                //if (robot.distanceSensor.getDistance(DistanceUnit.MM) < BALL_PRESENT_THRESHOLD_MM) {
+                if (colorDetection.isBallPresent()) {
                     intakeTimer.reset();
+                    colorDetection.startDetection();
                     intakeStates = IntakeStates.INTAKE_CAPTURE;
                 }
                 break;
 
             case INTAKE_CAPTURE:
+                colorDetection.updateDetection();
+                /**
                 if (intakeTimer.seconds() < 0.05) {
                     spindexer.clearVoteBuffer();
                 }
@@ -87,6 +93,19 @@ public class FSMIntake {
 
                     // CHECK: Are all 3 slots filled with something other than Empty?
                     // We check for Green OR Purple. If count is 3, we are full.
+                    if (spindexer.count(SpindexerUpd.SLOT.Empty) == 0) {
+                        intakeTimer.reset();
+                        intakeStates = IntakeStates.INTAKE_STOP;
+                    } else {
+                        // Move to next physical slot and wait for next ball
+                        spindexer.RunToNext();
+                        intakeTimer.reset();
+                        intakeStates = IntakeStates.INTAKE_RUNTONEXT;
+                    }
+                }*/
+                if (colorDetection.isColorStable()) {
+                    spindexer.setStableColor(colorDetection.getStableColor());
+                    spindexer.writeToCurrentSlot();
                     if (spindexer.count(SpindexerUpd.SLOT.Empty) == 0) {
                         intakeTimer.reset();
                         intakeStates = IntakeStates.INTAKE_STOP;
