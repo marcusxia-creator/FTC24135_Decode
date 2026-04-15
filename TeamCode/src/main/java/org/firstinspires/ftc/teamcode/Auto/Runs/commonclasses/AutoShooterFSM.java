@@ -63,18 +63,37 @@ public class AutoShooterFSM {
         private final ElapsedTime stateTimer2 = new ElapsedTime();
         private final ElapsedTime shooterTimer = new ElapsedTime();
 
-        private final int startingSlot;
+        private int startingSlot;
         private int targetSlot;
+        private final int currentGreenSlot;
+        private final int targetGreenSlot;
+
+        private final double shootSpeed;
+
         private double ShooterWaitTime;
         private double targetVelocity;
+
         public SHOOTERSTATE currentState;
 
-        public ShooterRunMode(RobotHardware robot, double ShotPower, double ShooterWaitTime, int startingSlot) {
+        private void updateShootingInitSlot() {
+            if (currentGreenSlot == -1) {
+                startingSlot = 0;
+            } else {
+                startingSlot = Math.floorMod(currentGreenSlot - targetGreenSlot, 3);
+            }
+        }
+
+        public ShooterRunMode(RobotHardware robot, double ShotPower, double shootSpeed, double ShooterWaitTime, int currentGreenSlot, int targetGreenSlot) {
             this.robot = robot;
+            ///Timing
             this.targetVelocity = ShotPower*shooterMaxRPM;
             this.ShooterWaitTime = ShooterWaitTime;
             this.currentState = SHOOTERSTATE.SHOOTER_INIT;
-            this.startingSlot = startingSlot;
+            this.shootSpeed = shootSpeed;
+            ///Calculate Sorting
+            this.currentGreenSlot = currentGreenSlot;
+            this.targetGreenSlot = targetGreenSlot;
+            updateShootingInitSlot();
             this.targetSlot = startingSlot;
         }
 
@@ -103,48 +122,46 @@ public class AutoShooterFSM {
             switch (currentState) {
                 case SHOOTER_INIT:
                     robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
-                    SpindexerRunTo(targetSlot);
                     robot.kickerServo.setPosition(kickerRetract);
+                    SpindexerRunTo(startingSlot);
                     shooterTimer.reset();
                     stateTimer.reset();
                     currentState = SHOOTERSTATE.SHOOTER_RUN;
                     break;
                 case SHOOTER_RUN:
-                    if (stateTimer.seconds() > ShooterWaitTime) {
+                    if (stateTimer.seconds() > ShooterWaitTime+0.4) {
                         robot.kickerServo.setPosition(kickerExtend);
-                        if (stateTimer.seconds() > ShooterWaitTime + 0.2) {
+                        if (stateTimer.seconds() > ShooterWaitTime + 0.8) {
                             stateTimer2.reset();
                             currentState = SHOOTERSTATE.SHOOTER_SWITCH;
                         }
                     }
                     break;
                 case SHOOTER_SWITCH:
-                    if (targetSlot == 3) {
-                        stateTimer2.reset();
-                        currentState = SHOOTERSTATE.SHOOTER_RESET;
-                    }
-                    else {
+                    if (targetSlot <= (startingSlot + 3)) {
                         targetSlot++;
                         stateTimer2.reset();
                         currentState = SHOOTERSTATE.SHOOTER_LAUNCH;
                     }
+                    else {
+                        stateTimer2.reset();
+                        currentState = SHOOTERSTATE.SHOOTER_RESET;
+                    }
                     break;
                 case SHOOTER_LAUNCH:
                     SpindexerRunTo(targetSlot);
-                    if (stateTimer2.seconds() > 0.6) {
+                    if (stateTimer2.seconds() > shootSpeed) {
                         stateTimer.reset();
                         currentState = SHOOTERSTATE.SHOOTER_SWITCH;
                     }
                     break;
                 case SHOOTER_RESET:
-                    SpindexerRunTo(1);
-                    if (stateTimer2.seconds() > 0.4) {
+                    SpindexerRunTo(0);
+                    if (stateTimer2.seconds() > 0.65) {
                         robot.kickerServo.setPosition(kickerRetract);
-                        if(stateTimer2.seconds()>0.8){
+                        if(stateTimer2.seconds()>0.95){
                             currentState = SHOOTERSTATE.SHOOTER_END;
                         }
-                    } else if (shooterTimer.seconds()>(10+ShooterWaitTime)) {
-                        currentState = SHOOTERSTATE.SHOOTER_END;
                     }
                     break;
                 case SHOOTER_END:
@@ -154,24 +171,19 @@ public class AutoShooterFSM {
             }
         }
 
-        public void RunShooter(double targetRPM){
+        public void RunShooter(double targetVelocity){
             double currentRPM = robot.topShooterMotor.getVelocity() * tickToRPM;
-
             double voltage  = robot.getBatteryVoltageRobust();
             double maxRPMDynamic = shooterMaxRPM * voltage /REF_VOLTAGE;
-
             //Normalised current and max velocity to 0..1 for stable tuning
             double normCurrentRPM = clamp01(currentRPM/maxRPMDynamic);
-            double normTargetRPM = clamp01(targetRPM /maxRPMDynamic);//Target velocity
-
+            double normTargetRPM = clamp01(targetVelocity /maxRPMDynamic);//Target velocity
             //Feedforward calculations
             double ff = (kS * Math.signum(normTargetRPM)) + (kV * normTargetRPM);
             //PID calculations
             double pidPower = pidController.calculate(normCurrentRPM, normTargetRPM);
-
             //Shooter total power
             double power = ff + pidPower;
-
             robot.topShooterMotor.setPower(power);
             robot.bottomShooterMotor.setPower(power);
         }
@@ -184,6 +196,10 @@ public class AutoShooterFSM {
                 return false;
             }
             else {
+                ///Dashboard Telemetry
+                telemetryPacket.put("Actual Starting Slot", startingSlot);
+                telemetryPacket.put("FSM Shooter State", currentState);
+                ///Run Shooter & FSM
                 RunShooter(targetVelocity);
                 FSMShooterRun();
                 return true;
@@ -191,8 +207,12 @@ public class AutoShooterFSM {
         }
     }
 
-    public Action ShooterRun(double ShotPower, double ShooterWaitTime, int startingSlot){
-        return new ShooterRunMode(robot, ShotPower, ShooterWaitTime, startingSlot);
+    public Action ShootFarZone(double ShotPower, double ShooterWaitTime, int currentGreen, int targetGreen){
+        return new ShooterRunMode(robot, ShotPower,0.55,ShooterWaitTime,currentGreen,targetGreen);
+    }
+
+    public Action ShootCloseZone (double ShotPower, double ShooterWaitTime, int currentGreen, int targetGreen){
+        return new ShooterRunMode(robot, ShotPower,0.35, ShooterWaitTime, currentGreen, targetGreen);
     }
 
     ///Shooter Speed
@@ -207,7 +227,6 @@ public class AutoShooterFSM {
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             double currentVel = robot.topShooterMotor.getVelocity()*tickToRPM;
             double power = pidController.calculate(currentVel, targetVelocity);
-
             robot.topShooterMotor.setPower(power);
             robot.bottomShooterMotor.setPower(power);
             return false;

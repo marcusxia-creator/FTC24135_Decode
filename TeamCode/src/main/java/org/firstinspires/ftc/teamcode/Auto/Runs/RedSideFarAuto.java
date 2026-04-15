@@ -28,15 +28,15 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 public class RedSideFarAuto extends LinearOpMode {
     public static Pose2d initialPose = new Pose2d(64, 7.5, Math.toRadians(90));
 
-    public int targetGreen;
-
     public RobotHardware robot;
 
     public AutoIntakeFSM intake;
     public AutoShooterFSM shooter;
     public AutoTurretDrive turret;
+
     public AprilTagDetection aprilTagDetection;
 
+    public int targetGreen;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -61,35 +61,31 @@ public class RedSideFarAuto extends LinearOpMode {
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
             while (opModeInInit()&&!isStopRequested()) {
                 aprilTagDetection.limelightDetect();
-                targetGreen = aprilTagDetection.findGreenSlot();
-                telemetry.addData("Detected ID",targetGreen);
+                targetGreen = aprilTagDetection.findGreenSlotStandard();
+                telemetry.addData("Detected ID",aprilTagDetection.tagID);
+                telemetry.addData("Target Green Slot",targetGreen);
                 telemetry.update();
             }
         }
 
         TrajectoryActionBuilder IntakeSet1Drive1 = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position1_X, Far_IntakeSet2Position1_Y), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(IntakeSet1Position1_X, IntakeSet1Position1_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder IntakeSet1Drive2 = IntakeSet1Drive1.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position2_X,Far_IntakeSet2Position2_Y),Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(IntakeSet1Position2_X,IntakeSet1Position2_Y),Math.toRadians(90))
                 .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position3_X,Far_IntakeSet2Position3_Y),Math.toRadians(90))
-                .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position4_X,Far_IntakeSet2Position4_Y),Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(IntakeSet1Position3_X,IntakeSet1Position3_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot1 = IntakeSet1Drive2.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position1_X, Far_IntakeSet2Position1_Y-8), Math.toRadians(90))
                 .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
 
         TrajectoryActionBuilder IntakeSet2Drive1 = DriveToShoot1.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(IntakeSet1Position1_X, IntakeSet1Position1_Y), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position1_X, Far_IntakeSet2Position1_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder IntakeSet2Drive2 = IntakeSet2Drive1.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(IntakeSet1Position2_X,IntakeSet1Position2_Y),Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position2_X,Far_IntakeSet2Position2_Y),Math.toRadians(90))
                 .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(IntakeSet1Position3_X,IntakeSet1Position3_Y),Math.toRadians(90))
-                .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(IntakeSet1Position4_X,IntakeSet1Position4_Y),Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(Far_IntakeSet2Position3_X,Far_IntakeSet2Position3_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot2 = IntakeSet2Drive2.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
@@ -103,15 +99,15 @@ public class RedSideFarAuto extends LinearOpMode {
 
         waitForStart();
 
-        if (opModeIsActive()) {
+        if (!isStopRequested()) {
             Actions.runBlocking(
                 new SequentialAction(
-                    turret.TurretRun(68),
-                    shooter.ShooterOn(FarShotPower),
-                    shooter.ShooterRun(FarShotPower, 2,0),
+                    turret.TurretRun(FarTurretAngle1),
+                    shooter.ShooterOn(FarShotPower1),
+                    shooter.ShootFarZone(FarShotPower1, 1.2, 0,targetGreen),
                     shooter.ShooterOff(),
                     new ParallelAction(
-                        intake.IntakeRun(targetGreen),
+                        intake.IntakeRun(6),
                         new SequentialAction(
                             intakeSet1Drive1Action,
                             intakeSet1Drive2Action
@@ -119,12 +115,13 @@ public class RedSideFarAuto extends LinearOpMode {
                     ),
                     new ParallelAction(
                             driveToShoot1Action,
-                            shooter.ShooterOn(FarShotPower)
+                            shooter.ShooterOn(FarShotPower2),
+                            turret.TurretRun(FarTurretAngle2)
                     ),
-                    shooter.ShooterRun(FarShotPower, 0.1,intake.getInitShotSlot()),
+                    shooter.ShootFarZone(FarShotPower2, 0,0,targetGreen),
                     shooter.ShooterOff(),
                     new ParallelAction(
-                        intake.IntakeRun(targetGreen),
+                        intake.IntakeRun(6),
                         new SequentialAction(
                             intakeSet2Drive1Action,
                             intakeSet2Drive2Action
@@ -132,15 +129,16 @@ public class RedSideFarAuto extends LinearOpMode {
                     ),
                     new ParallelAction(
                             driveToShoot2Action,
-                            shooter.ShooterOn(FarShotPower)
+                            turret.TurretRun(FarTurretAngle2),
+                            shooter.ShooterOn(FarShotPower2)
                     ),
-                    shooter.ShooterRun(FarShotPower, 0.1, intake.getInitShotSlot()),
+                    shooter.ShootFarZone(FarShotPower2, 0, 1,targetGreen),
                     shooter.ShooterOff()
-                    //turret.TurretRun(0)
                 )
             );
             robot.pinpoint.update();
             drive.localizer.update();
+
             PoseStorage.currentPose = drive.localizer.getPose();
             PoseStorage.turretEndTick = robot.turretMotor.getCurrentPosition();
             PoseStorage.motifGreenPos = targetGreen;

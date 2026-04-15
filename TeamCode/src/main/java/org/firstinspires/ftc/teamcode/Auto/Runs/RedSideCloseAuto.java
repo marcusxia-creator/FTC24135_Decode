@@ -10,9 +10,6 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoIntakeFSM;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM;
@@ -55,14 +52,15 @@ public class RedSideCloseAuto extends LinearOpMode {
         aprilTagDetection.limelightStart();
 
         if (opModeInInit()) {
-            Actions.runBlocking(turret.TurretRun(0));
+            Actions.runBlocking(turret.TurretRun(-65));
             robot.spindexerServo.setPosition(spindexerSlot1);
             robot.kickerServo.setPosition(kickerRetract);
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
             while (opModeInInit()&&!isStopRequested()) {
                 aprilTagDetection.limelightDetect();
-                targetGreen = aprilTagDetection.tagID;
-                telemetry.addData("Detected ID",targetGreen);
+                targetGreen = aprilTagDetection.findGreenSlotCloseRed();
+                telemetry.addData("Detected ID",aprilTagDetection.tagID);
+                telemetry.addData("Target Green Slot",targetGreen);
                 telemetry.update();
             }
         }
@@ -76,9 +74,7 @@ public class RedSideCloseAuto extends LinearOpMode {
         TrajectoryActionBuilder IntakeSet1Drive2Builder = IntakeSet1Drive1Builder.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(IntakeSet3Position2_X, IntakeSet3Position2_Y), Math.toRadians(90))
                 .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(IntakeSet3Position3_X, IntakeSet3Position3_Y), Math.toRadians(90))
-                .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(IntakeSet3Position4_X, IntakeSet3Position4_Y), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(IntakeSet3Position3_X, IntakeSet3Position3_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot2Builder = IntakeSet1Drive2Builder.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y), Math.toRadians(CloseShootingPosition_Heading));
@@ -89,12 +85,9 @@ public class RedSideCloseAuto extends LinearOpMode {
         TrajectoryActionBuilder IntakeSet2Drive2Builder = IntakeSet2Drive1Builder.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position2_X, Close_IntakeSet2Position2_Y), Math.toRadians(90))
                 .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position3_X, Close_IntakeSet2Position3_Y), Math.toRadians(90))
-                .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position3_X, Close_IntakeSet2Position3_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot3Builder = IntakeSet2Drive2Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y - 16), Math.toRadians(90))
                 .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y), Math.toRadians(CloseShootingPosition_Heading));
 
         TrajectoryActionBuilder LeaveDriveBuilder = DriveToShoot3Builder.endTrajectory().fresh()
@@ -115,14 +108,14 @@ public class RedSideCloseAuto extends LinearOpMode {
             Actions.runBlocking(
                     new SequentialAction(
                         new ParallelAction(
-                            turret.TurretRun(55),
+                            turret.TurretRun(CloseTurretAngle),
                             DriveToShoot1
                         ),
-                        shooter.ShooterRun(CloseShotPower, 0.2,0),
+                        shooter.ShootCloseZone(CloseShotPower, 0.2,0,targetGreen),
                         shooter.ShooterOff(),
                         new ParallelAction(
-                                turret.TurretRun(55),
-                                intake.IntakeRun(targetGreen),
+                                turret.TurretRun(CloseTurretAngle),
+                                intake.IntakeRun(6),
                                 new SequentialAction(
                                         IntakeSet1Drive1,
                                         IntakeSet1Drive2
@@ -132,11 +125,11 @@ public class RedSideCloseAuto extends LinearOpMode {
                                 DriveToShoot2,
                                 shooter.ShooterOn(CloseShotPower)
                         ),
-                        shooter.ShooterRun(CloseShotPower, 0.1,0),
+                        shooter.ShootCloseZone(CloseShotPower, 0.1,2,targetGreen),
                         shooter.ShooterOff(),
                         new ParallelAction(
-                                turret.TurretRun(55),
-                                intake.IntakeRun(targetGreen),
+                                turret.TurretRun(CloseTurretAngle),
+                                intake.IntakeRun(6),
                                 new SequentialAction(
                                         IntakeSet2Drive1,
                                         IntakeSet2Drive2
@@ -146,7 +139,7 @@ public class RedSideCloseAuto extends LinearOpMode {
                             DriveToShoot3,
                             shooter.ShooterOn(CloseShotPower)
                         ),
-                        shooter.ShooterRun(CloseShotPower, 0.1,0),
+                        shooter.ShootCloseZone(CloseShotPower, 0.1,1,targetGreen),
                         new ParallelAction(
                             shooter.ShooterOff(),
                             LeaveDrive

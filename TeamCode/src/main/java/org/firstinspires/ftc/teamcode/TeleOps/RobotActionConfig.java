@@ -33,20 +33,20 @@ public class RobotActionConfig {
 
     //kicker
     public static double kickerRetract                  = 0.37;  /// value - retract back for spindexer reversing
-    public static double kickerExtend                   = 0.68; /// value - into the spindexer for pushing the ball up
+    public static double kickerExtend                   = 0.64; /// value - into the spindexer for pushing the ball up
     //intake Speed
-    public static double intakeSpeed                    = 0.75;
+    public static double intakeSpeed                    = 0.80;
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.7;
     //shooter timer
-    public static final long FEED_PERIOD_MS_CLOSE       = 350; // (tune)
-    public static final long FEED_PERIOD_MS_FAR         = 500;
+    public static final long FEED_PERIOD_MS_CLOSE       = 200; // 250
+    public static final long FEED_PERIOD_MS_FAR         = 300; // 400 250
 
     public static final double SPOOLUP_SEC              = 1.25;
     //shooter adjustor
     public static double shooterAdjusterMax             = 0.48;
-    public static double shooterAdjusterMin             = 0.06;
-    public static double shooterAdjusterMid             = 0.4;
+    public static double shooterAdjusterMin             = 0.14; //new 0.14 ; old : 0.06
+    public static double shooterAdjusterMid             = 0.35; //new 0.35
     public static double shooterFactorThreshold         = 0.95;
     //drive train power
     public static double powerFactor                    = 1;
@@ -87,16 +87,16 @@ public class RobotActionConfig {
 
     //-64 66 works
             //-63 66 previous
-    public static final Pose2D redCloseGoalPose         = new Pose2D(DistanceUnit.INCH, -65, 66, AngleUnit.DEGREES, 0);
-    public static final Pose2D redFarGoalPose           = new Pose2D(DistanceUnit.INCH, -66, 66, AngleUnit.DEGREES, 0);
+    public static final Pose2D redCloseGoalPose         = new Pose2D(DistanceUnit.INCH, -60, 64, AngleUnit.DEGREES, 0);
+    public static final Pose2D redFarGoalPose           = new Pose2D(DistanceUnit.INCH, -66, 62, AngleUnit.DEGREES, 0);
 
-    public static final Pose2D blueCloseGoalPose        = new Pose2D(DistanceUnit.INCH, -65, -66, AngleUnit.DEGREES, 0);
-    public static final Pose2D blueFarGoalPose          = new Pose2D(DistanceUnit.INCH, -66, -66, AngleUnit.DEGREES, 0);
+    public static final Pose2D blueCloseGoalPose        = new Pose2D(DistanceUnit.INCH, -60, -64, AngleUnit.DEGREES, 0);
+    public static final Pose2D blueFarGoalPose          = new Pose2D(DistanceUnit.INCH, -66, -62, AngleUnit.DEGREES, 0);
 
     public static double FAR_EDGE                 = 105.0;
     public static double FAR                      = 92.0;
     public static double MidPoint                 = 82.0;
-    public static double MID                      = 72.0;
+    public static double MID                      = 68.0; ///72.0
     public static double CLOSE                    = 57.0;
     public static double closeEdge                = 36.0;
 
@@ -104,14 +104,14 @@ public class RobotActionConfig {
     public static double FAR_ZONE_MID               = 144;
     public static double FAR_ZONE_FAR               = 167.0;
 
-    public static int RPM0            = 3900;
-    public static int RPM1            = 3350;
-    public static int RPM2            = 3350;
-    public static int RPM3            = 3650;
-    public static int RPM4            = 3800;
-    public static int RPM5            = 3900;
-    public static int RPM6            = 4400;
-    public static int RPM7            = 4600;
+    public static int RPM0            = 3700; ///all minus 200 rpm with upgraded hardware
+    public static int RPM1            = 3150;
+    public static int RPM2            = 3150;
+    public static int RPM3            = 3450;
+    public static int RPM4            = 3600;
+    public static int RPM5            = 3700;
+    public static int RPM6            = 4300;
+    public static int RPM7            = 4550;
 
     public static final double farPower                 = 0.78;     // 3920 - 0.8  @ 12.73
     public static final double midPower                 = 0.73;     // 3360 - 0.70 @ 12.82

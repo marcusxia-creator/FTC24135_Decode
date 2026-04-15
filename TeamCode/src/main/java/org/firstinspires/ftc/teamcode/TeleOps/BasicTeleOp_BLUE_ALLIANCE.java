@@ -7,8 +7,6 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllia
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerRetract;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
 
-import static java.lang.Double.isNaN;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -42,11 +40,12 @@ import java.util.List;
  * Tuning LUT values when the hardware changes
  */
 @Config
-@TeleOp(name = "---------RED--🐧----------", group = "org.firstinspires.ftc.teamcode")
-public class BasicTeleOp_RED_ALLIANCE extends OpMode {
+@TeleOp(name = "---------BLUE--🐧----------", group = "org.firstinspires.ftc.teamcode")
+public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     /// Enum states for robot action state
     public enum RobotActionState {
         Sequence_Shooting,
+        Sort_Shooting,
         Intaking,
         Idle
     }
@@ -97,21 +96,24 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     public static double shooterRPM;
     public static int shooterTargetRPM;
 
+    private boolean turretStatus = false;
     private boolean resetTurret = false;
     private int startingTick;
 
+
     public List<String> switchTickLog = new ArrayList<>();
 
-    /// ------Initialization----------------------------------------------------------
+    /// ----------------------------------------------------------------
     @Override
     public void init() {
         /// For telemetry
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         /// For robot hardware initialization
         robot = new RobotHardware(hardwareMap);
-        robot.init();                           //Initialize all motors and servos
-        robot.initIMU();                        //Initialize control hub IMU
-        robot.initPinpoint();                   //Initialize pinpoint
+        robot.init();                       //Initialize all motors and servos
+        robot.initIMU();                    //Initialize control hub IMU
+        robot.initPinpoint();               //Initialize pinpoint
+        //robot.initExternalIMU();            //Initialize external IMU - no external IMU being used.
 
         /**
          * Transfer the pose 2D from Auto Ops
@@ -131,16 +133,17 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robotDrive.Init();
 
         /// 2.spindexer-------------------------------------------------------------------
-        spindexer = new SpindexerUpd(robot, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, 0);
+        spindexer = new SpindexerUpd(robot, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, 0); //Change inits for comp
 
+        // spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
         spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadComboInput);
 
         /// 3. turret---------------------------------------------------------------
-        turret = new Turret(robot, true);
+        turret = new Turret(robot, false);
 
         /// 9. limelight--------------------------------------------------------------
         limelight = new Limelight(robot);
-        limelight.initLimelight(24);
+        limelight.initLimelight(20);
         limelight.start();
 
         /// 4.1. power calculator for shooter------------------------------------------------------------
@@ -151,21 +154,23 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         FSMShooter.Init();
 
         /// 5. intake------------------------------------------------------------
-        FSMIntake = new FSMIntake (robot, spindexer);
+        FSMIntake = new FSMIntake(robot, spindexer);
 
         /// 6. color detection------------------------------------------------------------
         colorDetection = new ColorDetection(robot);
 
         /// 7. alliance selection-----------------------------------------------------------
-        alliance = Alliance.RED_ALLIANCE;
+        alliance = Alliance.BLUE_ALLIANCE;
         if (alliance == Alliance.RED_ALLIANCE) {
             shooterPowerAngleCalculator.setAlliance(true);
         }else{
             shooterPowerAngleCalculator.setAlliance(false);
         };
 
-        /// 8. robot state----------------------------------------------------------
+        /// 8. robot  tate----------------------------------------------------------
         actionStates = RobotActionState.Idle;
+
+
 
         /// 10. start adjuster servo at position to avoid soft start
         robot.shooterAdjusterServo.setPosition(0.48);
@@ -179,7 +184,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.update();
     }
 
-    /// ------Main Loop----------------------------------------------------------
     @Override
     public void loop() {
         // ========================================================
@@ -280,13 +284,14 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             resetTurret = true;
             startingTick = robot.turretMotor.getCurrentPosition(); // latch once on press
         }
+
         if (resetTurret) {
             if (turret.turretReset(startingTick)) {
                 resetTurret = false;
                 FSMShooter.resetTrim();
             }
         } else {
-            Limelight.TxSnapshot snap = limelight.getTxForTag(24);
+            Limelight.TxSnapshot snap = limelight.getTxForTag(20);
             //FSMShooter.setLimelightTx(snap.hasTarget, snap.txDeg);
             FSMShooter.SequenceShooterLoop();
         }
@@ -476,7 +481,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     ///  - LED Update
     private void updateLED() {
 
-        double tx = limelight.getTargetXForTag(24);  // call ONCE
+        double tx = limelight.getTargetXForTag(20);  // call ONCE
 
         if (Double.isNaN(tx)) {
             robot.LED.setPosition(0.288); // red (no tag)
@@ -510,16 +515,13 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
     ///  - Frequency Updates
     private void updateLoopFrequency() {
-
         long now = System.currentTimeMillis();
-
         if (lastLoopTime != 0) {
             long dtMs = now - lastLoopTime;
             if (dtMs > 0) {
                 loopHz = 1000.0 / dtMs;
             }
         }
-
         lastLoopTime = now;
     }
 
@@ -591,7 +593,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("turret power", robot.turretMotor.getPower());
         telemetry.addLine("-----------------------------------------");
         telemetry.addData("Switch tick logs", "["+String.join(", ", switchTickLog));
-        telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(24));
+        telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(20));
         telemetry.addData("green slot position", limelight.getGreenSlot());
         telemetry.update();
     }
