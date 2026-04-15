@@ -130,10 +130,55 @@ public class SpindexerUpd {
     /**
      * Simplification: No calculateSlot needed. We just use currentPos % 3.
      */
-    public void finalizeCurrentSlot() {
+    public void writeToCurrentSlot() {
         // Apply result to the current logical index
         slots[Math.floorMod(currentPos, 3)] = stableColor;
     }
+
+    //==================================================
+    // --- COLOR SENSING (MAJORITY VOTE) ---
+    //==================================================
+    public void clearVoteBuffer() {
+        voteBuffer.clear();
+    }
+
+    public void addVoteSample(ColorSensor colorSensor, DistanceSensor distanceSensor) {
+        float[] hsvValues = new float[3];
+        Color.RGBToHSV(colorSensor.red() * 8, colorSensor.green() * 8, colorSensor.blue() * 8, hsvValues);
+        colorValue = hsvValues[0];
+
+        if (distanceSensor.getDistance(DistanceUnit.MM) < BALL_PRESENT_THRESHOLD_MM) {
+            if ((greenRangeLow[0] < hsvValues[0] && hsvValues[0] < greenRangeLow[1]) ||
+                    (greenRangeHigh[0] < hsvValues[0] && hsvValues[0] < greenRangeHigh[1])) {
+                voteBuffer.add(SLOT.Green);
+            } else if ((purpleRangeLow[0] < hsvValues[0] && hsvValues[0] < purpleRangeLow[1]) ||
+                    (purpleRangeHigh[0] < hsvValues[0] && hsvValues[0] < purpleRangeHigh[1])) {
+                voteBuffer.add(SLOT.Purple);
+            } else {
+                voteBuffer.add(SLOT.Unknown);
+            }
+        }
+    }
+
+    /**
+     * Simplification: No calculateSlot needed. We just use currentPos % 3.
+     */
+    public void finalizeCurrentSlot() {
+        if (voteBuffer.isEmpty()) return;
+        int greenVotes = Collections.frequency(voteBuffer, SLOT.Green);
+        int purpleVotes = Collections.frequency(voteBuffer, SLOT.Purple);
+        //int unKonwnVotes = Collections.frequency(voteBuffer, SLOT.Unknown);
+        int emptyVotes = Collections.frequency(voteBuffer, SLOT.Empty);
+
+        SLOT winner;
+        if (greenVotes > purpleVotes && greenVotes > emptyVotes) winner = SLOT.Green;
+        else if (purpleVotes > greenVotes && purpleVotes > emptyVotes) winner = SLOT.Purple;
+        else winner = SLOT.Unknown;
+
+        // Apply result to the current logical index
+        slots[Math.floorMod(currentPos, 3)] = winner;
+    }
+
 
     //==================================================
     // --- UTILITY METHODS ---
