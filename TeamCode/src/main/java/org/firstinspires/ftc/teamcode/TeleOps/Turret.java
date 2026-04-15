@@ -40,7 +40,15 @@ public class Turret {
     //kp 0.004
     //ks 0.0001
     //kv 0.005
-    public static double kPTurret = 0.003, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.0001, kVTurret = 0.004; // turret motor drive pidcontroller
+    // Motion profile state
+    private double profilePosition = 0;
+    private double profileVelocity = 0;
+    private double lastTime = 0;
+    // Tunable constraints (Dashboard)
+    public static double maxVel = 2000;     // ticks/sec
+    public static double maxAccel = 4000;   // ticks/sec^2
+    // Feedforward constants
+    public static double kPTurret = 0.003, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.0001, kVTurret = 0.004, kATurret = 0.004; // turret motor drive FF & pid controller
     public static double kP_motor = 20, kI_motor = 0, kD_motor = 0.005, kF = 2; // turret motor pidf
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
 
@@ -134,23 +142,59 @@ public class Turret {
         double output = power + ff;
         robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
     }
+    public void driveTurretPIDF(int currentTick, int targetTick) {
 
-    public void driveTurretLimelight() {
-        LLResult llResult = robot.limelight.getLatestResult();
-        int targetTicks;
-        int currentTicks = robot.turretMotor.getCurrentPosition();
-        if (llResult != null && llResult.isValid()) {
-            targetTicks = (int) (llResult.getTx() * txToTickMultiplier);
-        }
-        else {
-            targetTicks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
+        double currentTime = System.nanoTime() * 1e-9;
+        double dt = currentTime - lastTime;
+
+        if (lastTime == 0) {
+            lastTime = currentTime;
+            profilePosition = currentTick;
+            profileVelocity = 0;
+            return;
         }
 
-        int errorTicks = targetTicks - currentTicks;
-        double ff = (kSTurret * Math.signum(errorTicks) + (kVTurret * errorTicks));
-        double power = pidController.calculate(currentTicks, targetTicks);
+        lastTime = currentTime;
+
+        int errorTicks = targetTick - (int) profilePosition;
+
+        // -------- Motion Profile (Trapezoidal) --------
+
+        // Determine desired direction
+        double direction = Math.signum(errorTicks);
+
+        // Deceleration distance
+        double decelDistance = (profileVelocity * profileVelocity) / (2.0 * maxAccel);
+
+        double targetVelocity;
+
+        if (Math.abs(errorTicks) > decelDistance) {
+            // Accelerate toward max velocity
+            targetVelocity = direction * maxVel;
+        } else {
+            // Decelerate to stop at target
+            targetVelocity = 0;
+        }
+
+        // Apply acceleration limit
+        double velocityError = targetVelocity - profileVelocity;
+        double accel = Range.clip(velocityError / dt, -maxAccel, maxAccel);
+
+        profileVelocity += accel * dt;
+        profilePosition += profileVelocity * dt;
+
+        // -------- PID (tracking profiled position) --------
+
+        double power = pidController.calculate(currentTick, profilePosition);
+
+        // -------- Feedforward --------
+
+        double ff = (kSTurret * Math.signum(profileVelocity))
+                + (kVTurret * profileVelocity)
+                + (kATurret * accel);
 
         double output = power + ff;
+
         robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
     }
 
