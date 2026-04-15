@@ -25,39 +25,35 @@ import java.util.Optional;
 @Config
 public class Turret {
     /*We will control the turret using input from the pinpoint
-    turret is continuously running and is separate from the shooter control
+    turret control is in ShooterFMS
      */
 
     private final RobotHardware robot;
 
-    private ElapsedTime pressedTimer = new ElapsedTime();
-    public static double txToTickMultiplier = 10;
-    private final double tickToAngle = ((0.16867469879518 * 360) / 145.1);
-    private final double angleToTick = 1.0 / tickToAngle;
-    private double conversionFactor = 39.3700787;
+    private ElapsedTime pressedTimer                    = new ElapsedTime();
+    public static double txToTickMultiplier             = 10;
+    private final double tickToAngle                    = (0.16867469879518 * (360 / 145.1)); // reduction ratio * (angle / motor Resolution tick)
+    private final double angleToTick                    = 1.0 / tickToAngle;
+    private double conversionFactor                     = 39.3700787;  // ??inch to mm conversion??
 
-    //0.00001 0 0.005 0.2 2
-    //kp 0.004
-    //ks 0.0001
-    //kv 0.005
     // Motion profile state
-    private double profilePosition = 0;
-    private double profileVelocity = 0;
-    private double lastTime = 0;
+    private double profilePosition                      = 0;
+    private double profileVelocity                      = 0;
+    private double lastTime                             = 0;
     // Tunable constraints (Dashboard)
-    public static double maxVel = 2000;     // ticks/sec
-    public static double maxAccel = 4000;   // ticks/sec^2
-    // Feedforward constants
-    public static double kPTurret = 0.003, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.0001, kVTurret = 0.004, kATurret = 0.004; // turret motor drive FF & pid controller
+    public static double maxVel                         = 2500; // ticks/sec
+    public static double maxAccel                       = 10000; // ticks/sec^2
+    //TODO - PID & Feedforward constants Tuning
+    public static double kPTurret = 0.003, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.0001, kVTurret = 0.004, kATurret = 0.004;
     public static double kP_motor = 20, kI_motor = 0, kD_motor = 0.005, kF = 2; // turret motor pidf
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
 
-    private final LUT<Integer, Pose2D> redTargetPose = new LUT<Integer, Pose2D>() {{
+    private final LUT<Integer, Pose2D> redTargetPose    = new LUT<Integer, Pose2D>() {{
         add(1, redCloseGoalPose);
         add(2, redFarGoalPose);
     }};
 
-    private final LUT<Integer, Pose2D> blueTargetPose = new LUT<Integer, Pose2D>() {{
+    private final LUT<Integer, Pose2D> blueTargetPose   = new LUT<Integer, Pose2D>() {{
         add(1, blueCloseGoalPose);
         add(2, blueFarGoalPose);
     }};
@@ -80,10 +76,10 @@ public class Turret {
 
     private final double turretCenterOffsetLength = Math.hypot(turret_Center_Y_Offset, turret_Center_X_Offset);
 
-    private final int zeroedTick = 0;
-    private int turretDeltaTick = 0;
+    private final int zeroedTick                        = 0;
+    private int turretDeltaTick                         = 0;
     private int turretLSZeroTick;
-    private int turretOffsetTick = 0;            // offset tick after turret reset
+    private int turretOffsetTick                        = 0; // offset tick after turret reset
 
     public Turret (RobotHardware robot, boolean isRedAlliance) {
         this.robot = robot;
