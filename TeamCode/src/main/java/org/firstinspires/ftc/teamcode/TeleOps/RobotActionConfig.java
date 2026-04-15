@@ -28,8 +28,8 @@ public class RobotActionConfig {
     public static double servoStepSize                  = 0.05;     // per update() call (try 0.002–0.01)
     public static double servoTolerance                 = 0.025;    // "close enough" to finish
 
-    public static double spindexerServoFullTime             = 0.65;    // full circle time
-    public static double spindexerServoPerSlotTime          = 0.15;    // per slot time
+public static double spindexerServoFullTime             = 0.65;    // full circle time
+public static double spindexerServoPerSlotTime          = 0.15;    // per slot time
 
     //kicker
     public static double kickerRetract                  = 0.37;  /// value - retract back for spindexer reversing
@@ -55,7 +55,7 @@ public class RobotActionConfig {
 
     public static double getDistanceThreshold           =0.02;
 
-
+    // Power distance
     public static double a                              = 0.0001320186;
     public static double b                              = -0.01961813;
     public static double c                              = 1.431126;
@@ -85,33 +85,32 @@ public class RobotActionConfig {
     ///public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, 9, -48.5, AngleUnit.DEGREES, 0);
     ///public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, 9, 48.5, AngleUnit.DEGREES, 0);
 
-    //-64 66 works
-            //-63 66 previous
+    //-64 66 works  //-63 66 previous
     public static final Pose2D redCloseGoalPose         = new Pose2D(DistanceUnit.INCH, -60, 64, AngleUnit.DEGREES, 0);
     public static final Pose2D redFarGoalPose           = new Pose2D(DistanceUnit.INCH, -66, 62, AngleUnit.DEGREES, 0);
 
     public static final Pose2D blueCloseGoalPose        = new Pose2D(DistanceUnit.INCH, -60, -64, AngleUnit.DEGREES, 0);
     public static final Pose2D blueFarGoalPose          = new Pose2D(DistanceUnit.INCH, -66, -62, AngleUnit.DEGREES, 0);
 
-    public static double FAR_EDGE                 = 105.0;
-    public static double FAR                      = 92.0;
-    public static double MidPoint                 = 82.0;
-    public static double MID                      = 68.0; ///72.0
-    public static double CLOSE                    = 57.0;
-    public static double closeEdge                = 36.0;
+    public static double FAR_EDGE                       = 105.0;
+    public static double FAR                            = 92.0;
+    public static double MidPoint                       = 82.0;
+    public static double MID                            = 68.0; ///72.0
+    public static double CLOSE                          = 57.0;
+    public static double closeEdge                      = 36.0;
 
-    public static double FAR_ZONE_CLOSE             = 120.0;
-    public static double FAR_ZONE_MID               = 144;
-    public static double FAR_ZONE_FAR               = 167.0;
+    public static double FAR_ZONE_CLOSE                 = 120.0;
+    public static double FAR_ZONE_MID                   = 144;
+    public static double FAR_ZONE_FAR                   = 167.0;
 
-    public static int RPM0            = 3700; ///all minus 200 rpm with upgraded hardware
-    public static int RPM1            = 3150;
-    public static int RPM2            = 3150;
-    public static int RPM3            = 3450;
-    public static int RPM4            = 3600;
-    public static int RPM5            = 3700;
-    public static int RPM6            = 4300;
-    public static int RPM7            = 4550;
+    public static int RPM0                              = 3700; ///all minus 200 rpm with upgraded hardware
+    public static int RPM1                              = 3150;
+    public static int RPM2                              = 3150;
+    public static int RPM3                              = 3450;
+    public static int RPM4                              = 3600;
+    public static int RPM5                              = 3700;
+    public static int RPM6                              = 4300;
+    public static int RPM7                              = 4550;
 
     public static final double farPower                 = 0.78;     // 3920 - 0.8  @ 12.73
     public static final double midPower                 = 0.73;     // 3360 - 0.70 @ 12.82
