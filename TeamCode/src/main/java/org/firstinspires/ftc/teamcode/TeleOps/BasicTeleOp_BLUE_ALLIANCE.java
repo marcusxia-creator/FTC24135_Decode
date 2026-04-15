@@ -6,6 +6,8 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.SHOOTER_R
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerRetract;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.shooterAdjusterMax;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.shooterAdjusterMid;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -134,8 +136,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
 
         /// 2.spindexer-------------------------------------------------------------------
         spindexer = new SpindexerUpd(robot, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, 0); //Change inits for comp
-
-        // spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
+        //manual control spindexer
         spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadComboInput);
 
         /// 3. turret---------------------------------------------------------------
@@ -167,20 +168,19 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
             shooterPowerAngleCalculator.setAlliance(false);
         };
 
-        /// 8. robot  tate----------------------------------------------------------
+        /// 8. robot Action State----------------------------------------------------------
         actionStates = RobotActionState.Idle;
 
-
+        ///  9. EMPTY--------------------------
 
         /// 10. start adjuster servo at position to avoid soft start
-        robot.shooterAdjusterServo.setPosition(0.48);
+        robot.shooterAdjusterServo.setPosition(shooterAdjusterMid);
 
         /// 11. start kicker servo at position to avoid soft start
         robot.kickerServo.setPosition(kickerRetract);
 
         telemetry.addData("start pose", PoseStorage.currentPose);
         telemetry.addData("pinpoint", robot.pinpoint.getPosition());
-
         telemetry.update();
     }
 
@@ -220,7 +220,6 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         // =========================================================
         // 1. INPUT UPDATE (read buttons + combos)
         // =========================================================
-
         gamepadCo1.readButtons();
         gamepadCo2.readButtons();
 
@@ -230,11 +229,13 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         buttonUpdate(); // sets requestedActionState ONLY
 
         // =========================================================
-        // 2. CONTINUOUS SENSOR / HOUSEKEEPING UPDATES
+        // 2. CONTINUOUS SENSOR
         // =========================================================
         robot.pinpoint.update();
         ballColor = BallColor.fromHue(colorDetection.getHue());
         updateLoopFrequency();
+        /// Turret PIDF Config
+        turret.updatePidFromDashboard();
 
         // =========================================================
         // 3. DRIVE (always responsive)
@@ -242,12 +243,17 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         robotDrive.DriveLoop();
 
         // =========================================================
-        // FIXME: 5.
+        // 7. NEW! - ACTION STATE TRANSITION MANAGER (GRACEFUL)
+        // Refine the order to reduce one loop delay.
+        // =========================================================
+        updateActionStateTransitions();
+
+        // =========================================================
         //  4. MODIFIED - PER-ACTION "EXTRAS" (NO FSM STATE FORCING HERE)
         // =========================================================
         switch (activeActionState){
             case Sequence_Shooting:
-                //turret.driveTurretMotor();
+                // empty as the FSM handles this,shooter FSM already running
                 break;
             case Intaking:
                 // empty as the FSM handles this,intake FSM already running
@@ -264,20 +270,18 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         // =========================================================
         // 5. ZONE STATUS
         // =========================================================
-        int zone = shooterPowerAngleCalculator.getZone();
+        int zone = updateZone();
         turret.updateZoneForGoalPose(zone);
         FSMShooter.updateZoneForGoalPose(zone);
-
-        //Turret PIDF Config
-        turret.updatePidFromDashboard();
 
         // =========================================================
         // 6. SUBSYSTEM FSMs (ALWAYS RUN)
         // =========================================================
+
+        /// 6.1 INTAKE CONTROL (BUTTON CONTROLLED)
         FSMIntake.loop();
-        // =========================================================
-        // 6.1 SHOOTER & TURRET CONTROL (BUTTON CONTROLLED)
-        // =========================================================
+
+        /// 6.2 SHOOTER & TURRET CONTROL (BUTTON CONTROLLED)
         /// When gamepad back pressed, reset turret.
         /// Otherwise, normal shooter and turret drive
         if (gamepadComboInput.getBackSinglePressedAny()) {
@@ -292,15 +296,8 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
             }
         } else {
             Limelight.TxSnapshot snap = limelight.getTxForTag(20);
-            //FSMShooter.setLimelightTx(snap.hasTarget, snap.txDeg);
             FSMShooter.SequenceShooterLoop();
         }
-
-        // =========================================================
-        // 7. NEW! - ACTION STATE TRANSITION MANAGER (GRACEFUL)
-        // Refine the order to reduce one loop delay.
-        // =========================================================
-        updateActionStateTransitions();
 
         // =========================================================
         // 8. LED STATUS (non-blocking)
@@ -509,7 +506,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     }
 
     /// update zone
-    private int updateZone () {
+    private int updateZone() {
         return shooterPowerAngleCalculator.getZone();
     }
 
@@ -614,7 +611,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         String MotifEnabled;
         String MotifAvailable;
         telemetry.addLine("-----SHOOTER STATE-----");
-        telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
+        //telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
         telemetry.addData("power set point-NORMED", FSMShooter.getPower_setpoint());
         telemetry.addData("Shooter Power-LUT OUT", robot.topShooterMotor.getPower());
     }
