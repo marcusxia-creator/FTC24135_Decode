@@ -16,7 +16,7 @@ public class ColorDetection {
     private BallColor stableColor                   = BallColor.UNKNOWN;
     private int stableCount                         = 0;
 
-    private ElapsedTime timer = new ElapsedTime();
+    private ElapsedTime timer                       = new ElapsedTime();
 
     // Parameters
     private final int REQUIRED_STABLE_COUNT         = 3;    // number of consistent readings (~0.1s if called every 20ms)
