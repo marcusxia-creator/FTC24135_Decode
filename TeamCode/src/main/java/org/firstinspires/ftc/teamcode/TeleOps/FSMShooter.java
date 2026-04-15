@@ -30,26 +30,26 @@ public class FSMShooter {
     SpindexerUpd spindexer;
     public final Turret turret;
 
-    Spindexer.SLOT targetColour = Spindexer.SLOT.Purple;
+    SpindexerUpd.SLOT targetColour = SpindexerUpd.SLOT.Purple;
 
     private double voltage;
     private double power;   //power lut power
     private double angle;   //shooter angle
-    private double power_setpoint=0; //not actually be used
+    private double power_setpoint   =   0; //not actually be used
     // shooting sequence config
     private int shootCounter; // counter for # ball shooting
-    private long lastFeedTimeMs = 0; // shooting feed time interval time stamp
+    private long lastFeedTimeMs     =   0; // shooting feed time interval time stamp
 
     private final ElapsedTime shooterTimer = new ElapsedTime();
-    public boolean stopRequested = false;
+    public boolean stopRequested    =   false;
 
     // Holds the current spindexer servo position when stop is requested
-    private double holdSpindexerPos = 0.0;
-    private boolean stopInitDone = false;
+    private double holdSpindexerPos =   0.0;
+    private boolean stopInitDone    =   false;
 
     // Tuning constants
-    private double stopClearancePos = 0;
-    private boolean clearanceChosen = false;
+    private double stopClearancePos =   0;
+    private boolean clearanceChosen =   false;
 
     private static final double MOVE_TO_CLEARANCE_TIME_S = 0.2;  // tune
     private static final double KICKER_RETRACT_TIME_S     = 0.25;  // tune
@@ -234,9 +234,9 @@ public class FSMShooter {
             trim=Range.clip(trim+trimInput*trimStep,-400,400);
             int currentTick = turret.getCurrentTick();
 
-            int txAdjust = getTxAdjustTicks();
+            int txAdjustTicks = getTxAdjustTicks();
 
-            int targetTick = (int) (turret.getTargetTick() + trim + offset +txAdjust);
+            int targetTick = (int) (turret.getTargetTick() + trim + offset +txAdjustTicks);
             turret.driveTurretPID(currentTick, targetTick);
         }
         else {
@@ -522,7 +522,6 @@ public class FSMShooter {
         long now = System.currentTimeMillis();
         if (!hasTarget) return;
 
-
         // smooth only when valid
         if (!txInit) { txFilt = txDeg; txInit = true; }
         txFilt = txAlpha * txDeg + (1.0 - txAlpha) * txFilt;
@@ -530,16 +529,6 @@ public class FSMShooter {
         // store last valid filtered tx
         lastValidTx = txFilt;
         lastValidTimeMs = now;
-    }
-
-    private int getTxAdjustTicksSimp() {
-        if (!llHasTarget) return 0;
-
-        double tx = txFilt; // or llTxDeg if you don't want smoothing
-        if (Math.abs(tx) < txDeadbandDeg) tx = 0.0;
-
-        int adjust = (int) Math.round(tx * degToTicks);
-        return Range.clip(adjust, -txMaxTicks, txMaxTicks);
     }
 
     private int getTxAdjustTicks() {
