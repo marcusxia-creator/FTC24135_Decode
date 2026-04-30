@@ -237,7 +237,7 @@ public class FSMShooter {
             int txAdjustTicks = getTxAdjustTicks();
 
             int targetTick = (int) (turret.getTargetTick() + trim + offset +txAdjustTicks);
-            turret.driveTurretPIDF(currentTick, targetTick);
+            turret.driveTurretPID(currentTick, targetTick);
         }
         else {
             robot.turretMotor.setVelocity(trimInput*adjSpeed);

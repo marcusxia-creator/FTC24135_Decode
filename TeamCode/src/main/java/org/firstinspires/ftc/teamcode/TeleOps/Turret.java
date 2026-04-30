@@ -40,14 +40,19 @@ public class Turret {
     private double profilePosition                      = 0;
     private double profileVelocity                      = 0;
     private double lastTime                             = 0;
+    private double commandedTick                        = 0;
+    private double commandedVelocity                    = 0;
+
     // Tunable constraints (Dashboard)
     public static double maxVel                         = 2500; // ticks/sec
     public static double maxAccel                       = 10000; // ticks/sec^2
+
     //TODO - PID & Feedforward constants Tuning
-    public static double kPTurret = 0.003, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.0001, kVTurret = 0.004, kATurret = 0.004;
+    public static double kPTurret = 0.003, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.0001, kVTurret = 0.0004, kATurret = 0.0004;
     public static double kP_motor = 20, kI_motor = 0, kD_motor = 0.005, kF = 2; // turret motor pidf
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
 
+    // Target pose
     private final LUT<Integer, Pose2D> redTargetPose    = new LUT<Integer, Pose2D>() {{
         add(1, redCloseGoalPose);
         add(2, redFarGoalPose);
@@ -139,55 +144,63 @@ public class Turret {
         robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
     }
     public void driveTurretPIDF(int currentTick, int targetTick) {
-
         double currentTime = System.nanoTime() * 1e-9;
         double dt = currentTime - lastTime;
 
         if (lastTime == 0) {
             lastTime = currentTime;
-            profilePosition = currentTick;
-            profileVelocity = 0;
+            commandedTick  = currentTick;
+            commandedVelocity  = 0;
             return;
+        }
+        // protect against bad loop time
+        if (dt <= 0) {
+            dt = 0.001;
+        }
+        if (dt > 0.05) {
+            dt = 0.05;
         }
 
         lastTime = currentTime;
 
-        int errorTicks = targetTick - (int) profilePosition;
+        double previousVelocity = commandedVelocity;
 
-        // -------- Motion Profile (Trapezoidal) --------
-
-        // Determine desired direction
+        // Remaining distance from profile state to target
+        double errorTicks = targetTick - commandedTick;
         double direction = Math.signum(errorTicks);
 
-        // Deceleration distance
-        double decelDistance = (profileVelocity * profileVelocity) / (2.0 * maxAccel);
+        // Maximum velocity that still allows stopping at target
+        double stoppingVelocity = Math.sqrt(2.0 * maxAccel * Math.abs(errorTicks));
 
-        double targetVelocity;
+        // Desired profile velocity with sign
+        double desiredVelocity = direction * Math.min(maxVel, stoppingVelocity);
 
-        if (Math.abs(errorTicks) > decelDistance) {
-            // Accelerate toward max velocity
-            targetVelocity = direction * maxVel;
-        } else {
-            // Decelerate to stop at target
-            targetVelocity = 0;
+        // Limit how fast profile velocity can change
+        double maxDeltaVelocity = maxAccel * dt;
+        double velocityError  = desiredVelocity - commandedVelocity;
+        double deltaVelocity = Range.clip(velocityError, -maxDeltaVelocity, maxDeltaVelocity);
+
+        // Limit how fast profile position can change
+        commandedVelocity += deltaVelocity;
+
+        // Compute profile acceleration from velocity change
+        double commandedAcceleration = (commandedVelocity - previousVelocity) / dt;
+
+        commandedTick += 0.5 * (previousVelocity + commandedVelocity) * dt;
+
+        if (Math.abs(targetTick - commandedTick) < 1.0 && Math.abs(commandedVelocity) < 5.0) {
+            commandedTick = targetTick;
+            commandedVelocity = 0.0;
+            commandedAcceleration = 0.0;
         }
 
-        // Apply acceleration limit
-        double velocityError = targetVelocity - profileVelocity;
-        double accel = Range.clip(velocityError / dt, -maxAccel, maxAccel);
-
-        profileVelocity += accel * dt;
-        profilePosition += profileVelocity * dt;
-
         // -------- PID (tracking profiled position) --------
-
-        double power = pidController.calculate(currentTick, profilePosition);
+        double power = pidController.calculate(currentTick, commandedTick);
 
         // -------- Feedforward --------
-
-        double ff = (kSTurret * Math.signum(profileVelocity))
-                + (kVTurret * profileVelocity)
-                + (kATurret * accel);
+        double ff = (kSTurret * Math.signum(commandedVelocity))
+                + (kVTurret * commandedVelocity)
+                + (kATurret * commandedAcceleration);
 
         double output = power + ff;
 
