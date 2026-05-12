@@ -103,6 +103,12 @@ public class RobotDrive {
     private final double accel_Slowness = 0.45;
     private final double decel_Slowness = 0.25;
 
+    /**
+     * private double lastFL = 0;
+     * private double lastFR = 0;
+     * private double lastBL = 0;
+     * private double lastBR = 0;
+    */
     private final SlewRateLimiter frontLeftLimiter = new SlewRateLimiter(0.1);
     private final SlewRateLimiter frontRightLimiter = new SlewRateLimiter(0.1);
     private final SlewRateLimiter backLeftLimiter = new SlewRateLimiter(0.1);
@@ -228,6 +234,14 @@ public class RobotDrive {
         double frontRightPower = frontRightLimiter.calculate(desiredFrontRightPower);
         double backLeftPower = backLeftLimiter.calculate(desiredBackLeftPower);
         double backRightPower = backRightLimiter.calculate(desiredBackRightPower);
+
+        /** if use lerp method, here is the place to add it.
+
+         *          lastFL = lerp(lastFL, frontLeft, RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
+         *          lastFR = lerp(lastFR, frontRight, RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
+         *          lastBL = lerp(lastBL, backLeft, RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
+         *          lastBR = lerp(lastBR, backRight, RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
+         */
 
         robot.frontLeftMotor.setPower(Range.clip(frontLeftPower * powerFactor, -1.0, 1.0));
         robot.frontRightMotor.setPower(Range.clip(frontRightPower * powerFactor, -1.0, 1.0));
