@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.util.LUT;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -63,7 +61,7 @@ public class FSMShooter {
 
     private long waitTimeMS = 350;
 
-    public double trim;
+    public double trimTicks;
     public int offset = 0;
 
     // ============================
@@ -149,7 +147,7 @@ public class FSMShooter {
         shooterState = SHOOTERSTATE.SHOOTER_IDLE;
         shootermotorstate = SHOOTERMOTORSTATE.STOP;
         turretState = TURRETSTATE.AIMING;
-        trim =0;
+        trimTicks =0;
     }
 
     public void SequenceShooterLoop() {
@@ -217,8 +215,6 @@ public class FSMShooter {
         // Triming/manual control
         //========================================================
         int trimInput=0;
-        /// New
-        //offset = turret.getTurretOffsetTick(); // turrest reset zero drift offset value
 
         //get limelight tx adjust
         Limelight.TxSnapshot snap = limelight.getTxForTag(24);
@@ -231,12 +227,12 @@ public class FSMShooter {
             if (gamepadComboInput.getrbSinglePressedAny()){
                 trimInput-=1;
             }
-            trim=Range.clip(trim+trimInput*trimStep,-400,400);
+            trimTicks =Range.clip(trimTicks +trimInput*trimStep,-400,400);
+
             int currentTick = turret.getCurrentTick();
-
             int txAdjustTicks = getTxAdjustTicks();
+            int targetTick = (int) (turret.getTargetTick() + trimTicks + offset +txAdjustTicks);
 
-            int targetTick = (int) (turret.getTargetTick() + trim + offset +txAdjustTicks);
             turret.driveTurretPID(currentTick, targetTick);
         }
         else {
@@ -510,7 +506,7 @@ public class FSMShooter {
     //==========================================================
     //helper - reset trim
     //=========================================================
-    public void resetTrim() { trim = 0; }
+    public void resetTrim() { trimTicks = 0; }
 
     //=========================================================
     //limelight tx adjust
