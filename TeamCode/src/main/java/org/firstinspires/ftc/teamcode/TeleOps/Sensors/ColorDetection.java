@@ -19,7 +19,7 @@ public class ColorDetection {
     private ElapsedTime timer                       = new ElapsedTime();
 
     // Parameters
-    private final int REQUIRED_STABLE_COUNT         = 3;    // number of consistent readings (~0.1s if called every 20ms)
+    private final int REQUIRED_STABLE_COUNT         = 1;    // number of consistent readings (~0.1s if called every 20ms)
     private final double TIMEOUT_S                  = 0.5;  // maximum time allowed to detect color
 
     //  Constructor
