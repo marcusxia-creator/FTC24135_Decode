@@ -43,9 +43,10 @@ public class FSMIntake {
 
     boolean recorded;
 
-    public FSMIntake(RobotHardware robot, SpindexerUpd spindexer) {
+    public FSMIntake(RobotHardware robot, SpindexerUpd spindexer, ColorDetection colorDetection) {
         this.robot = robot;
         this.spindexer = spindexer;
+        this.colorDetection = colorDetection;
     }
 
     public void loop() {
