@@ -109,10 +109,10 @@ public class RobotDrive {
      * private double lastBL = 0;
      * private double lastBR = 0;
     */
-    private final SlewRateLimiter frontLeftLimiter = new SlewRateLimiter(0.1);
-    private final SlewRateLimiter frontRightLimiter = new SlewRateLimiter(0.1);
-    private final SlewRateLimiter backLeftLimiter = new SlewRateLimiter(0.1);
-    private final SlewRateLimiter backRightLimiter = new SlewRateLimiter(0.1);
+    private final SlewRateLimiter frontLeftLimiter = new SlewRateLimiter(0.2);
+    private final SlewRateLimiter frontRightLimiter = new SlewRateLimiter(0.2);
+    private final SlewRateLimiter backLeftLimiter = new SlewRateLimiter(0.2);
+    private final SlewRateLimiter backRightLimiter = new SlewRateLimiter(0.2);
 
     public RobotDrive(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2) {
         this.robot = robot;
