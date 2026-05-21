@@ -104,8 +104,8 @@ public class FSMIntake {
                     }
                 }*/
                 if (colorDetection.isColorStable()) {
-                    spindexer.setStableColor(colorDetection.getStableColor());
-                    spindexer.writeToCurrentSlot();
+                    //spindexer.setStableColor(colorDetection.getStableColor());
+                    spindexer.writeToCurrentSlot(colorDetection.getStableColor());
                     if (spindexer.count(SpindexerUpd.SLOT.Empty) == 0) {
                         intakeTimer.reset();
                         intakeStates = IntakeStates.INTAKE_STOP;
