@@ -67,22 +67,23 @@ public class SpindexerUpd {
         RuntoPosition(prevPos);
     }
 
+    //==================================================
+    // Update Servo Step when requestServoPosition() is called.
+    // Update Servo Step - Incremental Servo Stepping
+    //==================================================
 
     ///  New!! method to run servo to specific position
     /// -  this method need to use updateServoStep() method.
     /// - updateServoSetp() method needs to be called every loop in shooter & intake
     public void requestServoPosition(double pos) {
         servoTargetPos = clamp01(pos);
-        robot.spindexerServo.setPosition(servoTargetPos);
+        //robot.spindexerServo.setPosition(servoTargetPos);
         servoBusy = true;
     }
 
-    //==================================================
-    // Update Servo Step when requestServoPosition() is called.
-    // Update Servo Step - Incremental Servo Stepping
-    //==================================================
     /**
      * Call this EVERY loop() (or every FSM update tick).
+     * It is used in conjunction with requestServoPosition() to assign a target position.
      * Returns true when the servo has reached the target (within tolerance).
      */
 
