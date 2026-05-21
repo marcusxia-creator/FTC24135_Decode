@@ -125,6 +125,9 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         Pose2D startingPose = new Pose2D(DistanceUnit.MM, PoseStorage.currentPose.position.x*25.4, PoseStorage.currentPose.position.y*25.4, AngleUnit.DEGREES, Math.toDegrees(heading_Radiant));
         robot.pinpoint.setPosition(startingPose);
 
+        /// 6. color detection------------------------------------------------------------
+        colorDetection = new ColorDetection(robot);
+
         /// 0. gamepad---------------------------------------------------------------
         gamepadCo1 = new GamepadEx(gamepad1);
         gamepadCo2 = new GamepadEx(gamepad2);
@@ -155,10 +158,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         FSMShooter.Init();
 
         /// 5. intake------------------------------------------------------------
-        FSMIntake = new FSMIntake(robot, spindexer);
-
-        /// 6. color detection------------------------------------------------------------
-        colorDetection = new ColorDetection(robot);
+        FSMIntake = new FSMIntake(robot, spindexer, colorDetection);
 
         /// 7. alliance selection-----------------------------------------------------------
         alliance = Alliance.BLUE_ALLIANCE;
