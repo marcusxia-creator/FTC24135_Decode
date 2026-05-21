@@ -67,22 +67,13 @@ public class SpindexerUpd {
         RuntoPosition(prevPos);
     }
 
-    ///  New!! method to run servo to incremental position
-    public void RuntoPositionNew(int n) {
-        prevPos = currentPos;
-        currentPos = n;
-
-        // Logical safety: map n to 0, 1, or 2
-        int index = Math.floorMod(currentPos, 6);
-        servoTargetPos = RobotActionConfig.spindexerPositions[index];
-        servoBusy = true;
-    }
 
     ///  New!! method to run servo to specific position
     /// -  this method need to use updateServoStep() method.
     /// - updateServoSetp() method needs to be called every loop in shooter & intake
     public void requestServoPosition(double pos) {
         servoTargetPos = clamp01(pos);
+        robot.spindexerServo.setPosition(servoTargetPos);
         servoBusy = true;
     }
 
@@ -215,6 +206,9 @@ public class SpindexerUpd {
     }
     public SLOT getCurrentSlotColor() {
         return slots[Math.floorMod(currentPos, 3)];
+    }
+    public double getServoPosition() {
+        return robot.spindexerServo.getPosition();
     }
 
     //==================================================

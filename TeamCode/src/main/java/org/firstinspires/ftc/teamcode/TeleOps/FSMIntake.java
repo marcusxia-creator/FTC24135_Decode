@@ -132,7 +132,8 @@ public class FSMIntake {
                 if (time > spindexerServoPerSlotTime) {
 
                     double targetPos =spindexerSlot2;
-                    double currentPos = robot.spindexerServo.getPosition();
+                    double currentPos = spindexer.getServoPosition();
+                    //double currentPos = robot.spindexerServo.getPosition();
                     double maxStep = 0.05; // max movement per loop
 
                     double error = targetPos - currentPos;
@@ -141,7 +142,8 @@ public class FSMIntake {
                             error
                     );
                     double nextPos = currentPos + step;
-                    robot.spindexerServo.setPosition(nextPos);
+                    //robot.spindexerServo.setPosition(nextPos);
+                    spindexer.requestServoPosition(nextPos);
                     if (Math.abs(targetPos - nextPos) < 0.01) {
                         spindexer.RuntoPosition(1); // go to slot1 position and reset the spindexer counter
                         intakeStates = IntakeStates.INTAKE_IDLE;
