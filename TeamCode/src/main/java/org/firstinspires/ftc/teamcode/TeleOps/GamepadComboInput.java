@@ -90,12 +90,10 @@ public class GamepadComboInput {
     }
 
     public void update() {
-
+        // read all button status every loop
         readAll();
-
         // Driver combos and singles
         driverLbBComboPressed = dLb.isDown() && dBk.wasJustPressed();
-
         driverBackSinglePressed = !dLb.isDown() && dBk.wasJustPressed();
         driverLbSinglePressed = dLb.wasJustPressed() && !dBk.isDown();
         driverRbSinglePressed = dRb.wasJustPressed() && !dBk.isDown();
