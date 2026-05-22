@@ -7,6 +7,7 @@ public class SpindexerManualControl {
     SpindexerUpd spindexer;
     GamepadComboInput gamepadComboInput;
     ElapsedTime debounceTimer = new ElapsedTime();
+
     public SpindexerManualControl(RobotHardware robot, SpindexerUpd spindexer, GamepadComboInput gamepadComboInput){
         this.robot=robot;
         this.spindexer=spindexer;
