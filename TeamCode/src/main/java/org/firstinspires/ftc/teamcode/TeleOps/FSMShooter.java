@@ -273,8 +273,7 @@ public class FSMShooter {
 
                 shooterState = SHOOTERSTATE.KICKER_EXTEND;
                 shootTimer.reset();
-                flyWheelTimer.reset();
-                // IMPORTANT: flyWheelTimer should be reset when flywheel starts
+                flyWheelTimer.reset(); // IMPORTANT: flyWheelTimer should be reset when flywheel starts
                 break;
 
             case KICKER_EXTEND:
@@ -328,7 +327,6 @@ public class FSMShooter {
             case SHOOTER_STOP:
                 //stop flywheel
                 shootermotorstate = SHOOTERMOTORSTATE.STOP;
-
                 if (shootTimer.seconds() > spindexerServoPerSlotTime) {
                     spindexer.resetSlot();
                     shootTimer.reset();
@@ -337,19 +335,18 @@ public class FSMShooter {
                 break;
 
             case KICKER_RETRACT:
-
-                    //=========================================================================
-                    // this is the place to reset the spindexer counter
-                    // meanwhile spindexer return back to spinderxerPositions[0] - slot 1 position
-                    //==========================================================================
+                //=========================================================================
+                // this is the place to reset the spindexer counter
+                // meanwhile spindexer return back to spinderxerPositions[0] - slot 1 position
+                //==========================================================================
                 //=========================================================
-                // when slot back to 0 position,then the kicker Retract
+                // the kicker Retract first then return to slot back to 0 position,
                 //=========================================================
-                if (shootTimer.seconds() > 0.1){
+                if (shootTimer.seconds() < 0.05){
                     robot.kickerServo.setPosition(kickerRetract);
                 }
 
-                if (shootTimer.seconds() > 0.4) {
+                if (shootTimer.seconds() > 0.2) {
                     spindexer.RuntoPosition(0); // reset counter in spindexer
                 }
                 if(shootTimer.seconds()>0.8){
