@@ -62,7 +62,7 @@ public class SpindexerUpd {
     public void RunToNext() {
         RuntoPosition(currentPos + 1);
     }
-
+    public void setCurrentPos(int pos){ this.currentPos = pos;} // new to set current post from outside
     public void unJam() {
         RuntoPosition(prevPos);
     }
@@ -77,9 +77,9 @@ public class SpindexerUpd {
     /// - updateServoSetp() method needs to be called every loop in shooter & intake
     public void requestServoPosition(double pos) {
         servoTargetPos = clamp01(pos);
-        //robot.spindexerServo.setPosition(servoTargetPos);
         servoBusy = true;
     }
+
 
     /**
      * Call this EVERY loop() (or every FSM update tick).
@@ -111,14 +111,6 @@ public class SpindexerUpd {
     //==================================================
     // --- COLOR Detection Methods (Continuous Count) ---
     //==================================================
-    public void setStableColor(BallColor color){
-        if (color == BallColor.GREEN){
-        stableColor = SLOT.Green;}
-        else if (color == BallColor.PURPLE){
-            stableColor = SLOT.Purple;}
-        else {stableColor = SLOT.Unknown;}
-    }
-
     /**
      * Simplification: No calculateSlot needed. We just use currentPos % 3.
      */
