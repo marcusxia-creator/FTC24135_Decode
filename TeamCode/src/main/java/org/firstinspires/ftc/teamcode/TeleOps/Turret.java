@@ -127,7 +127,7 @@ public class Turret {
     }
 
     public void driveTurretMotor(){
-        //updatePidFromDashboard();
+        //used in test telop for tuning;
         int ticks = (int)(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
         robot.turretMotor.setTargetPosition(ticks);
         robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
