@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 //import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.FSMShooter;
+import org.firstinspires.ftc.teamcode.TeleOps.GamepadComboInput;
 import org.firstinspires.ftc.teamcode.TeleOps.LUTPowerCalculator;
 import org.firstinspires.ftc.teamcode.TeleOps.Limelight;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
@@ -84,14 +85,13 @@ public class TestTeleOp extends OpMode {
         robot.initIMU();
         robot.initPinpoint();
 
-        robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
+        robotDrive = new RobotDrive(robot, new GamepadComboInput(gamepad_1, gamepad_2));
         robotDrive.Init();
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         powerCalculator = new LUTPowerCalculator(robot);
         shooterPowerLUT = new LUTPowerCalculator(robot);
-        robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
         //aprilTagDetection = new AprilTagDetection(robot);
 
         turret = new Turret(robot, true);

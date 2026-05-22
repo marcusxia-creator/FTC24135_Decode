@@ -8,8 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 @Config
 public class RobotActionConfig {
-    public static double gateDown                       = 0.13;
-    public static double gateUp                         = 0.39;
+
     public static double DEBOUNCE_THRESHOLD             = 0.25;
     public static double spindexerKickerInDelta         = 0.02;
     public static double spindexerZeroPos               = 0.00;
@@ -52,6 +51,7 @@ public static double spindexerServoPerSlotTime          = 0.15;    // per slot t
     public static double powerFactor                    = 1;
     public static double accel_Slowness                 = 0.25;
     public static double decel_Slowness                 = 0.5;
+    public static double rotate_Slowness                 = 0.5;
 
     public static double getDistanceThreshold           =0.02;
 

@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.START;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.rotate_Slowness;
 
 import android.annotation.SuppressLint;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -91,15 +91,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class RobotDrive {
 
-    private final GamepadEx gamepad_1;
-    private final GamepadEx gamepad_2;
+    private final GamepadComboInput gamepadComboInput;
     private final RobotHardware robot;
 
     private boolean startPressed = false;
     private boolean fieldCentric = false;
 
     private double powerFactor;
-    private final double rotateSlowness = 0.75;
     private final double accel_Slowness = 0.45;
     private final double decel_Slowness = 0.25;
 
@@ -114,10 +112,9 @@ public class RobotDrive {
     private final SlewRateLimiter backLeftLimiter = new SlewRateLimiter(0.2);
     private final SlewRateLimiter backRightLimiter = new SlewRateLimiter(0.2);
 
-    public RobotDrive(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2) {
+    public RobotDrive(RobotHardware robot, GamepadComboInput gamepadComboInput) {
         this.robot = robot;
-        this.gamepad_1 = gamepad_1;
-        this.gamepad_2 = gamepad_2;
+        this.gamepadComboInput = gamepadComboInput;
     }
 
     public void Init() {
@@ -128,15 +125,9 @@ public class RobotDrive {
     @SuppressLint("DefaultLocale")
     public void DriveLoop() {
 
-        boolean startNow =
-                gamepad_1.getButton(START) || gamepad_2.getButton(START);
-
-        boolean leftBumperNow =
-                gamepad_1.getButton(LEFT_BUMPER) || gamepad_2.getButton(LEFT_BUMPER);
-
+        boolean startNow = gamepadComboInput.getDriverStrSinglePressed() || gamepadComboInput.getOperatorStrSinglePressed();
         // START toggles field-centric mode.
-        // LEFT_BUMPER + START is ignored, so START can be used in combos elsewhere.
-        if (startNow && !startPressed && !leftBumperNow) {
+        if (startNow && !startPressed ) {
             fieldCentric = !fieldCentric;
             startPressed = true;
         } else if (!startNow) {
@@ -144,12 +135,12 @@ public class RobotDrive {
         }
 
         powerFactor = calculatePowerFactor();
-
         double drive = 0.0;
         double strafe = 0.0;
         double rotate = 0.0;
 
         // Gamepad 1 has priority over gamepad 2
+        /**
         if (hasDriveInput(gamepad_1)) {
             drive = deadband(-gamepad_1.getRightY(), 0.10);
             strafe = deadband(gamepad_1.getRightX(), 0.10);
@@ -159,10 +150,20 @@ public class RobotDrive {
             strafe = deadband(gamepad_2.getRightX(), 0.10);
             rotate = deadband(gamepad_2.getLeftX(), 0.10) * rotateSlowness;
         }
+         */
+
+        if(gamepadComboInput.getDriverHasDriveInput()) {
+            drive = -gamepadComboInput.getDriverRightStickY();
+            strafe = gamepadComboInput.getDriverRightStickX();
+            rotate = gamepadComboInput.getDriverLeftStickX()*rotate_Slowness;
+        } else if(gamepadComboInput.getOperatorHasDriveInput()) {
+            drive = -gamepadComboInput.getOperatorRightStickY();
+            strafe = gamepadComboInput.getOperatorRightStickX();
+            rotate = gamepadComboInput.getOperatorLeftStickX()*rotate_Slowness;
+        }
 
         if (fieldCentric) {
             double headingRadians = Math.toRadians(getRobotHeadingDegrees());
-
             double tempDrive = drive * Math.cos(headingRadians) - strafe * Math.sin(headingRadians);
             double tempStrafe = drive * Math.sin(headingRadians) + strafe * Math.cos(headingRadians);
 
@@ -173,16 +174,17 @@ public class RobotDrive {
         setMecanumDrivePower(drive, strafe, rotate, powerFactor);
     }
 
-    private boolean hasDriveInput(GamepadEx gamepad) {
-        return Math.abs(gamepad.getRightY()) > 0.10
-                || Math.abs(gamepad.getRightX()) > 0.10
-                || Math.abs(gamepad.getLeftX()) > 0.10;
-    }
+    /**
+     * private boolean hasDriveInput(GamepadEx gamepad) {
+     * return Math.abs(gamepad.getRightY()) > 0.10
+     *      || Math.abs(gamepad.getRightX()) > 0.10
+     *      || Math.abs(gamepad.getLeftX()) > 0.10;
+     *      }
+     */
 
     private double calculatePowerFactor() {
-        double trigger1 = gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
-        double trigger2 = gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
-
+        double trigger1 =gamepadComboInput.getDriverLeftTrigger();
+        double trigger2 = gamepadComboInput.getOperatorLeftTrigger();
         double trigger = Math.max(trigger1, trigger2);
 
         if (trigger > 0.4) {

@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.TeleOps.GamepadComboInput;
 import org.firstinspires.ftc.teamcode.TeleOps.LUTPowerCalculator;
 import org.firstinspires.ftc.teamcode.TeleOps.Limelight;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotDrive;
@@ -82,14 +83,13 @@ public class TurretTestTeleOp extends OpMode {
         robot.initIMU();
         robot.initPinpoint();
 
-        robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
+        robotDrive = new RobotDrive(robot, new GamepadComboInput(gamepad_1, gamepad_2));
         robotDrive.Init();
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         powerCalculator = new LUTPowerCalculator(robot);
         shooterPowerLUT = new LUTPowerCalculator(robot);
-        robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
         //aprilTagDetection = new AprilTagDetection(robot);
 
         turret = new Turret(robot, true);
