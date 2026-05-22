@@ -60,14 +60,12 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private GamepadEx gamepadCo1, gamepadCo2;
     private GamepadComboInput gamepadComboInput;
     private RobotDrive robotDrive;
-    FSMShooter FSMShooter;
-    FSMIntake FSMIntake;
-
+    private FSMShooter FSMShooter;
+    private FSMIntake FSMIntake;
     private Turret turret;
     private SpindexerManualControl spindexerManualControl;
-
     private SpindexerUpd spindexer;
-    public Limelight limelight;
+    private Limelight limelight;
     /// ----------------------------------------------------------------
     // For shooter power and angle calculator
     private LUTPowerCalculator shooterPowerAngleCalculator;
@@ -93,36 +91,45 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     /// For alliance colour
     public static Alliance alliance;
 
-    /// for dashboard
+    /// For dashboard & Telemetry
     public static double shooterRPM;
     public static int shooterTargetRPM;
-
     private boolean resetTurret = false;
     private int startingTick;
+    private TeleOpTelemetryManager teleOpTelemetryManager;
+    public static boolean SIMPLE_TELEMETRY = false;
+
 
     public List<String> switchTickLog = new ArrayList<>();
 
-    /// ------Initialization----------------------------------------------------------
+    /// For expensive values from getter
+    private int currentZone;
+    private double currentDistance;
+    private double currentTx;
+    private Pose2D currentPose;
+    private double batteryVoltage;
+
+    //========================================
+    //---------- Initialization --------------
+    //========================================
     @Override
     public void init() {
         /// For telemetry
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        /// For robot hardware initialization
+        teleOpTelemetryManager = new TeleOpTelemetryManager(telemetry);
+        teleOpTelemetryManager.setUpdateEveryLoops(5);
+
+        /// Instantized Robot subsystems and Hardware
         robot = new RobotHardware(hardwareMap);
         robot.init();                           //Initialize all motors and servos
         robot.initIMU();                        //Initialize control hub IMU
         robot.initPinpoint();                   //Initialize pinpoint
 
-        /**
-         * Transfer the pose 2D from Auto Ops
-         */
+        /// * Transfer the pose 2D from Auto Ops *
         Pose2d endPose = PoseStorage.currentPose;
         double heading_Radiant = endPose.heading.toDouble();
         Pose2D startingPose = new Pose2D(DistanceUnit.MM, PoseStorage.currentPose.position.x*25.4, PoseStorage.currentPose.position.y*25.4, AngleUnit.DEGREES, Math.toDegrees(heading_Radiant));
         robot.pinpoint.setPosition(startingPose);
-
-        /// 6. color detection------------------------------------------------------------
-        colorDetection = new ColorDetection(robot);
 
         /// 0. gamepad---------------------------------------------------------------
         gamepadCo1 = new GamepadEx(gamepad1);
@@ -133,29 +140,29 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
-        /// 2.spindexer-------------------------------------------------------------------
-        spindexer = new SpindexerUpd(robot, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, 0);
-
-        spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadComboInput);
-
-        /// 3. turret---------------------------------------------------------------
-        turret = new Turret(robot, true);
+        /// 6. color detection------------------------------------------------------------
+        colorDetection = new ColorDetection(robot);
 
         /// 9. limelight--------------------------------------------------------------
         limelight = new Limelight(robot);
         limelight.initLimelight(24);
         limelight.start();
 
+        /// 2.spindexer-------------------------------------------------------------------
+        spindexer = new SpindexerUpd(robot, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, 0);
+        spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadComboInput);
+
+        /// 3. turret---------------------------------------------------------------
+        turret = new Turret(robot, true);
+
         /// 4.1. power calculator for shooter------------------------------------------------------------
         shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
-
         /// 4. shooter-------------------------------------------------------------
         FSMShooter = new FSMShooter(robot, spindexer, shooterPowerAngleCalculator, gamepadComboInput, turret, limelight);
         FSMShooter.Init();
 
         /// 5. intake------------------------------------------------------------
         FSMIntake = new FSMIntake (robot, spindexer, colorDetection);
-
 
         /// 7. alliance selection-----------------------------------------------------------
         alliance = Alliance.RED_ALLIANCE;
@@ -217,10 +224,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         // 1. INPUT UPDATE (read buttons + combos)
         // =========================================================
-
         gamepadCo1.readButtons();
         gamepadCo2.readButtons();
-
         /// combo button LB+ & RB+ config and update
         gamepadComboInput.update(); // for combined button combo
         /// Changes the action state base on which button is pressed
@@ -232,6 +237,11 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.pinpoint.update();
         ballColor = BallColor.fromHue(colorDetection.getHue());
         updateLoopFrequency();
+        currentPose = robot.pinpoint.getPosition();
+        currentZone = shooterPowerAngleCalculator.getZone();
+        currentDistance = shooterPowerAngleCalculator.getDistance();
+        currentTx = limelight.getTargetXForTag(24);
+        batteryVoltage = robot.getBatteryVoltageRobust();
 
         // =========================================================
         // 3. DRIVE (always responsive)
@@ -261,12 +271,11 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         // 5. ZONE STATUS
         // =========================================================
-        int zone = shooterPowerAngleCalculator.getZone();
-        turret.updateZoneForGoalPose(zone);
-        FSMShooter.updateZoneForGoalPose(zone);
+        turret.updateZoneForGoalPose(currentZone);
+        FSMShooter.updateZoneForGoalPose(currentZone);
 
         //Turret PIDF Config
-        turret.updatePidFromDashboard();
+        //turret.updatePidFromDashboard();
 
         // =========================================================
         // 6. SUBSYSTEM FSMs (ALWAYS RUN)
@@ -287,7 +296,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                 FSMShooter.resetTrim();
             }
         } else {
-            Limelight.TxSnapshot snap = limelight.getTxForTag(24);
+            //Limelight.TxSnapshot snap = limelight.getTxForTag(24);
             //FSMShooter.setLimelightTx(snap.hasTarget, snap.txDeg);
             FSMShooter.SequenceShooterLoop();
         }
@@ -301,12 +310,42 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         // 8. LED STATUS (non-blocking)
         // =========================================================
-        updateLED();
+        updateLED(currentTx);
 
         // =========================================================
         // 9. TELEMETRY
         // =========================================================
-        telemetryManager();
+        if (SIMPLE_TELEMETRY) {
+            teleOpTelemetryManager.updateSimplified(
+                    alliance,
+                    requestedActionState,
+                    activeActionState,
+                    FSMIntake,
+                    FSMShooter,
+                    spindexer,
+                    robot,
+                    shooterPowerAngleCalculator,
+                    turret,
+                    limelight,
+                    loopHz
+            );
+        } else {
+            teleOpTelemetryManager.update(
+                    alliance,
+                    requestedActionState,
+                    activeActionState,
+                    switchTickLog,
+                    colorDetection,
+                    FSMIntake,
+                    FSMShooter,
+                    spindexer,
+                    robot,
+                    shooterPowerAngleCalculator,
+                    turret,
+                    limelight,
+                    loopHz
+            );
+        };
     }
 
     @Override
@@ -471,18 +510,13 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         }
 
     }
-
     ///  helper functions
-
     ///  - LED Update
-    private void updateLED() {
-
-        double tx = limelight.getTargetXForTag(24);  // call ONCE
-
+    private void updateLED(double tx) {
         if (Double.isNaN(tx)) {
             robot.LED.setPosition(0.288); // red (no tag)
         }
-        else if (tx == 0.0) {
+        else if (Math.abs(tx) < 1.0) {
             robot.LED.setPosition(0.5);   // green (in deadband)
         }
         else if (tx >= 5.0 && tx < 10.0) {
@@ -504,118 +538,15 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         }
     }
 
-    /// update zone
-    private int updateZone () {
-        return shooterPowerAngleCalculator.getZone();
-    }
-
     ///  - Frequency Updates
     private void updateLoopFrequency() {
-
         long now = System.currentTimeMillis();
-
         if (lastLoopTime != 0) {
             long dtMs = now - lastLoopTime;
             if (dtMs > 0) {
                 loopHz = 1000.0 / dtMs;
             }
         }
-
         lastLoopTime = now;
     }
-
-    //===========================================================
-    // telemetry Manager
-    //===========================================================
-    public void telemetryManager(){
-        telemetry.addData("Alliance", alliance);
-        telemetry.addData("loop frequency (Hz)", loopHz);
-        telemetry.addData("voltage from robot", robot.getBatteryVoltageRobust());
-        telemetry.addLine("-----");
-        telemetry.addData("Action State", actionStates);
-        telemetry.addData("Requested", requestedActionState);
-        telemetry.addData("Active", activeActionState);
-        telemetry.addData("IntakeState", FSMIntake.intakeStates);
-        telemetry.addData("ShooterState", FSMShooter.shooterState);
-        telemetry.addData("IntakeSafe", FSMIntake.canExit());
-        telemetry.addData("ShooterSafe", FSMShooter.canExit());
-        telemetry.addLine("--Spindexer-----------------------------------");
-        telemetry.addData("Distance Sensor", robot.distanceSensor.getDistance(DistanceUnit.MM));
-        telemetry.addData("Sensor Color", colorDetection.getStableColor());
-        telemetry.addData("Sensor values", spindexer.colorValue);
-        telemetry.addData("Slot 0", spindexer.slots[0]);
-        telemetry.addData("Slot 1", spindexer.slots[1]);
-        telemetry.addData("Slot 2", spindexer.slots[2]);
-        telemetry.addData("Current Pos", spindexer.currentPos);
-        telemetry.addData("Current index", spindexer.index);
-        telemetry.addLine("--Shooter-----------------------------------");
-        telemetry.addData("distance to goal", "%,.0f",shooterPowerAngleCalculator.getDistance());
-        telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
-        telemetry.addData("shooter power calculator", shooterPowerAngleCalculator.getPower());
-        telemetry.addData("Shooter actual Power", robot.topShooterMotor.getPower());
-        telemetry.addData("voltage from Shooter", FSMShooter.getVoltage());
-        shooterTargetRPM = shooterPowerAngleCalculator.getRPM();
-        shooterRPM = shooterPowerAngleCalculator.getMeasureRPM();
-        telemetry.addData("Shooter Target RPM",shooterTargetRPM);
-        telemetry.addData("Shooter acutal RPM",shooterRPM);
-        telemetry.addData("Shooter RPM","%,.0f",robot.topShooterMotor.getVelocity()*SHOOTER_RPM_CONVERSION);
-        telemetry.addLine("-----");
-        //String MotifAvailable;
-
-        telemetry.addLine("--Robot Heading & Pose-----------------------------------");
-        telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));
-        telemetry.addData("Pose2D", robot.pinpoint.getPosition());
-        telemetry.addData("Starting Pose",PoseStorage.currentPose);
-        Pose2D pose = robot.pinpoint.getPosition();
-        double xIn = pose.getX(DistanceUnit.INCH);
-        double yIn = pose.getY(DistanceUnit.INCH);
-        double headingDeg = Math.toDegrees(pose.getHeading(AngleUnit.RADIANS));
-        telemetry.addData(
-                "Pose (in)",
-                "X: %.2f  Y: %.2f  H: %.1f°",
-                xIn, yIn, headingDeg
-        );
-        telemetry.addLine("-----");
-
-        telemetry.addLine("Turret-----------------------------------");
-        telemetry.addData("Limit Switch State", robot.limitSwitch.getState());
-        telemetry.addData("Limit Switch Log", switchTickLog.toString());
-        telemetry.addData("goal pose", turret.getGoalPose());
-        telemetry.addData("turret target angle", turret.getTargetAngle());
-        telemetry.addData("turret drive angle", turret.getTurretDriveAngle());
-        telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
-        telemetry.addData("target motor tick", turret.getTargetTick());
-        telemetry.addData("current motor tick", turret.getCurrentTick());
-        telemetry.addData("turret auto end tick", PoseStorage.turretEndTick);
-        telemetry.addData("turret offset tick", turret.getTurretOffsetTick());
-        telemetry.addData("turret shooting mode", FSMShooter.turretState);
-        telemetry.addData("turret power", robot.turretMotor.getPower());
-        telemetry.addLine("-----------------------------------------");
-        telemetry.addData("Switch tick logs", "["+String.join(", ", switchTickLog));
-        telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(24));
-        telemetry.addData("green slot position", limelight.getGreenSlot());
-        telemetry.update();
-    }
-    public void telemetryManagerSimplified() {
-        telemetry.addLine("-----SPINDEXER-----");
-        telemetry.addData("Slot 0", spindexer.slots[0]);
-        telemetry.addData("Slot 1", spindexer.slots[1]);
-        telemetry.addData("Slot 2", spindexer.slots[2]);
-        telemetry.addLine("-----ROBOT STATE-----");
-        telemetry.addData("Action State", actionStates);
-        telemetry.addData("Requested", requestedActionState);
-        telemetry.addData("Active", activeActionState);
-        telemetry.addData("IntakeState", FSMIntake.intakeStates);
-        telemetry.addData("ShooterState", FSMShooter.shooterState);
-        telemetry.addData("IntakeSafe", FSMIntake.canExit());
-        telemetry.addData("ShooterSafe", FSMShooter.canExit());
-        telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
-        String MotifEnabled;
-        String MotifAvailable;
-        telemetry.addLine("-----SHOOTER STATE-----");
-        telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
-        telemetry.addData("power set point-NORMED", FSMShooter.getPower_setpoint());
-        telemetry.addData("Shooter Power-LUT OUT", robot.topShooterMotor.getPower());
-    }
-
 }
