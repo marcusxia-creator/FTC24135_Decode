@@ -134,7 +134,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         gamepadComboInput = new GamepadComboInput(gamepadCo1,gamepadCo2);
 
         /// 1. robot drive-------------------------------------------------------------
-        robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
+        robotDrive = new RobotDrive(robot,gamepadComboInput);
         robotDrive.Init();
 
         /// 2.spindexer-------------------------------------------------------------------
