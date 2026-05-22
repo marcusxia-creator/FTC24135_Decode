@@ -1,11 +1,8 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.rotate_Slowness;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 import android.annotation.SuppressLint;
-
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 
 import com.qualcomm.robotcore.util.Range;
 
@@ -140,18 +137,6 @@ public class RobotDrive {
         double rotate = 0.0;
 
         // Gamepad 1 has priority over gamepad 2
-        /**
-        if (hasDriveInput(gamepad_1)) {
-            drive = deadband(-gamepad_1.getRightY(), 0.10);
-            strafe = deadband(gamepad_1.getRightX(), 0.10);
-            rotate = deadband(gamepad_1.getLeftX(), 0.10) * rotateSlowness;
-        } else if (hasDriveInput(gamepad_2)) {
-            drive = deadband(-gamepad_2.getRightY(), 0.10);
-            strafe = deadband(gamepad_2.getRightX(), 0.10);
-            rotate = deadband(gamepad_2.getLeftX(), 0.10) * rotateSlowness;
-        }
-         */
-
         if(gamepadComboInput.getDriverHasDriveInput()) {
             drive = -gamepadComboInput.getDriverRightStickY();
             strafe = gamepadComboInput.getDriverRightStickX();
@@ -175,7 +160,16 @@ public class RobotDrive {
     }
 
     /**
-     * private boolean hasDriveInput(GamepadEx gamepad) {
+     if (hasDriveInput(gamepad_1)) {
+     drive = deadband(-gamepad_1.getRightY(), 0.10);
+     strafe = deadband(gamepad_1.getRightX(), 0.10);
+     rotate = deadband(gamepad_1.getLeftX(), 0.10) * rotateSlowness;
+     } else if (hasDriveInput(gamepad_2)) {
+     drive = deadband(-gamepad_2.getRightY(), 0.10);
+     strafe = deadband(gamepad_2.getRightX(), 0.10);
+     rotate = deadband(gamepad_2.getLeftX(), 0.10) * rotateSlowness;
+     }
+     private boolean hasDriveInput(GamepadEx gamepad) {
      * return Math.abs(gamepad.getRightY()) > 0.10
      *      || Math.abs(gamepad.getRightX()) > 0.10
      *      || Math.abs(gamepad.getLeftX()) > 0.10;
