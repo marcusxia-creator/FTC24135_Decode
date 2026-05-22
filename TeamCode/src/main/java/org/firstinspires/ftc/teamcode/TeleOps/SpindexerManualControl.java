@@ -15,9 +15,8 @@ public class SpindexerManualControl {
     }
     public void loop() {
         /**
-        if(gamepadComboInput.getDriverBackSinglePressed()) {
-            spindexer.unJam();
-        }
+         * Left bumper move down
+         * Right bumper move up
         */
         if(gamepadComboInput.getDriverLbSinglePressed()|| gamepadComboInput.getOperatorLbSinglePressed()){
             spindexer.RuntoPosition(spindexer.currentPos-1);
