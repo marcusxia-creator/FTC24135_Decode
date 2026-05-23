@@ -104,10 +104,10 @@ public class RobotDrive {
      * private double lastBL = 0;
      * private double lastBR = 0;
     */
-    private final SlewRateLimiter frontLeftLimiter = new SlewRateLimiter(0.2);
-    private final SlewRateLimiter frontRightLimiter = new SlewRateLimiter(0.2);
-    private final SlewRateLimiter backLeftLimiter = new SlewRateLimiter(0.2);
-    private final SlewRateLimiter backRightLimiter = new SlewRateLimiter(0.2);
+    private final SlewRateLimiter frontLeftLimiter = new SlewRateLimiter(0.2,0.45);
+    private final SlewRateLimiter frontRightLimiter = new SlewRateLimiter(0.2,0.45);
+    private final SlewRateLimiter backLeftLimiter = new SlewRateLimiter(0.2,0.45);
+    private final SlewRateLimiter backRightLimiter = new SlewRateLimiter(0.2,0.45);
 
     public RobotDrive(RobotHardware robot, GamepadComboInput gamepadComboInput) {
         this.robot = robot;
@@ -177,7 +177,7 @@ public class RobotDrive {
      */
 
     private double calculatePowerFactor() {
-        double trigger1 =gamepadComboInput.getDriverLeftTrigger();
+        double trigger1 = gamepadComboInput.getDriverLeftTrigger();
         double trigger2 = gamepadComboInput.getOperatorLeftTrigger();
         double trigger = Math.max(trigger1, trigger2);
 
@@ -267,16 +267,18 @@ public class RobotDrive {
 
     public static class SlewRateLimiter {
 
-        private final double maxStep;
+        private final double accelmaxStep;
+        private final double deaccelMaxStep;
         private double lastValue = 0.0;
 
-        public SlewRateLimiter(double maxStep) {
-            this.maxStep = maxStep;
+        public SlewRateLimiter(double accelmaxStep, double deaccelMaxStep) {
+            this.accelmaxStep = accelmaxStep;
+            this.deaccelMaxStep = deaccelMaxStep;
         }
 
         public double calculate(double target) {
             double delta = target - lastValue;
-            delta = Range.clip(delta, -maxStep, maxStep);
+            delta = Range.clip(delta, -deaccelMaxStep, accelmaxStep);
             lastValue += delta;
             return lastValue;
         }
