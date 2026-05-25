@@ -208,10 +208,10 @@ public class GamepadComboInput {
         rbSinglePressedAny = driverRbSinglePressed || operatorRbSinglePressed;
 
         driverLeftTrigger = driverGp.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
-        driverRightTrigger = driverGp.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+        driverRightTrigger = driverGp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
 
         operatorLeftTrigger = operatorGp.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
-        operatorRightTrigger = operatorGp.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+        operatorRightTrigger = operatorGp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
 
 
         boolean driverBoth = (driverLeftTrigger  > triggerThreshold) &&
