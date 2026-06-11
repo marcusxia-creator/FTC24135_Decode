@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -90,8 +91,10 @@ public class RobotHardware {
 
     //public ColorSensor colorSensor;// Color Sensor
     ///for debug colorSensor
-    public ColorSensor colorSensor;
-    public DistanceSensor distanceSensor;
+    public SlotSensor slotSensor1;
+    public SlotSensor slotSensor2;
+    public SlotSensor slotSensor3;
+    public List<SlotSensor> slotSensors;
 
     ///public DigitalChannel limitSwitch;// Limit Switch
 
@@ -145,9 +148,11 @@ public class RobotHardware {
         imu.initialize(new IMU.Parameters(revHubOrientationOnRobot));
 
         LED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
-        colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "Color_Sensor");
-
+        new SlotSensor(hardwareMap, "Color_Sensor_1");
+        slotSensor1 = new SlotSensor(hardwareMap, "Color_Sensor_1");
+        slotSensor2 = new SlotSensor(hardwareMap, "Color_Sensor_2");
+        slotSensor3 = new SlotSensor(hardwareMap, "Color_Sensor_3");
+        slotSensors = Arrays.asList(slotSensor1,slotSensor2,slotSensor3);
         limitSwitch = hardwareMap.get(DigitalChannel.class, "Limit_Switch");
         limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
