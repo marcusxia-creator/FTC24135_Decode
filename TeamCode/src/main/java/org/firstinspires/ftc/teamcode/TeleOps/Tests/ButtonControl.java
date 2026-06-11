@@ -24,15 +24,10 @@ public class ButtonControl {
     }
     public void control(){
         actionStates =  BasicTeleOp_RED_ALLIANCE.RobotActionState.Idle;
-        //For sequence shooting
+        //For shooting
         if (gamepad_1.getButton(GamepadKeys.Button.X) || gamepad_2.getButton(GamepadKeys.Button.X)
                 && isButtonDebounced()){
-            actionStates = BasicTeleOp_RED_ALLIANCE.RobotActionState.Sequence_Shooting;
-        }
-        //For sort shooting
-        if (gamepad_1.getButton(GamepadKeys.Button.Y) || gamepad_2.getButton(GamepadKeys.Button.Y)
-                && isButtonDebounced()){
-            actionStates = BasicTeleOp_RED_ALLIANCE.RobotActionState.Sort_Shooting;
+            actionStates = BasicTeleOp_RED_ALLIANCE.RobotActionState.Shooting;
         }
         //For intaking
         if (gamepad_1.getButton(GamepadKeys.Button.DPAD_LEFT) || gamepad_2.getButton(GamepadKeys.Button.DPAD_LEFT)

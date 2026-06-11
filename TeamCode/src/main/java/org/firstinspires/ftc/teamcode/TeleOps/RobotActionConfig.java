@@ -11,16 +11,14 @@ public class RobotActionConfig {
     public static double gateDown                       = 0.13;
     public static double gateUp                         = 0.39;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
-    public static double spindexerKickerInDelta         = 0.02;
-    public static double spindexerZeroPos               = 0.00;
-    public static double spindexerSlot1                 = 0.12;
-    public static double spindexerSlot2                 = 0.31;
-    public static double spindexerSlot3                 = 0.49;
-    public static double spindexerSlot4                 = 0.68;
-    public static double spindexerSlot5                 = 0.86;
-    public static double spindexerFullPos               = 1.0;
-    public static double spinderxerShootPos             = 0.08;
-    public static double[] spindexerPositions           = {spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5, spindexerFullPos};
+    public static double spindexerIntakePos             = 0.12;
+    public static double spindexerShootStartPos         = 0.00;
+    public static double spindexerShoot1                = 0.31;
+    public static double spindexerShoot2                = 0.49;
+    public static double spindexerShoot3                = 0.67;     ///六七
+    public static double spindexerClearanceOffset       = 0.19;     ///distance between tha shoot pos and the earlier cleared slot, used in stopping. Might switch to a list of cleared positions
+    public static double[] spindexerShootSteps          = {spindexerShoot1,spindexerShoot2,spindexerShoot3};
+    //New spindexer values untested
 
     public static double angleResetPos                  = 0.0;
     public static double slotAngleDelta                 = 0.19;
@@ -28,12 +26,10 @@ public class RobotActionConfig {
     public static double servoStepSize                  = 0.05;     // per update() call (try 0.002–0.01)
     public static double servoTolerance                 = 0.025;    // "close enough" to finish
 
-    public static double spindexerServoFullTime             = 0.65;    // full circle time
-    public static double spindexerServoPerSlotTime          = 0.15;    // per slot time
-
     //kicker
     public static double kickerRetract                  = 0.33;  /// value - retract back for spindexer reversing
     public static double kickerExtend                   = 0.6; /// value - into the spindexer for pushing the ball up
+    public static double kickerRetractDelay             = 0.2;
     //intake Speed
     public static double intakeSpeed                    = 0.75;
     public static double intakeStop                     = 0;

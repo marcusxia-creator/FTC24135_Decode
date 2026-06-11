@@ -44,8 +44,7 @@ import java.util.List;
 public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     /// Enum states for robot action state
     public enum RobotActionState {
-        Sequence_Shooting,
-        Sort_Shooting,
+        Shooting,
         Intaking,
         Idle
     }
@@ -63,9 +62,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     FSMIntake FSMIntake;
 
     private Turret turret;
-    private SpindexerManualControl spindexerManualControl;
-
-    private SpindexerUpd spindexer;
     public Limelight limelight;
     /// ----------------------------------------------------------------
     // For shooter power and angle calculator
@@ -130,12 +126,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
-        /// 2.spindexer-------------------------------------------------------------------
-        spindexer = new SpindexerUpd(robot, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, 0); //Change inits for comp
-
-        // spindexer = new Spindexer(robot, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, Spindexer.SLOT.Empty, 0); //Change inits for comp
-        spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadComboInput);
-
         /// 3. turret---------------------------------------------------------------
         //turret = new TurretUpd(robot);
         turret = new Turret(robot, true);
@@ -144,11 +134,11 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
 
         /// 4. shooter-------------------------------------------------------------
-        FSMShooter = new FSMShooter(gamepadCo1, gamepadCo2, robot, spindexer, shooterPowerAngleCalculator, gamepadComboInput, turret, limelight);
+        FSMShooter = new FSMShooter(gamepadCo1, gamepadCo2, robot, shooterPowerAngleCalculator, gamepadComboInput, turret, limelight);
         FSMShooter.Init();
 
         /// 5. intake------------------------------------------------------------
-        FSMIntake = new FSMIntake(gamepadCo1, gamepadCo2, robot, spindexer);
+        FSMIntake = new FSMIntake(gamepadCo1, gamepadCo2, robot);
 
         /// 6. color detection------------------------------------------------------------
         colorDetection = new ColorDetection(robot);
@@ -265,19 +255,14 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // FIXME: 5. MODIFIED - PER-ACTION "EXTRAS" (NO FSM STATE FORCING HERE)
         // =========================================================
         switch (activeActionState){
-            case Sequence_Shooting:
+            case Shooting:
                 //turret.driveTurretMotor();
-                break;
-            case Sort_Shooting:
-                //turret.driveTurretMotor();
-                //FSMShooter.SortShooterLoop();
                 break;
             case Intaking:
                 // empty as the FSM handles this,intake FSM already running
                 break;
             case Idle:
                 // empty as the FSM handles this
-                spindexerManualControl.loop();
                 break;
             default:
                 // do nothing — graceful stop handled elsewhere
@@ -355,10 +340,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             case Intaking:
                 canSwitch = shooterSafe;
                 break;
-            case Sequence_Shooting:
-                canSwitch = intakeSafe;  // wait until intake finishes its current sequence
-                break;
-            case Sort_Shooting:
+            case Shooting:
                 canSwitch = intakeSafe;  // wait until intake finishes its current sequence
                 break;
             case Idle:
@@ -384,14 +366,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     //===========================================================
     private void requestGracefulStopsIfNeeded(RobotActionState current, RobotActionState target) {
         switch (target) {
-            case Sequence_Shooting:
-                if (!FSMIntake.canExit()) {
-                    FSMIntake.requestGracefulStop(); // sets INTAKE_STOP if needed
-                }
-                break;
-
-            case Sort_Shooting:
-                // We are trying to start shooting → intake must finish gracefully first
+            case Shooting:
                 if (!FSMIntake.canExit()) {
                     FSMIntake.requestGracefulStop(); // sets INTAKE_STOP if needed
                 }
@@ -400,7 +375,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             case Intaking:
                 // We are trying to intake → shooter must finish gracefully first
                 if (!FSMShooter.canExit()) {
-                    //FSMShooter.requestGracefulStop(); // you implement: STOPPING or set IDLE safely
+                    FSMShooter.requestGracefulStop();
                 }
                 break;
 
@@ -422,13 +397,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     //===========================================================
     private void onEnterActionState(RobotActionState s) {
         switch (s) {
-            case Sequence_Shooting:
+            case Shooting:
                 FSMShooter.shooterState = SHOOTERSTATE.FLYWHEEL_RUNNING;
-                break;
-
-            case Sort_Shooting:
-                FSMIntake.intakeStates  = IntakeStates.INTAKE_STOP; // or IDLE
-                // FSMShooter.sortShooterState = ...
                 break;
 
             case Intaking:
@@ -449,7 +419,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     //===========================================================
 
     private void buttonUpdate() {
-        boolean seqShootPressed =
+        boolean ShootPressed =
                 (gamepadCo1.getButton(GamepadKeys.Button.X) || gamepadCo2.getButton(GamepadKeys.Button.X))
                         && isButtonDebounced();
         boolean intakePressed =
@@ -474,8 +444,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             }
         }
         boolean sortPressed = gamepadComboInput.getOperatorLbXComboPressed(); // combo - LB+X for sorted shooting. Assume this is edge-based already
-        if (seqShootPressed) requestedActionState = RobotActionState.Sequence_Shooting;
-        if (sortPressed)     requestedActionState = RobotActionState.Sort_Shooting;
+        if (ShootPressed) requestedActionState = RobotActionState.Shooting;
         if (intakePressed)   requestedActionState = RobotActionState.Intaking;
         //if (reversePressed)  requestedActionState = RobotActionState.Reverse_Intake; // add enum if needed
         if (idlePressed)     requestedActionState = RobotActionState.Idle;
@@ -562,14 +531,10 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("IntakeSafe", FSMIntake.canExit());
         telemetry.addData("ShooterSafe", FSMShooter.canExit());
         telemetry.addLine("--Spindexer-----------------------------------");
-        telemetry.addData("Distance Sensor", robot.distanceSensor.getDistance(DistanceUnit.MM));
-        telemetry.addData("Sensor Color", colorDetection.getStableColor());
-        telemetry.addData("Sensor values", spindexer.colorValue);
-        telemetry.addData("Slot 0", spindexer.slots[0]);
-        telemetry.addData("Slot 1", spindexer.slots[1]);
-        telemetry.addData("Slot 2", spindexer.slots[2]);
-        telemetry.addData("Current Pos", spindexer.currentPos);
-        telemetry.addData("Current index", spindexer.index);
+        telemetry.addData("Slot 0", robot.slotSensor1.checkBall());
+        telemetry.addData("Slot 1", robot.slotSensor2.checkBall());
+        telemetry.addData("Slot 2", robot.slotSensor3.checkBall());
+        telemetry.addData("Current Pos", robot.spindexerServo.getPosition());
         telemetry.addLine("--Shooter-----------------------------------");
         telemetry.addData("distance to goal", "%,.0f",shooterPowerAngleCalculator.getDistance());
         telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
@@ -617,9 +582,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     }
     public void telemetryManagerSimplified() {
         telemetry.addLine("-----SPINDEXER-----");
-        telemetry.addData("Slot 0", spindexer.slots[0]);
-        telemetry.addData("Slot 1", spindexer.slots[1]);
-        telemetry.addData("Slot 2", spindexer.slots[2]);
+        telemetry.addData("Slot 0", robot.slotSensor1.checkBall());
+        telemetry.addData("Slot 1", robot.slotSensor2.checkBall());
+        telemetry.addData("Slot 2", robot.slotSensor3.checkBall());
         telemetry.addLine("-----ROBOT STATE-----");
         telemetry.addData("Action State", actionStates);
         telemetry.addData("Requested", requestedActionState);
@@ -629,10 +594,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("IntakeSafe", FSMIntake.canExit());
         telemetry.addData("ShooterSafe", FSMShooter.canExit());
         telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
-        String MotifEnabled;
-        String MotifAvailable;
         telemetry.addLine("-----SHOOTER STATE-----");
-        telemetry.addData("Shooter Target Colour", FSMShooter.targetColour.name());
         telemetry.addData("power set point-NORMED", FSMShooter.getPower_setpoint());
         telemetry.addData("Shooter Power-LUT OUT", robot.topShooterMotor.getPower());
     }
