@@ -170,8 +170,6 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         /// 8. robot  tate----------------------------------------------------------
         actionStates = RobotActionState.Idle;
 
-
-
         /// 10. start adjuster servo at position to avoid soft start
         robot.shooterAdjusterServo.setPosition(0.48);
 
@@ -245,21 +243,8 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         // FIXME: 5.
         //  4. MODIFIED - PER-ACTION "EXTRAS" (NO FSM STATE FORCING HERE)
         // =========================================================
-        switch (activeActionState){
-            case Sequence_Shooting:
-                //turret.driveTurretMotor();
-                break;
-            case Intaking:
-                // empty as the FSM handles this,intake FSM already running
-                break;
-            case Idle:
-                // empty as the FSM handles this
-                spindexerManualControl.loop();
-                break;
-            default:
-                // do nothing — graceful stop handled elsewhere
-                break;
-        }
+
+        manageSubsystems();
 
         // =========================================================
         // 5. ZONE STATUS
@@ -417,6 +402,24 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     // Enter Action State
     // Actually set FSM STATES
     //===========================================================
+
+    private void manageSubsystems(){
+        switch (activeActionState){
+            case Sequence_Shooting:
+                //turret.driveTurretMotor();
+                break;
+            case Intaking:
+                // empty as the FSM handles this,intake FSM already running
+                break;
+            case Idle:
+                // empty as the FSM handles this
+                spindexerManualControl.loop();
+                break;
+            default:
+                // do nothing — graceful stop handled elsewhere
+                break;
+        }
+    }
     private void onEnterActionState(RobotActionState s) {
         switch (s) {
             case Sequence_Shooting:
