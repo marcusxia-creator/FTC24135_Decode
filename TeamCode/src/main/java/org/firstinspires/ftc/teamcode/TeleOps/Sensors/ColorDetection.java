@@ -41,9 +41,9 @@ public class ColorDetection {
 
         float[] hsv = new float[3];
         Color.RGBToHSV(
-                robot.colorSensor.red() * 8,
-                robot.colorSensor.green() * 8,
-                robot.colorSensor.blue() * 8,
+                robot.frontColorSensor.red() * 8,
+                robot.frontColorSensor.green() * 8,
+                robot.frontColorSensor.blue() * 8,
                 hsv
         );
         float hue = hsv[0];
@@ -80,28 +80,41 @@ public class ColorDetection {
     /** check if the ball is present. */
     public boolean isBallPresent() {
         // Check if ball is in slot first
-        double distance = robot.distanceSensor.getDistance(DistanceUnit.MM);
+        double distance = robot.frontDistanceSensor.getDistance(DistanceUnit.MM);
         return distance < RobotActionConfig.BALL_PRESENT_THRESHOLD_MM;
     }
 
     /** Returns the raw hue value (useful for telemetry or tuning). */
-    public float getHue() {
+    public float getHue(int sensor) {
         float hsv[] = new float[3];
-        Color.RGBToHSV(
-                robot.colorSensor.red() * 8,
-                robot.colorSensor.green() * 8,
-                robot.colorSensor.blue() * 8,
-                hsv
-        );
+        if (sensor == 0) {
+            Color.RGBToHSV(
+                    robot.frontColorSensor.red() * 8,
+                    robot.frontColorSensor.green() * 8,
+                    robot.frontColorSensor.blue() * 8,
+                    hsv);
+        } if (sensor == 1) {
+            Color.RGBToHSV(
+                    robot.rightColorSensor.red() * 8,
+                    robot.rightColorSensor.green() * 8,
+                    robot.rightColorSensor.blue() * 8,
+                    hsv);
+        } else {
+            Color.RGBToHSV(
+                    robot.leftColorSensor.red() * 8,
+                    robot.leftColorSensor.green() * 8,
+                    robot.leftColorSensor.blue() * 8,
+                    hsv);
+        }
         return hsv[0];
     }
 
     /**Returns raw RGB readings for diagnostics.*/
     public String getRawRGB() {
-        return "R:" + robot.colorSensor.red() + " G:" + robot.colorSensor.green() + " B:" + robot.colorSensor.blue();
+        return "R:" + robot.frontColorSensor.red() + " G:" + robot.frontColorSensor.green() + " B:" + robot.frontColorSensor.blue();
     }
 
     public BallColor getStableColor(){ return stableColor;}
 
-    public double getDistance(){ return robot.distanceSensor.getDistance(DistanceUnit.MM);}
+    public double getDistance(){ return robot.frontDistanceSensor.getDistance(DistanceUnit.MM);}
 }

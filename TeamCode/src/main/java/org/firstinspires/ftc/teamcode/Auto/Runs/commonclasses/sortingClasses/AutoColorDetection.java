@@ -70,16 +70,16 @@ public class AutoColorDetection {
     private float[] getHsvValues(){
         float[] hsvValues = new float[3];
         Color.RGBToHSV(
-                robot.colorSensor.red()*SENSOR_GAIN,
-                robot.colorSensor.blue()*SENSOR_GAIN,
-                robot.colorSensor.green()*SENSOR_GAIN,
+                robot.frontColorSensor.red()*SENSOR_GAIN,
+                robot.frontColorSensor.blue()*SENSOR_GAIN,
+                robot.frontColorSensor.green()*SENSOR_GAIN,
                 hsvValues
         );
         return hsvValues;
     }
 
     public boolean isBallPresent(){
-        double distance = robot.distanceSensor.getDistance(DistanceUnit.MM);
+        double distance = robot.frontDistanceSensor.getDistance(DistanceUnit.MM);
         return distance < BALL_PRESENT_THRESHOLD_MM;
     }
 

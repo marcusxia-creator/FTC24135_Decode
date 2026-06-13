@@ -17,7 +17,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 //import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
-import org.firstinspires.ftc.teamcode.TeleOps.FSMShooter;
 import org.firstinspires.ftc.teamcode.TeleOps.LUTPowerCalculator;
 import org.firstinspires.ftc.teamcode.TeleOps.Limelight;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
@@ -42,7 +41,8 @@ public class TestTeleOp extends OpMode {
     private LUTPowerCalculator powerCalculator;
     private Turret turret;
 
-    private BallColor ballColor;
+    private double leftDistance;
+    private double rightDistance;
     private ColorDetection colorDetection;
 
     double intakeSpeed = 0.5;
@@ -115,7 +115,8 @@ public class TestTeleOp extends OpMode {
         robotDrive.DriveLoop();
 
         /// color detection
-        ballColor = BallColor.fromHue(colorDetection.getHue());
+        leftDistance = robot.leftDistanceSensor.getDistance(DistanceUnit.MM);
+        rightDistance = robot.rightDistanceSensor.getDistance(DistanceUnit.MM);
 
         ///  PID Controller for power calculation
         pidController.setPID(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
@@ -280,20 +281,23 @@ public class TestTeleOp extends OpMode {
         /**
          * LED alarm light
          */
+        /*
         if (powerCalculator.getDistance() <= 54) {
             robot.LED.setPosition(0.28);
         }
-        else if (ballColor.isKnown()) {
-            if (ballColor == BallColor.GREEN) {
+        else if (leftBallColor.isKnown()) {
+            if (leftBallColor == BallColor.GREEN) {
                 robot.LED.setPosition(0.5);
             }
-            if (ballColor == BallColor.PURPLE) {
+            if (leftBallColor == BallColor.PURPLE) {
                 robot.LED.setPosition(0.722);
             }
         }
         else {
             robot.LED.setPosition(1.0);
         }
+
+         */
         telemetry.addData("Limit Switch", robot.limitSwitch.getState());
         telemetry.addData("Kicker Postion", robot.kickerServo.getPosition());
         telemetry.addData("Spindexer Position", robot.spindexerServo.getPosition());
@@ -307,8 +311,11 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("shooter velocity", robot.topShooterMotor.getVelocity());
         telemetry.addData("shooter RPM", robot.topShooterMotor.getVelocity() * tickToRPM);
         telemetry.addLine("----------------------------------------------------");
-        telemetry.addData("Color", ballColor);
-        telemetry.addData("Color Hue", colorDetection.getHue());
+        //telemetry.addData("Color", leftBallColor);
+        telemetry.addData("Right Color Hue", colorDetection.getHue(1));
+        telemetry.addData("Left Color Hue", colorDetection.getHue(2));
+        telemetry.addData("Right Distajce", rightDistance);
+        telemetry.addData("Left Distance", leftDistance);
         telemetry.addLine("----------------------------------------------------");
         //telemetry.addData("turret target angle - atan", turret.getTargetAngle());
         telemetry.addData("turret motor tick", robot.turretMotor.getCurrentPosition());

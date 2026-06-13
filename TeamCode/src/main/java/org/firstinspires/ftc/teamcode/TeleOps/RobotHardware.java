@@ -15,7 +15,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -60,10 +59,10 @@ I2C port
 EXP hub:
                 port 0: external_imu
 Control hub:
-                port 0: control hub imu
-                port 1: Pinpoint (odometry computer)
-                port 2: Empty
-                port 3: Color_Sensor
+                port 0: Front_Color_Sensor
+                port 1: Right_Color_Sensor
+                port 2: Left_Color_Sensor
+                port 3: pinpoint
 Digital Port
 Control hub
                 port 7: Empty
@@ -88,10 +87,14 @@ public class RobotHardware {
     private RevHubOrientationOnRobot revHubOrientationOnRobot;
     public DigitalChannel limitSwitch;
 
-    //public ColorSensor colorSensor;// Color Sensor
-    ///for debug colorSensor
-    public ColorSensor colorSensor;
-    public DistanceSensor distanceSensor;
+    //public ColorSensor frontColorSensor;// Color Sensor
+    ///for debug frontColorSensor
+    public ColorSensor frontColorSensor;
+    public DistanceSensor frontDistanceSensor;
+    public ColorSensor rightColorSensor;
+    public DistanceSensor rightDistanceSensor;
+    public ColorSensor leftColorSensor;
+    public DistanceSensor leftDistanceSensor;
 
     ///public DigitalChannel limitSwitch;// Limit Switch
 
@@ -145,8 +148,12 @@ public class RobotHardware {
         imu.initialize(new IMU.Parameters(revHubOrientationOnRobot));
 
         LED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
-        colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "Color_Sensor");
+        frontColorSensor = hardwareMap.get(ColorSensor.class, "Front_Color_Sensor");
+        frontDistanceSensor = hardwareMap.get(DistanceSensor.class, "Front_Color_Sensor");
+        rightColorSensor = hardwareMap.get(ColorSensor.class, "Right_Color_Sensor");
+        rightDistanceSensor = hardwareMap.get(DistanceSensor.class, "Right_Color_Sensor");
+        leftColorSensor = hardwareMap.get(ColorSensor.class, "Left_Color_Sensor");
+        leftDistanceSensor = hardwareMap.get(DistanceSensor.class, "Left_Color_Sensor");
 
         limitSwitch = hardwareMap.get(DigitalChannel.class, "Limit_Switch");
         limitSwitch.setMode(DigitalChannel.Mode.INPUT);
@@ -170,7 +177,7 @@ public class RobotHardware {
 
         /// config intake motor
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
         /// config turret motor

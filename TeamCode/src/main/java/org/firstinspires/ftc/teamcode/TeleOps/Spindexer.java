@@ -62,7 +62,7 @@ public class Spindexer {
      */
     public void writeToCurrent(ColorSensor colorSensor, DistanceSensor distanceSensor) {
         float[] hsvValues = new float[3];
-        Color.RGBToHSV(colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, hsvValues);
+        Color.RGBToHSV(colorSensor.red() * 8, robot.frontColorSensor.green() * 8, robot.frontColorSensor.blue() * 8, hsvValues);
         colorValue = hsvValues[0];
 
         if (distanceSensor.getDistance(DistanceUnit.MM)<BALL_PRESENT_THRESHOLD_MM) {

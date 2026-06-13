@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -66,24 +64,23 @@ public class FSMIntake {
                 HandleIntaking(jammed); // This manages motor power internally
 
                 // Wait for ball to be detected in the intake mouth
-                if (robot.distanceSensor.getDistance(DistanceUnit.MM) < BALL_PRESENT_THRESHOLD_MM) {
+                if (robot.frontDistanceSensor.getDistance(DistanceUnit.MM) < BALL_PRESENT_THRESHOLD_MM) {
                     intakeTimer.reset();
+                    //spindexer.clearVoteBuffer();
                     intakeStates = IntakeStates.INTAKE_CAPTURE;
                 }
                 break;
 
             case INTAKE_CAPTURE:
                 if (intakeTimer.seconds() < 0.05) {
-                    spindexer.clearVoteBuffer();
-                }
-                //nned to make this longer
-                else if (intakeTimer.seconds() < 0.2) {
-                    // Collect as many samples as possible in 200ms
-                    spindexer.addVoteSample(robot.colorSensor, robot.distanceSensor);
+                    // Collect as many samples as possible in 50ms
+                    //spindexer.addVoteSample(robot.frontColorSensor, robot.frontDistanceSensor);
+
                 }
                 else {
                     // Decide the color of the current slot
-                    spindexer.finalizeCurrentSlot();
+                    //spindexer.finalizeCurrentSlot();
+                    spindexer.writeToSlot(robot.frontColorSensor);
 
                     // CHECK: Are all 3 slots filled with something other than Empty?
                     // We check for Green OR Purple. If count is 3, we are full.
@@ -121,10 +118,10 @@ public class FSMIntake {
                             Math.min(Math.abs(error), maxStep),
                             error
                     );
-                    double nextPos = currentPos + step;
-                    robot.spindexerServo.setPosition(nextPos);
-                    if (Math.abs(targetPos - nextPos) < 0.01) {
+                    robot.spindexerServo.setPosition(currentPos + step);
+                    if (Math.abs(error) < 0.01) {
                         spindexer.RuntoPosition(1); // go to slot1 position and reset the spindexer counter
+
                         intakeStates = IntakeStates.INTAKE_IDLE;
                     }
                 }
@@ -188,8 +185,7 @@ public class FSMIntake {
 
     public void requestGracefulStop() {
         // Only request STOP if we are not already stopping/idle
-        if (intakeStates == IntakeStates.INTAKE_IDLE) return;
-        if (intakeStates != IntakeStates.INTAKE_STOP) {
+        if (intakeStates != IntakeStates.INTAKE_IDLE && intakeStates != IntakeStates.INTAKE_STOP) {
             intakeTimer.reset();
             intakeStates = IntakeStates.INTAKE_STOP;
         }

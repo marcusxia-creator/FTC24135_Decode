@@ -7,14 +7,11 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllia
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerRetract;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
 
-import static java.lang.Double.isNaN;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -229,7 +226,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // 2. CONTINUOUS SENSOR / HOUSEKEEPING UPDATES
         // =========================================================
         robot.pinpoint.update();
-        ballColor = BallColor.fromHue(colorDetection.getHue());
+        //ballColor = BallColor.fromHue(colorDetection.getHue());
         updateLoopFrequency();
 
         // =========================================================
@@ -539,7 +536,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("IntakeSafe", FSMIntake.canExit());
         telemetry.addData("ShooterSafe", FSMShooter.canExit());
         telemetry.addLine("--Spindexer-----------------------------------");
-        telemetry.addData("Distance Sensor", robot.distanceSensor.getDistance(DistanceUnit.MM));
+        telemetry.addData("Distance Sensor", robot.frontDistanceSensor.getDistance(DistanceUnit.MM));
         telemetry.addData("Sensor Color", colorDetection.getStableColor());
         telemetry.addData("Sensor values", spindexer.colorValue);
         telemetry.addData("Slot 0", spindexer.slots[0]);
