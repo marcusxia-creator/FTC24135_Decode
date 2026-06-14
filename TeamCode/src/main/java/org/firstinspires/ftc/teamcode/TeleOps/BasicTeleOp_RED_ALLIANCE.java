@@ -69,7 +69,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
     // for ball color and color detection
     private BallColor ballColor;
-    private ColorDetection colorDetection;
 
     // for time and frequency
     private long lastLoopTime = 0;
@@ -140,8 +139,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         /// 5. intake------------------------------------------------------------
         FSMIntake = new FSMIntake(gamepadCo1, gamepadCo2, robot);
 
-        /// 6. color detection------------------------------------------------------------
-        colorDetection = new ColorDetection(robot);
 
         /// 7. alliance selection-----------------------------------------------------------
         alliance = Alliance.RED_ALLIANCE;
@@ -238,7 +235,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // 2. CONTINUOUS SENSOR / HOUSEKEEPING UPDATES
         // =========================================================
         robot.pinpoint.update();
-        ballColor = BallColor.fromHue(colorDetection.getHue());
+        ballColor = BallColor.fromHue(robot.slotSensor1.getColourHSV()[0]);
         updateLoopFrequency();
 
         // =========================================================

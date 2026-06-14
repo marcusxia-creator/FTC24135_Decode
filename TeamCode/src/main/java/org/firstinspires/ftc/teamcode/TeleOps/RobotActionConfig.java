@@ -11,14 +11,23 @@ public class RobotActionConfig {
     public static double gateDown                       = 0.13;
     public static double gateUp                         = 0.39;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
-    public static double spindexerIntakePos             = 0.12;
+    public static double spindexerIntakePos             = 0.18;
     public static double spindexerShootStartPos         = 0.00;
-    public static double spindexerShoot1                = 0.31;
-    public static double spindexerShoot2                = 0.49;
-    public static double spindexerShoot3                = 0.67;     ///六七
-    public static double spindexerClearanceOffset       = 0.19;     ///distance between tha shoot pos and the earlier cleared slot, used in stopping. Might switch to a list of cleared positions
+    public static double spindexerShoot1                = 0.18;
+    public static double spindexerShoot2                = 0.56;
+    public static double spindexerShoot3                = 0.75;     ///六七
+    public static double spindexerClearanceOffset       = 0.185;     ///distance between tha shoot pos and the earlier cleared slot, used in stopping. Might switch to a list of cleared positions
     public static double[] spindexerShootSteps          = {spindexerShoot1,spindexerShoot2,spindexerShoot3};
     //New spindexer values untested
+
+    public static double spindexerzeropos   = 0.00;
+    public static double spindexerSlot1     = 0.0;
+    public static double spindexerSlot2     = 0.18;
+    public static double spindexerSlot3     = 0.37;
+    public static double spindexerSlot4     = 0.56;
+    public static double spindexerSlot5     = 0.75;
+    public static double spindexerFullPos   = 1.0;
+    //legacy, kept for auto
 
     public static double angleResetPos                  = 0.0;
     public static double slotAngleDelta                 = 0.19;
@@ -27,8 +36,8 @@ public class RobotActionConfig {
     public static double servoTolerance                 = 0.025;    // "close enough" to finish
 
     //kicker
-    public static double kickerRetract                  = 0.33;  /// value - retract back for spindexer reversing
-    public static double kickerExtend                   = 0.6; /// value - into the spindexer for pushing the ball up
+    public static double kickerRetract                  = 0.57; /// value - retract back for spindexer reversing
+    public static double kickerExtend                   = 0.84; /// value - into the spindexer for pushing the ball up
     public static double kickerRetractDelay             = 0.2;
     //intake Speed
     public static double intakeSpeed                    = 0.75;
@@ -63,6 +72,8 @@ public class RobotActionConfig {
 
     public static int[] purpleRangeLow                  = {115, 118};
     public static int[] purpleRangeHigh                 = {170, 230};
+
+    public static int requiredSensors                   = 2;
 
     public static double BALL_PRESENT_THRESHOLD_MM      = 50;
     public static final double INTAKE_TICKS_PER_REV     = 145.1;

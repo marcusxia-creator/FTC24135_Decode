@@ -96,6 +96,10 @@ public class RobotHardware {
     public SlotSensor slotSensor3;
     public List<SlotSensor> slotSensors;
 
+    //Legacy colour sensors, kept for auto errors
+    public ColorSensor colorSensor;
+    public DistanceSensor distanceSensor;
+
     ///public DigitalChannel limitSwitch;// Limit Switch
 
     public IMU imu; //IMU
@@ -148,9 +152,9 @@ public class RobotHardware {
         imu.initialize(new IMU.Parameters(revHubOrientationOnRobot));
 
         LED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
-        slotSensor1 = new SlotSensor(hardwareMap, "Color_Sensor_1");
-        slotSensor2 = new SlotSensor(hardwareMap, "Color_Sensor_2");
-        slotSensor3 = new SlotSensor(hardwareMap, "Color_Sensor_3");
+        slotSensor1 = new SlotSensor(hardwareMap, "Front_Color_Sensor");
+        slotSensor2 = new SlotSensor(hardwareMap, "Right_Color_Sensor");
+        slotSensor3 = new SlotSensor(hardwareMap, "Left_Color_Sensor");
         slotSensors = Arrays.asList(slotSensor1,slotSensor2,slotSensor3);
         limitSwitch = hardwareMap.get(DigitalChannel.class, "Limit_Switch");
         limitSwitch.setMode(DigitalChannel.Mode.INPUT);
@@ -174,7 +178,7 @@ public class RobotHardware {
 
         /// config intake motor
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
         /// config turret motor

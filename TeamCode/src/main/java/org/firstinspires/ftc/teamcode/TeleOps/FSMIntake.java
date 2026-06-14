@@ -79,7 +79,7 @@ public class FSMIntake {
                 else if (intakeTimer.seconds() < 0.10) {// Collect as many samples as possible in 200ms
                     }
                 // count the number of full slots. if all three slots are full, stop
-                if (Collections.frequency(robot.slotSensors.stream().map(SlotSensor::checkBall).collect(Collectors.toList()), Boolean.TRUE)==3) {
+                if (Collections.frequency(robot.slotSensors.stream().map(SlotSensor::checkBall).collect(Collectors.toList()), Boolean.TRUE)>=requiredSensors) {
                     intakeTimer.reset();
                     intakeStates = IntakeStates.INTAKE_STOP;
                 }
