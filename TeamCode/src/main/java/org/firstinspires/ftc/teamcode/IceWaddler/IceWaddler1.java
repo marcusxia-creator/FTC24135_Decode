@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.IceWaddler;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.METER;
-import static org.firstinspires.ftc.teamcode.IceWaddler.IceWaddlerConfig.*;
+import static org.firstinspires.ftc.teamcode.IceWaddler.IceWaddlerConfig1.*;
 
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 import java.util.List;
 
-public class IceWaddler {
+public class IceWaddler1 {
     final RobotHardware robot;
 
     //Hardware Definition
@@ -88,7 +88,7 @@ public class IceWaddler {
 
     public CONTROLMODE controlMode;
 
-    public IceWaddler(RobotHardware robot){
+    public IceWaddler1(RobotHardware robot){
         this.robot=robot;
     }
 

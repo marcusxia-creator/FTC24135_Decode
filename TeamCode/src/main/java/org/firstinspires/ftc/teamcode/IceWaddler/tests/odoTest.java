@@ -20,8 +20,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler.CONTROLMODE;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1.CONTROLMODE;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 @Config
 public class odoTest extends OpMode {
     public RobotHardware robot;
-    public IceWaddler iceWaddler;
+    public IceWaddler1 iceWaddler;
     public ArrayList<Pose2D> poses;
     public ElapsedTime writeTime;
     public FtcDashboard dashboard;
@@ -43,7 +43,7 @@ public class odoTest extends OpMode {
         robot=new RobotHardware(hardwareMap);
         robot.init(hardwareMap);
 
-        iceWaddler=new IceWaddler(robot);
+        iceWaddler=new IceWaddler1(robot);
         iceWaddler.Init(CONTROLMODE.POWER,initPose,false);
 
         dashboard=FtcDashboard.getInstance();

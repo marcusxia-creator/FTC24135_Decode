@@ -1,14 +1,14 @@
 package org.firstinspires.ftc.teamcode.IceWaddler.tests.Paths;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.METER;
-import static org.firstinspires.ftc.teamcode.IceWaddler.IceWaddlerConfig.stopTolerance;
+import static org.firstinspires.ftc.teamcode.IceWaddler.IceWaddlerConfig1.stopTolerance;
 
 import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler.Action;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler.Action.HOLDTYPE;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1.Action;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1.Action.HOLDTYPE;
 
 import java.util.ArrayList;
 import java.util.Arrays;

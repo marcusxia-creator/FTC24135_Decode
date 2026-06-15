@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.IceWaddler.tests;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.INCH;
-import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.METER;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.cos;
@@ -14,27 +13,25 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler.Action.ACTIONTYPE;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1.Action.ACTIONTYPE;
 import org.firstinspires.ftc.teamcode.IceWaddler.tests.Paths.ExamplePath;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 @TeleOp(name="Example Auto", group="Icewaddler Tests")
 public class ExampleAuto extends OpMode {
     public RobotHardware robot;
-    public IceWaddler iceWaddler;
+    public IceWaddler1 iceWaddler;
     public FtcDashboard dashboard;
 
     public void init(){
         robot=new RobotHardware(hardwareMap);
         robot.init(hardwareMap);
 
-        iceWaddler=new IceWaddler(robot);
-        iceWaddler.Init(IceWaddler.CONTROLMODE.POWER,ExamplePath.init,true);
+        iceWaddler=new IceWaddler1(robot);
+        iceWaddler.Init(IceWaddler1.CONTROLMODE.POWER,ExamplePath.init,true);
 
         dashboard= FtcDashboard.getInstance();
         telemetry=new MultipleTelemetry(telemetry,dashboard.getTelemetry());

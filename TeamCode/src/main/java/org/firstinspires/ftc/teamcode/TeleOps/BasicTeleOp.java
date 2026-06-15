@@ -1,25 +1,12 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.*;
-
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.hardware.lynx.LynxModule.BulkData;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1;
 
 @TeleOp (name = "Basic TeleOp", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOp extends OpMode {
@@ -30,7 +17,7 @@ public class BasicTeleOp extends OpMode {
     private FSMIntake intakeControl;
     private FSMShooterManual shooterControl;
     private FSMAprilTagProc aprilTagProc;
-    private IceWaddler iceWaddler;
+    private IceWaddler1 iceWaddler;
 
     private FtcDashboard dashboard;
 

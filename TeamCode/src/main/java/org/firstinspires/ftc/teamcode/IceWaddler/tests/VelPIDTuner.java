@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.IceWaddler.tests;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.INCH;
@@ -17,20 +15,17 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
-
-import java.util.ArrayList;
 
 @TeleOp(name="Vel PID Tuner", group="Icewaddler Tests")
 
 public class VelPIDTuner extends OpMode {
     public RobotHardware robot;
-    public IceWaddler iceWaddler;
+    public IceWaddler1 iceWaddler;
     public FtcDashboard dashboard;
 
     //Config Vars
@@ -41,8 +36,8 @@ public class VelPIDTuner extends OpMode {
         robot = new RobotHardware(hardwareMap);
         robot.init(hardwareMap);
 
-        iceWaddler = new IceWaddler(robot);
-        iceWaddler.Init(IceWaddler.CONTROLMODE.POWER, initPose, false);
+        iceWaddler = new IceWaddler1(robot);
+        iceWaddler.Init(IceWaddler1.CONTROLMODE.POWER, initPose, false);
 
         dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());

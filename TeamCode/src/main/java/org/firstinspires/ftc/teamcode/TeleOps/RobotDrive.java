@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.BACK;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.START;
 
@@ -15,7 +13,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1;
 
 /** Button Config for Drive
  * * Joy Right Y                : Drive
@@ -43,7 +41,7 @@ public class RobotDrive {
 
     private double rotate_Slowness = 0.75;
 
-    public IceWaddler iceWaddler;
+    public IceWaddler1 iceWaddler;
 
     public FSMAprilTagProc AprilTag;
 
@@ -57,9 +55,9 @@ public class RobotDrive {
 
     public void Init(FSMAprilTagProc AprilTag) {
         // Initialize IMU from RobotHardware
-        iceWaddler = new IceWaddler(robot);
+        iceWaddler = new IceWaddler1(robot);
 
-        iceWaddler.Init(IceWaddler.CONTROLMODE.POWER,
+        iceWaddler.Init(IceWaddler1.CONTROLMODE.POWER,
                 new Pose2D(DistanceUnit.METER,0,0, AngleUnit.DEGREES,0),
                 false);
 

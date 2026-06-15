@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -12,8 +11,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Auto.drive.GoBildaPinpointDriver;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -87,7 +85,7 @@ public class RobotHardware {
     public HardwareMap hardwareMap;
     public ArrayList <VoltageSensor> voltageSensors;
     public SparkFunOTOS odo; //Gobilda Pinpoint if needed
-    public IceWaddler.IWLocalizer IWodo;
+    public IceWaddler1.IWLocalizer IWodo;
 
     private double vEma = 12.0;                 // EMA state
     public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
@@ -145,7 +143,7 @@ public class RobotHardware {
         // odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo"); with pinpoint computer
         odo = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
 
-        IWodo = new IceWaddler.IWLocalizer(odo);
+        IWodo = new IceWaddler1.IWLocalizer(odo);
 
 
 

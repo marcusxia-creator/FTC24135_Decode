@@ -8,7 +8,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 
 @Config
-public class IceWaddlerConfig {
+public class IceWaddlerConfig1 {
     //Gobilda Odo Settings
     public static double odoXOffset                                             = -149.225;
     public static double odoYOffset                                             = -165.1;
