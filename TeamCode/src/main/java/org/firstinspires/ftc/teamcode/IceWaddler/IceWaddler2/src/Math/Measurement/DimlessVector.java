@@ -41,7 +41,7 @@ public class DimlessVector {
         return new DimlessVector(x-vector.x,y-vector.y);
     }
 
-    public DimlessVector add(double factor){
+    public DimlessVector multi(double factor){
         return new DimlessVector(x*factor,y*factor);
     }
 
@@ -58,14 +58,10 @@ public class DimlessVector {
         return div(mag());
     }
 
-    /// Rotates the vector by normalized angle angle clockwise
+    /// Rotates the vector by normalized angle {@code angle} clockwise
     /// @param angle the angle to rotate by
     /// @return the rotated vector
-    /// @throws RuntimeException "mathError" if the vector has a magnitude of 0
     public DimlessVector rotateBy(NormalizedAngle angle){
-        if(mag()==0){
-            throw new RuntimeException("mathError: Cannot find the direction of a vector with magnitude 0, and no direction");
-        }
         return new DimlessVector((x*cos(angle))+(y*sin(angle)),(y*cos(angle))-(x*sin(angle)));
     }
 }

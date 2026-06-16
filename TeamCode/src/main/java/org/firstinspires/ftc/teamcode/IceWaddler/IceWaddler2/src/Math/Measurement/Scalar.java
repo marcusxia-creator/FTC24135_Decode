@@ -32,7 +32,7 @@ public class Scalar {
             return unit.convertFromSI(value);
         }
         else{
-            throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot convert unit of dimensions %s and SI base units %s to new dimensions %s and SI base units %s",dimensions.toString(), dimensions.SIBaseUnitStr(), dimensions.toString(), dimensions.SIBaseUnitStr()));
+            throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot convert scalar of dimensions %s and SI base units %s to new dimensions %s and SI base units %s",dimensions.toString(), dimensions.SIBaseUnitStr(), unit.getDimensions().toString(), unit.getDimensions().SIBaseUnitStr()));
         }
     }
 
@@ -50,7 +50,7 @@ public class Scalar {
             return new Scalar(value+scalar.getValueSI(), dimensions);
         }
         else{
-            throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot add unit of dimensions %s and SI base units %s to new dimensions %s and SI base units %s",dimensions.toString(), dimensions.SIBaseUnitStr(), dimensions.toString(), dimensions.SIBaseUnitStr()));
+            throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot add unit of dimensions %s and SI base units %s to dimensions %s and SI base units %s",scalar.getDimensions().toString(), scalar.getDimensions().SIBaseUnitStr(), dimensions.toString(), dimensions.SIBaseUnitStr()));
         }
     }
 
@@ -61,7 +61,7 @@ public class Scalar {
             return new Scalar(value-scalar.getValueSI(), dimensions);
         }
         else{
-            throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot subtract unit of dimensions %s and SI base units %s to new dimensions %s and SI base units %s",dimensions.toString(), dimensions.SIBaseUnitStr(), dimensions.toString(), dimensions.SIBaseUnitStr()));
+            throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot subtract unit of dimensions %s and SI base units %s to dimensions %s and SI base units %s",scalar.getDimensions().toString(), scalar.getDimensions().SIBaseUnitStr(), dimensions.toString(), dimensions.SIBaseUnitStr()));
         }
     }
 
@@ -87,41 +87,25 @@ public class Scalar {
 
     /// @throws RuntimeException unitError if dimensions do not match
     public Boolean greaterThan(Scalar scalar){
-        if(dimensions.equals(scalar.getDimensions())){
-            return value>scalar.value;
-        }
-        else{
-            throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot compare unit of dimensions %s and SI base units %s to new dimensions %s and SI base units %s",dimensions.toString(), dimensions.SIBaseUnitStr(), dimensions.toString(), dimensions.SIBaseUnitStr()));
-        }
+        if(!dimensions.equals(scalar.getDimensions())){throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot compare scalars with unit of dimensions %s and SI base units %s with unit of dimensions %s and SI base units %s",dimensions.toString(), dimensions.SIBaseUnitStr(), scalar.getDimensions().toString(), scalar.getDimensions().SIBaseUnitStr()));}
+        return value>scalar.value;
     }
 
     /// @throws RuntimeException unitError if dimensions do not match
     public Boolean greaterThanOrEqual(Scalar scalar){
-        if(dimensions.equals(scalar.getDimensions())){
-            return value>=scalar.value;
-        }
-        else{
-            throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot compare unit of dimensions %s and SI base units %s to new dimensions %s and SI base units %s",dimensions.toString(), dimensions.SIBaseUnitStr(), dimensions.toString(), dimensions.SIBaseUnitStr()));
-        }
+        if(!dimensions.equals(scalar.getDimensions())){throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot compare scalars with unit of dimensions %s and SI base units %s with unit of dimensions %s and SI base units %s",dimensions.toString(), dimensions.SIBaseUnitStr(), scalar.getDimensions().toString(), scalar.getDimensions().SIBaseUnitStr()));}
+        return value>=scalar.value;
     }
 
     /// @throws RuntimeException unitError if dimensions do not match
     public Boolean lessThan(Scalar scalar){
-        if(dimensions.equals(scalar.getDimensions())){
-            return value<scalar.value;
-        }
-        else{
-            throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot compare unit of dimensions %s and SI base units %s to new dimensions %s and SI base units %s",dimensions.toString(), dimensions.SIBaseUnitStr(), dimensions.toString(), dimensions.SIBaseUnitStr()));
-        }
+        if(!dimensions.equals(scalar.getDimensions())){throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot compare scalars with unit of dimensions %s and SI base units %s with unit of dimensions %s and SI base units %s",dimensions.toString(), dimensions.SIBaseUnitStr(), scalar.getDimensions().toString(), scalar.getDimensions().SIBaseUnitStr()));}
+        return value<scalar.value;
     }
 
     /// @throws RuntimeException unitError if dimensions do not match
     public Boolean lessThanOrEqual(Scalar scalar){
-        if(dimensions.equals(scalar.getDimensions())){
-            return value<=scalar.value;
-        }
-        else{
-            throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot compare unit of dimensions %s and SI base units %s to new dimensions %s and SI base units %s",dimensions.toString(), dimensions.SIBaseUnitStr(), dimensions.toString(), dimensions.SIBaseUnitStr()));
-        }
+        if(!dimensions.equals(scalar.getDimensions())){throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot compare scalars with unit of dimensions %s and SI base units %s with unit of dimensions %s and SI base units %s",dimensions.toString(), dimensions.SIBaseUnitStr(), scalar.getDimensions().toString(), scalar.getDimensions().SIBaseUnitStr()));}
+        return value<=scalar.value;
     }
 }
