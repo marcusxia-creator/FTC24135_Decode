@@ -27,6 +27,7 @@ public class ActionTestAuto extends LinearOpMode {
     public AutoTurretDrive turret;
     public MecanumDrive drive;
     public AprilTagDetection aprilTagDetection;
+    public AutoSpindexerContext context;
 
     public int targetGreen;
 
@@ -37,23 +38,24 @@ public class ActionTestAuto extends LinearOpMode {
         robot.init();
         robot.turretInit();
 
+        context = new AutoSpindexerContext();
         turret = new AutoTurretDrive(robot);
-        intake = new AutoIntakeFSM(robot);
-        shooter = new AutoShooterFSM(robot);
+        intake = new AutoIntakeFSM(robot,context);
+        shooter = new AutoShooterFSM(robot,context);
 
         aprilTagDetection = new AprilTagDetection(robot);
         aprilTagDetection.limelightStart();
 
         if (opModeInInit()) {
-            Actions.runBlocking(turret.TurretRun(90));
+            Actions.runBlocking(turret.TurretRun(66));
             robot.spindexerServo.setPosition(spindexerSlot1);
             robot.kickerServo.setPosition(kickerRetract);
-            robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
+            //robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
             while (opModeInInit()&&!isStopRequested()) {
                 aprilTagDetection.limelightDetect();
-                targetGreen = aprilTagDetection.findGreenSlot();
+                context.targetGreenSlot = aprilTagDetection.findGreenSlot();
                 telemetry.addData("Detected ID",aprilTagDetection.tagID);
-                telemetry.addData("Target Green Slot",targetGreen);
+                telemetry.addData("Target Green Slot",context.targetGreenSlot);
                 telemetry.update();
             }
         }
@@ -63,16 +65,8 @@ public class ActionTestAuto extends LinearOpMode {
         if (opModeIsActive()) {
             Actions.runBlocking(
                 new SequentialAction(
-                    turret.TurretRun(68),
                     intake.IntakeRun(8),
-                    shooter.ShootFarZone(FarShotPower,2, 0,targetGreen),
-                    shooter.ShooterOff(),
-                    intake.IntakeRun(8),
-                    shooter.ShootFarZone(FarShotPower,2, 1,targetGreen),
-                    shooter.ShooterOff(),
-                    intake.IntakeRun(8),
-                    shooter.ShootFarZone(FarShotPower,2, 2,targetGreen),
-                    shooter.ShooterOff()
+                    shooter.ShootFarZone(0.88,1.0)
                 )
             );
         }

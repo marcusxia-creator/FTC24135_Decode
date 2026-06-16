@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps.Tests;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.DEBOUNCE_THRESHOLD;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerExtend;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerRetract;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.slotAngleDelta;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -17,15 +14,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.TeleOps.LUTPowerCalculator;
 import org.firstinspires.ftc.teamcode.TeleOps.Limelight;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotDrive;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
-import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.Turret;
 import org.firstinspires.ftc.teamcode.TeleOps.TurretUpd;
 
@@ -44,7 +37,6 @@ public class TurretTestTeleOp extends OpMode {
     private TurretUpd turretUpd;
 
     private BallColor ballColor;
-    private ColorDetection colorDetection;
 
     double intakeSpeed = 0.5;
     double shooterPower = 0.0;
@@ -104,7 +96,6 @@ public class TurretTestTeleOp extends OpMode {
         limelight.initLimelight(24);
         limelight.start();
 
-        colorDetection = new ColorDetection(robot);
         pidController = new PIDController(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
 
         robot.shooterAdjusterServo.setPosition(adjusterServoPosition);

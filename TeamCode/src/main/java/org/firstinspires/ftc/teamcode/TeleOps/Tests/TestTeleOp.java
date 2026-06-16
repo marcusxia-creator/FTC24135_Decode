@@ -17,11 +17,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 //import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
-import org.firstinspires.ftc.teamcode.TeleOps.FSMShooter;
 import org.firstinspires.ftc.teamcode.TeleOps.LUTPowerCalculator;
 import org.firstinspires.ftc.teamcode.TeleOps.Limelight;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
-import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 
 import org.firstinspires.ftc.teamcode.TeleOps.RobotDrive;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
@@ -44,7 +42,6 @@ public class TestTeleOp extends OpMode {
     private TurretUpd turretUpd;
 
     private BallColor ballColor;
-    private ColorDetection colorDetection;
 
     double intakeSpeed = 0.5;
     double shooterPower = 0.0;
@@ -104,7 +101,6 @@ public class TestTeleOp extends OpMode {
         limelight.initLimelight(24);
         limelight.start();
 
-        colorDetection = new ColorDetection(robot);
         pidController = new PIDController(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
     }
 
@@ -116,7 +112,6 @@ public class TestTeleOp extends OpMode {
         robotDrive.DriveLoop();
 
         /// color detection
-        ballColor = BallColor.fromHue(colorDetection.getHue());
 
         ///  PID Controller for power calculation
         pidController.setPID(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
@@ -309,7 +304,6 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("shooter RPM", robot.topShooterMotor.getVelocity() * tickToRPM);
         telemetry.addLine("----------------------------------------------------");
         telemetry.addData("Color", ballColor);
-        telemetry.addData("Color Hue", colorDetection.getHue());
         telemetry.addLine("----------------------------------------------------");
         //telemetry.addData("turret target angle - atan", turret.getTargetAngle());
         telemetry.addData("turret motor tick", robot.turretMotor.getCurrentPosition());

@@ -22,7 +22,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
-import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 
 import java.util.ArrayList;
 import java.util.List;
