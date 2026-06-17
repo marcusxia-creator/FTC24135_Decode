@@ -49,7 +49,7 @@ public class Vector {
         return vector.unitVector();
     }
 
-    ///Returns a normalized angle representing the direction of the vector
+    /// Returns a normalized angle representing the direction of the vector
     /// note: All angles are measured from the positive y-axis towards the positive x-axis (clockwise)
     public NormalizedAngle direction(){
         return vector.direction();
@@ -83,10 +83,26 @@ public class Vector {
         return div(new Scalar(factor, dimensionless.SIBaseUnit()));
     }
 
+    public Scalar getX(){
+        return new Scalar(vector.getX(), dimensions.SIBaseUnit());
+    }
+
+    public Scalar getY(){
+        return new Scalar(vector.getY(), dimensions.SIBaseUnit());
+    }
+
     /// Rotates the vector by normalized angle {@code angle} clockwise
     /// @param angle the angle to rotate by
     /// @return the rotated vector
     public Vector rotateBy(NormalizedAngle angle){
         return new Vector(vector.rotateBy(angle), dimensions.SIBaseUnit());
+    }
+
+    /// Calculates the normalized angle pointing toward the other vector
+    /// note: All angles are measured from the positive y-axis towards the positive x-axis (clockwise)
+    /// @throws RuntimeException if vectors are in different dimensions.
+    public NormalizedAngle angleTo(Vector vector){
+        if(!dimensions.equals(vector.getDimensions())){throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot subtract vectors with unit of dimensions %s and SI base units %s and unit of dimensions %s and SI base units %s",vector.getDimensions().toString(), vector.getDimensions().SIBaseUnitStr(), dimensions.toString(), dimensions.SIBaseUnitStr()));}
+        return sub(vector).direction();
     }
 }

@@ -62,4 +62,16 @@ public class Velocity {
         if(!dt.getDimensions().equals(time)){throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot accept a vector with dimensions %s and SI base units %s as the derivative of time", dt.getDimensions().toString(), dt.getDimensions().SIBaseUnitStr()));}
         return new Position(linVel.multiply(dt),new NormalizedAngle(angVel.multiply(dt)));
     }
+
+    public Scalar getX(){
+        return linVel.getX();
+    }
+
+    public Scalar getY(){
+        return linVel.getY();
+    }
+
+    public Scalar getHeading(){
+        return angVel;
+    }
 }
