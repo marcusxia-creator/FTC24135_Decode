@@ -73,7 +73,7 @@ public class RobotActionConfig {
     public static int[] purpleRangeLow                  = {115, 118};
     public static int[] purpleRangeHigh                 = {170, 230};
 
-    public static int requiredSensors                   = 2;
+    public static int requiredSensors                   = 3;
 
     public static double BALL_PRESENT_THRESHOLD_MM      = 50;
     public static final double INTAKE_TICKS_PER_REV     = 145.1;

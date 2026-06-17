@@ -29,8 +29,6 @@ public class ActionTestAuto extends LinearOpMode {
     public AprilTagDetection aprilTagDetection;
     public AutoSpindexerContext context;
 
-    public int targetGreen;
-
     @Override
     public void runOpMode() throws InterruptedException {
         ///Init
@@ -47,10 +45,10 @@ public class ActionTestAuto extends LinearOpMode {
         aprilTagDetection.limelightStart();
 
         if (opModeInInit()) {
-            Actions.runBlocking(turret.TurretRun(66));
+            Actions.runBlocking(turret.TurretRun(68));
             robot.spindexerServo.setPosition(spindexerSlot1);
             robot.kickerServo.setPosition(kickerRetract);
-            //robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
+            robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
             while (opModeInInit()&&!isStopRequested()) {
                 aprilTagDetection.limelightDetect();
                 context.targetGreenSlot = aprilTagDetection.findGreenSlot();

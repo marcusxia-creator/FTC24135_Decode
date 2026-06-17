@@ -136,8 +136,10 @@ public class AutoShooterFSM {
                         currentState = SHOOTERSTATE.SHOOTER_LAUNCH;
                     }
                     else {
-                        stateTimer2.reset();
-                        currentState = SHOOTERSTATE.SHOOTER_RESET;
+                        if (stateTimer2.seconds() > 0.5) {
+                            stateTimer2.reset();
+                            currentState = SHOOTERSTATE.SHOOTER_RESET;
+                        }
                     }
                     break;
                 case SHOOTER_LAUNCH:
@@ -149,9 +151,9 @@ public class AutoShooterFSM {
                     break;
                 case SHOOTER_RESET:
                     SpindexerRunTo(1);
-                    if (stateTimer2.seconds() > 0.4) {
+                    if (stateTimer2.seconds() > 0.3) {
                         robot.kickerServo.setPosition(kickerRetract);
-                        if(stateTimer2.seconds()>0.8){
+                        if(stateTimer2.seconds()>0.6){
                             currentState = SHOOTERSTATE.SHOOTER_END;
                         }
                     }
@@ -204,7 +206,7 @@ public class AutoShooterFSM {
     }
 
     public Action ShootCloseZone (double ShotPower, double ShooterWaitTime){
-        return new ShooterRunMode(robot, ShotPower,0.08, ShooterWaitTime, spindexerContext);
+        return new ShooterRunMode(robot, ShotPower,0.1, ShooterWaitTime, spindexerContext);
     }
 
     ///Shooter Speed
