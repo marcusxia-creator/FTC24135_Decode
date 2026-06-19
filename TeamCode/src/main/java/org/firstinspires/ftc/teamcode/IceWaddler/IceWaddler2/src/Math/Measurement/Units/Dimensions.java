@@ -66,7 +66,7 @@ public class Dimensions {
     }
 
     public boolean equals(Dimensions dim){
-        return powers==dim.powers;
+        return powers.equals(dim.powers);
     }
 
     @Override

@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measureme
 
 import static org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measurement.Units.Dimensions.acceleration;
 import static org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measurement.Units.Dimensions.angAcceleration;
+import static org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measurement.Units.Dimensions.angVelocity;
 import static org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measurement.Units.Dimensions.time;
+import static org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measurement.Units.Dimensions.velocity;
 
 import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measurement.Scalar;
 import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measurement.Vector;
@@ -27,6 +29,14 @@ public class Acceleration {
 
     public Scalar getAngAcc(){
         return angAcc;
+    }
+
+    /// Rotates the vector by normalized angle {@code angle} clockwise
+    /// @param angle the angle to rotate by
+    /// @return the rotated vector
+    /// note: does not rotate angular acceleration
+    public Acceleration rotateBy(NormalizedAngle angle){
+        return new Acceleration(linAcc.rotateBy(angle),angAcc);
     }
 
     public Acceleration add(Acceleration accel){
@@ -67,4 +77,6 @@ public class Acceleration {
     public Scalar getHeading(){
         return angAcc;
     }
+
+    public static Acceleration zero=new Acceleration(new Vector(0,0,acceleration.SIBaseUnit()),new Scalar(0,angAcceleration.SIBaseUnit()));
 }

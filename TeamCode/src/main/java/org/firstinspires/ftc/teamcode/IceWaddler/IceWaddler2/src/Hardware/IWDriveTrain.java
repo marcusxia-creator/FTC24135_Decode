@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface IWDriveTrain {
     /// This method is run once at the beginning of the program, leave blank if not needed
-    /// After init, all motors should be reversed such that all motors running at power +1 yields clockwise rotation
+    /// After init, all motors should be reversed such that all motors running at power +1 yields forward acceleration
     void init();
 
     /// Should write each power, between 1 and -1, to the corresponding motor<br>

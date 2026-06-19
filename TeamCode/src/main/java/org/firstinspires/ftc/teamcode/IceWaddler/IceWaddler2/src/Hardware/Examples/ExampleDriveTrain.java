@@ -25,7 +25,7 @@ public class ExampleDriveTrain implements IWDriveTrain {
         robot.frontLeftMotor.setPower(FL_Power);
         robot.backLeftMotor.setPower(BL_Power);
         robot.frontRightMotor.setPower(FR_Power);
-        robot.backLeftMotor.setPower(BR_Power);
+        robot.backRightMotor.setPower(BR_Power);
     }
 
     public List<Double> getVelocities() {

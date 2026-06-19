@@ -29,6 +29,14 @@ public class Velocity {
         return angVel;
     }
 
+    /// Rotates the vector by normalized angle {@code angle} clockwise
+    /// @param angle the angle to rotate by
+    /// @return the rotated vector
+    /// note: does not rotate angular velocity
+    public Velocity rotateBy(NormalizedAngle angle){
+        return new Velocity(linVel.rotateBy(angle),angVel);
+    }
+
     public Velocity add(Velocity velocity){
         return new Velocity(linVel.add(velocity.getLinVel()),angVel.add(velocity.getAngVel()));
     }
@@ -58,7 +66,7 @@ public class Velocity {
 
     /// for a small change in time dt, usually a tick, returns the change in position
     /// @throws RuntimeException unitError if dt is not in the dimension of time
-    public Position Integrate(Scalar dt){
+    public Position integrate(Scalar dt){
         if(!dt.getDimensions().equals(time)){throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot accept a vector with dimensions %s and SI base units %s as the derivative of time", dt.getDimensions().toString(), dt.getDimensions().SIBaseUnitStr()));}
         return new Position(linVel.multiply(dt),new NormalizedAngle(angVel.multiply(dt)));
     }
@@ -74,4 +82,6 @@ public class Velocity {
     public Scalar getHeading(){
         return angVel;
     }
+
+    public static Velocity zero=new Velocity(new Vector(0,0,velocity.SIBaseUnit()),new Scalar(0,angVelocity.SIBaseUnit()));
 }

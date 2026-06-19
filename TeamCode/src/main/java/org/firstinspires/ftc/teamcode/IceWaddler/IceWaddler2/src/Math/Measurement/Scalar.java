@@ -81,6 +81,10 @@ public class Scalar {
         return new Scalar(value/factor, dimensions);
     }
 
+    public Scalar abs(){
+        return new Scalar(Math.abs(value),dimensions);
+    }
+
     public Boolean equals(Scalar scalar){
         return dimensions==scalar.dimensions && value==scalar.value;
     }

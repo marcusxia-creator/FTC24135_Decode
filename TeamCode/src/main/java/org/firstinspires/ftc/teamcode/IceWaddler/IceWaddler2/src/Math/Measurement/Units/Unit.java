@@ -82,6 +82,7 @@ public class Unit {
     }
 
     //Premade Units
+    public static Unit none =new Unit(1,        dimensionless);
     //Lengths
     public static Unit mm   =new Unit(0.001,    length);
     public static Unit cm   =new Unit(0.01,     length);

@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import static org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measurement.Units.Unit.deg;
+import static org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measurement.Units.Unit.in;
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,6 +15,13 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Hardware.Examples.ExampleDriveTrain;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Hardware.Examples.OTOS;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Hardware.IWDriveTrain;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Hardware.IWLocalizer;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measurement.SpecialMeasurements.NormalizedAngle;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Position;
+import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measurement.Vector;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -85,7 +95,10 @@ public class RobotHardware {
     public HardwareMap hardwareMap;
     public ArrayList <VoltageSensor> voltageSensors;
     public SparkFunOTOS odo; //Gobilda Pinpoint if needed
-    public IceWaddler1.IWLocalizer IWodo;
+    public IceWaddler1.IWLocalizer IWodo;//legacy icewaddler for error management
+
+    public IWLocalizer localizer;
+    public IWDriveTrain driveTrain;
 
     private double vEma = 12.0;                 // EMA state
     public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
@@ -112,13 +125,13 @@ public class RobotHardware {
         //distanceSensor = hardwareMap.get(DistanceSensor.class, "colorSensor");
 
 
-        frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
         //Webcam
-        webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
+        //webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
 
                 // limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
@@ -145,9 +158,8 @@ public class RobotHardware {
 
         IWodo = new IceWaddler1.IWLocalizer(odo);
 
-
-
-
+        localizer = new OTOS(new Position(new Vector(-0.45, -6.57, in), new NormalizedAngle(0, deg)),odo);
+        driveTrain = new ExampleDriveTrain(this);
     }// End of init
 
     // Initialize IMU

@@ -23,7 +23,8 @@ import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measuremen
 ///An implementation of the SparkFun optical tracking odometry sensor (OTOS), for use with IceWaddler
 public class OTOS implements IWLocalizer {
     SparkFunOTOS odo;
-    public OTOS(Position offset){
+    public OTOS(Position offset, SparkFunOTOS otosSensor){
+        odo=otosSensor;
         odo.setLinearUnit(METER);
         odo.setAngularUnit(RADIANS);
 
@@ -51,8 +52,8 @@ public class OTOS implements IWLocalizer {
         SparkFunOTOS.Pose2D acceleration = odo.getAcceleration();
         return new Situation(
                 new Acceleration(new Vector(acceleration.x, acceleration.y, metersPerSecondSquared), new Scalar(acceleration.h, radiansPerSecondSquared)),
-                new Velocity(new Vector(velocity.x, velocity.y, metersPerSecond), new Scalar(velocity.h, radiansPerSecond)),
-                new Position(new Vector(position.x, position.y, m), new NormalizedAngle(position.h, rad))
+                new Velocity(new Vector(velocity.x, velocity.y, metersPerSecond), new Scalar(-velocity.h, radiansPerSecond)),
+                new Position(new Vector(position.x, position.y, m), new NormalizedAngle(-position.h, rad))
         );
     }
 }

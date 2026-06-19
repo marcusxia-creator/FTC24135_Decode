@@ -22,4 +22,16 @@ public class Situation {
     public Position getPosition() {
         return position;
     }
+
+    public void setAcceleration(Acceleration acceleration) {
+        this.acceleration=acceleration;
+    }
+
+    public void setVelocity(Velocity velocity) {
+        this.velocity=velocity;
+    }
+
+    public void setPosition(Position position) {
+        this.position=position;
+    }
 }
