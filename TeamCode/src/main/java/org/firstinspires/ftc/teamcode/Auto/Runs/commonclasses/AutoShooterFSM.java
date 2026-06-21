@@ -55,7 +55,7 @@ public class AutoShooterFSM {
             SHOOTER_SWITCH,
             SHOOTER_LAUNCH,
             SHOOTER_RESET,
-            SHOOTER_END
+            SHOOTER_END;
         }
 
         /// Variables
@@ -69,20 +69,26 @@ public class AutoShooterFSM {
         private  int rapidStartingSlot = 0;
         private int sortingStartingSlot;
         private int targetSlot;
-        private final double shootSpeed;
+        private double shootSpeed;
 
         private double ShooterWaitTime;
         private double targetVelocity;
 
+        private final SHOOTERSTATE startingState;
+        private final SHOOTERSTATE endState;
+        private boolean hasEnteredEndState = false;
         public SHOOTERSTATE currentState;
 
-        public ShooterRunMode(RobotHardware robot, double ShotPower, double shootSpeed, double ShooterWaitTime, AutoSpindexerContext spindexerContext) {
+        public ShooterRunMode(RobotHardware robot, SHOOTERSTATE startingState,SHOOTERSTATE endState, double ShotPower, double shootSpeed, double ShooterWaitTime, AutoSpindexerContext spindexerContext) {
             this.spindexerContext = spindexerContext;
             this.robot = robot;
-            ///Timing
-            this.targetVelocity = ShotPower*shooterMaxRPM;
+
+            this.endState = endState;
+            this.startingState = startingState;
+            this.currentState = startingState;
+
+            this.targetVelocity = ShotPower * shooterMaxRPM;
             this.ShooterWaitTime = ShooterWaitTime;
-            this.currentState = SHOOTERSTATE.SHOOTER_INIT;
             this.sortingStartingSlot = spindexerContext.shootingInitSlot;
             this.shootSpeed = shootSpeed;
         }
@@ -113,7 +119,7 @@ public class AutoShooterFSM {
                 case SHOOTER_INIT:
                     spindexerContext.shooterStarted = true;
                     spindexerContext.intakeShouldStop = true;
-                    //robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
+                    robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
                     robot.kickerServo.setPosition(kickerRetract);
                     SpindexerRunTo(rapidStartingSlot);
                     shooterTimer.reset();
@@ -184,29 +190,38 @@ public class AutoShooterFSM {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            SHOOTERSTATE stateBeforeRun = currentState;
+
+            telemetryPacket.put("Actual Starting Slot", sortingStartingSlot);
+            telemetryPacket.put("FSM Shooter State", currentState);
+
+            RunShooter(targetVelocity);
+            FSMShooterRapidFire();
+
+            if (stateBeforeRun == endState) {
+                hasEnteredEndState = true;
+            }
+
+            if (hasEnteredEndState && currentState != endState) {
+                return false;
+            }
+
             if (currentState == SHOOTERSTATE.SHOOTER_END) {
                 robot.topShooterMotor.setPower(0);
                 robot.bottomShooterMotor.setPower(0);
                 return false;
             }
-            else {
-                ///Dashboard Telemetry
-                telemetryPacket.put("Actual Starting Slot", sortingStartingSlot);
-                telemetryPacket.put("FSM Shooter State", currentState);
-                ///Run Shooter & FSM
-                RunShooter(targetVelocity);
-                FSMShooterRapidFire();
-                return true;
-            }
+
+            return true;
         }
     }
 
-    public Action ShootFarZone(double ShotPower, double ShooterWaitTime){
-        return new ShooterRunMode(robot, ShotPower,0.23,ShooterWaitTime, spindexerContext);
+    public Action ShootFarZone(double ShotPower, double ShooterWaitTime, ShooterRunMode.SHOOTERSTATE startingState, ShooterRunMode.SHOOTERSTATE endState){
+        return new ShooterRunMode(robot, startingState, endState, ShotPower,0.23,ShooterWaitTime, spindexerContext);
     }
 
-    public Action ShootCloseZone (double ShotPower, double ShooterWaitTime){
-        return new ShooterRunMode(robot, ShotPower,0.1, ShooterWaitTime, spindexerContext);
+    public Action ShootCloseZone(double ShotPower, double ShooterWaitTime, ShooterRunMode.SHOOTERSTATE startingState, ShooterRunMode.SHOOTERSTATE endState){
+        return new ShooterRunMode(robot, startingState, endState, ShotPower,0.1,ShooterWaitTime, spindexerContext);
     }
 
     ///Shooter Speed

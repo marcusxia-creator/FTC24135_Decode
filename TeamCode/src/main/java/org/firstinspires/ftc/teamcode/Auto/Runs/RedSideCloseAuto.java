@@ -70,61 +70,33 @@ public class RedSideCloseAuto extends LinearOpMode {
         }
 
         TrajectoryActionBuilder DriveToShoot1Builder = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(
-                        new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y),
-                        Math.toRadians(CloseShootingPosition_Heading)
-                );
+                .setTangent(Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-40.5,44),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(-90));
 
 // FIRST RUN SET: go to Close Set 2 instead of Intake Set 3
         TrajectoryActionBuilder IntakeSet1Drive1Builder = DriveToShoot1Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(
-                        new Vector2d(Close_IntakeSet2Position1_X, Close_IntakeSet2Position1_Y),
-                        Math.toRadians(90)
-                );
+                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position1_X,Close_IntakeSet2Position1_Y),Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position4_X,Close_IntakeSet2Position4_Y),Math.toRadians(90));
 
-        TrajectoryActionBuilder IntakeSet1Drive2Builder = IntakeSet1Drive1Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(
-                        new Vector2d(Close_IntakeSet2Position4_X, Close_IntakeSet2Position4_Y),
-                        Math.toRadians(90)
-                );
-
-        TrajectoryActionBuilder DriveToShoot2Builder = IntakeSet1Drive2Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(
-                        new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y),
-                        Math.toRadians(CloseShootingPosition_Heading)
-                );
+        TrajectoryActionBuilder DriveToShoot2Builder = IntakeSet1Drive1Builder.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y), Math.toRadians(CloseShootingPosition_Heading));
 
 // SECOND RUN SET: go to the gate
         TrajectoryActionBuilder IntakeGateSet1Drive1Builder = DriveToShoot2Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(
-                        new Vector2d(Close_IntakeSet2Position1_X, Close_IntakeSet2Position1_Y),
-                        Math.toRadians(90)
-                )
-                .strafeToLinearHeading(
-                        new Vector2d(GateIntakePosition_X, GateIntakePosition_Y),
-                        Math.toRadians(GateIntakePosition_Heading)
-                );
+                .setTangent(Math.toRadians(52))
+                .splineTo(new Vector2d(GateIntakePosition_X,GateIntakePosition_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot3Builder = IntakeGateSet1Drive1Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(
-                        new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y),
-                        Math.toRadians(CloseShootingPosition_Heading)
-                );
+                .setTangent(Math.toRadians(-90))
+                .splineTo(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y + 16),Math.toRadians(-128));
 
 // THIRD RUN SET: go to the furthest Close Set 2 position
         TrajectoryActionBuilder IntakeSet2Drive1Builder = DriveToShoot3Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(
-                        new Vector2d(IntakeSet3Position1_X, IntakeSet3Position1_Y),
-                        Math.toRadians(90)
-                );
+                .splineToConstantHeading(new Vector2d(IntakeSet3Position1_X,IntakeSet3Position1_Y),Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(IntakeSet3Position4_X,IntakeSet3Position4_Y),Math.toRadians(90));
 
-        TrajectoryActionBuilder IntakeSet2Drive2Builder = IntakeSet2Drive1Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(
-                        new Vector2d(IntakeSet3Position4_X, IntakeSet3Position4_Y),
-                        Math.toRadians(90)
-                );
-
-        TrajectoryActionBuilder DriveToShoot4Builder = IntakeSet2Drive2Builder.endTrajectory().fresh()
+        TrajectoryActionBuilder DriveToShoot4Builder = IntakeSet2Drive1Builder.endTrajectory().fresh()
                 .strafeToLinearHeading(
                         new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y),
                         Math.toRadians(CloseShootingPosition_Heading)
@@ -138,12 +110,10 @@ public class RedSideCloseAuto extends LinearOpMode {
 
         Action DriveToShoot1 = DriveToShoot1Builder.build();
         Action IntakeSet1Drive1 = IntakeSet1Drive1Builder.build();
-        Action IntakeSet1Drive2 = IntakeSet1Drive2Builder.build();
         Action DriveToShoot2 = DriveToShoot2Builder.build();
         Action IntakeGateSet1Drive1 = IntakeGateSet1Drive1Builder.build();
         Action DriveToShoot3 = DriveToShoot3Builder.build();
         Action IntakeSet2Drive1 = IntakeSet2Drive1Builder.build();
-        Action IntakeSet2Drive2 = IntakeSet2Drive2Builder.build();
         Action DriveToShoot4 = DriveToShoot4Builder.build();
         Action LeaveDrive = LeaveDriveBuilder.build();
 
@@ -162,8 +132,7 @@ public class RedSideCloseAuto extends LinearOpMode {
                         new ParallelAction(
                                 intake.IntakeRun(5),
                                 new SequentialAction(
-                                        IntakeSet1Drive1,
-                                        IntakeSet1Drive2
+                                        IntakeSet1Drive1
                                 )
                         ),
                         new ParallelAction(
@@ -186,10 +155,9 @@ public class RedSideCloseAuto extends LinearOpMode {
                         new ParallelAction(
                                 intake.IntakeRun(5),
                                 new SequentialAction(
-                                        IntakeSet2Drive1,
-                                        IntakeSet2Drive2
+                                        IntakeSet2Drive1
                                 )
-                        ),
+                        ), 
                         new ParallelAction(
                             DriveToShoot4,
                             shooter.ShooterOn(CloseShotPower)

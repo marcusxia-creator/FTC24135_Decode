@@ -51,19 +51,33 @@ public class TrajectoryTestAuto extends LinearOpMode {
 
 
         TrajectoryActionBuilder FullRun = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-4,8),Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(13,30),Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(13,58),Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(-4,8),Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(13,30),Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(12,63),Math.toRadians(128))
-                .strafeToLinearHeading(new Vector2d(-4,8),Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(13,30),Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(12,63),Math.toRadians(128))
-                .strafeToLinearHeading(new Vector2d(-4,8),Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(-12,30),Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(-12,54),Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(-4,8),Math.toRadians(90));
+                .setTangent(Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-40.5,44),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-4,16),Math.toRadians(-90))
+                ///Intake First Set & Shoot
+                .waitSeconds(2)
+                .splineToConstantHeading(new Vector2d(13,30),Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(13,58),Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(-4,16),Math.toRadians(90))
+                .waitSeconds(2)
+                ///Gate Intake & Shoot
+                .setTangent(Math.toRadians(52))
+                .splineTo(new Vector2d(12,63),Math.toRadians(90))
+                .waitSeconds(4)
+                .setTangent(Math.toRadians(-90))
+                .splineTo(new Vector2d(-4,16),Math.toRadians(-128))
+                .waitSeconds(2)
+                ///Gate Intake & Shoot
+                .setTangent(Math.toRadians(52))
+                .splineTo(new Vector2d(12,63),Math.toRadians(90))
+                .waitSeconds(4)
+                .setTangent(Math.toRadians(-90))
+                .splineTo(new Vector2d(-4,16),Math.toRadians(-128))
+                .waitSeconds(2)
+                ///Intake Second Set & Shoot
+                .splineToConstantHeading(new Vector2d(-12,30),Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-12,56),Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(-4,16),Math.toRadians(90));
 
 
         Action intakeSet1Drive1Action = IntakeSet1Drive1.build();

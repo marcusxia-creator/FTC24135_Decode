@@ -59,12 +59,14 @@ Expansion hub servo:
 
 I2C port
 EXP hub:
-                port 0: external_imu
+                port 0: Front_Color_Sensor
+                port 1: Right_Color_Sensor
+                port 2: Left_Color_Sensor
 Control hub:
                 port 0: control hub imu
-                port 1: Pinpoint (odometry computer)
+                port 1: Empty
                 port 2: Empty
-                port 3: Color_Sensor
+                port 3: Pinpoint
 Digital Port
 Control hub
                 port 7: Empty

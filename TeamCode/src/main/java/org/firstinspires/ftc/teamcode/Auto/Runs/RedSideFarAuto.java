@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.*;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterRunMode.SHOOTERSTATE.*;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -102,9 +103,12 @@ public class RedSideFarAuto extends LinearOpMode {
         if (!isStopRequested()) {
             Actions.runBlocking(
                 new SequentialAction(
-                    turret.TurretRun(68),
-                    shooter.ShooterOn(FarShotPower),
-                    shooter.ShootFarZone(FarShotPower, 1.6),
+                    new ParallelAction(
+                        turret.TurretRun(68),
+                        shooter.ShooterOn(FarShotPower),
+                        shooter.ShootFarZone(FarShotPower, 1.6,SHOOTER_INIT,SHOOTER_RUN)
+                    ),
+                    shooter.ShootFarZone(FarShotPower, 0,SHOOTER_SWITCH,SHOOTER_END),
                     shooter.ShooterOff(),
                     new ParallelAction(
                         intake.IntakeRun(6),
@@ -116,9 +120,10 @@ public class RedSideFarAuto extends LinearOpMode {
                     new ParallelAction(
                             driveToShoot1Action,
                             shooter.ShooterOn(FarShotPower),
-                            turret.TurretRun(67)
+                            turret.TurretRun(67),
+                            shooter.ShootFarZone(FarShotPower, 1.6,SHOOTER_INIT,SHOOTER_RUN)
                     ),
-                    shooter.ShootFarZone(FarShotPower, 0.1),
+                    shooter.ShootFarZone(FarShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                     shooter.ShooterOff(),
                     new ParallelAction(
                         intake.IntakeRun(6),
@@ -130,9 +135,10 @@ public class RedSideFarAuto extends LinearOpMode {
                     new ParallelAction(
                             driveToShoot2Action,
                             turret.TurretRun(67),
-                            shooter.ShooterOn(FarShotPower)
+                            shooter.ShooterOn(FarShotPower),
+                            shooter.ShootFarZone(FarShotPower, 1.6,SHOOTER_INIT,SHOOTER_RUN)
                     ),
-                    shooter.ShootFarZone(FarShotPower, 0.1),
+                    shooter.ShootFarZone(FarShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                     shooter.ShooterOff()
                 )
             );

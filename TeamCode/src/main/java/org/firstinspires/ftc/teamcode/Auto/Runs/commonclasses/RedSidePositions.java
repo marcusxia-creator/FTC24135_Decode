@@ -35,7 +35,6 @@ public class RedSidePositions {
 
     public static double GateIntakePosition_X = 12;
     public static double GateIntakePosition_Y = 63;
-    public static double GateIntakePosition_Heading = 128;
 
 
     public static double FarShootingPosition_X = 58;
