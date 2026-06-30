@@ -339,14 +339,13 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
                 }
                 break;
 
-            case Idle:
             default:
                 // Going idle → stop both gracefully
                 if (!FSMIntake.canExit()) {
                     FSMIntake.requestGracefulStop();
                 }
                 if (!FSMShooter.canExit()) {
-                    //FSMShooter.requestGracefulStop();
+                    FSMShooter.requestGracefulStop();
                 }
                 break;
         }
@@ -365,7 +364,6 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
                 FSMIntake.intakeStates  = IntakeStates.INTAKE_PREP;
                 break;
 
-            case Idle:
             default:
                 // Don't hard-cut motors here unless your FSM is already idle-safe.
                 // Better: request FSMs to go to IDLE naturally.

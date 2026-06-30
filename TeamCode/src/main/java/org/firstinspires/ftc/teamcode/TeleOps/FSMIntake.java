@@ -90,7 +90,7 @@ public class FSMIntake {
                 robot.intakeMotor.setPower(ejectSpeed);
                 double time = intakeTimer.seconds();
                 //Park spindexer at shoot pos
-                robot.spindexerServo.setPosition(spindexerShootStartPos);
+                robot.spindexerServo.setPosition(spindexerIntakeEndPos);
                 //Might need delay here
                 intakeStates = IntakeStates.INTAKE_IDLE;
                 break;

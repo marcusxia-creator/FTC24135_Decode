@@ -41,7 +41,7 @@ public class Turret {
     //ks 0.0001
     //kv 0.005
     public static double kPTurret = 0.003, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.0001, kVTurret = 0.004; // turret motor drive pidcontroller
-    public static double kP_motor = 20, kI_motor = 0, kD_motor = 0.005, kF = 2; // turret motor pidf
+    public static double kP_motor = 25, kI_motor = 0, kD_motor = 0.01, kF = 2; // turret motor pidf
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
 
     private final LUT<Integer, Pose2D> redTargetPose = new LUT<Integer, Pose2D>() {{
@@ -137,7 +137,7 @@ public class Turret {
 
             runToPositionConfigured = true;
         }
-        int ticks = (int) Math.round(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
+        int ticks = (int) Math.round(Range.clip(getTurretDriveAngle(), -175, 175) * angleToTick);
         robot.turretMotor.setTargetPosition(ticks);
         robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.turretMotor.setPower(1);

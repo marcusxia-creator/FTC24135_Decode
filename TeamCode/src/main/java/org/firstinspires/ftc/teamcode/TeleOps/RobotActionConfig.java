@@ -13,6 +13,8 @@ public class RobotActionConfig {
     public static double DEBOUNCE_THRESHOLD             = 0.25;
     public static double spindexerIntakePos             = 0.18;
     public static double spindexerShootStartPos         = 0.00;
+
+    public static double spindexerIntakeEndPos          = 0.1;
     public static double spindexerShoot1                = 0.18;
     public static double spindexerShoot2                = 0.56;
     public static double spindexerShoot3                = 0.75;     ///六七
@@ -55,8 +57,8 @@ public class RobotActionConfig {
     public static double shooterFactorThreshold         = 0.95;
     //drive train power
     public static double powerFactor                    = 1;
-    public static double accel_Slowness                 = 0.25;
-    public static double decel_Slowness                 = 0.5;
+    public static double accel_Slowness                 = 0.5;
+    public static double decel_Slowness                 = 0.67;
 
     public static double getDistanceThreshold           =0.02;
 
