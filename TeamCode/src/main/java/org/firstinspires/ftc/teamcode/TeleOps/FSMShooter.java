@@ -255,10 +255,9 @@ public class FSMShooter {
                 break;
 
             case KICKER_EXTEND:
-                robot.kickerServo.setPosition(kickerExtend);
-                if (shootTimer.seconds() > 0.15) {
-                    double currentPosition = robot.spindexerServo.getPosition();
-                    robot.spindexerServo.setPosition(spindexerShootStartPos);
+                robot.spindexerServo.setPosition(spindexerShootStartPos);
+                if (shootTimer.seconds() > 0.3) {
+                    robot.kickerServo.setPosition(kickerExtend);
                     shooterState = SHOOTERSTATE.SHOOT_READY;
                 }
                 break;
@@ -306,20 +305,19 @@ public class FSMShooter {
             case SHOOTER_STOP:
                 //stop flywheel
                 shootermotorstate = SHOOTERMOTORSTATE.STOP;
+                robot.spindexerServo.setPosition(spindexerShootStartPos); //move to start pos for kicker clearance
 
-                if (shootTimer.seconds() > kickerRetractDelay) {
+                //spindexer movement time
+                if (shootTimer.seconds() > 0.5) {
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.KICKER_RETRACT;
-                    robot.spindexerServo.setPosition(spindexerShootStartPos); //move to start pos for kicker clearance
                 }
                 break;
 
             case KICKER_RETRACT:
-                if (shootTimer.seconds() > 0.2){ //Delay set to zero for now
-                    robot.kickerServo.setPosition(kickerRetract);
-                }
+                robot.kickerServo.setPosition(kickerRetract);
 
-                if (shootTimer.seconds() > 0.4) {
+                if (shootTimer.seconds() > kickerRetractDelay) {
                     robot.spindexerServo.setPosition(spindexerIntakePos); //Park spindexer at intake pos
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.SHOOTER_IDLE;

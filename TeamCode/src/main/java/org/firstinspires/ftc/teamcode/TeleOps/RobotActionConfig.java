@@ -14,7 +14,7 @@ public class RobotActionConfig {
     public static double spindexerIntakePos             = 0.18;
     public static double spindexerShootStartPos         = 0.00;
 
-    public static double spindexerIntakeEndPos          = 0.1;
+    public static double spindexerStowPos               = 0.1;
     public static double spindexerShoot1                = 0.18;
     public static double spindexerShoot2                = 0.56;
     public static double spindexerShoot3                = 0.75;     ///六七
