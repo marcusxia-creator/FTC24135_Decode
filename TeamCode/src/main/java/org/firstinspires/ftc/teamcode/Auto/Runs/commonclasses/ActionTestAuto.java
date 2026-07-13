@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
 //import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AutoColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 @Config
 @Autonomous(name = "ActionTestAuto", group = "Autonomous")
@@ -28,6 +29,7 @@ public class ActionTestAuto extends LinearOpMode {
     public MecanumDrive drive;
     public AprilTagDetection aprilTagDetection;
     public AutoSpindexerContext context;
+    public AutoColorDetection colorDetection;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -41,6 +43,9 @@ public class ActionTestAuto extends LinearOpMode {
         intake = new AutoIntakeFSM(robot,context);
         shooter = new AutoShooterFSM(robot,context);
 
+        colorDetection = new AutoColorDetection(robot);
+
+
         aprilTagDetection = new AprilTagDetection(robot);
         aprilTagDetection.limelightStart();
 
@@ -49,11 +54,18 @@ public class ActionTestAuto extends LinearOpMode {
             robot.spindexerServo.setPosition(spindexerSlot1);
             robot.kickerServo.setPosition(kickerRetract);
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
+            colorDetection.detectInit();
+            aprilTagDetection.limelightStart();
             while (opModeInInit()&&!isStopRequested()) {
+                colorDetection.updateSlotColors();
                 aprilTagDetection.limelightDetect();
                 context.targetGreenSlot = aprilTagDetection.findGreenSlot();
                 telemetry.addData("Detected ID",aprilTagDetection.tagID);
                 telemetry.addData("Target Green Slot",context.targetGreenSlot);
+                telemetry.addData("Current Green Slot",colorDetection.findGreenSlot());
+                telemetry.addData("Slot 1 Color",colorDetection.getSlotColor(0));
+                telemetry.addData("Slot 2 Color",colorDetection.getSlotColor(1));
+                telemetry.addData("Slot 3 Color",colorDetection.getSlotColor(2));
                 telemetry.update();
             }
         }

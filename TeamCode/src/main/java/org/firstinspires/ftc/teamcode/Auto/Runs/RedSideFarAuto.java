@@ -12,14 +12,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.*;
-import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterRunMode.SHOOTERSTATE.*;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterRapidRunMode.SHOOTERSTATE.*;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoIntakeFSM;
-import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoLimelightDetection;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoSpindexerContext;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoTurretDrive;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
