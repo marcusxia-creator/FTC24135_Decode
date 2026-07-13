@@ -127,7 +127,7 @@ public class RedSideCloseAuto extends LinearOpMode {
                             shooter.ShooterOn(CloseShotPower),
                             DriveToShoot1
                         ),
-                        shooter.ShootCloseZone(CloseShotPower, 0.1),
+                        //shooter.ShootCloseZone(CloseShotPower, 0.1),
                         shooter.ShooterOff(),
                         new ParallelAction(
                                 intake.IntakeRun(5),
@@ -139,7 +139,7 @@ public class RedSideCloseAuto extends LinearOpMode {
                                 DriveToShoot2,
                                 shooter.ShooterOn(CloseShotPower)
                         ),
-                        shooter.ShootCloseZone(CloseShotPower, 0.1),
+                        //shooter.ShootCloseZone(CloseShotPower, 0.1),
                         shooter.ShooterOff(),
                         new ParallelAction(
                                 intake.IntakeRun(8),
@@ -151,7 +151,7 @@ public class RedSideCloseAuto extends LinearOpMode {
                                 DriveToShoot3,
                                 shooter.ShooterOn(CloseShotPower)
                         ),
-                        shooter.ShootCloseZone(CloseShotPower, 0.1),
+                        //shooter.ShootCloseZone(CloseShotPower, 0.1),
                         new ParallelAction(
                                 intake.IntakeRun(5),
                                 new SequentialAction(
@@ -162,7 +162,7 @@ public class RedSideCloseAuto extends LinearOpMode {
                             DriveToShoot4,
                             shooter.ShooterOn(CloseShotPower)
                         ),
-                        shooter.ShootCloseZone(CloseShotPower, 0.1),
+                        //shooter.ShootCloseZone(CloseShotPower, 0.1),
                         new ParallelAction(
                             shooter.ShooterOff(),
                             LeaveDrive

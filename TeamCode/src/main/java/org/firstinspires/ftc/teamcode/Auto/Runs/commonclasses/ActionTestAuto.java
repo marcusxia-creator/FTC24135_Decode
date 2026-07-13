@@ -63,8 +63,8 @@ public class ActionTestAuto extends LinearOpMode {
         if (opModeIsActive()) {
             Actions.runBlocking(
                 new SequentialAction(
-                    intake.IntakeRun(8),
-                    shooter.ShootFarZone(0.88,1.0)
+                    intake.IntakeRun(8)
+                    //shooter.ShootFarZone(0.88,1.0)
                 )
             );
         }

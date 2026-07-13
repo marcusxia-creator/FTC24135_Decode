@@ -11,7 +11,7 @@ public class RobotActionConfig {
     public static double gateDown                       = 0.13;
     public static double gateUp                         = 0.39;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
-    public static double spindexerIntakePos             = 0.18;
+    public static double spindexerIntakePos             = 0.165;
     public static double spindexerShootStartPos         = 0.00;
     public static double spindexerShoot1                = 0.18;
     public static double spindexerShoot2                = 0.56;
@@ -22,15 +22,15 @@ public class RobotActionConfig {
 
     public static double spindexerzeropos   = 0.00;
     public static double spindexerSlot1     = 0.0;
-    public static double spindexerSlot2     = 0.18;
-    public static double spindexerSlot3     = 0.37;
-    public static double spindexerSlot4     = 0.56;
-    public static double spindexerSlot5     = 0.75;
+    public static double spindexerSlot2     = 0.165;
+    public static double spindexerSlot3     = 0.35;
+    public static double spindexerSlot4     = 0.52;
+    public static double spindexerSlot5     = 0.67;
     public static double spindexerFullPos   = 1.0;
     //legacy, kept for auto
 
     public static double angleResetPos                  = 0.0;
-    public static double slotAngleDelta                 = 0.19;
+    public static double slotAngleDelta                 = 0.165;
 
     public static double servoStepSize                  = 0.05;     // per update() call (try 0.002–0.01)
     public static double servoTolerance                 = 0.025;    // "close enough" to finish

@@ -41,8 +41,6 @@ public class TestTeleOp extends OpMode {
     private Turret turret;
     private TurretUpd turretUpd;
 
-    private BallColor ballColor;
-
     double intakeSpeed = 0.5;
     double shooterPower = 0.0;
     double power = 0.0;
@@ -266,30 +264,13 @@ public class TestTeleOp extends OpMode {
 
         /** run turret*/
         if (gamepad_2.getButton(GamepadKeys.Button.DPAD_UP) && isButtonDebounced()) {
-            turretStatus = true;
+            robot.spindexerServo.setPosition(spindexerFullPos);
         }
         if (gamepad_2.getButton(GamepadKeys.Button.DPAD_DOWN) && isButtonDebounced()) {
             turretStatus = false;
         }
 
 
-        /**
-         * LED alarm light
-         */
-        if (powerCalculator.getDistance() <= 54) {
-            robot.LED.setPosition(0.28);
-        }
-        else if (ballColor.isKnown()) {
-            if (ballColor == BallColor.GREEN) {
-                robot.LED.setPosition(0.5);
-            }
-            if (ballColor == BallColor.PURPLE) {
-                robot.LED.setPosition(0.722);
-            }
-        }
-        else {
-            robot.LED.setPosition(1.0);
-        }
         telemetry.addData("Limit Switch", robot.limitSwitch.getState());
         telemetry.addData("Kicker Postion", robot.kickerServo.getPosition());
         telemetry.addData("Spindexer Position", robot.spindexerServo.getPosition());
@@ -303,7 +284,6 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("shooter velocity", robot.topShooterMotor.getVelocity());
         telemetry.addData("shooter RPM", robot.topShooterMotor.getVelocity() * tickToRPM);
         telemetry.addLine("----------------------------------------------------");
-        telemetry.addData("Color", ballColor);
         telemetry.addLine("----------------------------------------------------");
         //telemetry.addData("turret target angle - atan", turret.getTargetAngle());
         telemetry.addData("turret motor tick", robot.turretMotor.getCurrentPosition());
