@@ -47,9 +47,9 @@ public class FSMShooter {
     private double stopClearancePos = 0;
     private boolean clearanceChosen = false;
 
-    private static final double MOVE_TO_CLEARANCE_TIME_S = 0.2;  // tune
-    private static final double KICKER_RETRACT_TIME_S     = 0.25;  // tune
-    private static final double PARK_TO_ZERO_TIME_S       = 0.50;  // tune
+    private static final double MOVE_TO_CLEARANCE_TIME_S      = 0.2;  // tune
+    private static final double KICKER_RETRACT_TIME_S         = 0.25;  // tune
+    private static final double PARK_TO_ZERO_TIME_S           = 0.50;  // tune
 
 
     LUT<Integer, Long> timeStamp = new LUT<Integer, Long>() {{
