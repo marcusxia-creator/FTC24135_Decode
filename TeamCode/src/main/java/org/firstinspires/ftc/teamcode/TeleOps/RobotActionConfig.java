@@ -22,10 +22,10 @@ public class RobotActionConfig {
 
     public static double spindexerzeropos   = 0.00;
     public static double spindexerSlot1     = 0.0;
-    public static double spindexerSlot2     = 0.165;
-    public static double spindexerSlot3     = 0.35;
-    public static double spindexerSlot4     = 0.52;
-    public static double spindexerSlot5     = 0.67;
+    public static double spindexerSlot2     = 0.17;
+    public static double spindexerSlot3     = 0.345;
+    public static double spindexerSlot4     = 0.51;
+    public static double spindexerSlot5     = 0.675;
     public static double spindexerFullPos   = 1.0;
     //legacy, kept for auto
 
@@ -37,7 +37,7 @@ public class RobotActionConfig {
 
     //kicker
     public static double kickerRetract                  = 0.57; /// value - retract back for spindexer reversing
-    public static double kickerExtend                   = 0.84; /// value - into the spindexer for pushing the ball up
+    public static double kickerExtend                   = 0.82; /// value - into the spindexer for pushing the ball up
     public static double kickerRetractDelay             = 0.2;
     //intake Speed
     public static double intakeSpeed                    = 0.75;

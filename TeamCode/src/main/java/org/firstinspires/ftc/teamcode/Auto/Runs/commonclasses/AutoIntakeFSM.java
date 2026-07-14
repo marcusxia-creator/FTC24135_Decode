@@ -76,6 +76,7 @@ public class AutoIntakeFSM {
                     currentState = INTAKESTATE.INTAKE_RUN;
                     break;
                 case INTAKE_RUN:
+                    colorDetection.updateSlotColors();
                     robot.kickerServo.setPosition(kickerRetract);
                     robot.intakeMotor.setPower(0.85);
                     stateTimer.reset();
@@ -85,6 +86,7 @@ public class AutoIntakeFSM {
                     if (spindexerContext.shooterStarted || spindexerContext.intakeShouldStop) {
                         currentState = INTAKESTATE.INTAKE_END;
                     } else if (colorDetection.isSpindexerFull()) {
+                        colorDetection.updateSlotColors();
                         spindexerContext.currentGreenSlot = colorDetection.findGreenSlot();
                         spindexerContext.updateShootingInitSlot();
                         if (stateTimer.seconds()>0.3) {
@@ -115,8 +117,9 @@ public class AutoIntakeFSM {
             FSMIntakeRun();
             telemetryPacket.put("FSM Intake State", currentState);
             telemetryPacket.put("Is Spindexer Full",colorDetection.isSpindexerFull());
-            //telemetryPacket.put("Calc Shooting Int Slot", shootingInitSlot);
-            //telemetryPacket.put("Detected Green Slot", currentGreenSlot);
+            telemetryPacket.put("Calc Shooting Int Slot", spindexerContext.shootingInitSlot);
+            telemetryPacket.put("Detected Green Slot", colorDetection.findGreenSlot());
+            telemetryPacket.put("Transferred Green Slot",spindexerContext.currentGreenSlot);
             return currentState != INTAKESTATE.INTAKE_END;
         }
     }

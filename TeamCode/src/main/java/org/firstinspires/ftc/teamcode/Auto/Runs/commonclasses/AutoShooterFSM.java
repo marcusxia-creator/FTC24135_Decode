@@ -226,14 +226,14 @@ public class AutoShooterFSM {
 
     ///Shooter Sorting Run Mode
     public static class ShooterSortingRunMode implements Action {
-        public enum SHOOTERSTATE {
-            SHOOTER_INIT,
-            SHOOTER_RUN,
-            SHOOTER_SWITCH,
-            SHOOTER_LAUNCH,
-            SHOOTER_EMPTY,
-            SHOOTER_RESET,
-            SHOOTER_END;
+        public enum SORTINGSHOOTERSTATE {
+            SORTINGSHOOTER_INIT,
+            SORTINGSHOOTER_RUN,
+            SORTINGSHOOTER_SWITCH,
+            SORTINGSHOOTER_LAUNCH,
+            SORTINGSHOOTER_EMPTY,
+            SORTINGSHOOTER_RESET,
+            SORTINGSHOOTER_END;
         }
 
         /// Variables
@@ -244,7 +244,6 @@ public class AutoShooterFSM {
         private final ElapsedTime stateTimer2 = new ElapsedTime();
         private final ElapsedTime shooterTimer = new ElapsedTime();
 
-        private  int rapidStartingSlot = 0;
         private int sortingStartingSlot;
         private int targetSlot;
         private double shootSpeed;
@@ -252,12 +251,12 @@ public class AutoShooterFSM {
         private double ShooterWaitTime;
         private double targetVelocity;
 
-        private final SHOOTERSTATE startingState;
-        private final SHOOTERSTATE endState;
+        private final SORTINGSHOOTERSTATE startingState;
+        private final SORTINGSHOOTERSTATE endState;
         private boolean hasEnteredEndState = false;
-        public SHOOTERSTATE currentState;
+        public SORTINGSHOOTERSTATE currentState;
 
-        public ShooterSortingRunMode(RobotHardware robot, SHOOTERSTATE startingState, SHOOTERSTATE endState, double ShotPower, double shootSpeed, double ShooterWaitTime, AutoSpindexerContext spindexerContext) {
+        public ShooterSortingRunMode(RobotHardware robot, SORTINGSHOOTERSTATE startingState, SORTINGSHOOTERSTATE endState, double ShotPower, double shootSpeed, double ShooterWaitTime, AutoSpindexerContext spindexerContext) {
             this.spindexerContext = spindexerContext;
             spindexerContext.updateShootingInitSlot();
             this.robot = robot;
@@ -295,73 +294,74 @@ public class AutoShooterFSM {
 
         public void FSMShooterSortingFire() {
             switch (currentState) {
-                case SHOOTER_INIT:
+                case SORTINGSHOOTER_INIT:
                     spindexerContext.shooterStarted = true;
                     spindexerContext.intakeShouldStop = true;
                     robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
                     robot.kickerServo.setPosition(kickerRetract);
-                    SpindexerRunTo(sortingStartingSlot);
+                    targetSlot = sortingStartingSlot;
+                    SpindexerRunTo(targetSlot);
                     shooterTimer.reset();
                     stateTimer.reset();
-                    currentState = SHOOTERSTATE.SHOOTER_RUN;
+                    currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_RUN;
                     break;
-                case SHOOTER_RUN:
+                case SORTINGSHOOTER_RUN:
                     if (stateTimer.seconds() > ShooterWaitTime+0.2) {
                         robot.kickerServo.setPosition(kickerExtend);
                         if (stateTimer.seconds() > ShooterWaitTime + 0.5) {
                             stateTimer2.reset();
-                            currentState = SHOOTERSTATE.SHOOTER_SWITCH;
+                            currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_SWITCH;
                         }
                     }
                     break;
-                case SHOOTER_SWITCH:
+                case SORTINGSHOOTER_SWITCH:
                     if (targetSlot <= 3) {
                         targetSlot++;
                         stateTimer2.reset();
-                        currentState = SHOOTERSTATE.SHOOTER_LAUNCH;
+                        currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_LAUNCH;
                     }
-                    if (targetSlot > 3) {
+                    else if (targetSlot > 3 && targetSlot <5) {
                         targetSlot = 5;
                         stateTimer2.reset();
-                        currentState = SHOOTERSTATE.SHOOTER_EMPTY;
+                        currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_EMPTY;
                     }
                     else if (targetSlot == 5){
                         if (stateTimer2.seconds() > 0.5) {
                             stateTimer2.reset();
-                            currentState = SHOOTERSTATE.SHOOTER_RESET;
+                            currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_RESET;
                         }
                     }
                     else {
                         if (stateTimer2.seconds() > 0.5) {
                             stateTimer2.reset();
-                            currentState = SHOOTERSTATE.SHOOTER_RESET;
+                            currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_RESET;
                         }
                     }
                     break;
-                case SHOOTER_LAUNCH:
+                case SORTINGSHOOTER_LAUNCH:
                     SpindexerRunTo(targetSlot);
                     if (stateTimer2.seconds() > shootSpeed) {
                         stateTimer.reset();
-                        currentState = SHOOTERSTATE.SHOOTER_SWITCH;
+                        currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_SWITCH;
                     }
                     break;
-                case SHOOTER_EMPTY:
+                case SORTINGSHOOTER_EMPTY:
                     SpindexerRunTo(targetSlot);
                     if (stateTimer2.seconds() > shootSpeed) {
                         stateTimer.reset();
-                        currentState = SHOOTERSTATE.SHOOTER_SWITCH;
+                        currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_SWITCH;
                     }
                     break;
-                case SHOOTER_RESET:
+                case SORTINGSHOOTER_RESET:
                     SpindexerRunTo(1);
                     if (stateTimer2.seconds() > 0.3) {
                         robot.kickerServo.setPosition(kickerRetract);
                         if(stateTimer2.seconds()>0.6){
-                            currentState = SHOOTERSTATE.SHOOTER_END;
+                            currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_END;
                         }
                     }
                     break;
-                case SHOOTER_END:
+                case SORTINGSHOOTER_END:
                     robot.topShooterMotor.setPower(0);
                     robot.bottomShooterMotor.setPower(0);
                     break;
@@ -387,7 +387,7 @@ public class AutoShooterFSM {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            SHOOTERSTATE stateBeforeRun = currentState;
+            SORTINGSHOOTERSTATE stateBeforeRun = currentState;
             telemetryPacket.put("Calculated Starting Slot", spindexerContext.shootingInitSlot);
             telemetryPacket.put("Actual Starting Slot", sortingStartingSlot);
             telemetryPacket.put("FSM Shooter State", currentState);
@@ -403,7 +403,7 @@ public class AutoShooterFSM {
                 return false;
             }
 
-            if (currentState == SHOOTERSTATE.SHOOTER_END) {
+            if (currentState == SORTINGSHOOTERSTATE.SORTINGSHOOTER_END) {
                 robot.topShooterMotor.setPower(0);
                 robot.bottomShooterMotor.setPower(0);
                 return false;
@@ -413,8 +413,8 @@ public class AutoShooterFSM {
         }
     }
 
-    public Action ShootSorting(double ShotPower, double ShooterWaitTime, ShooterSortingRunMode.SHOOTERSTATE startingState, ShooterSortingRunMode.SHOOTERSTATE endState){
-        return new ShooterSortingRunMode(robot, startingState, endState, ShotPower,0.1,ShooterWaitTime, spindexerContext);
+    public Action ShootSorting(double ShotPower, double ShooterWaitTime, ShooterSortingRunMode.SORTINGSHOOTERSTATE startingState, ShooterSortingRunMode.SORTINGSHOOTERSTATE endState){
+        return new ShooterSortingRunMode(robot, startingState, endState, ShotPower,0.35,ShooterWaitTime, spindexerContext);
     }
 
     ///Shooter Speed
