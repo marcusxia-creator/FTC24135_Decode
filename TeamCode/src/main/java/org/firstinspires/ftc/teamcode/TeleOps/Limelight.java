@@ -18,7 +18,6 @@ import java.util.List;
 public class Limelight {
 
     private RobotHardware robot;
-    private TurretUpd turret;
     private double conversionFactor;
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
     private final double turretCenterOffsetLength = Math.hypot(turret_Center_Y_Offset, turret_Center_X_Offset);
@@ -32,6 +31,10 @@ public class Limelight {
     public void initLimelight(int apriltagID) {
         if (apriltagID == 24) {
             robot.limelight.pipelineSwitch(0);
+        }
+
+        if (apriltagID == 20) {
+            robot.limelight.pipelineSwitch(1);
         }
 
         if (apriltagID == 21 || apriltagID == 22 || apriltagID == 23) {
@@ -78,6 +81,45 @@ public class Limelight {
             }
         }
         return -1.0;
+    }
+
+    //============================================================
+    // Use Limelight Tx Angle to filter the llresult
+    // generate Tag angle for turret angle correction
+    //============================================================
+    public double getTargetXForTag(int tagId) {
+        LLResult r = robot.limelight.getLatestResult();
+        if (r == null || !r.isValid() || r.getFiducialResults() == null) return Double.NaN;
+
+        for (LLResultTypes.FiducialResult f : r.getFiducialResults()) {
+            if (f.getFiducialId() == tagId) {
+                double tx = f.getTargetXDegrees();
+                if (Math.abs(tx) < aimingAngleThrehold) return 0.0;
+                return tx;
+            }
+        }
+        return Double.NaN;
+    }
+
+    // NEW - get Tx Snapshot from Limelight
+    public TxSnapshot getTxForTag(int tagId) {
+        LLResult r = robot.limelight.getLatestResult();
+        if (r == null || !r.isValid() || r.getFiducialResults() == null) {
+            return new TxSnapshot(false, 0.0);
+        }
+
+        for (LLResultTypes.FiducialResult f : r.getFiducialResults()) {
+            if (f.getFiducialId() == tagId) {
+                double tx = f.getTargetXDegrees();
+
+                // optional deadband like you already do
+                if (Math.abs(tx) < aimingAngleThrehold) tx = 0.0;
+
+                return new TxSnapshot(true, tx);
+            }
+        }
+
+        return new TxSnapshot(false, 0.0);
     }
 
     //============================================================
@@ -129,6 +171,19 @@ public class Limelight {
             this.turretXOffset = turretXOffSet;
             this.turretYOffset = turretYOffset;
             TargetX = targetX;
+        }
+    }
+
+    //======================================
+    //limelight Tx for angle result
+    //======================================
+    public static class TxSnapshot {
+        public final boolean hasTarget;
+        public final double txDeg;
+
+        public TxSnapshot(boolean hasTarget, double txDeg) {
+            this.hasTarget = hasTarget;
+            this.txDeg = txDeg;
         }
     }
 
