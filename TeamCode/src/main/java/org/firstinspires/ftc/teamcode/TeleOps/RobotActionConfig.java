@@ -26,6 +26,7 @@ public class RobotActionConfig {
     public static double spindexerSlot3     = 0.345;
     public static double spindexerSlot4     = 0.51;
     public static double spindexerSlot5     = 0.675;
+    public static double spindexerSlot6     = 0.85;
     public static double spindexerFullPos   = 1.0;
     //legacy, kept for auto
 

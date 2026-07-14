@@ -15,4 +15,8 @@ public class AutoSpindexerContext {
             shootingInitSlot = Math.floorMod(currentGreenSlot - targetGreenSlot, 3);
         }
     }
+
+    public int getShootingInitSlot() {
+        return shootingInitSlot;
+    }
 }

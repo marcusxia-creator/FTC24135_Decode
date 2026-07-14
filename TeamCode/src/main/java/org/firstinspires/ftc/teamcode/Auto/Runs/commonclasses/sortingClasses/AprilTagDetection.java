@@ -19,7 +19,7 @@ public class AprilTagDetection {
     }
 
     public void limelightStart () {
-        robot.limelight.pipelineSwitch(2);
+        robot.limelight.pipelineSwitch(0);
         robot.limelight.start();
     }
 
@@ -32,7 +32,7 @@ public class AprilTagDetection {
         }
     }
 
-    public int findGreenSlot () {
+    public int findGreenSlot() {
         if (tagID == 21) {
             return 0;
         } else if (tagID == 22) {

@@ -156,9 +156,9 @@ public class AutoShooterFSM {
                     }
                     break;
                 case SHOOTER_RESET:
-                    SpindexerRunTo(1);
+                    robot.kickerServo.setPosition(kickerRetract);
                     if (stateTimer2.seconds() > 0.3) {
-                        robot.kickerServo.setPosition(kickerRetract);
+                        SpindexerRunTo(1);
                         if(stateTimer2.seconds()>0.6){
                             currentState = SHOOTERSTATE.SHOOTER_END;
                         }
@@ -192,7 +192,7 @@ public class AutoShooterFSM {
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             SHOOTERSTATE stateBeforeRun = currentState;
 
-            telemetryPacket.put("Actual Starting Slot", sortingStartingSlot);
+
             telemetryPacket.put("FSM Shooter State", currentState);
 
             RunShooter(targetVelocity);
@@ -258,7 +258,6 @@ public class AutoShooterFSM {
 
         public ShooterSortingRunMode(RobotHardware robot, SORTINGSHOOTERSTATE startingState, SORTINGSHOOTERSTATE endState, double ShotPower, double shootSpeed, double ShooterWaitTime, AutoSpindexerContext spindexerContext) {
             this.spindexerContext = spindexerContext;
-            spindexerContext.updateShootingInitSlot();
             this.robot = robot;
 
             this.endState = endState;
@@ -267,7 +266,6 @@ public class AutoShooterFSM {
 
             this.targetVelocity = ShotPower * shooterMaxRPM;
             this.ShooterWaitTime = ShooterWaitTime;
-            this.sortingStartingSlot = spindexerContext.shootingInitSlot;
             this.shootSpeed = shootSpeed;
         }
 
@@ -288,6 +286,9 @@ public class AutoShooterFSM {
                 robot.spindexerServo.setPosition(spindexerSlot5);
             }
             if (slot == 5) {
+                robot.spindexerServo.setPosition(spindexerSlot6);
+            }
+            if (slot == 6) {
                 robot.spindexerServo.setPosition(spindexerFullPos);
             }
         }
@@ -299,6 +300,8 @@ public class AutoShooterFSM {
                     spindexerContext.intakeShouldStop = true;
                     robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
                     robot.kickerServo.setPosition(kickerRetract);
+                    spindexerContext.updateShootingInitSlot();
+                    sortingStartingSlot = spindexerContext.getShootingInitSlot();
                     targetSlot = sortingStartingSlot;
                     SpindexerRunTo(targetSlot);
                     shooterTimer.reset();
@@ -315,24 +318,24 @@ public class AutoShooterFSM {
                     }
                     break;
                 case SORTINGSHOOTER_SWITCH:
-                    if (targetSlot <= 3) {
+                    if (targetSlot <= 2) {
                         targetSlot++;
                         stateTimer2.reset();
                         currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_LAUNCH;
                     }
-                    else if (targetSlot > 3 && targetSlot <5) {
-                        targetSlot = 5;
+                    else if (targetSlot>2 && targetSlot <6) {
+                        targetSlot = 6;
                         stateTimer2.reset();
                         currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_EMPTY;
                     }
-                    else if (targetSlot == 5){
-                        if (stateTimer2.seconds() > 0.5) {
+                    else if (targetSlot == 6){
+                        if (stateTimer2.seconds() > 0.3) {
                             stateTimer2.reset();
                             currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_RESET;
                         }
                     }
                     else {
-                        if (stateTimer2.seconds() > 0.5) {
+                        if (stateTimer2.seconds() > 0.3) {
                             stateTimer2.reset();
                             currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_RESET;
                         }
@@ -347,17 +350,20 @@ public class AutoShooterFSM {
                     break;
                 case SORTINGSHOOTER_EMPTY:
                     SpindexerRunTo(targetSlot);
-                    if (stateTimer2.seconds() > shootSpeed) {
+                    if (stateTimer2.seconds() > 0.5) {
                         stateTimer.reset();
                         currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_SWITCH;
                     }
                     break;
                 case SORTINGSHOOTER_RESET:
-                    SpindexerRunTo(1);
+                    SpindexerRunTo(5);
                     if (stateTimer2.seconds() > 0.3) {
                         robot.kickerServo.setPosition(kickerRetract);
-                        if(stateTimer2.seconds()>0.6){
-                            currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_END;
+                        if(stateTimer2.seconds()>0.8){
+                            SpindexerRunTo(1);
+                            if(stateTimer2.seconds()>1.4){
+                                currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_END;
+                            }
                         }
                     }
                     break;
@@ -388,6 +394,8 @@ public class AutoShooterFSM {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             SORTINGSHOOTERSTATE stateBeforeRun = currentState;
+            telemetryPacket.put("Imported Green Position", spindexerContext.currentGreenSlot);
+            telemetryPacket.put("Imported Target Green", spindexerContext.targetGreenSlot);
             telemetryPacket.put("Calculated Starting Slot", spindexerContext.shootingInitSlot);
             telemetryPacket.put("Actual Starting Slot", sortingStartingSlot);
             telemetryPacket.put("FSM Shooter State", currentState);
