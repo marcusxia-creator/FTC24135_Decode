@@ -148,6 +148,8 @@ public class RobotHardware {
         colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
         distanceSensor = hardwareMap.get(DistanceSensor.class, "Color_Sensor");
 
+
+
         limitSwitch = hardwareMap.get(DigitalChannel.class, "Limit_Switch");
         limitSwitch.setMode(DigitalChannel.Mode.INPUT);
 

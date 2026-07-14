@@ -1,11 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.BALL_PRESENT_THRESHOLD_MM;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.greenRangeHigh;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.greenRangeLow;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.purpleRangeHigh;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.purpleRangeLow;
-//import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.spindexerZeroPos;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 import android.graphics.Color;
@@ -15,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,7 +25,7 @@ public class SpindexerUpd {
     public int index;
     public double colorValue;
     public SLOT stableColor;
-    private final List<SLOT> voteBuffer = new ArrayList<>();
+    //private final List<SLOT> voteBuffer = new ArrayList<>();
     // -------------------------------
     // NEW ! - Incremental servo stepping state
     // -------------------------------
@@ -63,7 +58,6 @@ public class SpindexerUpd {
         RuntoPosition(currentPos + 1);
     } // Run to next position
     public void setCurrentPos(int pos){ this.currentPos = pos;} // new to set current post from outside
-    public void unJam() {RuntoPosition(prevPos);} // unjam but not use
 
     //==================================================
     // Update Servo Step when requestServoPosition() is called.
@@ -114,6 +108,7 @@ public class SpindexerUpd {
     //==================================================
     // --- COLOR SENSING (MAJORITY VOTE) ---
     //==================================================
+    /**
     public void clearVoteBuffer() {voteBuffer.clear();}
     public void addVoteSample(ColorSensor colorSensor, DistanceSensor distanceSensor) {
         float[] hsvValues = new float[3];
@@ -145,6 +140,7 @@ public class SpindexerUpd {
         // Apply result to the current logical index
         slots[Math.floorMod(currentPos, 3)] = winner;
     }
+    */
     //==================================================
     // --- UTILITY METHODS ---
     //==================================================
@@ -168,7 +164,8 @@ public class SpindexerUpd {
     // Getter and Setter Helper
     //==================================================
     public void resetSlot() {
-        for (int i = 0; i < slots.length; i++) slots[i] = SLOT.Empty;
+        //for (int i = 0; i < slots.length; i++) slots[i] = SLOT.Empty;
+        Arrays.fill(slots, SLOT.Empty);
     }
     public SLOT getCurrentSlotColor() {
         return slots[Math.floorMod(currentPos, 3)];
