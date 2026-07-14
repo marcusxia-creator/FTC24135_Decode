@@ -40,8 +40,8 @@ public class Turret {
     //kp 0.004
     //ks 0.0001
     //kv 0.005
-    public static double kPTurret = 0.003, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.0001, kVTurret = 0.004; // turret motor drive pidcontroller
-    public static double kP_motor = 25, kI_motor = 0, kD_motor = 0.01, kF = 2; // turret motor pidf
+    public static double kPTurret = 0.002, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.0001, kVTurret = 0.004; // turret motor drive pidcontroller
+    public static double kP_motor = 20, kI_motor = 0, kD_motor = 0.01, kF = 2; // turret motor pidf
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
 
     private final LUT<Integer, Pose2D> redTargetPose = new LUT<Integer, Pose2D>() {{

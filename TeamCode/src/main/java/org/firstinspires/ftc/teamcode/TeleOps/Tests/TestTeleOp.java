@@ -43,9 +43,6 @@ public class TestTeleOp extends OpMode {
     private Turret turret;
     private TurretUpd turretUpd;
 
-    private BallColor ballColor;
-    private ColorDetection colorDetection;
-
     double intakeSpeed = 0.5;
     double shooterPower = 0.0;
     double power = 0.0;
@@ -67,6 +64,8 @@ public class TestTeleOp extends OpMode {
     private boolean pidstatus = false;
     private boolean turretStatus = false;
     private boolean resetTurret = false;
+
+    private int slotTested = 0;  //which slot ball colour and distance data is read from
 
     public static double adjusterServoPosition = 0.49;
 
@@ -104,7 +103,6 @@ public class TestTeleOp extends OpMode {
         limelight.initLimelight(24);
         limelight.start();
 
-        colorDetection = new ColorDetection(robot);
         pidController = new PIDController(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
     }
 
@@ -114,9 +112,6 @@ public class TestTeleOp extends OpMode {
         /// Robot pinpoint
         robot.pinpoint.update();
         robotDrive.DriveLoop();
-
-        /// color detection
-        ballColor = BallColor.fromHue(colorDetection.getHue());
 
         ///  PID Controller for power calculation
         pidController.setPID(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
@@ -284,13 +279,8 @@ public class TestTeleOp extends OpMode {
         if (powerCalculator.getDistance() <= 54) {
             robot.LED.setPosition(0.28);
         }
-        else if (ballColor.isKnown()) {
-            if (ballColor == BallColor.GREEN) {
-                robot.LED.setPosition(0.5);
-            }
-            if (ballColor == BallColor.PURPLE) {
-                robot.LED.setPosition(0.722);
-            }
+        else if (robot.slotSensors.get(slotTested).checkBall()) {
+            robot.LED.setPosition(0.5);
         }
         else {
             robot.LED.setPosition(1.0);
@@ -308,8 +298,9 @@ public class TestTeleOp extends OpMode {
         telemetry.addData("shooter velocity", robot.topShooterMotor.getVelocity());
         telemetry.addData("shooter RPM", robot.topShooterMotor.getVelocity() * tickToRPM);
         telemetry.addLine("----------------------------------------------------");
-        telemetry.addData("Color", ballColor);
-        telemetry.addData("Color Hue", colorDetection.getHue());
+        telemetry.addData("From Slot Sensor",slotTested);
+        telemetry.addData("Color Hue", robot.slotSensors.get(slotTested).getColourHSV()[0]);
+        telemetry.addData("Distance", robot.slotSensors.get(slotTested).getColourHSV()[0]);
         telemetry.addLine("----------------------------------------------------");
         //telemetry.addData("turret target angle - atan", turret.getTargetAngle());
         telemetry.addData("turret motor tick", robot.turretMotor.getCurrentPosition());

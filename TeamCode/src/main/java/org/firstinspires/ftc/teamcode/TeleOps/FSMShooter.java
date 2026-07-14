@@ -256,7 +256,7 @@ public class FSMShooter {
 
             case KICKER_EXTEND:
                 robot.spindexerServo.setPosition(spindexerShootStartPos);
-                if (shootTimer.seconds() > 0.3) {
+                if (shootTimer.seconds() > 0.2) {
                     robot.kickerServo.setPosition(kickerExtend);
                     shooterState = SHOOTERSTATE.SHOOT_READY;
                 }
@@ -283,7 +283,7 @@ public class FSMShooter {
                 if (shootCounter == 0) {
                     shootCounter = 1;
                     lastFeedTimeMs = now;
-                    robot.spindexerServo.setPosition(spindexerShoot1);   // feed 1st ball NOW
+                    robot.spindexerServo.setPosition(spindexerSlots[1]);   // feed 1st ball NOW
                     break;
                 }
                 // --- Next balls: every FEED_PERIOD_MS ---
@@ -291,7 +291,7 @@ public class FSMShooter {
                     shootCounter++;
                     lastFeedTimeMs = now;
                     if (shootCounter <= 3) {
-                        robot.spindexerServo.setPosition(spindexerShootSteps[shootCounter-1]);
+                        robot.spindexerServo.setPosition(spindexerSlots[shootCounter]);
                     } else {
                         shooterState = SHOOTERSTATE.SHOOTER_STOP;
                         shootTimer.reset();
@@ -303,15 +303,10 @@ public class FSMShooter {
                 break;
 
             case SHOOTER_STOP:
-                //stop flywheel
+                //stop flywheel, very short state, might fuse
                 shootermotorstate = SHOOTERMOTORSTATE.STOP;
-                robot.spindexerServo.setPosition(spindexerShootStartPos); //move to start pos for kicker clearance
-
-                //spindexer movement time
-                if (shootTimer.seconds() > 0.5) {
-                    shootTimer.reset();
-                    shooterState = SHOOTERSTATE.KICKER_RETRACT;
-                }
+                shooterState = SHOOTERSTATE.KICKER_RETRACT;
+                shootTimer.reset();
                 break;
 
             case KICKER_RETRACT:

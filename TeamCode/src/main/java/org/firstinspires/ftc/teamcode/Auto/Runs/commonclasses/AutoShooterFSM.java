@@ -114,7 +114,7 @@ public class AutoShooterFSM {
                 robot.spindexerServo.setPosition(spindexerSlot5);
             }
             if (slot == 5) {
-                robot.spindexerServo.setPosition(spindexerFullPos);
+                robot.spindexerServo.setPosition(spindexerSlot6);
             }
         }
 

@@ -11,25 +11,23 @@ public class RobotActionConfig {
     public static double gateDown                       = 0.13;
     public static double gateUp                         = 0.39;
     public static double DEBOUNCE_THRESHOLD             = 0.25;
-    public static double spindexerIntakePos             = 0.18;
-    public static double spindexerShootStartPos         = 0.00;
 
-    public static double spindexerStowPos               = 0.1;
-    public static double spindexerShoot1                = 0.18;
-    public static double spindexerShoot2                = 0.56;
-    public static double spindexerShoot3                = 0.75;     ///六七
-    public static double spindexerClearanceOffset       = 0.185;     ///distance between tha shoot pos and the earlier cleared slot, used in stopping. Might switch to a list of cleared positions
-    public static double[] spindexerShootSteps          = {spindexerShoot1,spindexerShoot2,spindexerShoot3};
     //New spindexer values untested
+    public static double spindexerzeropos   = 0.0;
+    public static double spindexerSlot0     = 0.0;
+    public static double spindexerSlot1     = 0.17;
+    public static double spindexerSlot2     = 0.345;
+    public static double spindexerSlot3     = 0.51;
+    public static double spindexerSlot4     = 0.675;
+    public static double spindexerSlot5     = 0.83899857;
+    public static double spindexerSlot6     = 1.0;  //六七
+    public static double[] spindexerSlots   = {spindexerSlot0, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5, spindexerSlot6};
 
-    public static double spindexerzeropos   = 0.00;
-    public static double spindexerSlot1     = 0.0;
-    public static double spindexerSlot2     = 0.18;
-    public static double spindexerSlot3     = 0.37;
-    public static double spindexerSlot4     = 0.56;
-    public static double spindexerSlot5     = 0.75;
-    public static double spindexerFullPos   = 1.0;
-    //legacy, kept for auto
+    //Special Spindexer Positions
+    public static double spindexerStowPos               = (spindexerSlot0+spindexerSlot1)/2; //Position between slots 1 and 2 to prevent balls from falling out under acceleration
+    public static double spindexerIntakePos             = spindexerSlot1;
+    public static double spindexerShootStartPos         = 0.0;
+    public static double spindexerClearanceOffset       = 0.0;     //distance between tha shoot pos and the earlier cleared slot, used in stopping. Might switch to a list of cleared positions
 
     public static double angleResetPos                  = 0.0;
     public static double slotAngleDelta                 = 0.19;
@@ -39,8 +37,8 @@ public class RobotActionConfig {
 
     //kicker
     public static double kickerRetract                  = 0.57; /// value - retract back for spindexer reversing
-    public static double kickerExtend                   = 0.84; /// value - into the spindexer for pushing the ball up
-    public static double kickerRetractDelay             = 0.2;
+    public static double kickerExtend                   = 0.82; /// value - into the spindexer for pushing the ball up
+    public static double kickerRetractDelay             = 0.3;
     //intake Speed
     public static double intakeSpeed                    = 0.75;
     public static double intakeStop                     = 0;
@@ -75,7 +73,7 @@ public class RobotActionConfig {
     public static int[] purpleRangeLow                  = {115, 118};
     public static int[] purpleRangeHigh                 = {170, 230};
 
-    public static int requiredSensors                   = 2;
+    public static int requiredSensors                   = 3;
 
     public static double BALL_PRESENT_THRESHOLD_MM      = 50;
     public static final double INTAKE_TICKS_PER_REV     = 145.1;

@@ -13,9 +13,10 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -78,7 +79,7 @@ public class RobotHardware {
     public DcMotorEx frontRightMotor;
     public DcMotorEx backRightMotor;
     public Servo kickerServo;
-    public Servo spindexerServo;
+    public ServoImplEx spindexerServo;
     public Servo shooterAdjusterServo;
     public DcMotorEx intakeMotor;
     public DcMotorEx turretMotor;
@@ -136,7 +137,7 @@ public class RobotHardware {
         //Servos
         //angleServo = hardwareMap.get(Servo.class, "Angle_Servo");
         kickerServo = hardwareMap.get(Servo.class, "Kicker_Servo");
-        spindexerServo = hardwareMap.get(Servo.class, "Spindexer_Servo");
+        spindexerServo = hardwareMap.get(ServoImplEx.class, "Spindexer_Servo");
         shooterAdjusterServo = hardwareMap.get(Servo.class, "Shooter_Adjuster_Servo");
 
         topShooterMotor = hardwareMap.get(DcMotorEx.class, "Top_Shooter_Motor");
@@ -198,6 +199,8 @@ public class RobotHardware {
         shooterAdjusterServo.setDirection(Servo.Direction.REVERSE);
         kickerServo.setDirection(Servo.Direction.REVERSE);
 
+        ///set spindexer servo PWM
+        spindexerServo.setPwmRange(new PwmControl.PwmRange(500,2500));
 
         /** set drive motor 0 */
         frontLeftMotor.setPower(0);
