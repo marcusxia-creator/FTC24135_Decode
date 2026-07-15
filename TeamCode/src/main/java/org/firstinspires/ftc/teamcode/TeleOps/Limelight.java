@@ -71,24 +71,6 @@ public class Limelight {
     //============================================================
     public double getTargetXForTag(int tagId) {
         LLResult r = robot.limelight.getLatestResult();
-        if (r == null || !r.isValid() || r.getFiducialResults() == null) return -1.0;
-
-        for (LLResultTypes.FiducialResult f : r.getFiducialResults()) {
-            if (f.getFiducialId() == tagId) {
-                double tx = f.getTargetXDegrees();
-                if (Math.abs(tx) < aimingAngleThrehold) return 0.0;
-                return tx;
-            }
-        }
-        return -1.0;
-    }
-
-    //============================================================
-    // Use Limelight Tx Angle to filter the llresult
-    // generate Tag angle for turret angle correction
-    //============================================================
-    public double getTargetXForTag(int tagId) {
-        LLResult r = robot.limelight.getLatestResult();
         if (r == null || !r.isValid() || r.getFiducialResults() == null) return Double.NaN;
 
         for (LLResultTypes.FiducialResult f : r.getFiducialResults()) {

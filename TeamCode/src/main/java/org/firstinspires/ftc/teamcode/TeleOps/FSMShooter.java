@@ -20,7 +20,6 @@ public class FSMShooter {
     private ElapsedTime shootTimer = new ElapsedTime();
     private ElapsedTime flyWheelTimer = new ElapsedTime();
     private ElapsedTime debounceTimer = new ElapsedTime();
-    private long lastLoopTime = 0;
 
     public static SHOOTERSTATE shooterState;
     SHOOTERMOTORSTATE shootermotorstate;
@@ -35,22 +34,6 @@ public class FSMShooter {
     // shooting sequence config
     private int shootCounter; // counter for # ball shooting
     private long lastFeedTimeMs = 0; // shooting feed time interval time stamp
-
-    private final ElapsedTime shooterTimer = new ElapsedTime();
-    public boolean stopRequested = false;
-
-    // Holds the current spindexer servo position when stop is requested
-    private double holdSpindexerPos = 0.0;
-    private boolean stopInitDone = false;
-
-    // Tuning constants
-    private double stopClearancePos = 0;
-    private boolean clearanceChosen = false;
-
-    private static final double MOVE_TO_CLEARANCE_TIME_S      = 0.2;  // tune
-    private static final double KICKER_RETRACT_TIME_S         = 0.25;  // tune
-    private static final double PARK_TO_ZERO_TIME_S           = 0.50;  // tune
-
 
     LUT<Integer, Long> timeStamp = new LUT<Integer, Long>() {{
         add(1, FEED_PERIOD_MS_CLOSE);
@@ -83,8 +66,7 @@ public class FSMShooter {
         SHOOT_READY,
         SHOOTING,
         KICKER_RETRACT,
-        SHOOTER_STOP,
-        SHOOTER_GRACE_STOPPING
+        SHOOTER_STOP
     }
 
     public enum SHOOTERMOTORSTATE{
@@ -123,15 +105,6 @@ public class FSMShooter {
 
 
     public void SequenceShooterLoop() {
-        //===========================================================
-        //✅ Add STOPPING to shooter enum
-        //✅ Add stopRequested, holdSpindexerPos, shooterTimer
-        //✅ Add requestGracefulStop() and canExit()
-        //✅ Add enterStoppingState() + handleStoppingState()
-        //✅ In shooter loop: if stopRequested → enter STOPPING
-        //✅ Transition manager: request stop, wait for canExit()
-        //===========================================================
-
         //==========================================================
         // Set shooter power
         //==========================================================
@@ -156,16 +129,6 @@ public class FSMShooter {
         if (shootermotorstate == SHOOTERMOTORSTATE.STOP) {
             robot.topShooterMotor.setPower(0);
             robot.bottomShooterMotor.setPower(0);
-        }
-
-        //==========================================================
-        // Handle stopping
-        // If stop is requested, immediately transition to STOPPING
-        //==========================================================
-        if (stopRequested
-                && shooterState != SHOOTERSTATE.SHOOTER_IDLE
-                && shooterState != SHOOTERSTATE.SHOOTER_GRACE_STOPPING) {
-                enterStoppingState();   // this sets stopInitDone = true
         }
 
         //==========================================================
@@ -236,9 +199,6 @@ public class FSMShooter {
                 // ✅ single authoritative reset point
                 shootCounter = 0;
                 lastFeedTimeMs = 0;
-
-                stopRequested = false;
-                stopInitDone = false;
 
                 shootTimer.reset();
                 flyWheelTimer.reset();
@@ -319,10 +279,6 @@ public class FSMShooter {
                 }
                 break;
 
-            case SHOOTER_GRACE_STOPPING:
-                handleStoppingState();
-                break;
-
             default:
                 shootermotorstate = SHOOTERMOTORSTATE.STOP;
                 shooterState = SHOOTERSTATE.SHOOTER_IDLE;
@@ -330,80 +286,9 @@ public class FSMShooter {
         }
     }
 
-    //=========================================================
-    // HANDLE STOPPING
-    //=========================================================
-    private void enterStoppingState() {
-        shooterState = SHOOTERSTATE.SHOOTER_GRACE_STOPPING;
-        if (!stopInitDone){
-            shooterTimer.reset();
-            // Freeze spindexer exactly where it currently is
-            holdSpindexerPos = robot.spindexerServo.getPosition();
-
-            // Mark init done so we don't recapture every loop
-            stopInitDone = true;
-        }
-    }
-
-    private void handleStoppingState() {
-        // Always stop flywheel immediately
-        shootermotorstate = SHOOTERMOTORSTATE.STOP;
-        robot.topShooterMotor.setPower(0.0);
-        robot.bottomShooterMotor.setPower(0.0);
-
-        double t = shooterTimer.seconds();
-        // ---------------------------------------------------------
-        // Step 0: Decide clearance slot ONCE (closest > current)
-        // ---------------------------------------------------------
-        if (!clearanceChosen) {
-            if (robot.spindexerServo.getPosition()==spindexerShootStartPos) {
-                stopClearancePos = spindexerShootStartPos;//the shoot start pos should always be clear
-            } else {
-                //move back to the last cleared slot, assuming that we are on a shoot position
-                stopClearancePos = robot.spindexerServo.getPosition()-spindexerClearanceOffset;
-            }
-            clearanceChosen = true;
-        }
-
-        // ---------------------------------------------------------
-        // Step 1: Move spindexer to clearance slot (do NOT retract yet)
-        // ---------------------------------------------------------
-        if (t > MOVE_TO_CLEARANCE_TIME_S) {
-            robot.spindexerServo.setPosition(stopClearancePos);
-        }
-
-        // ---------------------------------------------------------
-        // Step 2: Retract kicker (now that kicker is clear)
-        // ---------------------------------------------------------
-        if (t > (MOVE_TO_CLEARANCE_TIME_S + KICKER_RETRACT_TIME_S)) {
-            robot.kickerServo.setPosition(kickerRetract);
-            robot.spindexerServo.setPosition(stopClearancePos); // keep holding clearance
-        }
-
-        // ---------------------------------------------------------
-        // Step 3: Park spindexer to intake position
-        // ---------------------------------------------------------
-        if (t > (MOVE_TO_CLEARANCE_TIME_S + KICKER_RETRACT_TIME_S + PARK_TO_ZERO_TIME_S)) {
-            robot.kickerServo.setPosition(kickerRetract);
-            robot.spindexerServo.setPosition(spindexerIntakePos);
-            // ---------------------------------------------------------
-            // Done
-            // ---------------------------------------------------------
-            stopRequested = false;
-            stopInitDone = false;
-            clearanceChosen = false;
-            shooterState = SHOOTERSTATE.SHOOTER_IDLE;
-        }
-    }
-
     //  safe exit in FSMShooter
     public boolean canExit() {
         return shooterState == SHOOTERSTATE.SHOOTER_IDLE;
-    }
-
-    public void requestGracefulStop() {
-        // If you have a specific STOPPING state, use it here.
-        stopRequested= true;
     }
 
     //============================================================

@@ -65,7 +65,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     // For shooter power and angle calculator
     private LUTPowerCalculator shooterPowerAngleCalculator;
 
-    // for ball color and color detection
+    // for ball colour and colour detection
     private BallColor ballColor;
 
     // for time and frequency
@@ -164,7 +164,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         // 1.Buttons → requestedActionState
         // 2.Transition manager:-> requests graceful stops -> waits for canExit() ->commits activeActionState
         //                     -> calls onEnterActionState()
-        // 3. Pre-loop switch ->only adds behavior, never changes FSM states
+        // 3. Pre-loop switch ->only adds behaviour, never changes FSM states
         // --------VISUAL MIND MODEL-------------------------------
         //      [Buttons]
         //      ↓
@@ -333,19 +333,13 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
                 break;
 
             case Intaking:
-                // We are trying to intake → shooter must finish gracefully first
-                if (!FSMShooter.canExit()) {
-                    FSMShooter.requestGracefulStop();
-                }
+                // Assume that shooter always runs all the way through
                 break;
 
             default:
                 // Going idle → stop both gracefully
                 if (!FSMIntake.canExit()) {
                     FSMIntake.requestGracefulStop();
-                }
-                if (!FSMShooter.canExit()) {
-                    FSMShooter.requestGracefulStop();
                 }
                 break;
         }
@@ -426,7 +420,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
 
         if (shooterPowerAngleCalculator.getZone() == 0 && Math.abs(turret.getTargetTick() - turret.getCurrentTick())<10 && !limelight.llresult()) {
             //Distance outside shooting zone and no limelight, white alert
-            robot.LED.setPosition(1.0); // white color
+            robot.LED.setPosition(1.0); // white colour
         } else if (shooterPowerAngleCalculator.getZone() == 0 && limelight.llresult() && Math.abs(turret.getTargetTick() - turret.getCurrentTick())<10){
             robot.LED.setPosition(0.333); // orange
         } else if (shooterPowerAngleCalculator.getZone() > 0 && limelight.llresult() && Math.abs(turret.getTargetTick() - turret.getCurrentTick())<10){

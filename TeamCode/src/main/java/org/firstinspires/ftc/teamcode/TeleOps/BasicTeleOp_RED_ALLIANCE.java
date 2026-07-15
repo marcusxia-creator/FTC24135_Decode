@@ -370,10 +370,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                 break;
 
             case Intaking:
-                // We are trying to intake → shooter must finish gracefully first
-                if (!FSMShooter.canExit()) {
-                    FSMShooter.requestGracefulStop();
-                }
+                // Assume that shooter always runs full cycle
                 break;
 
             case Idle:
@@ -381,9 +378,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                 // Going idle → stop both gracefully
                 if (!FSMIntake.canExit()) {
                     FSMIntake.requestGracefulStop();
-                }
-                if (!FSMShooter.canExit()) {
-                    //FSMShooter.requestGracefulStop();
                 }
                 break;
         }
@@ -541,7 +535,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         shooterTargetRPM = shooterPowerAngleCalculator.getRPM();
         shooterRPM = shooterPowerAngleCalculator.getMeasureRPM();
         telemetry.addData("Shooter Target RPM",shooterTargetRPM);
-        telemetry.addData("Shooter acutal RPM",shooterRPM);
+        telemetry.addData("Shooter actual RPM",shooterRPM);
         telemetry.addData("Shooter RPM","%,.0f",robot.topShooterMotor.getVelocity()*SHOOTER_RPM_CONVERSION);
         telemetry.addLine("-----");
         //String MotifAvailable;
