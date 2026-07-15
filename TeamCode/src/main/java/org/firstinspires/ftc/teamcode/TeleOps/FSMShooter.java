@@ -395,29 +395,34 @@ public class FSMShooter {
     public void resetTrim() { trimTicks = 0; }
 
     //=========================================================
-    //limelight tx adjust
+    //limelight tx adjust helper
+    //1. set limelightTx by setLimelightTx
+    // * Tx snap data class from limelight class, which has two fields: hasTarget boolean and txDeg value
+    //2. get txAdjustTicks by getTxAdjustTicks
+    // * smooth out the tx value based on the Tx delay time
+    // * smooth out the shaking value based on the deadband
     //=========================================================
     public void setLimelightTx(boolean hasTarget, double txDeg) {
+        /// limelight Tx snap from limelight class
+        /// the Tx snap data class has two fields: hasTarget boolean and txDeg value
         llHasTarget = hasTarget;
         llTxDeg = hasTarget ? txDeg : Double.NaN;
-
+        /// timestamp
         long now = System.currentTimeMillis();
+        /// check for valid target
         if (!hasTarget) return;
-
-        // smooth only when valid
+        /// smooth only when valid
         if (!txInit) { txFilt = txDeg; txInit = true; }
         txFilt = txAlpha * txDeg + (1.0 - txAlpha) * txFilt;
-
-        // store last valid filtered tx
+        /// store last valid filtered tx
         lastValidTx = txFilt;
         lastValidTimeMs = now;
     }
 
     private int getTxAdjustTicks() {
         long now = System.currentTimeMillis();
-
         double txToUse;
-
+        /// handle missing tx delay, if longer than holdMs, fade to 0 depending on how long it has been
         if (llHasTarget) {
             txToUse = txFilt;
         } else {
@@ -432,7 +437,7 @@ public class FSMShooter {
                 txToUse = 0.0;
             }
         }
-
+        ///  handel shaking tx, compare with deadband to prevent shaking, more than deadband, it drives the turret.
         if (Math.abs(txToUse) < txDeadbandDeg) txToUse = 0.0;
 
         int adjust = (int) Math.round(-1*txToUse * degToTicks);
