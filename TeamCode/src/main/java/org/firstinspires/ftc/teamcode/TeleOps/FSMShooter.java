@@ -377,7 +377,12 @@ public class FSMShooter {
     }
 
     //=========================================================
-    //limelight tx adjust
+    //limelight tx adjust helper
+    //1. set limelightTx by setLimelightTx
+    // * Tx snap data class from limelight class, which has two fields: hasTarget boolean and tx Deg value
+    //2. get txAdjustTicks by getTxAdjustTicks
+    // * smooth out the tx value based on the Tx delay time
+    // * smooth out the shaking value based on the deadband
     //=========================================================
     public void setLimelightTx(boolean hasTarget, double txDeg) {
         llHasTarget = hasTarget;
