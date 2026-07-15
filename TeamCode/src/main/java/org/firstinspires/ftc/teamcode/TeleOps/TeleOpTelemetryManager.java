@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.SHOOTER_RPM_CONVERSION;
 
-import android.graphics.Color;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -35,7 +33,7 @@ public class TeleOpTelemetryManager {
             FSMShooter fsmShooter,
             SpindexerUpd spindexer,
             RobotHardware robot,
-            LUTPowerCalculator shooterPowerAngleCalculator,
+            ShooterPowerCalculator shooterPowerAngleCalculator,
             Turret turret,
             Limelight limelight,
             double loopHz
@@ -70,7 +68,7 @@ public class TeleOpTelemetryManager {
 
         telemetry.addLine("-----SHOOTER-----");
         telemetry.addData("distance to goal", "%,.0f",shooterPowerAngleCalculator.getDistance());
-        telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
+        telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getCurrentZone());
         telemetry.addData("shooter power calculator", shooterPowerAngleCalculator.getPower());
         telemetry.addData("Shooter actual Power", robot.topShooterMotor.getPower());
         telemetry.addData("voltage from Shooter", fsmShooter.getVoltage());
@@ -118,7 +116,7 @@ public class TeleOpTelemetryManager {
             FSMShooter fsmShooter,
             SpindexerUpd spindexer,
             RobotHardware robot,
-            LUTPowerCalculator shooterPowerAngleCalculator,
+            ShooterPowerCalculator shooterPowerAngleCalculator,
             Turret turret,
             Limelight limelight,
             double loopHz
@@ -139,7 +137,6 @@ public class TeleOpTelemetryManager {
         String MotifAvailable;
         telemetry.addLine("-----SHOOTER STATE-----");
         telemetry.addData("Shooter Target Colour", fsmShooter.targetColour.name());
-        telemetry.addData("power set point-NORMED", fsmShooter.getPower_setpoint());
         telemetry.addData("Shooter Power-LUT OUT", robot.topShooterMotor.getPower());
         telemetry.update();
     }
