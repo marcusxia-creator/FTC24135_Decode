@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.TeleOps.Sensors;
 
 
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.greenRangeHigh;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.purpleRangeHigh;
+
 public enum BallColor {
     PURPLE,
     GREEN,
@@ -15,8 +18,8 @@ public enum BallColor {
 
     public static BallColor fromHue(float hue) {
 
-        if (hue >= 170 && hue <= 230) return PURPLE;
-        if (hue >= 135 && hue <= 160) return GREEN;
+        if (hue >= purpleRangeHigh[0] && hue <= purpleRangeHigh[1]) return PURPLE;
+        if (hue >= greenRangeHigh[0] && hue <= greenRangeHigh[1]) return GREEN;
         return UNKNOWN;
     }
 
