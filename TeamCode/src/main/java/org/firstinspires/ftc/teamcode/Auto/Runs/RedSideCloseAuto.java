@@ -22,6 +22,8 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.*;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterRapidRunMode.SHOOTERSTATE.*;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterSortingRunMode.SORTINGSHOOTERSTATE.*;
 
 @Autonomous(name = "RedSideCloseAuto", group = "Autonomous")
 public class RedSideCloseAuto extends LinearOpMode {
@@ -56,23 +58,23 @@ public class RedSideCloseAuto extends LinearOpMode {
         aprilTagDetection.limelightStart();
 
         if (opModeInInit()) {
-            Actions.runBlocking(turret.TurretRun(45));
+            Actions.runBlocking(turret.TurretRun(155));
             robot.spindexerServo.setPosition(spindexerSlot1);
             robot.kickerServo.setPosition(kickerRetract);
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
             while (opModeInInit()&&!isStopRequested()) {
                 aprilTagDetection.limelightDetect();
-                targetGreen = aprilTagDetection.findGreenSlot();
+                context.targetGreenSlot = aprilTagDetection.findGreenSlot();
                 telemetry.addData("Detected ID",aprilTagDetection.tagID);
-                telemetry.addData("Target Green Slot",targetGreen);
+                telemetry.addData("Target Green Slot",context.targetGreenSlot);
                 telemetry.update();
             }
         }
 
         TrajectoryActionBuilder DriveToShoot1Builder = drive.actionBuilder(initialPose)
                 .setTangent(Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(-40.5,44),Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(-90));
+                .splineTo(new Vector2d(-40.5,44),Math.toRadians(-90))
+                .splineTo(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(-90));
 
 // FIRST RUN SET: go to Close Set 2 instead of Intake Set 3
         TrajectoryActionBuilder IntakeSet1Drive1Builder = DriveToShoot1Builder.endTrajectory().fresh()
@@ -89,7 +91,7 @@ public class RedSideCloseAuto extends LinearOpMode {
 
         TrajectoryActionBuilder DriveToShoot3Builder = IntakeGateSet1Drive1Builder.endTrajectory().fresh()
                 .setTangent(Math.toRadians(-90))
-                .splineTo(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y + 16),Math.toRadians(-128));
+                .splineTo(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(-128));
 
 // THIRD RUN SET: go to the furthest Close Set 2 position
         TrajectoryActionBuilder IntakeSet2Drive1Builder = DriveToShoot3Builder.endTrajectory().fresh()
@@ -125,9 +127,10 @@ public class RedSideCloseAuto extends LinearOpMode {
                         new ParallelAction(
                             turret.TurretRun(45),
                             shooter.ShooterOn(CloseShotPower),
+                            shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_RUN),
                             DriveToShoot1
                         ),
-                        //shooter.ShootCloseZone(CloseShotPower, 0.1),
+                        shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                         shooter.ShooterOff(),
                         new ParallelAction(
                                 intake.IntakeRun(5),
@@ -137,21 +140,23 @@ public class RedSideCloseAuto extends LinearOpMode {
                         ),
                         new ParallelAction(
                                 DriveToShoot2,
-                                shooter.ShooterOn(CloseShotPower)
+                                shooter.ShooterOn(CloseShotPower),
+                                shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_RUN)
                         ),
-                        //shooter.ShootCloseZone(CloseShotPower, 0.1),
+                        shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                         shooter.ShooterOff(),
                         new ParallelAction(
-                                intake.IntakeRun(8),
+                                intake.IntakeRun(7),
                                 new SequentialAction(
                                     IntakeGateSet1Drive1
                                 )
                         ),
                         new ParallelAction(
                                 DriveToShoot3,
-                                shooter.ShooterOn(CloseShotPower)
+                                shooter.ShooterOn(CloseShotPower),
+                                shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_INIT,SORTINGSHOOTER_RUN)
                         ),
-                        //shooter.ShootCloseZone(CloseShotPower, 0.1),
+                        shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_SWITCH,SORTINGSHOOTER_END),
                         new ParallelAction(
                                 intake.IntakeRun(5),
                                 new SequentialAction(
@@ -160,9 +165,10 @@ public class RedSideCloseAuto extends LinearOpMode {
                         ), 
                         new ParallelAction(
                             DriveToShoot4,
-                            shooter.ShooterOn(CloseShotPower)
+                            shooter.ShooterOn(CloseShotPower),
+                            shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_INIT,SORTINGSHOOTER_RUN)
                         ),
-                        //shooter.ShootCloseZone(CloseShotPower, 0.1),
+                            shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_SWITCH,SORTINGSHOOTER_END),
                         new ParallelAction(
                             shooter.ShooterOff(),
                             LeaveDrive

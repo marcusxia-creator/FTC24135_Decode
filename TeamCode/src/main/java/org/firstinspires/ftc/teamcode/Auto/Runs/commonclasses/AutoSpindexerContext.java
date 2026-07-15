@@ -5,9 +5,6 @@ public class AutoSpindexerContext {
     public int targetGreenSlot = -1;
     public int shootingInitSlot = 0;
 
-    public boolean shooterStarted = false;
-    public boolean intakeShouldStop = false;
-
     public void updateShootingInitSlot() {
         if (currentGreenSlot == -1 || targetGreenSlot == -1) {
             shootingInitSlot = 0;

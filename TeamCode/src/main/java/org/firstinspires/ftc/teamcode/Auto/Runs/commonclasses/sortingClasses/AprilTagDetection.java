@@ -19,7 +19,7 @@ public class AprilTagDetection {
     }
 
     public void limelightStart () {
-        robot.limelight.pipelineSwitch(0);
+        robot.limelight.pipelineSwitch(2);
         robot.limelight.start();
     }
 

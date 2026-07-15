@@ -117,8 +117,6 @@ public class AutoShooterFSM {
         public void FSMShooterRapidFire() {
             switch (currentState) {
                 case SHOOTER_INIT:
-                    spindexerContext.shooterStarted = true;
-                    spindexerContext.intakeShouldStop = true;
                     robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
                     robot.kickerServo.setPosition(kickerRetract);
                     SpindexerRunTo(rapidStartingSlot);
@@ -296,8 +294,6 @@ public class AutoShooterFSM {
         public void FSMShooterSortingFire() {
             switch (currentState) {
                 case SORTINGSHOOTER_INIT:
-                    spindexerContext.shooterStarted = true;
-                    spindexerContext.intakeShouldStop = true;
                     robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
                     robot.kickerServo.setPosition(kickerRetract);
                     spindexerContext.updateShootingInitSlot();
@@ -359,11 +355,9 @@ public class AutoShooterFSM {
                     SpindexerRunTo(5);
                     if (stateTimer2.seconds() > 0.3) {
                         robot.kickerServo.setPosition(kickerRetract);
-                        if(stateTimer2.seconds()>0.8){
+                        if(stateTimer2.seconds()>1.2){
                             SpindexerRunTo(1);
-                            if(stateTimer2.seconds()>1.4){
-                                currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_END;
-                            }
+                            currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_END;
                         }
                     }
                     break;
@@ -431,8 +425,6 @@ public class AutoShooterFSM {
         private AutoSpindexerContext context;
 
         public ShooterOn (double shotPower){
-            spindexerContext.shooterStarted = true;
-            spindexerContext.intakeShouldStop = true;
             this.targetVelocity = shotPower*shooterMaxRPM;
         }
 

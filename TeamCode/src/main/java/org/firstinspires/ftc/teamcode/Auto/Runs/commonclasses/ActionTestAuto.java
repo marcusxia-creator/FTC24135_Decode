@@ -57,7 +57,7 @@ public class ActionTestAuto extends LinearOpMode {
                 colorDetection.updateSlotColors();
                 aprilTagDetection.limelightDetect();
                 context.currentGreenSlot = colorDetection.findGreenSlot();
-                context.targetGreenSlot = 2;
+                context.targetGreenSlot = aprilTagDetection.findGreenSlot();
                 context.updateShootingInitSlot();
                 telemetry.addData("Detected ID",aprilTagDetection.tagID);
                 telemetry.addData("Target Green Slot",context.targetGreenSlot);
@@ -77,7 +77,11 @@ public class ActionTestAuto extends LinearOpMode {
             Actions.runBlocking(
                 new SequentialAction(
                     intake.IntakeRun(8),
-                    shooter.ShootSorting(0.4, 1.6,SORTINGSHOOTER_INIT,SORTINGSHOOTER_END)
+                    shooter.ShootSorting(0.67, 1.6,SORTINGSHOOTER_INIT,SORTINGSHOOTER_END),
+                    intake.IntakeRun(8),
+                    shooter.ShootSorting(0.67, 1.6,SORTINGSHOOTER_INIT,SORTINGSHOOTER_END),
+                    intake.IntakeRun(8),
+                    shooter.ShootSorting(0.67, 1.6,SORTINGSHOOTER_INIT,SORTINGSHOOTER_END)
                 )
             );
         }

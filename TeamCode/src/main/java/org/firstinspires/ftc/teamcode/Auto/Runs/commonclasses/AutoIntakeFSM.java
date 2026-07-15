@@ -83,9 +83,7 @@ public class AutoIntakeFSM {
                     currentState = INTAKESTATE.INTAKE_DETECT;
                     break;
                 case INTAKE_DETECT:
-                    if (spindexerContext.shooterStarted || spindexerContext.intakeShouldStop) {
-                        currentState = INTAKESTATE.INTAKE_END;
-                    } else if (colorDetection.isSpindexerFull()) {
+                    if (colorDetection.isSpindexerFull()) {
                         colorDetection.updateSlotColors();
                         spindexerContext.currentGreenSlot = colorDetection.findGreenSlot();
                         spindexerContext.updateShootingInitSlot();
@@ -94,7 +92,13 @@ public class AutoIntakeFSM {
                             currentState = INTAKESTATE.INTAKE_UNJAM;
                         }
                     } else if (intakeTimer.seconds() > maxRunTime) {
-                        currentState = INTAKESTATE.INTAKE_END;
+                        colorDetection.updateSlotColors();
+                        spindexerContext.currentGreenSlot = colorDetection.findGreenSlot();
+                        spindexerContext.updateShootingInitSlot();
+                        if (stateTimer.seconds()>0.3) {
+                            stateTimer.reset();
+                            currentState = INTAKESTATE.INTAKE_UNJAM;
+                        }
                     } else {
                         currentState = INTAKESTATE.INTAKE_RUN;
                     }
@@ -106,7 +110,7 @@ public class AutoIntakeFSM {
                     }
                     break;
                 case INTAKE_END:
-                    robot.intakeMotor.setPower(intakeStop);
+                    robot.intakeMotor.setPower(0);
                     break;
 
             }
