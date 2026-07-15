@@ -2,19 +2,15 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMIntake.IntakeStates;
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SHOOTERSTATE;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.SHOOTER_RPM_CONVERSION;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerRetract;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
-
-import static java.lang.Double.isNaN;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -68,7 +64,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private Limelight limelight;
     /// ----------------------------------------------------------------
     // For shooter power and angle calculator
-    private LUTPowerCalculator shooterPowerAngleCalculator;
+    private ShooterPowerCalculator shooterPowerAngleCalculator;
 
     // for ball color and color detection
     private BallColor ballColor;
@@ -156,13 +152,13 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         turret = new Turret(robot, true);
 
         /// 4.1. power calculator for shooter------------------------------------------------------------
-        shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
+        shooterPowerAngleCalculator = new ShooterPowerCalculator(robot);
         /// 4. shooter-------------------------------------------------------------
         FSMShooter = new FSMShooter(robot, spindexer, shooterPowerAngleCalculator, gamepadComboInput, turret, limelight);
         FSMShooter.Init();
 
         /// 5. intake------------------------------------------------------------
-        FSMIntake = new FSMIntake (robot, spindexer, colorDetection);
+        FSMIntake = new FSMIntake (robot, spindexer);
 
         /// 7. alliance selection-----------------------------------------------------------
         alliance = Alliance.RED_ALLIANCE;
@@ -238,7 +234,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         ballColor = BallColor.fromHue(colorDetection.getHue());
         updateLoopFrequency();
         currentPose = robot.pinpoint.getPosition();
-        currentZone = shooterPowerAngleCalculator.getZone();
+        currentZone = shooterPowerAngleCalculator.getCurrentZone();
         currentDistance = shooterPowerAngleCalculator.getDistance();
         currentTx = limelight.getTargetXForTag(24);
         batteryVoltage = robot.getBatteryVoltageRobust();
@@ -370,11 +366,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             stopRequestedForPending = false; //
         }
 
-        // If driver changed their mind mid-transition, you have 2 choices:
-        // A) ignore until commit (most stable)
-        // B) allow retargeting only when safe (optional)
-        // We'll do A: ignore changes until commit.
-
+        // initial intake_safe_stop and shooter_safe_stop boolean
         boolean intakeSafe  = FSMIntake.canExit();
         boolean shooterSafe = FSMShooter.canExit();
 
@@ -389,7 +381,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         //TODO: if specific stop needed. uncomment the function below
         // Request graceful stops once
         if (!stopRequestedForPending) {
-            requestGracefulStopsIfNeeded(activeActionState, pendingActionState);
+            requestGracefulStopsIfNeeded(pendingActionState);
             stopRequestedForPending = true;
         }
 
@@ -427,7 +419,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     // ONLY SHOOTER STOPPED, IT CAN SAFE EXIT / SWITCH
     // NOT SAFE, REQUEST TO GRACEFULSTOP - FSMIntake.requestGracefulStop()
     //===========================================================
-    private void requestGracefulStopsIfNeeded(RobotActionState current, RobotActionState target) {
+    private void requestGracefulStopsIfNeeded(RobotActionState target) {
         switch (target) {
             case Sequence_Shooting:
                 if (!FSMIntake.canExit()) {
