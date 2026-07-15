@@ -12,23 +12,23 @@ public class RobotActionConfig {
     public static double DEBOUNCE_THRESHOLD             = 0.25;
     public static double spindexerKickerInDelta         = 0.02;
     public static double spindexerZeroPos               = 0.00;
-    public static double spindexerSlot1                 = 0.12;
-    public static double spindexerSlot2                 = 0.31;
-    public static double spindexerSlot3                 = 0.49;
-    public static double spindexerSlot4                 = 0.68;
-    public static double spindexerSlot5                 = 0.86;
+    public static double spindexerSlot1                 = 0.17;
+    public static double spindexerSlot2                 = 0.345;
+    public static double spindexerSlot3                 = 0.51;
+    public static double spindexerSlot4                 = 0.675;
+    public static double spindexerSlot5                 = 0.84;
     public static double spindexerFullPos               = 1.0;
     public static double spinderxerShootPos             = 0.08;
-    public static double[] spindexerPositions           = {spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5, spindexerFullPos};
+    public static double[] spindexerPositions           = {spindexerZeroPos, spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5, spindexerFullPos};
 
     public static double angleResetPos                  = 0.0;
     public static double slotAngleDelta                 = 0.19;
 
     public static double servoStepSize                  = 0.05;     // per update() call (try 0.002–0.01)
-    public static double servoTolerance                 = 0.025;    // "close enough" to finish
+    public static double servoTolerance                 = 0.015;    // "close enough" to finish
 
-public static double spindexerServoFullTime             = 0.65;    // full circle time
-public static double spindexerServoPerSlotTime          = 0.15;    // per slot time
+    public static double spindexerServoFullTime             = 0.65;    // full circle time
+    public static double spindexerServoPerSlotTime          = 0.15;    // per slot time
 
     //kicker
     public static double kickerRetract                  = 0.37;  /// value - retract back for spindexer reversing
@@ -73,11 +73,6 @@ public static double spindexerServoPerSlotTime          = 0.15;    // per slot t
     public static final double INTAKE_RPM_CONVERSION    = 60.0 / INTAKE_TICKS_PER_REV;
     public static final double SHOOTER_RPM_CONVERSION   = (60.0 / 28.0);
 
-
-    //Motif IDs
-    public static int GPPid                             = 21;
-    public static int PGPid                             = 22;
-    public static int PPGid                             = 23;
 
     public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, -64, 8, AngleUnit.DEGREES, 0);
     public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, -64, 8, AngleUnit.DEGREES, 0);
@@ -130,4 +125,5 @@ public static double spindexerServoPerSlotTime          = 0.15;    // per slot t
     public static final double trimStep                 = 10;
     public static final double adjSpeed                 = 1500;
     public static final double pressTime                = 0.2;
+    public static final double requiredSensors          =3;
 }
