@@ -145,7 +145,9 @@ public class FSMShooter {
         // NEW Turret Trim
         // Triming/manual control
         //========================================================
+       
         int trimInput=0;
+         /** Depreciated!!
         if ((gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
                 || gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER))
                 && isButtonDebounced()){
@@ -167,7 +169,7 @@ public class FSMShooter {
             robot.turretMotor.setVelocity(trimInput*adjSpeed);
             ///turret.driveTurretPID(turret.getCurrentTick(), turret.getTargetTick());
         }
-        /** Depreciated!!
+        
         if (turretState == TURRETSTATE.AIMING && aimEnabled) {
             int currentTick = turret.getCurrentTick();
             int targetTick = turret.getTargetTick();
@@ -178,6 +180,32 @@ public class FSMShooter {
             ///turret.driveTurretPID(turret.getCurrentTick(), turret.getTargetTick());
         }
          */
+         //get limelight tx adjust
+        Limelight.TxSnapshot snap = limelight.getTxForTag(24);
+        setLimelightTx(snap.hasTarget, snap.txDeg);
+
+        if (turretState == TURRETSTATE.AIMING && aimEnabled) {
+            if ((gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
+                || gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER))
+                && isButtonDebounced()){
+                trimInput+=1;
+            }
+            if (gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER)
+                || gamepad_2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+                && isButtonDebounced()){
+                trimInput-=1;
+            }
+            trimTicks =Range.clip(trimTicks +trimInput*trimStep,-400,400);
+
+            int currentTick = turret.getCurrentTick();
+            int txAdjustTicks = getTxAdjustTicks();
+            int targetTick = (int) (currentTick + trimTicks +txAdjustTicks);
+
+            turret.driveTurretPID(currentTick, targetTick);
+        }
+        else {
+            robot.turretMotor.setVelocity(trimInput*adjSpeed);
+        }
         //=====================================
         // TODO - Update Zone for shooting interval - not in use, - update the MS in main loop right now.
         //=====================================
@@ -348,4 +376,48 @@ public class FSMShooter {
         return false;
     }
 
+    //=========================================================
+    //limelight tx adjust
+    //=========================================================
+    public void setLimelightTx(boolean hasTarget, double txDeg) {
+        llHasTarget = hasTarget;
+        llTxDeg = hasTarget ? txDeg : Double.NaN;
+
+        long now = System.currentTimeMillis();
+        if (!hasTarget) return;
+
+        // smooth only when valid
+        if (!txInit) { txFilt = txDeg; txInit = true; }
+        txFilt = txAlpha * txDeg + (1.0 - txAlpha) * txFilt;
+
+        // store last valid filtered tx
+        lastValidTx = txFilt;
+        lastValidTimeMs = now;
+    }
+
+    private int getTxAdjustTicks() {
+        long now = System.currentTimeMillis();
+
+        double txToUse;
+
+        if (llHasTarget) {
+            txToUse = txFilt;
+        } else {
+            long lostMs = now - lastValidTimeMs;
+
+            if (lostMs <= txHoldMs) {
+                txToUse = lastValidTx;                 // hold
+            } else if (lostMs <= txHoldMs + txFadeMs) {
+                double t = (lostMs - txHoldMs) / (double) txFadeMs; // 0..1
+                txToUse = lastValidTx * (1.0 - t);     // fade to 0
+            } else {
+                txToUse = 0.0;
+            }
+        }
+
+        if (Math.abs(txToUse) < txDeadbandDeg) txToUse = 0.0;
+
+        int adjust = (int) Math.round(-1*txToUse * degToTicks);
+        return Range.clip(adjust, -txMaxTicks, txMaxTicks);
+    }
 }
