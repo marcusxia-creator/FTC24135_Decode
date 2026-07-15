@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
-@TeleOp (name = "VelTuner", group = "org.firstinspires.ftc.teamcode")
+@TeleOp (name = "VelTuner", group = "org.firstinspires.ftc.teamcode.Tests")
 @Config
 @Disabled
 public class VelTuner extends OpMode {

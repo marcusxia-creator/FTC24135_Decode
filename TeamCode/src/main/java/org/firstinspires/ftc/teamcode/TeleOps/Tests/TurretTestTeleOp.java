@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps.Tests;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.DEBOUNCE_THRESHOLD;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerExtend;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerRetract;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.slotAngleDelta;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -17,11 +14,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.TeleOps.GamepadComboInput;
-import org.firstinspires.ftc.teamcode.TeleOps.LUTPowerCalculator;
+import org.firstinspires.ftc.teamcode.TeleOps.ShooterPowerCalculator;
 import org.firstinspires.ftc.teamcode.TeleOps.Limelight;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotDrive;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
@@ -30,7 +24,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.Turret;
 
 @Config
-@TeleOp (name = "TurretTestTeleOp", group = "org.firstinspires.ftc.teamcode")
+@TeleOp (name = "TurretTestTeleOp", group = "org.firstinspires.ftc.teamcode.Tests")
 public class TurretTestTeleOp extends OpMode {
     private RobotHardware robot;
     private Turret turret;
@@ -40,7 +34,7 @@ public class TurretTestTeleOp extends OpMode {
     private static double speed;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private RobotDrive robotDrive;
-    private LUTPowerCalculator powerCalculator;
+    private ShooterPowerCalculator powerCalculator;
 
     private BallColor ballColor;
     private ColorDetection colorDetection;
@@ -59,7 +53,7 @@ public class TurretTestTeleOp extends OpMode {
     private Limelight limelight;
 
     private PIDController pidController;
-    private LUTPowerCalculator shooterPowerLUT;
+    private ShooterPowerCalculator shooterPowerLUT;
     //private AprilTagDetection aprilTagDetection;
 
     private boolean finetune = false;
@@ -88,8 +82,8 @@ public class TurretTestTeleOp extends OpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        powerCalculator = new LUTPowerCalculator(robot);
-        shooterPowerLUT = new LUTPowerCalculator(robot);
+        powerCalculator = new ShooterPowerCalculator(robot);
+        shooterPowerLUT = new ShooterPowerCalculator(robot);
         //aprilTagDetection = new AprilTagDetection(robot);
 
         turret = new Turret(robot, true);

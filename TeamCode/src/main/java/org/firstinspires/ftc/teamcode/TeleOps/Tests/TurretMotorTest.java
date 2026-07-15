@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.TeleOps.Turret;
 
-@TeleOp(name = "Turret Motor Test", group = "Test")
+@TeleOp(name = "Turret Motor Test", group = "org.firstinspires.ftc.teamcode.Tests")
 public class TurretMotorTest extends OpMode {
 
     private DcMotorEx turretMotor;

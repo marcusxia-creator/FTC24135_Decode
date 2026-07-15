@@ -17,9 +17,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 //import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
-import org.firstinspires.ftc.teamcode.TeleOps.FSMShooter;
 import org.firstinspires.ftc.teamcode.TeleOps.GamepadComboInput;
-import org.firstinspires.ftc.teamcode.TeleOps.LUTPowerCalculator;
+import org.firstinspires.ftc.teamcode.TeleOps.ShooterPowerCalculator;
 import org.firstinspires.ftc.teamcode.TeleOps.Limelight;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
@@ -30,7 +29,7 @@ import org.firstinspires.ftc.teamcode.TeleOps.Turret;
 
 
 @Config
-@TeleOp (name = "TestTeleOp", group = "org.firstinspires.ftc.teamcode")
+@TeleOp (name = "TestTeleOp", group = "org.firstinspires.ftc.teamcode.Tests")
 public class TestTeleOp extends OpMode {
     private RobotHardware robot;
     private GamepadEx gamepad_1;
@@ -40,7 +39,7 @@ public class TestTeleOp extends OpMode {
     private ElapsedTime debounceTimer = new ElapsedTime();
     private ElapsedTime pressedTimer = new ElapsedTime();
     private RobotDrive robotDrive;
-    private LUTPowerCalculator powerCalculator;
+    private ShooterPowerCalculator powerCalculator;
     private Turret turret;
 
     private BallColor ballColor;
@@ -61,7 +60,7 @@ public class TestTeleOp extends OpMode {
     private Limelight limelight;
 
     private PIDController pidController;
-    private LUTPowerCalculator shooterPowerLUT;
+    private ShooterPowerCalculator shooterPowerLUT;
     //private AprilTagDetection aprilTagDetection;
 
     private boolean finetune = false;
@@ -90,8 +89,8 @@ public class TestTeleOp extends OpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        powerCalculator = new LUTPowerCalculator(robot);
-        shooterPowerLUT = new LUTPowerCalculator(robot);
+        powerCalculator = new ShooterPowerCalculator(robot);
+        shooterPowerLUT = new ShooterPowerCalculator(robot);
         //aprilTagDetection = new AprilTagDetection(robot);
 
         turret = new Turret(robot, true);
