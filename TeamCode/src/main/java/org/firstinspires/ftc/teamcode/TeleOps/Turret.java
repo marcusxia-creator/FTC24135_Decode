@@ -101,14 +101,6 @@ public class Turret {
         return (int) Math.round(getTurretDriveAngle() * angleToTick);
     }
 
-    public void updatePidFromDashboard() {
-        // FTCLib PID (your own controller)
-        if (kPTurret != lastkP || kITurret != lastkI || kDTurret != lastkD) {
-            pidController.setPID(kPTurret, kITurret, kDTurret);
-            lastkP = kPTurret; lastkI = kITurret; lastkD = kDTurret;
-        }
-    }
-
     public double getTurretDriveAngle () {
         return -(floorMod(robot.pinpoint.getHeading(AngleUnit.DEGREES) - getTargetAngle()+180, 360)-180);
     }
@@ -152,10 +144,9 @@ public class Turret {
         double turretcentX = robot.pinpoint.getPosX(DistanceUnit.INCH) + turretXOffSet;
         double turretcentY = robot.pinpoint.getPosY(DistanceUnit.INCH) + turretYOffSet;
         return Math.toDegrees(Math.atan2((goalPose.getY(DistanceUnit.INCH)-turretcentY), (goalPose.getX(DistanceUnit.INCH)-turretcentX)));
-        //FIXME OLD
-        //return Math.toDegrees(Math.atan2((goalPose.getY(DistanceUnit.INCH)-robot.pinpoint.getPosY(DistanceUnit.INCH)), (goalPose.getX(DistanceUnit.INCH)-robot.pinpoint.getPosX(DistanceUnit.INCH))));
     }
 
+    // select target goal pose
     public void updateZoneForGoalPose(int zone) {
         int normalizedZone;
 
