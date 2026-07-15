@@ -77,7 +77,6 @@ public class Turret {
             kF               // F
     );
     private double lastkP = Double.NaN, lastkI = Double.NaN, lastkD = Double.NaN;
-    private double lastkPmotor = Double.NaN, lastkImotor = Double.NaN, lastkDmotor = Double.NaN, lastkF = Double.NaN;
 
     private final double turretCenterOffsetLength = Math.hypot(turret_Center_Y_Offset, turret_Center_X_Offset);
 
@@ -95,7 +94,7 @@ public class Turret {
         targetPose = isRedAlliance ? redTargetPose : blueTargetPose;
 
         // Prevent goalPose null before updateZoneForGoalPose() is called
-        goalPose = Optional.ofNullable(targetPose.get(1)).orElse(redCloseGoalPose);
+        goalPose = Optional.ofNullable(targetPose.get(1)).orElse(targetPose.get(2));
     }
 
     public int getMotorDriveTick() {
@@ -107,14 +106,6 @@ public class Turret {
         if (kPTurret != lastkP || kITurret != lastkI || kDTurret != lastkD) {
             pidController.setPID(kPTurret, kITurret, kDTurret);
             lastkP = kPTurret; lastkI = kITurret; lastkD = kDTurret;
-        }
-
-        // Motor controller PIDF (RUN_USING_ENCODER) — only if you really need it
-        if (kP_motor != lastkPmotor || kI_motor != lastkImotor || kD_motor != lastkDmotor || kF != lastkF) {
-            pidf = new PIDFCoefficients(kP_motor, kI_motor, kD_motor, kF);
-            robot.turretMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-
-            lastkPmotor = kP_motor; lastkImotor = kI_motor; lastkDmotor = kD_motor; lastkF = kF;
         }
     }
 
@@ -141,69 +132,6 @@ public class Turret {
         double ff = (kSTurret * Math.signum(errorTicks)) + (kVTurret * errorTicks);
         double power = pidController.calculate(currentTick, targetTick);
         double output = power + ff;
-        robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
-    }
-    public void driveTurretPIDF(int currentTick, int targetTick) {
-        double currentTime = System.nanoTime() * 1e-9;
-        double dt = currentTime - lastTime;
-
-        if (lastTime == 0) {
-            lastTime = currentTime;
-            commandedTick  = currentTick;
-            commandedVelocity  = 0;
-            return;
-        }
-        // protect against bad loop time
-        if (dt <= 0) {
-            dt = 0.001;
-        }
-        if (dt > 0.05) {
-            dt = 0.05;
-        }
-
-        lastTime = currentTime;
-
-        double previousVelocity = commandedVelocity;
-
-        // Remaining distance from profile state to target
-        double errorTicks = targetTick - commandedTick;
-        double direction = Math.signum(errorTicks);
-
-        // Maximum velocity that still allows stopping at target
-        double stoppingVelocity = Math.sqrt(2.0 * maxAccel * Math.abs(errorTicks));
-
-        // Desired profile velocity with sign
-        double desiredVelocity = direction * Math.min(maxVel, stoppingVelocity);
-
-        // Limit how fast profile velocity can change
-        double maxDeltaVelocity = maxAccel * dt;
-        double velocityError  = desiredVelocity - commandedVelocity;
-        double deltaVelocity = Range.clip(velocityError, -maxDeltaVelocity, maxDeltaVelocity);
-
-        // Limit how fast profile position can change
-        commandedVelocity += deltaVelocity;
-
-        // Compute profile acceleration from velocity change
-        double commandedAcceleration = (commandedVelocity - previousVelocity) / dt;
-
-        commandedTick += 0.5 * (previousVelocity + commandedVelocity) * dt;
-
-        if (Math.abs(targetTick - commandedTick) < 1.0 && Math.abs(commandedVelocity) < 5.0) {
-            commandedTick = targetTick;
-            commandedVelocity = 0.0;
-            commandedAcceleration = 0.0;
-        }
-
-        // -------- PID (tracking profiled position) --------
-        double power = pidController.calculate(currentTick, commandedTick);
-
-        // -------- Feedforward --------
-        double ff = (kSTurret * Math.signum(commandedVelocity))
-                + (kVTurret * commandedVelocity)
-                + (kATurret * commandedAcceleration);
-
-        double output = power + ff;
-
         robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
     }
 
