@@ -78,9 +78,10 @@ public class Turret {
     private boolean runToPositionConfigured = false;
 
     //New variables for experimental motion profile driven turret
-    public static double MPK_p=12; //proportional slope factor as the turret approaches the target in ticks/s/tick
-    public static double MPmaxVel=800; //Max velocity to request of the motor in ticks/s, excluding derivative
-    public static double MPtickTime=0.0067;//Usual time/tick for derivative
+    public static double MPaccel=3000; //Acceleration when accelerationg
+    public static double MPdecel=3000; //Acceleration when decelerating
+    public static double MPmaxSpeed=800; //Max speed to request of the motor in ticks/s, excluding derivative
+    public static double MPtickTime=0.0067;//Usual time/tick for derivative, switch to timer if possible
     public static double MPmaxDeltaT=20;//max change in target value, to filter out erroneous target tick changes
     int lastTargetTick = 0;//to find dT_t/dt
 
@@ -166,13 +167,15 @@ public class Turret {
 
     public void driveTurretMP(int currentTick, int targetTick) {
         //Experimental motion-profile velocity driven turret, needs turret in velocity mode
-        int errorTicks = targetTick - currentTick;
+        int error=Math.abs(targetTick - currentTick);
+        double currentSpeed=Math.abs(robot.turretMotor.getVelocity());
+        double profileDirection=Math.signum(targetTick-currentTick);
+        double profileSpeed=Math.min(Math.min(Math.sqrt(2*MPdecel*error),currentSpeed+(MPtickTime*MPaccel)),MPmaxSpeed);
+
         double deltaTt=targetTick-lastTargetTick;
         double tTvel=(deltaTt)/MPtickTime;
-        robot.turretMotor.setVelocity(Range.clip(MPK_p*errorTicks,-MPmaxVel,MPmaxVel)+((Math.abs(deltaTt)<MPmaxDeltaT)?tTvel:0));
-        ///                                             ¦________________¦¦_________________¦  ¦_____________________________¦¦_____¦
-        ///                                             Proportional ramp  limits max speeds      Filters erroneous changes  derivative
-        ///                                                                  when far away              in target tick
+        double derivativeCorrection = (Math.abs(deltaTt)<MPmaxDeltaT)?tTvel:0;
+        robot.turretMotor.setVelocity(profileDirection*profileSpeed+derivativeCorrection);
         lastTargetTick=targetTick;
     }
 
