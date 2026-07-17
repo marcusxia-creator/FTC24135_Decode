@@ -104,6 +104,7 @@ public class LUTPowerCalculator {
         if (robot == null || robot.pinpoint == null || robot.topShooterMotor == null) return 0.0;
         updateDistanceAndZone();
         rpmTarget = Optional.ofNullable(targetRPM.get(zone)).orElse(0);
+        rpmTarget=(int)Math.round(RPMFactor*rpmTarget);
         // If not shooting, return 0 and reset PID so it doesn't "wind up"
         if (rpmTarget <= 0) {
             pid.reset();

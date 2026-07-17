@@ -117,6 +117,10 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
         robotDrive.Init();
 
+        limelight = new Limelight(robot);
+        limelight.initLimelight(25);
+        limelight.start();
+
         /// 3. turret---------------------------------------------------------------
         //turret = new TurretUpd(robot);
         turret = new Turret(robot, false);
@@ -137,11 +141,6 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
 
         /// 8. robot state----------------------------------------------------------
         actionStates = RobotActionState.Idle;
-
-        /// 9. limelight--------------------------------------------------------------
-        limelight = new Limelight(robot);
-        limelight.initLimelight(25);
-        limelight.start();
 
         /// 10. start adjuster servo at position to avoid soft start
         robot.shooterAdjusterServo.setPosition(0.48);
@@ -255,7 +254,9 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         // =========================================================
         // 9. TELEMETRY
         // =========================================================
-        telemetryManager();
+        //telemetryManager();
+        telemetry.addData("loopFreq", loopHz);
+        telemetry.update();
     }
 
     @Override

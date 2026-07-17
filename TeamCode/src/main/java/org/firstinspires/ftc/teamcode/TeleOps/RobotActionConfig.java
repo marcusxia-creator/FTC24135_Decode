@@ -111,6 +111,7 @@ public class RobotActionConfig {
     public static double FAR_ZONE_MID               = 144;
     public static double FAR_ZONE_FAR               = 167.0;
 
+    public static double RPMFactor    = 1.1;
     public static int RPM0            = 3700; ///all minus 200 rpm with upgraded hardware
     public static int RPM1            = 3150;
     public static int RPM2            = 3150;

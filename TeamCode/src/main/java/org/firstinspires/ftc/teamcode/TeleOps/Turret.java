@@ -40,8 +40,9 @@ public class Turret {
     //kp 0.004
     //ks 0.0001
     //kv 0.005
-    public static double kPTurret = 0.002, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.0001, kVTurret = 0.004; // turret motor drive pidcontroller
+    public static double kPTurret = 0.0055, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.08, kVTurret = 0.00; // turret motor drive pidcontroller
     public static double kP_motor = 20, kI_motor = 0, kD_motor = 0.01, kF = 2; // turret motor pidf
+    public static double staticFThreshold=2; //The velocity threshold at which the turret is considered stationary
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
 
     private final LUT<Integer, Pose2D> redTargetPose = new LUT<Integer, Pose2D>() {{
@@ -75,6 +76,13 @@ public class Turret {
 
     // NEW (does not rename anything): prevents mode spam
     private boolean runToPositionConfigured = false;
+
+    //New variables for experimental motion profile driven turret
+    public static double MPK_p=12; //proportional slope factor as the turret approaches the target in ticks/s/tick
+    public static double MPmaxVel=800; //Max velocity to request of the motor in ticks/s, excluding derivative
+    public static double MPtickTime=0.0067;//Usual time/tick for derivative
+    public static double MPmaxDeltaT=20;//max change in target value, to filter out erroneous target tick changes
+    int lastTargetTick = 0;//to find dT_t/dt
 
     public Turret (RobotHardware robot, boolean isRedAlliance) {
         this.robot = robot;
@@ -147,12 +155,25 @@ public class Turret {
         //updatePidFromDashboard();
 
         int errorTicks = targetTick - currentTick;
+        double vel=robot.turretMotor.getVelocity();
         // Feedforward should NOT be based on absolute targetTicks (too large).
         // Use direction + error assist.
-        double ff = (kSTurret * Math.signum(errorTicks)) + (kVTurret * errorTicks);
+        double ff = Math.abs(vel)>=staticFThreshold?(kSTurret * Math.signum(errorTicks)) + (kVTurret * vel):0;
         double power = pidController.calculate(currentTick, targetTick);
         double output = power + ff;
         robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
+    }
+
+    public void driveTurretMP(int currentTick, int targetTick) {
+        //Experimental motion-profile velocity driven turret, needs turret in velocity mode
+        int errorTicks = targetTick - currentTick;
+        double deltaTt=targetTick-lastTargetTick;
+        double tTvel=(deltaTt)/MPtickTime;
+        robot.turretMotor.setVelocity(Range.clip(MPK_p*errorTicks,-MPmaxVel,MPmaxVel)+((Math.abs(deltaTt)<MPmaxDeltaT)?tTvel:0));
+        ///                                             ¦________________¦¦_________________¦  ¦_____________________________¦¦_____¦
+        ///                                             Proportional ramp  limits max speeds      Filters erroneous changes  derivative
+        ///                                                                  when far away              in target tick
+        lastTargetTick=targetTick;
     }
 
     public void driveTurretLimelight() {

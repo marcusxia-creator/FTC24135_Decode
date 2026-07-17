@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.TeleOps.Tests;
 
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.*;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.DEBOUNCE_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerExtend;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerRetract;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.slotAngleDelta;
+
+import static java.lang.Math.round;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -17,6 +20,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -30,45 +34,37 @@ import org.firstinspires.ftc.teamcode.TeleOps.Turret;
 import org.firstinspires.ftc.teamcode.TeleOps.TurretUpd;
 
 @Config
-@TeleOp (name = "TestTeleOp", group = "org.firstinspires.ftc.teamcode")
+@TeleOp (name = "turretTestTeleop", group = "org.firstinspires.ftc.teamcode")
 public class TurretTestTeleOp extends OpMode {
     private RobotHardware robot;
     private Turret turret;
     private GamepadEx gamepad_1;
-    private GamepadEx gamepad_2;
-    private double servoposition;
-    private static double speed;
     private ElapsedTime debounceTimer = new ElapsedTime();
-    private RobotDrive robotDrive;
-    private LUTPowerCalculator powerCalculator;
-    private TurretUpd turretUpd;
-
-    private BallColor ballColor;
-    private ColorDetection colorDetection;
-
-    double intakeSpeed = 0.5;
-    double shooterPower = 0.0;
-    double power = 0.0;
-    public static double targetShooterRPM = 0.0;
-    double currentShooterRPM = 0;
-    public static double tickToRPM = (60/28); // for (tick/s) * 60 (s/min) /28 (tick per rotation)
-    public SHOOTERMOTORSTATE shootermotorstate;
-    public double adjusterservoposition;
-
 
     private LimelightTest limelightTest;
     private Limelight limelight;
 
-    private PIDController pidController;
-    private LUTPowerCalculator shooterPowerLUT;
-    //private AprilTagDetection aprilTagDetection;
+    enum TurretMode{
+        MANUAL,
+        PID,
+        MOTIONPROFILE,
+        LIMELIGHT//Not implemented yet
+    }
 
-    private boolean finetune = false;
-    private boolean pidstatus = false;
-    private boolean turretStatus = false;
+    public TurretMode mode;
 
     public static double adjusterServoPosition = 0.49;
-    int targetTick = 0;
+    public static double targetAngle = 0;
+    public double robotAngle = 0;
+    public double turretAngle = 0;
+    public int currentTick = 0;
+    public int targetTick = 0;
+
+    private final double tickToAngle = ((0.16867469879518 * 360) / 145.1);
+    private final double angleToTick = 1.0 / tickToAngle;
+
+    private long lastLoopTime = 0;
+    private double loopHz = 0.0;
 
     /// Power status
     public enum SHOOTERMOTORSTATE{
@@ -78,24 +74,14 @@ public class TurretTestTeleOp extends OpMode {
     @Override
     public void init() {
         gamepad_1 = new GamepadEx(gamepad1);
-        gamepad_2 = new GamepadEx(gamepad2);
         robot = new RobotHardware(hardwareMap);
         robot.init();
         robot.initIMU();
         robot.initPinpoint();
 
-        robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
-        robotDrive.Init();
-
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        powerCalculator = new LUTPowerCalculator(robot);
-        shooterPowerLUT = new LUTPowerCalculator(robot);
-        robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
-        //aprilTagDetection = new AprilTagDetection(robot);
-
         turret = new Turret(robot, true);
-        turretUpd = new TurretUpd(robot);
 
         limelightTest = new LimelightTest(robot, turret);
         limelightTest.initLimelight(24);
@@ -104,37 +90,58 @@ public class TurretTestTeleOp extends OpMode {
         limelight.initLimelight(24);
         limelight.start();
 
-        colorDetection = new ColorDetection(robot);
-        pidController = new PIDController(PIDTuning.kP, PIDTuning.kI, PIDTuning.kD);
-
         robot.shooterAdjusterServo.setPosition(adjusterServoPosition);
 
-        robot.turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        mode=TurretMode.MANUAL;
+
+        writeTelemetry();
     }
 
     @Override
 
     public void loop() {
-
         /// Robot pinpoint
         robot.pinpoint.update();
-        robotDrive.DriveLoop();
 
-        if (gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER) && isButtonDebounced()) {
-            targetTick += 50;
+        //Controls
+        if(gamepad_1.getButton(B)){
+            mode=TurretMode.MANUAL;
+            robot.turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
-        if (gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER) && isButtonDebounced()) {
-            targetTick -= 50;
+        if(gamepad_1.getButton(A)){
+            mode=TurretMode.PID;
+            robot.turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
+        if(gamepad_1.getButton(X)){
+            mode=TurretMode.MOTIONPROFILE;
+            robot.turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+        //Limelight not implemented
 
+        if(mode!=TurretMode.MANUAL) {
+            targetAngle+=(int)round(gamepad_1.getLeftX()*3);
+        }
+        targetAngle=normalize(targetAngle);
+        robotAngle=normalize(robot.pinpoint.getHeading(AngleUnit.DEGREES));
+        turretAngle=normalize(targetAngle-robotAngle);
 
-        robot.turretMotor.setTargetPosition(Range.clip(targetTick, -400, 400));
-        robot.turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.turretMotor.setPower(0.9);
+        currentTick = turret.getCurrentTick();
+        targetTick = (int)Math.round(Range.clip(turretAngle, -175, 175) * angleToTick);
 
-        telemetry.addData("pinpoint Pose2D", robot.pinpoint.getPosition());
-        telemetry.addData("turret position", robot.turretMotor.getCurrentPosition());
-        telemetry.update();
+        switch(mode){
+            case MANUAL:
+                robot.turretMotor.setPower(gamepad_1.getLeftX());
+            case PID:
+                turret.driveTurretPID(currentTick,targetTick);
+                turret.updatePidFromDashboard();
+                break;
+            case MOTIONPROFILE:
+                turret.driveTurretMP(currentTick,targetTick);
+                break;
+                //Limelight not implemented
+        }
+        updateLoopFrequency();
+        writeTelemetry();
     }
 
     private boolean isButtonDebounced() {
@@ -145,10 +152,36 @@ public class TurretTestTeleOp extends OpMode {
         return false;
     }
 
-    @Config
-    public static class PIDTuning {
-        public static double kP = 0.001;
-        public static double kI = 0.000001;
-        public static double kD = 0.00001; // position or RPM target
+    void writeTelemetry(){
+        telemetry.addData("1. Mode",mode.name());
+        telemetry.addData("1. Target Angle",targetAngle);
+        telemetry.addData("1. Robot Angle",robotAngle);
+        telemetry.addData("1. Turret Angle",turretAngle);
+        telemetry.addData("2. Current Tick",currentTick);
+        telemetry.addData("2. Target Tick",targetTick);
+        telemetry.addData("3. Error",currentTick-targetTick);
+        telemetry.addData("LoopFreq",loopHz);
+        telemetry.update();
+    }
+
+    private double floorMod(double x, double y){
+        return x-(Math.floor(x/y) * y);
+    }
+
+    private double normalize(double angle){
+        return floorMod(angle+180,360)-180;
+    }
+
+    private void updateLoopFrequency() {
+
+        long now = System.currentTimeMillis();
+
+        if (lastLoopTime != 0) {
+            long dtMs = now - lastLoopTime;
+            if (dtMs > 0) {
+                loopHz = 1000.0 / dtMs;
+            }
+        }
+        lastLoopTime = now;
     }
 }
