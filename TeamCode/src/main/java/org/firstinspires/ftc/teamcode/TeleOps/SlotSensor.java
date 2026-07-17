@@ -35,11 +35,13 @@ public class SlotSensor {
 
     public boolean checkBall(){
         //no voting, may change in testing
-        float hue=getColourHSV()[0];
-        return (getDistance(DistanceUnit.MM) < BALL_PRESENT_THRESHOLD_MM)
-                &&((greenRangeLow[0] < hue && hue < greenRangeLow[1]) 
-                ||(greenRangeHigh[0] < hue && hue < greenRangeHigh[1]) 
+        //float hue=getColourHSV()[0]; Commented out to save computation
+        return (getDistance(DistanceUnit.MM) < BALL_PRESENT_THRESHOLD_MM);
+        /*For colour detection:
+                &&((greenRangeLow[0] < hue && hue < greenRangeLow[1])
+                ||(greenRangeHigh[0] < hue && hue < greenRangeHigh[1])
                 ||(purpleRangeLow[0] < hue && hue < purpleRangeLow[1])
-                ||(purpleRangeHigh[0] < hue && hue < purpleRangeHigh[1])); 
+                ||(purpleRangeHigh[0] < hue && hue < purpleRangeHigh[1]))
+         */
     }
 }

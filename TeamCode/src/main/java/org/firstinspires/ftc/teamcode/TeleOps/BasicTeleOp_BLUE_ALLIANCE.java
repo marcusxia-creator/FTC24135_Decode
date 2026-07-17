@@ -10,6 +10,7 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllian
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -87,6 +88,10 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     /// for dashboard
     public static double shooterRPM;
     public static int shooterTargetRPM;
+
+    ///efficient telemetry
+    public static double telemetryInterval;
+    public ElapsedTime telemeteryTimer=new ElapsedTime();
 
     /// ----------------------------------------------------------------
     @Override
@@ -455,10 +460,42 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         lastLoopTime = now;
     }
 
+    public void runTimeTelemetry(){
+        //simplified telemetry for teleop
+        if(telemeteryTimer.time()>telemetryInterval){
+            telemetry.addData("loop frequency (Hz)", loopHz);
+            telemetry.addData("Action State", actionStates);
+
+            telemetry.addLine("\n---ROBOT");
+            telemetry.addData("Alliance", alliance);
+            telemetry.addData("Pose2D", robot.pinpoint.getPosition());
+
+            telemetry.addLine("\n---INTAKE");
+            telemetry.addData("Intake State", FSMIntake.intakeStates);
+
+            telemetry.addLine("\n---SHOOTER");
+            telemetry.addData("ShooterState", FSMShooter.shooterState);
+            telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
+            telemetry.addData("Shooter Target RPM",shooterTargetRPM);
+            telemetry.addData("Shooter Actual RPM",shooterRPM);
+
+            telemetry.addLine("\n---TURRET");
+            telemetry.addData("Turret state", FSMShooter.turretState);
+            telemetry.addData("Turret trim", FSMShooter.trim);
+            telemetry.addData("Turret error", turret.getCurrentTick()-turret.getTargetTick());
+
+            telemetry.addLine("\n---SPINDEXER");
+            telemetry.addData("SD Current Pos", robot.spindexerServo.getPosition());
+
+            telemetry.update();
+            telemeteryTimer.reset();
+        }
+    }
+
     //===========================================================
     // telemetry Manager
     //===========================================================
-    public void telemetryManager(){
+    public void debugTelemetry(){
         telemetry.addData("loop frequency (Hz)", loopHz);
         telemetry.addData("voltage from robot", robot.getBatteryVoltageRobust());
         telemetry.addLine("-----");
@@ -482,7 +519,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         shooterTargetRPM = shooterPowerAngleCalculator.getRPM();
         shooterRPM = shooterPowerAngleCalculator.getMeasureRPM();
         telemetry.addData("Shooter Target RPM",shooterTargetRPM);
-        telemetry.addData("Shooter acutal RPM",shooterRPM);
+        telemetry.addData("Shooter actual RPM",shooterRPM);
         telemetry.addData("Shooter RPM","%,.0f",robot.topShooterMotor.getVelocity()*SHOOTER_RPM_CONVERSION);
         telemetry.addLine("-----");
         telemetry.addData("Alliance", alliance);
