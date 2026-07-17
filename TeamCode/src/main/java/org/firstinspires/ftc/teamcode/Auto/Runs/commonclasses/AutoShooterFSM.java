@@ -24,9 +24,9 @@ public class AutoShooterFSM {
     public static final double tickToRPM = 60.0 / 28.0;
 
     public static class PIDTuning {
-        public static double kP = 2;
+        public static double kP = 4;
         public static double kI = 0;
-        public static double kD = 0.02; // position or RPM target
+        public static double kD = 0.08; // position or RPM target
     }
 
     public static class FeedforwardTuning {
@@ -219,7 +219,7 @@ public class AutoShooterFSM {
     }
 
     public Action ShootCloseZone(double ShotPower, double ShooterWaitTime, ShooterRapidRunMode.SHOOTERSTATE startingState, ShooterRapidRunMode.SHOOTERSTATE endState){
-        return new ShooterRapidRunMode(robot, startingState, endState, ShotPower,0.1,ShooterWaitTime, spindexerContext);
+        return new ShooterRapidRunMode(robot, startingState, endState, ShotPower,0.15,ShooterWaitTime, spindexerContext);
     }
 
     ///Shooter Sorting Run Mode

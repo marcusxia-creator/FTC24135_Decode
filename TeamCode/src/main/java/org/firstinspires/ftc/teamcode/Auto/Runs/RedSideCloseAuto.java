@@ -27,7 +27,7 @@ import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooter
 
 @Autonomous(name = "RedSideCloseAuto", group = "Autonomous")
 public class RedSideCloseAuto extends LinearOpMode {
-    public static Pose2d initialPose = new Pose2d(-40.5, 55, Math.toRadians(90));
+    public static Pose2d initialPose = new Pose2d(-38.5, 54, Math.toRadians(90));
 
     public RobotHardware robot;
 
@@ -73,8 +73,8 @@ public class RedSideCloseAuto extends LinearOpMode {
 
         TrajectoryActionBuilder DriveToShoot1Builder = drive.actionBuilder(initialPose)
                 .setTangent(Math.toRadians(-90))
-                .splineTo(new Vector2d(-40.5,44),Math.toRadians(-90))
-                .splineTo(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(-90));
+                .splineToConstantHeading(new Vector2d(-38.5,44),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(-90));
 
 // FIRST RUN SET: go to Close Set 2 instead of Intake Set 3
         TrajectoryActionBuilder IntakeSet1Drive1Builder = DriveToShoot1Builder.endTrajectory().fresh()
@@ -82,16 +82,16 @@ public class RedSideCloseAuto extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position4_X,Close_IntakeSet2Position4_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot2Builder = IntakeSet1Drive1Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y), Math.toRadians(CloseShootingPosition_Heading));
+                .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y-3), Math.toRadians(CloseShootingPosition_Heading));
 
 // SECOND RUN SET: go to the gate
         TrajectoryActionBuilder IntakeGateSet1Drive1Builder = DriveToShoot2Builder.endTrajectory().fresh()
-                .setTangent(Math.toRadians(52))
+                .setTangent(Math.toRadians(180-GateIntakePosition_Heading))
                 .splineTo(new Vector2d(GateIntakePosition_X,GateIntakePosition_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot3Builder = IntakeGateSet1Drive1Builder.endTrajectory().fresh()
                 .setTangent(Math.toRadians(-90))
-                .splineTo(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(-128));
+                .splineTo(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(-GateIntakePosition_Heading));
 
 // THIRD RUN SET: go to the furthest Close Set 2 position
         TrajectoryActionBuilder IntakeSet2Drive1Builder = DriveToShoot3Builder.endTrajectory().fresh()
@@ -134,9 +134,8 @@ public class RedSideCloseAuto extends LinearOpMode {
                         shooter.ShooterOff(),
                         new ParallelAction(
                                 intake.IntakeRun(5),
-                                new SequentialAction(
-                                        IntakeSet1Drive1
-                                )
+                                IntakeSet1Drive1
+
                         ),
                         new ParallelAction(
                                 DriveToShoot2,
