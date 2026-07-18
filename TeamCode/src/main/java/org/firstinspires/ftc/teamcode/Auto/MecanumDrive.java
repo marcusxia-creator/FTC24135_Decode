@@ -63,32 +63,32 @@ public final class MecanumDrive {
                 RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
 
         // drive model parameters
-        public double inPerTick = 0.00197558;
-        public double lateralInPerTick = 0.001321568546952087;
-        public double trackWidthTicks = 6504.059818554108;
+        public double inPerTick = 0.00214116;
+        public double lateralInPerTick = 0.00214116;
+        public double trackWidthTicks = 6452.753160486291;
 
         // feedforward parameters (in tick units)
-        public double kS = 1.25;
-        public double kV = 0.00027;
-        public double kA = 0.0000001;
+        public double kS = 0.8;
+        public double kV = 0.00025;
+        public double kA = 0.00007;
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 90;
-        public double minProfileAccel = -30;
-        public double maxProfileAccel = 90;
+        public double maxWheelVel = 79.26939782646593;
+        public double minProfileAccel = -26.423132608821977;
+        public double maxProfileAccel = 79.26939782646593;
 
         // turn profile parameters (in radians)
-        public double maxAngVel = Math.PI; // shared with path
-        public double maxAngAccel = Math.PI;
+        public double maxAngVel = Math.toRadians(252.32233); // shared with path
+        public double maxAngAccel = Math.toRadians(252.32233);
 
         // path controller gains
-        public double axialGain = 4.25;
-        public double lateralGain = 5;
-        public double headingGain = 8; // shared with turn
+        public double axialGain = 4.5;
+        public double lateralGain = 3;
+        public double headingGain = 6; // shared with turn
 
-        public double axialVelGain = 0.15;
-        public double lateralVelGain = 0.2;
-        public double headingVelGain = 0.4;
+        public double axialVelGain = 0.35;
+        public double lateralVelGain = 0.3;
+        public double headingVelGain = 0.5;
     }
 
     public static Params PARAMS = new Params();
