@@ -118,8 +118,8 @@ public class RobotActionConfig {
     public static int RPM3            = 3450;
     public static int RPM4            = 3600;
     public static int RPM5            = 3700;
-    public static int RPM6            = 4300;
-    public static int RPM7            = 4550;
+    public static int RPM6            = 4500;
+    public static int RPM7            = 4800;
 
     public static final double farPower                 = 0.78;     // 3920 - 0.8  @ 12.73
     public static final double midPower                 = 0.73;     // 3360 - 0.70 @ 12.82

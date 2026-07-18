@@ -67,7 +67,7 @@ public class LUTPowerCalculator {
         add(6, shooterAdjusterMax);
         add(5, shooterAdjusterMax);
         add(4, shooterAdjusterMax);
-        add(3, shooterAdjusterMax);
+        add(3, shooterAdjusterMid);
         add(2, shooterAdjusterMid);
         add(1, shooterAdjusterMin);
         add(0, shooterAdjusterMax);
