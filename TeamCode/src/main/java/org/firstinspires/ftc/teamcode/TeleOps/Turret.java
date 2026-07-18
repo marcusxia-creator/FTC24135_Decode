@@ -40,7 +40,7 @@ public class Turret {
     //kp 0.004
     //ks 0.0001
     //kv 0.005
-    public static double kPTurret = 0.0055, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.08, kVTurret = 0.00; // turret motor drive pidcontroller
+    public static double kPTurret = 0.0055, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.01, kVTurret = 0.00; // turret motor drive pidcontroller
     public static double kP_motor = 20, kI_motor = 0, kD_motor = 0.01, kF = 2; // turret motor pidf
     public static double staticFThreshold=2; //The velocity threshold at which the turret is considered stationary
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);

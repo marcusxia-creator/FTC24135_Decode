@@ -259,8 +259,8 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         // =========================================================
         // 9. TELEMETRY
         // =========================================================
-        //telemetryManager();
-        telemetry.addData("loopFreq", loopHz);
+
+        runTimeTelemetry();
         telemetry.update();
     }
 

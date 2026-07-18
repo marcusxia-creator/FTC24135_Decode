@@ -40,7 +40,7 @@ public class RobotActionConfig {
     public static double kickerExtend                   = 0.82; /// value - into the spindexer for pushing the ball up
     public static double kickerRetractDelay             = 0.3;
     //intake Speed
-    public static double intakeSpeed                    = 0.75;
+    public static double intakeSpeed                    = 0.9;
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.7;
     //shooter timer

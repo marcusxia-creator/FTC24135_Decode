@@ -79,7 +79,7 @@ public class FSMIntake {
                 else if (intakeTimer.seconds() < 0.10) {// Collect as many samples as possible in 200ms
                     }
                 // count the number of full slots. if all three slots are full, stop
-                if (Collections.frequency(robot.slotSensors.stream().map(SlotSensor::checkBall).collect(Collectors.toList()), Boolean.TRUE)>=requiredSensors) {
+                if (robot.slotSensor1.checkBall()&&robot.slotSensor2.checkBall()&&robot.slotSensor3.checkBall()) {
                     intakeTimer.reset();
                     intakeStates = IntakeStates.INTAKE_STOP;
                 }
@@ -96,7 +96,7 @@ public class FSMIntake {
                 break;
 
             case INTAKE_REVERSE:
-                if (intakeTimer.seconds() < 0.5) {
+                if (intakeTimer.seconds() < 0.7) {
                     robot.intakeMotor.setPower(ejectSpeed);
                 }else{
                     intakeStates = IntakeStates.INTAKE_IDLE;
