@@ -37,19 +37,33 @@ public class Turret {
     private double conversionFactor                     = 39.3700787;  // ??inch to mm conversion??
 
     // Motion profile state
-    private double profilePosition                      = 0;
-    private double profileVelocity                      = 0;
-    private double lastTime                             = 0;
-    private double commandedTick                        = 0;
-    private double commandedVelocity                    = 0;
+    private double profilePositionTicks                     = 0;
+    private double profileVelocityTicksPerSecond            = 0;
+    private double lastTime                                 = 0;
+    private double commandedTick                            = 0;
+    private double commandedVelocity                        = 0;
+    private long previousTimeNs;
+    private long currentTimeNs = System.nanoTime();
+    // Motion limits - Tunable constraints (Dashboard)
+    public static double maxVel                             = 1200; // ticks/sec
+    public static double maxAccel                           = 10000; // ticks/sec^2
 
-    // Tunable constraints (Dashboard)
-    public static double maxVel                         = 2500; // ticks/sec
-    public static double maxAccel                       = 10000; // ticks/sec^2
+    public static double turretToleranceTicks               = 5.0;
+    private int turretOffsetTick                            = 0; // offset tick after turret reset
+
+    private double turretPIDOutput                          = 0.0;
+    private double turretFeedforwardOutput                  = 0.0;
+    private double turretMotorOutput                        = 0.0;
+    private double turretProfileAcceleration                = 0.0;
+
+    private boolean turretProfileInitialized                = false;
+    private boolean turretProfileAtTarget                   = false;
+    private double turretLSZeroTick                         = 0.0;
+
 
     //TODO - PID & Feedforward constants Tuning
-    public static double kPTurret = 0.003, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.0001, kVTurret = 0.0004, kATurret = 0.0004;
-    public static double kP_motor = 20, kI_motor = 0, kD_motor = 0.005, kF = 2; // turret motor pidf
+    public static double kPTurret = 0.004, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.0001, kVTurret = 0.0004, kATurret = 0.0004;
+
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
 
     // Target pose
@@ -69,21 +83,9 @@ public class Turret {
 
     private PIDController pidController;
 
-    // Motor Intrinsic PIDF constants
-    PIDFCoefficients pidf = new PIDFCoefficients(
-            kP_motor,      // P
-            kI_motor,      // I
-            kD_motor,      // D
-            kF               // F
-    );
-    private double lastkP = Double.NaN, lastkI = Double.NaN, lastkD = Double.NaN;
-
     private final double turretCenterOffsetLength = Math.hypot(turret_Center_Y_Offset, turret_Center_X_Offset);
 
-    private final int zeroedTick                        = 0;
-    private int turretDeltaTick                         = 0;
-    private int turretLSZeroTick;
-    private int turretOffsetTick                        = 0; // offset tick after turret reset
+
 
     public Turret (RobotHardware robot, boolean isRedAlliance) {
         this.robot = robot;
@@ -121,12 +123,147 @@ public class Turret {
         int errorTicks = targetTick - currentTick;
         // Feedforward should NOT be based on absolute targetTicks (too large).
         // Use direction + error assist.
-        double ff = (kSTurret * Math.signum(errorTicks)) + (kVTurret * errorTicks);
+        double ff = (kSTurret *Math.signum(errorTicks)) ;
         double power = pidController.calculate(currentTick, targetTick);
         double output = power + ff;
         robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
     }
 
+    public void driveTurretPIDF (int currentTick, int targetTick) {
+        long currentTimeNs = System.nanoTime();
+
+        double measuredDeltaTime = (currentTimeNs - previousTimeNs) / 1_000_000_000.0;
+        previousTimeNs = currentTimeNs;
+
+        if (measuredDeltaTime <= 0.0)
+        {
+            measuredDeltaTime = 0.01;
+        }
+        /*
+         * Limit only the profile timestep.
+         * This prevents a long loop from causing a large profile jump.
+         */
+        double profileDeltaTime = Math.min(measuredDeltaTime, 0.1);
+
+        /*
+         * Start the profile from the actual turret position.
+         */
+        if (!turretProfileInitialized) {
+            profilePositionTicks = currentTick;
+            profileVelocityTicksPerSecond = 0.0;
+            turretProfileInitialized = true;
+        }
+        /*
+         * distance from the profile position to the target
+         */
+        double remainingDistanceTick = targetTick - profilePositionTicks;
+        double direction = Math.signum(remainingDistanceTick);
+
+        /*
+         * Maximum velocity that still allows the turret to stop at
+         * the target:
+         *
+         * v = sqrt(2 * acceleration * distance)
+         */
+        double maximumVelocityAllowedNow  =
+                Math.sqrt(2.0 * maxAccel * Math.abs(remainingDistanceTick));
+
+        /*
+         * Velocity requested by the profile.
+         *
+         * It cannot exceed:
+         * 1. The configured maximum velocity
+         * 2. The velocity from which it can still stop
+         */
+        double desiredVelocity = direction * Math.min(maxVel,maximumVelocityAllowedNow);
+
+        /*
+         * Limit how much velocity can change this loop.
+         *
+         * velocity change = acceleration * time
+         */
+        double maximumVelocityChange = maxAccel * profileDeltaTime;
+
+        double previousProfileVelocity = profileVelocityTicksPerSecond;
+
+        profileVelocityTicksPerSecond = applyAccelerationLimit(
+                profileVelocityTicksPerSecond,
+                desiredVelocity,
+                maximumVelocityChange
+            );
+
+        /*
+         * Calculate profile acceleration for kA feedforward.
+         */
+        turretProfileAcceleration = ( profileVelocityTicksPerSecond - previousProfileVelocity ) / profileDeltaTime;
+
+        /*
+         * Update the profile position.
+         */
+        profilePositionTicks += profileVelocityTicksPerSecond * profileDeltaTime;
+
+        /*
+         *prevent the generated profile from crossing the target.
+         */
+        if (direction > 0 && profilePositionTicks > targetTick) {
+            profilePositionTicks = targetTick;
+            profileVelocityTicksPerSecond = 0.0;
+            turretProfileAcceleration = 0.0;
+        } else if (direction < 0 && profilePositionTicks < targetTick) {
+            profilePositionTicks = targetTick;
+            profileVelocityTicksPerSecond = 0.0;
+            turretProfileAcceleration = 0.0;
+        }
+
+        turretPIDOutput =
+                pidController.calculate(
+                        currentTick,
+                        profilePositionTicks
+                );
+        /* * Feedforward kS power */
+        double staticFeedforward = 0.0;
+        if (Math.abs(profileVelocityTicksPerSecond) > 1.0) {
+            staticFeedforward = kSTurret * Math.signum(profileVelocityTicksPerSecond);
+        }
+        turretFeedforwardOutput =
+                staticFeedforward
+                + kVTurret * profileVelocityTicksPerSecond
+                + kATurret * turretProfileAcceleration;
+        /// Motor Power
+        turretMotorOutput = Range.clip( turretPIDOutput  + turretFeedforwardOutput,-1.0,1.0);
+        /// When completely finished, remove small unnecessary output.
+        if (Math.abs(targetTick - currentTick) <= turretToleranceTicks
+                && Math.abs(profileVelocityTicksPerSecond) <= 5.0) {
+            profilePositionTicks = targetTick;
+            profileVelocityTicksPerSecond = 0.0;
+            turretProfileAcceleration = 0.0;
+
+            /*
+             * Set zero only if your turret does not need holding power.
+             */
+            turretMotorOutput = 0.0;
+        }
+        /// drive
+        robot.turretMotor.setPower(turretMotorOutput);
+
+    }
+    // Call whenever the motor is driven by something other than driveTurretPIDF()
+    // (e.g. manual/locking control) so the profile resyncs to the real position
+    // next time driveTurretPIDF() resumes, instead of chasing a stale setpoint.
+    public void resetTurretProfile() {
+        turretProfileInitialized = false;
+    }
+
+    private double applyAccelerationLimit(double profileVelocityTicksPerSecond,double desiredVelocity,double maximumChange)
+    {
+        double difference = desiredVelocity - profileVelocityTicksPerSecond;
+        if (Math.abs(difference) <= maximumChange) {
+                return desiredVelocity;
+            }
+        else{
+               return maximumChange;
+        }
+    }
     public int getTargetTick () {
         return (int)Math.round(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
     }

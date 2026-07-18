@@ -93,14 +93,11 @@ public class Limelight {
         for (LLResultTypes.FiducialResult f : r.getFiducialResults()) {
             if (f.getFiducialId() == tagId) {
                 double tx = f.getTargetXDegrees();
-
                 // optional deadband like you already do
                 if (Math.abs(tx) < aimingAngleThrehold) tx = 0.0;
-
                 return new TxSnapshot(true, tx);
             }
         }
-
         return new TxSnapshot(false, 0.0);
     }
 

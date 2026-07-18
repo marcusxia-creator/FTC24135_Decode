@@ -18,11 +18,8 @@ public class FSMShooter {
 
     private ElapsedTime shootTimer = new ElapsedTime();
     private ElapsedTime flyWheelTimer = new ElapsedTime();
-    private ElapsedTime debounceTimer = new ElapsedTime();
-    private long lastLoopTime = 0;
 
     public static SHOOTERSTATE shooterState;
-    SORTSHOOTERSTATE sortShooterState;
     SHOOTERMOTORSTATE shootermotorstate;
     TURRETSTATE turretState;
     SpindexerUpd spindexer;
@@ -31,23 +28,12 @@ public class FSMShooter {
     SpindexerUpd.SLOT targetColour = SpindexerUpd.SLOT.Purple;
 
     private double voltage;
-    private double power;   //power lut power
-    private double angle;   //shooter angle
+    private double power;                                       //power lut power
+    private double angle;                                       //shooter angle
 
     // shooting sequence config
-    private int shootCounter; // counter for # ball shooting
-    private long lastFeedTimeMs     =   0; // shooting feed time interval time stamp
-
-    private final ElapsedTime shooterTimer = new ElapsedTime();
-
-    // Tuning constants
-    private double stopClearancePos =   0;
-    private boolean clearanceChosen =   false;
-
-    private static final double MOVE_TO_CLEARANCE_TIME_S    = 0.2;  // tune
-    private static final double KICKER_RETRACT_TIME_S       = 0.25;  // tune
-    private static final double PARK_TO_ZERO_TIME_S         = 0.50;  // tune
-
+    private int shootCounter;                                   // counter for # ball shooting
+    private long lastFeedTimeMs       = 0;                      // shooting feed time interval time stamp
 
     LUT<Integer, Long> timeStamp = new LUT<Integer, Long>() {{
         add(1, FEED_PERIOD_MS_CLOSE);
@@ -57,7 +43,6 @@ public class FSMShooter {
     private long waitTimeMS = 350;
 
     public double trimTicks;
-    public int offset = 0;
 
     // ============================
     // Limelight Tx input (from OpMode loop)
@@ -102,16 +87,7 @@ public class FSMShooter {
         SHOOT_READY,
         SEQUENCE_SHOOTING,
         KICKER_RETRACT,
-        SHOOTER_STOP,
-        SHOOTER_GRACE_STOPPING
-    }
-    public enum SORTSHOOTERSTATE {
-        SHOOTER_IDLE,
-        FLYWHEEL_RUNNING,
-        KICKER_EXTEND,
-        SORT_SHOOTING,
-        SHOOTER_STOP,
-        SHOOTER_GRACE_STOPPING
+        SHOOTER_STOP
     }
     public enum SHOOTERMOTORSTATE{
         RUN,
@@ -197,32 +173,33 @@ public class FSMShooter {
                         shooterState == SHOOTERSTATE.SHOOT_READY;
         turretStateUpdate();
 
+        //get limelight tx adjust
+        Limelight.TxSnapshot snap = limelight.getTxForTag(24);
+        setLimelightTx(snap.hasTarget, snap.txDeg);
+        
         //========================================================
         // NEW Turret Trim
         // Triming/manual control
         //========================================================
         int trimInput=0;
-
-        //get limelight tx adjust
-        Limelight.TxSnapshot snap = limelight.getTxForTag(24);
-        setLimelightTx(snap.hasTarget, snap.txDeg);
-
+        if (gamepadComboInput.getLbSinglePressedAny()){
+            trimInput+=1;
+            }
+        if (gamepadComboInput.getrbSinglePressedAny()){
+            trimInput-=1;
+        }
         if (turretState == TURRETSTATE.AIMING && aimEnabled) {
-            if (gamepadComboInput.getLbSinglePressedAny()){
-                trimInput+=1;
-            }
-            if (gamepadComboInput.getrbSinglePressedAny()){
-                trimInput-=1;
-            }
+           
             trimTicks =Range.clip(trimTicks +trimInput*trimStep,-400,400);
 
             int currentTick = turret.getCurrentTick();
             int txAdjustTicks = getTxAdjustTicks();
-            int targetTick = (int) (turret.getTargetTick() + trimTicks + offset +txAdjustTicks);
+            int targetTick = (int) (turret.getTargetTick() + trimTicks + txAdjustTicks);
 
-            turret.driveTurretPID(currentTick, targetTick);
+            turret.driveTurretPIDF(currentTick, targetTick);
         }
         else {
+            turret.resetTurretProfile();
             robot.turretMotor.setVelocity(trimInput*adjSpeed);
         }
         //=====================================
