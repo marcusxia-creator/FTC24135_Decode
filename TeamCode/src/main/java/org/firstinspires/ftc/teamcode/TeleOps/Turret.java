@@ -49,6 +49,7 @@ public class Turret {
     public static double maxAccel                           = 10000; // ticks/sec^2
 
     public static double turretToleranceTicks               = 5.0;
+    public static double turretVelocityToleranceTicksPerSec = 5.0;
     private int turretOffsetTick                            = 0; // offset tick after turret reset
 
     private double turretPIDOutput                          = 0.0;
@@ -162,7 +163,6 @@ public class Turret {
         /*
          * Maximum velocity that still allows the turret to stop at
          * the target:
-         *
          * v = sqrt(2 * acceleration * distance)
          */
         double maximumVelocityAllowedNow  =
@@ -179,7 +179,6 @@ public class Turret {
 
         /*
          * Limit how much velocity can change this loop.
-         *
          * velocity change = acceleration * time
          */
         double maximumVelocityChange = maxAccel * profileDeltaTime;
@@ -233,7 +232,7 @@ public class Turret {
         turretMotorOutput = Range.clip( turretPIDOutput  + turretFeedforwardOutput,-1.0,1.0);
         /// When completely finished, remove small unnecessary output.
         if (Math.abs(targetTick - currentTick) <= turretToleranceTicks
-                && Math.abs(profileVelocityTicksPerSecond) <= 5.0) {
+                && Math.abs(profileVelocityTicksPerSecond) <= turretVelocityToleranceTicksPerSec) {
             profilePositionTicks = targetTick;
             profileVelocityTicksPerSecond = 0.0;
             turretProfileAcceleration = 0.0;
