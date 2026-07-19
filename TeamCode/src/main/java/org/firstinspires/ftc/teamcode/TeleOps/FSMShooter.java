@@ -234,19 +234,22 @@ public class FSMShooter {
             case FLYWHEEL_RUNNING:
                 // Start flywheels (your motor control elsewhere should respond to this state)
                 shootermotorstate = SHOOTERMOTORSTATE.RUN;
-
-                shooterState = SHOOTERSTATE.KICKER_EXTEND;
-                shootTimer.reset();
-                flyWheelTimer.reset();
+                /// 07/18/2026 Set spindexer to shooter start slot pos
+                robot.spindexerServo.setPosition(spindexerShootStartPos);
+                if (shootTimer.seconds()>0.3) {
+                    shooterState = SHOOTERSTATE.KICKER_EXTEND;
+                    shootTimer.reset();
+                    flyWheelTimer.reset();
+                }
                 // IMPORTANT: flyWheelTimer should be reset when flywheel starts
                 break;
 
             case KICKER_EXTEND:
-                robot.spindexerServo.setPosition(spindexerShootStartPos);
-                if (shootTimer.seconds() > 0.3) {
+                /** 07/18/2026 moved to FLYWHEEL_RUNNING stat
+                *robot.spindexerServo.setPosition(spindexerShootStartPos);
+                 * */
                     robot.kickerServo.setPosition(kickerExtend);
                     shooterState = SHOOTERSTATE.SHOOT_READY;
-                }
                 break;
 
             case SHOOT_READY:

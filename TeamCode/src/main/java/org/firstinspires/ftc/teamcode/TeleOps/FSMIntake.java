@@ -90,9 +90,13 @@ public class FSMIntake {
                 robot.intakeMotor.setPower(ejectSpeed);
                 double time = intakeTimer.seconds();
                 //Park spindexer at travel pos
-                robot.spindexerServo.setPosition(spindexerStowPos);
+                ///No need for spindexer to move in the intake 07/18/2026
+                //robot.spindexerServo.setPosition(spindexerStowPos);
                 //Might need delay here
-                intakeStates = IntakeStates.INTAKE_IDLE;
+                if (time > 0.4) {
+                    intakeStates = IntakeStates.INTAKE_IDLE;
+                    intakeTimer.reset();
+                }
                 break;
 
             case INTAKE_REVERSE:
