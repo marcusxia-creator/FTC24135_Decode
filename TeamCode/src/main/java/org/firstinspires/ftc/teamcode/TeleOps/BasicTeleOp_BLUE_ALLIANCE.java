@@ -72,6 +72,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     // for time and frequency
     private long lastLoopTime = 0;
     private double loopHz = 0.0;
+    private double loopTime = 0.0;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private static double voltage;
 
@@ -452,6 +453,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
 
         if (lastLoopTime != 0) {
             long dtMs = now - lastLoopTime;
+            loopTime=(double)dtMs/1000;
             if (dtMs > 0) {
                 loopHz = 1000.0 / dtMs;
             }
@@ -474,8 +476,8 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
             telemetry.addData("Intake State", FSMIntake.intakeStates);
 
             telemetry.addLine("\n---SHOOTER");
-            telemetry.addData("ShooterState", FSMShooter.shooterState);
-            telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
+            telemetry.addData("Shooter Target RPM",shooterPowerAngleCalculator.getRPM());
+            telemetry.addData("Shooter actual RPM",shooterPowerAngleCalculator.getMeasureRPM());
             telemetry.addData("Shooter Target RPM",shooterTargetRPM);
             telemetry.addData("Shooter Actual RPM",shooterRPM);
 

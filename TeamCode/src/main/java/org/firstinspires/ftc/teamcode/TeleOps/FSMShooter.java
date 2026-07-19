@@ -34,6 +34,7 @@ public class FSMShooter {
     // shooting sequence config
     private int shootCounter; // counter for # ball shooting
     private long lastFeedTimeMs = 0; // shooting feed time interval time stamp
+    private ElapsedTime loopTimer; // shooting feed time interval time stamp
 
     LUT<Integer, Long> timeStamp = new LUT<Integer, Long>() {{
         add(1, FEED_PERIOD_MS_CLOSE);
@@ -200,7 +201,8 @@ public class FSMShooter {
             int currentTick = turret.getCurrentTick();
             int targetTick = (int) (turret.getTargetTick() + trim);
 
-            turret.driveTurretPID(currentTick, targetTick);
+            turret.driveTurretPID(currentTick, targetTick, loopTimer.seconds());
+            loopTimer.reset();
         }
         else {
             robot.turretMotor.setVelocity(trimInput*adjSpeed);

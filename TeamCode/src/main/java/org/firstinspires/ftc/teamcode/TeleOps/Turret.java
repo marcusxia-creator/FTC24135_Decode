@@ -152,20 +152,21 @@ public class Turret {
         robot.turretMotor.setPower(1);
     }
 
-    public void driveTurretPID(int currentTick, int targetTick) {
+    public void driveTurretPID(int currentTick, int targetTick, double loopTime) {
         //updatePidFromDashboard();
-
+        double dTt=(targetTick-lastTargetTick)/loopTime;
+        lastTargetTick=targetTick;
         int errorTicks = targetTick - currentTick;
         double vel=robot.turretMotor.getVelocity();
         // Feedforward should NOT be based on absolute targetTicks (too large).
         // Use direction + error assist.
-        double ff = Math.abs(vel)>=staticFThreshold?(kSTurret * Math.signum(errorTicks)) + (kVTurret * vel):0;
+        double ff = Math.abs(vel)>=staticFThreshold?(kSTurret * Math.signum(errorTicks)) + (kVTurret * dTt):0;
         double power = pidController.calculate(currentTick, targetTick);
         double output = power + ff;
         robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
     }
 
-    public void driveTurretMP(int currentTick, int targetTick) {
+    public void driveTurretMP(int currentTick, int targetTick, double loopTime) {
         //Experimental motion-profile velocity driven turret, needs turret in velocity mode
         int error=Math.abs(targetTick - currentTick);
         double currentSpeed=Math.abs(robot.turretMotor.getVelocity());
@@ -173,7 +174,7 @@ public class Turret {
         double profileSpeed=Math.min(Math.min(Math.sqrt(2*MPdecel*error),currentSpeed+(MPtickTime*MPaccel)),MPmaxSpeed);
 
         double deltaTt=targetTick-lastTargetTick;
-        double tTvel=(deltaTt)/MPtickTime;
+        double tTvel=(deltaTt)/loopTime;
         double derivativeCorrection = (Math.abs(deltaTt)<MPmaxDeltaT)?tTvel:0;
         robot.turretMotor.setVelocity(profileDirection*profileSpeed+derivativeCorrection);
         lastTargetTick=targetTick;

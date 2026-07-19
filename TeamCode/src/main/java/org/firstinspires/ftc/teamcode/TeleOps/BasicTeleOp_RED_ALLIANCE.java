@@ -72,6 +72,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     // for time and frequency
     private long lastLoopTime = 0;
     private double loopHz = 0.0;
+    private double loopTime = 0.0;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private static double voltage;
 
@@ -84,10 +85,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
     /// For alliance colour
     public static Alliance alliance;
-
-    /// for dashboard
-    public static double shooterRPM;
-    public static int shooterTargetRPM;
 
     ///efficient telemetry
     public static double telemetryInterval;
@@ -453,6 +450,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
         if (lastLoopTime != 0) {
             long dtMs = now - lastLoopTime;
+            loopTime=(double)dtMs/1000;
             if (dtMs > 0) {
                 loopHz = 1000.0 / dtMs;
             }
@@ -477,8 +475,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             telemetry.addLine("\n---SHOOTER");
             telemetry.addData("ShooterState", FSMShooter.shooterState);
             telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
-            telemetry.addData("Shooter Target RPM",shooterTargetRPM);
-            telemetry.addData("Shooter Actual RPM",shooterRPM);
+            telemetry.addData("Shooter Target RPM",shooterPowerAngleCalculator.getRPM());
+            telemetry.addData("Shooter actual RPM",shooterPowerAngleCalculator.getMeasureRPM());
 
             telemetry.addLine("\n---TURRET");
             telemetry.addData("Turret state", FSMShooter.turretState);
@@ -517,10 +515,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Shooter Power", robot.topShooterMotor.getPower());
         telemetry.addData("voltage from Shooter", FSMShooter.getVoltage());
         telemetry.addData("power set point", FSMShooter.getPower_setpoint());
-        shooterTargetRPM = shooterPowerAngleCalculator.getRPM();
-        shooterRPM = shooterPowerAngleCalculator.getMeasureRPM();
-        telemetry.addData("Shooter Target RPM",shooterTargetRPM);
-        telemetry.addData("Shooter actual RPM",shooterRPM);
+        telemetry.addData("Shooter Target RPM",shooterPowerAngleCalculator.getRPM());
+        telemetry.addData("Shooter actual RPM",shooterPowerAngleCalculator.getMeasureRPM());
         telemetry.addData("Shooter RPM","%,.0f",robot.topShooterMotor.getVelocity()*SHOOTER_RPM_CONVERSION);
         telemetry.addLine("-----");
         telemetry.addData("Alliance", alliance);

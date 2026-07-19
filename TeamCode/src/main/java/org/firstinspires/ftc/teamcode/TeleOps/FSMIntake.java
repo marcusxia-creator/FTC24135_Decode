@@ -79,7 +79,7 @@ public class FSMIntake {
                 else if (intakeTimer.seconds() < 0.10) {// Collect as many samples as possible in 200ms
                     }
                 // count the number of full slots. if all three slots are full, stop
-                if (robot.slotSensor1.checkBall()&&robot.slotSensor2.checkBall()&&robot.slotSensor3.checkBall()) {
+                if (robot.slotSensor1.checkBall()&&robot.slotSensor2.checkBall()&&robot.slotSensor3.checkBall()&&intakeTimer.seconds()>0.5) {
                     intakeTimer.reset();
                     intakeStates = IntakeStates.INTAKE_STOP;
                 }
@@ -90,8 +90,7 @@ public class FSMIntake {
                 robot.intakeMotor.setPower(ejectSpeed);
                 double time = intakeTimer.seconds();
                 //Park spindexer at travel pos
-                ///No need for spindexer to move in the intake 07/18/2026
-                //robot.spindexerServo.setPosition(spindexerStowPos);
+                robot.spindexerServo.setPosition(spindexerStowPos);
                 //Might need delay here
                 if (time > 0.4) {
                     intakeStates = IntakeStates.INTAKE_IDLE;

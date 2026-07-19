@@ -59,12 +59,14 @@ public class TurretTestTeleOp extends OpMode {
     public double turretAngle = 0;
     public int currentTick = 0;
     public int targetTick = 0;
+    public int lastTargetTick = 0;
 
     private final double tickToAngle = ((0.16867469879518 * 360) / 145.1);
     private final double angleToTick = 1.0 / tickToAngle;
 
     private long lastLoopTime = 0;
     private double loopHz = 0.0;
+    private double loopTime = 0.0;
 
     /// Power status
     public enum SHOOTERMOTORSTATE{
@@ -78,6 +80,7 @@ public class TurretTestTeleOp extends OpMode {
         robot.init();
         robot.initIMU();
         robot.initPinpoint();
+        robot.pinpoint.setPosition(new Pose2D(DistanceUnit.INCH,0,0,AngleUnit.RADIANS,0));
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -91,6 +94,7 @@ public class TurretTestTeleOp extends OpMode {
         limelight.start();
 
         robot.shooterAdjusterServo.setPosition(adjusterServoPosition);
+        robot.turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         mode=TurretMode.MANUAL;
 
@@ -126,17 +130,18 @@ public class TurretTestTeleOp extends OpMode {
         turretAngle=normalize(targetAngle-robotAngle);
 
         currentTick = turret.getCurrentTick();
+        lastTargetTick=targetTick;
         targetTick = (int)Math.round(Range.clip(turretAngle, -175, 175) * angleToTick);
 
         switch(mode){
             case MANUAL:
                 robot.turretMotor.setPower(gamepad_1.getLeftX());
             case PID:
-                turret.driveTurretPID(currentTick,targetTick);
+                turret.driveTurretPID(currentTick,targetTick,loopTime);
                 turret.updatePidFromDashboard();
                 break;
             case MOTIONPROFILE:
-                turret.driveTurretMP(currentTick,targetTick);
+                turret.driveTurretMP(currentTick,targetTick,loopTime);
                 break;
                 //Limelight not implemented
         }
@@ -159,8 +164,11 @@ public class TurretTestTeleOp extends OpMode {
         telemetry.addData("1. Turret Angle",turretAngle);
         telemetry.addData("2. Current Tick",currentTick);
         telemetry.addData("2. Target Tick",targetTick);
+        telemetry.addData("2. Target Tick",targetTick);
         telemetry.addData("3. Error",currentTick-targetTick);
+        telemetry.addData("TargetTickVel",(targetTick-lastTargetTick)/loopTime);
         telemetry.addData("LoopFreq",loopHz);
+        telemetry.addData("LoopTime",loopTime);
         telemetry.update();
     }
 
@@ -178,6 +186,7 @@ public class TurretTestTeleOp extends OpMode {
 
         if (lastLoopTime != 0) {
             long dtMs = now - lastLoopTime;
+            loopTime=(double)dtMs/1000;
             if (dtMs > 0) {
                 loopHz = 1000.0 / dtMs;
             }

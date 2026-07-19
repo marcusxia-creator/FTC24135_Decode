@@ -21,10 +21,10 @@ public class RobotActionConfig {
     public static double spindexerSlot4     = 0.675;
     public static double spindexerSlot5     = 0.83899857;
     public static double spindexerSlot6     = 1.0;  //六七
-    public static double[] spindexerSlots   = {spindexerSlot0, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5, spindexerSlot6};
+    public static double[] spindexerSlots   = {spindexerSlot0, spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5, spindexerSlot6};
 
     //Special Spindexer Positions
-    public static double spindexerStowPos               = (spindexerSlot0+spindexerSlot1)/2; //Position between slots 1 and 2 to prevent balls from falling out under acceleration
+    public static double spindexerStowPos               = spindexerSlot1; //Position between slots 1 and 2 to prevent balls from falling out under acceleration
     public static double spindexerIntakePos             = spindexerSlot1;
     public static double spindexerShootStartPos         = 0.0;
     public static double spindexerClearanceOffset       = 0.0;     //distance between tha shoot pos and the earlier cleared slot, used in stopping. Might switch to a list of cleared positions
@@ -44,12 +44,12 @@ public class RobotActionConfig {
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.7;
     //shooter timer
-    public static final long FEED_PERIOD_MS_CLOSE       = 200; // 250
-    public static final long FEED_PERIOD_MS_FAR         = 300; // 400 250
+    public static long FEED_PERIOD_MS_CLOSE       = 200; // 250
+    public static long FEED_PERIOD_MS_FAR         = 600; // 400 250
 
     public static final double SPOOLUP_SEC              = 1.25;
     //shooter adjustor
-    public static double shooterAdjusterMax             = 0.48;
+    public static double shooterAdjusterMax             = 0.47;
     public static double shooterAdjusterMin             = 0.14; //new 0.14 ; old : 0.06
     public static double shooterAdjusterMid             = 0.35; //new 0.35
     public static double shooterFactorThreshold         = 0.95;
@@ -111,15 +111,15 @@ public class RobotActionConfig {
     public static double FAR_ZONE_MID               = 144;
     public static double FAR_ZONE_FAR               = 167.0;
 
-    public static double RPMFactor    = 1.1;
+    public static double RPMFactor    = 1.0;
     public static int RPM0            = 3700; ///all minus 200 rpm with upgraded hardware
     public static int RPM1            = 3150;
-    public static int RPM2            = 3150;
-    public static int RPM3            = 3450;
-    public static int RPM4            = 3600;
-    public static int RPM5            = 3700;
-    public static int RPM6            = 4500;
-    public static int RPM7            = 4800;
+    public static int RPM2            = 3200;
+    public static int RPM3            = 3400;
+    public static int RPM4            = 3850;
+    public static int RPM5            = 4000;
+    public static int RPM6            = 4550;
+    public static int RPM7            = 4700;
 
     public static final double farPower                 = 0.78;     // 3920 - 0.8  @ 12.73
     public static final double midPower                 = 0.73;     // 3360 - 0.70 @ 12.82
