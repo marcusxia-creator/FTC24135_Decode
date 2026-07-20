@@ -89,7 +89,7 @@ public class AutoIntakeFSM {
                         spindexerContext.updateShootingInitSlot();
                         if (stateTimer.seconds()>0.2) {
                             stateTimer.reset();
-                            currentState = INTAKESTATE.INTAKE_UNJAM;
+                            currentState = INTAKESTATE.INTAKE_END;
                         }
                     } else if (intakeTimer.seconds() > maxRunTime) {
                         colorDetection.updateSlotColors();
@@ -97,16 +97,10 @@ public class AutoIntakeFSM {
                         spindexerContext.updateShootingInitSlot();
                         if (stateTimer.seconds()>0.2) {
                             stateTimer.reset();
-                            currentState = INTAKESTATE.INTAKE_UNJAM;
+                            currentState = INTAKESTATE.INTAKE_END;
                         }
                     } else {
                         currentState = INTAKESTATE.INTAKE_RUN;
-                    }
-                    break;
-                case INTAKE_UNJAM:
-                    robot.intakeMotor.setPower(ejectSpeed);
-                    if (stateTimer.seconds() > 0.2) {
-                        currentState = INTAKESTATE.INTAKE_END;
                     }
                     break;
                 case INTAKE_END:

@@ -126,6 +126,7 @@ public class AutoShooterFSM {
                     break;
                 case SHOOTER_RUN:
                     if (stateTimer.seconds() > ShooterWaitTime+0.2) {
+                        robot.intakeMotor.setPower(ejectSpeed);
                         robot.kickerServo.setPosition(kickerExtend);
                         if (stateTimer.seconds() > ShooterWaitTime + 0.5) {
                             stateTimer2.reset();
@@ -305,6 +306,7 @@ public class AutoShooterFSM {
                     currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_RUN;
                     break;
                 case SORTINGSHOOTER_RUN:
+                    robot.intakeMotor.setPower(ejectSpeed);
                     if (stateTimer.seconds() > ShooterWaitTime+0.2) {
                         robot.kickerServo.setPosition(kickerExtend);
                         if (stateTimer.seconds() > ShooterWaitTime + 0.5) {
