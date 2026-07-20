@@ -22,9 +22,6 @@ public class ShooterPowerCalculator {
     private double distance;
     private int currentZone = 0;
 
-    private static final double tickToRPM = SHOOTER_RPM_CONVERSION;
-    private final int maxVelocityRPM = shooterMaxRPM;
-
     private int rpmTarget;
     private double rpmMeasured;
     private double shooterAdjusterAngle;
@@ -42,6 +39,10 @@ public class ShooterPowerCalculator {
     // Feedforward
     public static double kSShooter = 0.03;  // static friction (small bump)
     public static double kVShooter = 1.0;  // scale from targetNorm to power (roughly 1.0 if perfect)
+
+    private double activeKP = Double.NaN;
+    private double activeKI = Double.NaN;
+    private double activeKD = Double.NaN;
     // --------------------------------
 
     /**
@@ -60,16 +61,6 @@ public class ShooterPowerCalculator {
         add(0, RPM0); ///change this later
     }};
 
-    private final LUT<Integer, Double> targetShootingAngle = new LUT<Integer, Double>() {{
-        add(7, shooterAdjusterMax);
-        add(6, shooterAdjusterMax);
-        add(5, shooterAdjusterMax);
-        add(4, shooterAdjusterMax);
-        add(3, shooterAdjusterMax);
-        add(2, shooterAdjusterMid);
-        add(1, shooterAdjusterMin);
-        add(0, shooterAdjusterMax);
-    }};
 
     //===================================================
     //Constructor
@@ -77,6 +68,9 @@ public class ShooterPowerCalculator {
     public ShooterPowerCalculator(RobotHardware robot) {
         this.robot = robot;
         this.pid = new PIDController(kPShooter, kIShooter, kDShooter);
+        activeKP = kPShooter;
+        activeKI = kIShooter;
+        activeKD = kDShooter;
     }
 
     /** * Selects the goal used for distance calculation.
@@ -87,27 +81,57 @@ public class ShooterPowerCalculator {
     }
 
     /**
+     * Compatibility method.
+     *
+     * Calling getPower() means shooter control is enabled.
+     */
+    public double getPower() {
+        return getPower(true);
+    }
+    /**
      * * Calculates shooter motor power.
      * * Call this once during each OpMode loop.
      * * @return motor power from 0.0 to 1.0
      */
-    public double getPower() {
+    public double getPower(boolean enabled) {
         if (robot == null || robot.pinpoint == null || robot.topShooterMotor == null) return 0.0;
+
+        // Apply changes made through FTC Dashboard.
+        updatePIDParameters();
 
         /// update distance, zone, and target RPM every loop.
         updateState();
 
-        /// If not shooting, return 0 and reset PID so it doesn't "wind up"
-        if (rpmTarget <= 0) {
+        /*
+         * Always update measured RPM so telemetry and the FSM can
+         * see the actual flywheel speed, including during coast-down.
+         */
+        double shooterTicksPerSecond =
+                Math.abs(
+                        robot.topShooterMotor.getVelocity()
+                );
+
+        rpmMeasured =
+                shooterTicksPerSecond
+                        * SHOOTER_RPM_CONVERSION;
+
+        /*
+         * Do not allow PID accumulation while the flywheel is off.
+         */
+        if (!enabled || rpmTarget <= 0) {
             pid.reset();
             return 0.0;
         }
-        // Measured RPM from encoder ticks/sec
-        rpmMeasured = RobotActionConfig.shooterMotorSpeed * tickToRPM;
 
         // Voltage - aware max RPM
         double voltage = robot.getBatteryVoltageRobust();
-        double maxRPMDynamic = maxVelocityRPM * voltage / REF_VOLTAGE;
+        double maxRPMDynamic = shooterMaxRPM * voltage / REF_VOLTAGE; //voltage corrected max RPM
+        // Protect against invalid configuration or voltage.
+        if (!Double.isFinite(maxRPMDynamic)
+                || maxRPMDynamic <= 0.0) {
+            pid.reset();
+            return 0.0;
+        }
 
         // Normalize to 0..1 for stable tuning
         double targetNorm = (double) rpmTarget / maxRPMDynamic;
@@ -116,8 +140,13 @@ public class ShooterPowerCalculator {
         targetNorm = clamp01(targetNorm);
         currentNorm = clamp01(currentNorm);
 
+        double staticFeedforward =
+                targetNorm > 0.005
+                        ? kSShooter
+                        : 0.0;
+
         // Feedforward: baseline power
-        double ff = (kSShooter * Math.signum(targetNorm)) + (kVShooter * targetNorm);
+        double ff = staticFeedforward + (kVShooter * targetNorm);
 
         // PID correction (FTCLib PIDController uses (measured, setpoint))
         double pidOut = pid.calculate(currentNorm, targetNorm);
@@ -125,7 +154,18 @@ public class ShooterPowerCalculator {
         double output = ff + pidOut;
 
         if (Double.isNaN(output) || Double.isInfinite(output)) return 0.0;
-        return clamp(output, -1.0, 1.0);
+        return clamp(output, 0.0, 1.0);
+    }
+
+    /** * update distance, zone, and target RPM. */
+    private void updateState() {
+        updateDistanceAndZone();
+
+        rpmTarget =
+                getTargetRpmForZone(currentZone);
+
+        shooterAdjusterAngle =
+                getShooterAngleForZone(currentZone);
     }
 
     /** * Updates distance, zone. */
@@ -136,15 +176,8 @@ public class ShooterPowerCalculator {
         currentZone = calculateZone(distance);
     }
 
-    /** * update distance, zone, and target RPM. */
-    private void updateState() {
-        updateDistanceAndZone();
-        rpmTarget = Optional.ofNullable(targetRPM.get(currentZone)).orElse(0);
-        shooterAdjusterAngle = getShooterAngleForZone(currentZone);
-    }
-
     private int calculateZone(double distance) {
-        if (!Double.isFinite(distance) || distance < 0.0) {
+        if (!Double.isFinite(distance)) {
             return 0;
         }
         if (distance > closeEdge && distance <= CLOSE) {
@@ -191,13 +224,14 @@ public class ShooterPowerCalculator {
             case 6: return RPM6;
             case 7: return RPM7;
             case 0:
-                default: return RPM0; } }
+                default: return RPM0; }
+    }
     /** * Returns the shooter adjuster position for the supplied zone. */
     private double getShooterAngleForZone(int zone)
         { switch (zone)
         {  case 1: return shooterAdjusterMin;
             case 2: return shooterAdjusterMid;
-            case 3:
+            case 3: return shooterAdjusterMid;
             case 4:
             case 5:
             case 6:
@@ -211,7 +245,6 @@ public class ShooterPowerCalculator {
     }
 
     public double getDistance(){
-        updateDistanceAndZone();
         return distance;
     }
 
@@ -233,5 +266,28 @@ public class ShooterPowerCalculator {
 
     private static double clamp(double x, double low, double high) {
         return Math.max(low, Math.min(high, x));
+    }
+
+    private void updatePIDParameters() {
+        boolean pidChanged =
+                Double.compare(activeKP, kPShooter) != 0
+                        || Double.compare(activeKI, kIShooter) != 0
+                        || Double.compare(activeKD, kDShooter) != 0;
+
+        if (!pidChanged) {
+            return;
+        }
+
+        pid.setPID(
+                kPShooter,
+                kIShooter,
+                kDShooter
+        );
+
+        pid.reset();
+
+        activeKP = kPShooter;
+        activeKI = kIShooter;
+        activeKD = kDShooter;
     }
 }
