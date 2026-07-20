@@ -71,6 +71,12 @@ public class TurretUpd {
     public static double turretVelocityToleranceTicksPerSec =
             5.0;
 
+    /*
+     * Keep a small margin below the mechanical +/-180 limit so the
+     * turret never commands a target angle right at the hard stop.
+     */
+    public static double turretAngleLimitDegrees = 175.0;
+
     // =========================================================
     // Motion-profile state
     // =========================================================
@@ -264,8 +270,8 @@ public class TurretUpd {
                 (int) Math.round(
                         Range.clip(
                                 cachedTurretDriveAngleDegrees,
-                                -180.0,
-                                180.0
+                                -turretAngleLimitDegrees,
+                                turretAngleLimitDegrees
                         ) * angleToTick
                 );
 
