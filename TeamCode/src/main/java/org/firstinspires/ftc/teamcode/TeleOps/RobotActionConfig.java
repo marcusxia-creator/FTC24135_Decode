@@ -24,7 +24,7 @@ public class RobotActionConfig {
     public static double spindexerShootingPos           = spindexerZeroPos;
 
     public static double angleResetPos                  = 0.0;
-    public static double slotAngleDelta                 = 0.19;
+    public static double slotAngleDelta                 = 0.17;
 
     public static double servoStepSize                  = 0.05;     // per update() call (try 0.002–0.01)
     public static double servoTolerance                 = 0.015;    // "close enough" to finish
@@ -33,10 +33,11 @@ public class RobotActionConfig {
     public static double spindexerServoPerSlotTime          = 0.15;    // per slot time
 
     //kicker
-    public static double kickerRetract                  = 0.37;  /// value - retract back for spindexer reversing
-    public static double kickerExtend                   = 0.64; /// value - into the spindexer for pushing the ball up
+    public static double kickerRetract                  = 0.57;  /// value - retract back for spindexer reversing
+    public static double kickerExtend                   = 0.82; /// value - into the spindexer for pushing the ball up
+    public static double kickerRetractDelay             =0.3;
     //intake Speed
-    public static double intakeSpeed                    = 0.80;
+    public static double intakeSpeed                    = 0.90;
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.7;
     //shooter timer
@@ -45,14 +46,14 @@ public class RobotActionConfig {
 
     public static final double SPOOLUP_SEC              = 1.25;
     //shooter adjustor
-    public static double shooterAdjusterMax             = 0.48;
+    public static double shooterAdjusterMax             = 0.47;
     public static double shooterAdjusterMin             = 0.14; //new 0.14 ; old : 0.06
     public static double shooterAdjusterMid             = 0.35; //new 0.35
     public static double shooterFactorThreshold         = 0.95;
     //drive train power
     public static double powerFactor                    = 1;
     public static double accel_Slowness                 = 0.25;
-    public static double decel_Slowness                 = 0.5;
+    public static double decel_Slowness                 = 0.67;
     public static double rotate_Slowness                 = 0.5;
 
     public static double getDistanceThreshold           =0.02;
@@ -102,12 +103,12 @@ public class RobotActionConfig {
 
     public static int RPM0                              = 3700; ///all minus 200 rpm with upgraded hardware
     public static int RPM1                              = 3150;
-    public static int RPM2                              = 3150;
-    public static int RPM3                              = 3450;
-    public static int RPM4                              = 3600;
-    public static int RPM5                              = 3700;
-    public static int RPM6                              = 4300;
-    public static int RPM7                              = 4550;
+    public static int RPM2                              = 3200;
+    public static int RPM3                              = 3400;
+    public static int RPM4                              = 3850;
+    public static int RPM5                              = 4000;     //3700
+    public static int RPM6                              = 4550;     //4300
+    public static int RPM7                              = 4700;     //4550
 
     public static final double farPower                 = 0.78;     // 3920 - 0.8  @ 12.73
     public static final double midPower                 = 0.73;     // 3360 - 0.70 @ 12.82
@@ -130,4 +131,16 @@ public class RobotActionConfig {
     public static final double requiredSensors          =3;
 
     public static double shooterMotorSpeed;
+
+    /// PID parameters for shooter
+    public static double turretKP = 0.008;
+    public static double turretKI = 0.0;
+    public static double turretKD = 0.0001;
+
+    public static double turretKS = 0.05;
+    public static double turretKV = 0.0002;
+    public static double turretKA = 0.00001;
+
+    public static double turretMaxVelocity = 1000.0;
+    public static double turretMaxAcceleration = 2000.0;
 }
