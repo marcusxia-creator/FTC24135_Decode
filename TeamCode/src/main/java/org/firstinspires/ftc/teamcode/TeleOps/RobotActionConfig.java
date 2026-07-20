@@ -40,6 +40,7 @@ public class RobotActionConfig {
     public static double intakeSpeed                    = 0.90;
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.7;
+    public static int requiredSensors                   = 3;    // number of slot sensors that must see a ball before intake is considered full
     //shooter timer
     public static final long FEED_PERIOD_MS_CLOSE       = 200; // 250
     public static final long FEED_PERIOD_MS_FAR         = 300; // 400 250
@@ -128,7 +129,6 @@ public class RobotActionConfig {
     public static final double trimStep                 = 10;
     public static final double adjSpeed                 = 1500;
     public static final double pressTime                = 0.2;
-    public static final double requiredSensors          =3;
 
     public static double shooterMotorSpeed;
 

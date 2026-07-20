@@ -62,6 +62,7 @@ public class FSMIntake {
             case INTAKE_PREP:
                 // Ensure we start at a slot position 1
                 targetSlot = 1;
+                occupiedSlots = 0;
                 spindexer.RuntoPosition(targetSlot);
                 intakeStates = IntakeStates.INTAKE_START;
                 break;
@@ -76,18 +77,23 @@ public class FSMIntake {
             case INTAKE_CAPTURE:
                 boolean jammed = isIntakeJammmed();
                 HandleIntaking(jammed); // This manages motor power internally
-                // Wait for ball to be detected in the intake mouth
-                for (SlotSensor sensor : robot.slotSensors) {
+
+                // Recompute slot occupancy fresh each tick and record ball colors
+                occupiedSlots = 0;
+                for (int i = 0; i < robot.slotSensors.size(); i++) {
+                    SlotSensor sensor = robot.slotSensors.get(i);
                     if (sensor.isBallPresent()) {
+                        spindexer.writeToCurrentSlot(i, sensor.getBallColor());
                         occupiedSlots++;
-                        if (occupiedSlots >= requiredSensors) {
-                            robot.intakeMotor.setPower(0);
-                            intakeTimer.reset();
-                            intakeStates = IntakeStates.INTAKE_FINISH;
-                            targetSlot = 0;
-                            break;
-                        }
                     }
+                }
+
+                // All slots filled -> stop intake and move to finish
+                if (occupiedSlots >= requiredSensors) {
+                    robot.intakeMotor.setPower(0);
+                    targetSlot = 0;
+                    intakeTimer.reset();
+                    intakeStates = IntakeStates.INTAKE_FINISH;
                 }
                 break;
             case INTAKE_FINISH:

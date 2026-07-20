@@ -366,22 +366,44 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         // 10. TELEMETRY
         // =========================================================
-        teleOpTelemetryManager.updateSimplified(
-                alliance,
-                requestedActionState,
-                activeActionState,
-                FSMIntake,
-                FSMShooter,
-                spindexer,
-                loopHz,
-                currentZone,
-                currentDistance,
-                currentTx,
-                batteryVoltage,
-                shooterRPM,
-                shooterTargetRPM,
-                waitTimeMs
-        );
+        if (SIMPLE_TELEMETRY) {
+            teleOpTelemetryManager.updateSimplified(
+                    alliance,
+                    requestedActionState,
+                    activeActionState,
+                    FSMIntake,
+                    FSMShooter,
+                    spindexer,
+                    loopHz,
+                    currentZone,
+                    currentDistance,
+                    currentTx,
+                    batteryVoltage,
+                    shooterRPM,
+                    shooterTargetRPM,
+                    waitTimeMs
+            );
+        } else {
+            teleOpTelemetryManager.update(
+                    alliance,
+                    requestedActionState,
+                    activeActionState,
+                    FSMIntake,
+                    FSMShooter,
+                    spindexer,
+                    robot,
+                    shooterPowerAngleCalculator,
+                    turret,
+                    loopHz,
+                    currentPose,
+                    currentZone,
+                    currentDistance,
+                    currentTx,
+                    batteryVoltage,
+                    shooterRPM,
+                    shooterTargetRPM
+            );
+        }
     }
 
     @Override

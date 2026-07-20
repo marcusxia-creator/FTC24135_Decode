@@ -96,14 +96,14 @@ public class SpindexerUpd {
     //==================================================
     /** No calculated Slot needed. Just use currentPos % 3.
       * write the color directly to slot */
-    public void writeToCurrentSlot(BallColor color) {
+    public void writeToCurrentSlot(int slotnumber, BallColor color) {
         if (color == BallColor.GREEN){
             stableColor = SLOT.Green;}
         else if (color == BallColor.PURPLE){
             stableColor = SLOT.Purple;}
         else {stableColor = SLOT.Unknown;}
         // Apply result to the current logical index
-        slots[Math.floorMod(currentPos, 3)] = stableColor;
+        slots[slotnumber] = stableColor;
     }
 
     //==================================================

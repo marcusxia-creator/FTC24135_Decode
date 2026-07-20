@@ -5,9 +5,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
-import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
-
-import java.util.List;
 
 public class TeleOpTelemetryManager {
 
@@ -61,8 +58,6 @@ public class TeleOpTelemetryManager {
             BasicTeleOp_RED_ALLIANCE.Alliance alliance,
             BasicTeleOp_RED_ALLIANCE.RobotActionState requestedActionState,
             BasicTeleOp_RED_ALLIANCE.RobotActionState activeActionState,
-            List<String> switchTickLog,
-            ColorDetection colorDetection,
             FSMIntake fsmIntake,
             FSMShooter fsmShooter,
             SpindexerUpd spindexer,
@@ -96,7 +91,6 @@ public class TeleOpTelemetryManager {
         );
 
         addSpindexerTelemetry(
-                colorDetection,
                 spindexer,
                 robot
         );
@@ -115,7 +109,6 @@ public class TeleOpTelemetryManager {
         );
 
         addTurretTelemetry(
-                switchTickLog,
                 fsmShooter,
                 turret,
                 robot
@@ -337,7 +330,6 @@ public class TeleOpTelemetryManager {
     }
 
     private void addSpindexerTelemetry(
-            ColorDetection colorDetection,
             SpindexerUpd spindexer,
             RobotHardware robot
     ) {
@@ -358,11 +350,6 @@ public class TeleOpTelemetryManager {
                 robot.distanceSensor.getDistance(
                         DistanceUnit.MM
                 )
-        );
-
-        telemetry.addData(
-                "Stable Color",
-                colorDetection.getStableColor()
         );
 
         telemetry.addData(
@@ -509,7 +496,6 @@ public class TeleOpTelemetryManager {
     }
 
     private void addTurretTelemetry(
-            List<String> switchTickLog,
             FSMShooter fsmShooter,
             TurretUpd turret,
             RobotHardware robot
@@ -523,15 +509,6 @@ public class TeleOpTelemetryManager {
                 turret.isSensorSnapshotValid()
         );
 
-        telemetry.addData(
-                "Limit Switch Pressed",
-                turret.isLimitPressed()
-        );
-
-        telemetry.addData(
-                "Limit Switch Log",
-                switchTickLog
-        );
 
         telemetry.addData(
                 "Goal Pose",
