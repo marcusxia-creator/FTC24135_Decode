@@ -260,7 +260,7 @@ public class Turret {
                 return desiredVelocity;
             }
         else{
-               return maximumChange;
+               return profileVelocityTicksPerSecond +Math.signum(difference)*maximumChange;
         }
     }
     public int getTargetTick () {
@@ -330,5 +330,20 @@ public class Turret {
 
     public boolean isLimitPressed (){
         return robot.limitSwitch.getState();
+    }
+
+    public void updatePIDFParameters(
+            double kP,
+            double kI,
+            double kD,
+            double kS,
+            double kV,
+            double kA
+    ) {
+        pidController.setPID(kP, kI, kD);
+
+        this.kSTurret = kS;
+        this.kVTurret = kV;
+        this.kATurret = kA;
     }
 }
