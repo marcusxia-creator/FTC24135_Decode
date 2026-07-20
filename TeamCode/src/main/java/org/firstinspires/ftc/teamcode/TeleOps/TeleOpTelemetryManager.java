@@ -247,9 +247,8 @@ public class TeleOpTelemetryManager {
 
         telemetry.addData(
                 "waitMS",
-                Double.isFinite(waitMS)
-                        ? String.format("%.2f°", waitMS)
-                        : "No target"
+                "%.2f",
+                (double) waitMS
         );
 
         telemetry.update();
