@@ -39,6 +39,8 @@ import java.util.List;
 @Config
 @TeleOp(name = "---------RED--🐧---Coach_version-------", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOp_RED_ALLIANCE extends OpMode {
+    private long waitTimeMs;
+
     /// Enum states for robot action state
     public enum RobotActionState {
         Sequence_Shooting,
@@ -65,10 +67,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     // For shooter power and angle calculator
     private ShooterPowerCalculator shooterPowerAngleCalculator;
 
-    /// Ball color and color detection
-    private BallColor ballColor;
-    private ColorDetection colorDetection;
-
     /// Time and frequency
     private long lastLoopTimeNs;
     private double loopHz = 0.0;
@@ -93,9 +91,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private int startingTick;
     private TeleOpTelemetryManager teleOpTelemetryManager;
     public static boolean SIMPLE_TELEMETRY = false;
-
-
-    public List<String> switchTickLog = new ArrayList<>();
 
     /// For expensive values from getter
     private int currentZone;
@@ -138,7 +133,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robotDrive.Init();
 
         /// 2. color detection------------------------------------------------------------
-        colorDetection = new ColorDetection(robot);
+        /// empty
 
         /// 3. limelight--------------------------------------------------------------
         limelight = new Limelight(robot);
@@ -149,11 +144,17 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         spindexer = new SpindexerUpd(robot, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, 0);
         spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadComboInput);
 
+        ///  Alliance selection
+        alliance =
+                Alliance.RED_ALLIANCE;
+        boolean isRedAlliance = alliance == Alliance.RED_ALLIANCE;
+
         /// 5. turret---------------------------------------------------------------
-        turret = new TurretUpd(robot, true);
+        turret = new TurretUpd(robot, isRedAlliance);
 
         /// 6 power calculator for shooter------------------------------------------------------------
         shooterPowerAngleCalculator = new ShooterPowerCalculator(robot);
+        shooterPowerAngleCalculator.setAlliance(isRedAlliance);
 
         /// 7. shooter-------------------------------------------------------------
         FSMShooter = new FSMShooter(robot, spindexer, shooterPowerAngleCalculator, gamepadComboInput, turret, limelight);
@@ -368,7 +369,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         shooterTargetRPM =
                 shooterPowerAngleCalculator
                         .getRPM();
-
+        waitTimeMs = FSMShooter.getTimestampForGoalZone(currentZone);
         // =========================================================
         // 9. LED
         // =========================================================
@@ -378,7 +379,22 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         // 10. TELEMETRY
         // =========================================================
-
+        teleOpTelemetryManager.updateSimplified(
+                alliance,
+                requestedActionState,
+                activeActionState,
+                FSMIntake,
+                FSMShooter,
+                spindexer,
+                loopHz,
+                currentZone,
+                currentDistance,
+                currentTx,
+                batteryVoltage,
+                shooterRPM,
+                shooterTargetRPM,
+                waitTimeMs
+        );
     }
 
     @Override
