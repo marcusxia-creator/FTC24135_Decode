@@ -57,7 +57,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private RobotDrive robotDrive;
     private FSMShooter FSMShooter;
     private FSMIntake FSMIntake;
-    private Turret turret;
+    private TurretUpd turret;
     private SpindexerManualControl spindexerManualControl;
     private SpindexerUpd spindexer;
     private Limelight limelight;
@@ -70,7 +70,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private ColorDetection colorDetection;
 
     /// Time and frequency
-    private long lastLoopTime = 0;
+    private long lastLoopTimeNs;
     private double loopHz = 0.0;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private static double voltage;
@@ -150,7 +150,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadComboInput);
 
         /// 5. turret---------------------------------------------------------------
-        turret = new Turret(robot, true);
+        turret = new TurretUpd(robot, true);
 
         /// 6 power calculator for shooter------------------------------------------------------------
         shooterPowerAngleCalculator = new ShooterPowerCalculator(robot);
@@ -220,136 +220,165 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
 
         // =========================================================
-        // 1. INPUT UPDATE (read buttons + combos)
+        // 1. START A NEW HARDWARE LOOP
         // =========================================================
+
+        /*
+         * Clear all REV Hub bulk caches exactly once at the
+         * beginning of the loop.
+         */
         robot.clearBulkCache();
+
+        // =========================================================
+        // 2. GAMEPAD INPUT
+        // =========================================================
+
         gamepadCo1.readButtons();
         gamepadCo2.readButtons();
-        /// combo button LB+ & RB+ config and update
-        gamepadComboInput.update(); // for combined button combo
-        /// Changes the action state base on which button is pressed
-        buttonUpdate(); // sets requestedActionState ONLY
 
-        // =========================================================
-        // 2. CONTINUOUS SENSOR / HOUSEKEEPING UPDATES
-        // =========================================================
-        robot.pinpoint.update();
-        //ballColor = BallColor.fromHue(colorDetection.getHue());
-        updateLoopFrequency();
-        currentPose = robot.pinpoint.getPosition();
-        currentZone = shooterPowerAngleCalculator.getCurrentZone();
-        currentDistance = shooterPowerAngleCalculator.getDistance();
-        currentTx = limelight.getTargetXForTag(24);
-        batteryVoltage = robot.getBatteryVoltageRobust();
+        gamepadComboInput.update();
 
-        RobotActionConfig.shooterMotorSpeed = robot.topShooterMotor.getVelocity();
-
-        // =========================================================
-        // 3. DRIVE (always responsive)
-        // =========================================================
-        robotDrive.DriveLoop();
-
-        // =========================================================
-        // FIXME:
-        //  4. MODIFIED - PER-ACTION "EXTRAS" (NO FSM STATE FORCING HERE)
-        // =========================================================
-        switch (activeActionState){
-            case Sequence_Shooting:
-                //turret.driveTurretMotor();
-                break;
-            case Intaking:
-                // empty as the FSM handles this,intake FSM already running
-                break;
-            case Idle:
-                // empty as the FSM handles this
-                spindexerManualControl.loop();
-                break;
-            default:
-                // do nothing — graceful stop handled elsewhere
-                break;
-        }
-
-        // =========================================================
-        // 5. ZONE STATUS
-        // =========================================================
-        turret.updateZoneForGoalPose(currentZone);
-        FSMShooter.updateZoneForGoalPose(currentZone);
-
-        //Turret PIDF Config
-        //turret.updatePidFromDashboard();
-
-        // =========================================================
-        // 6. SUBSYSTEM FSMs (ALWAYS RUN)
-        // =========================================================
-        FSMIntake.loop();
-        // =========================================================
-        // 6.1 SHOOTER & TURRET CONTROL (BUTTON CONTROLLED)
-        // =========================================================
-        /// When gamepad back pressed, reset turret.
-        /// Otherwise, normal shooter and turret drive
-        /**
-        if (gamepadComboInput.getBackSinglePressedAny()) {
-            resetTurret = true;
-            startingTick = robot.turretMotor.getCurrentPosition(); // latch once on press
-        }
-        if (resetTurret) {
-            if (turret.turretReset(startingTick)) {
-                resetTurret = false;
-                FSMShooter.resetTrim();
-            }
-        } else {
-            //Limelight.TxSnapshot snap = limelight.getTxForTag(24);
-            //FSMShooter.setLimelightTx(snap.hasTarget, snap.txDeg);
-            FSMShooter.SequenceShooterLoop();
-        }
+        /*
+         * Updates requestedActionState only.
          */
-        ///  No Turret Reset
-        FSMShooter.SequenceShooterLoop();
+        buttonUpdate();
+
         // =========================================================
-        // 7. NEW! - ACTION STATE TRANSITION MANAGER (GRACEFUL)
-        // Refine the order to reduce one loop delay.
+        // 3. UPDATE ACTION TRANSITIONS
         // =========================================================
+
+        /*
+         * Run the transition manager before subsystem FSMs.
+         *
+         * If a subsystem becomes safe, the new action state can be
+         * entered and processed during this same loop.
+         */
         updateActionStateTransitions();
 
         // =========================================================
-        // 8. LED STATUS (non-blocking)
+        // 4. SENSOR UPDATES
         // =========================================================
+
+        /*
+         * Update Pinpoint exactly once.
+         *
+         * TurretUpd and ShooterPowerCalculator will then read the
+         * current Pinpoint values without calling update() again.
+         */
+        robot.pinpoint.update();
+
+        updateLoopFrequency();
+
+        // =========================================================
+        // 5. DRIVE
+        // =========================================================
+
+        /*
+         * Driving remains responsive regardless of the active
+         * intake or shooter state.
+         */
+        robotDrive.DriveLoop();
+
+        // =========================================================
+        // 6. SUBSYSTEM FSMs
+        // =========================================================
+
+        /*
+         * Always run both FSMs so their timers, stopping sequences
+         * and state transitions can continue.
+         */
+        FSMIntake.loop();
+
+        /*
+         * SequenceShooterLoop performs:
+         *
+         * - Shooter state update
+         * - Shooter PID + feedforward calculation
+         * - Shooter motor control
+         * - Goal-zone selection
+         * - Turret sensor snapshot
+         * - Limelight query
+         * - Turret motion-profile PIDF
+         * - Spindexer update
+         */
+        FSMShooter.SequenceShooterLoop();
+
+        // =========================================================
+        // 7. ACTION-SPECIFIC EXTRA CONTROLS
+        // =========================================================
+
+        switch (activeActionState) {
+
+            case Sequence_Shooting:
+                /*
+                 * Shooter and turret are handled by FSMShooter.
+                 */
+                break;
+
+            case Intaking:
+                /*
+                 * Intake is handled by FSMIntake.
+                 */
+                break;
+
+            case Idle:
+                /*
+                 * Manual Spindexer control is available only while
+                 * the overall action state is idle.
+                 *
+                 * Placing this after the FSM updates makes manual
+                 * commands the final Spindexer command this loop.
+                 */
+                spindexerManualControl.loop();
+                break;
+
+            default:
+                break;
+        }
+
+        // =========================================================
+        // 8. COLLECT CACHED TELEMETRY VALUES
+        // =========================================================
+
+        /*
+         * These getters now return values already calculated during
+         * this loop. They should not perform new sensor updates.
+         */
+        currentPose =
+                robot.pinpoint.getPosition();
+
+        currentZone =
+                shooterPowerAngleCalculator
+                        .getCurrentZone();
+
+        currentDistance =
+                shooterPowerAngleCalculator
+                        .getDistance();
+
+        currentTx =
+                FSMShooter.getLimelightTxForLED();
+
+        batteryVoltage =
+                robot.getBatteryVoltageRobust();
+
+        shooterRPM =
+                shooterPowerAngleCalculator
+                        .getMeasureRPM();
+
+        shooterTargetRPM =
+                shooterPowerAngleCalculator
+                        .getRPM();
+
+        // =========================================================
+        // 9. LED
+        // =========================================================
+
         updateLED(currentTx);
 
         // =========================================================
-        // 9. TELEMETRY
+        // 10. TELEMETRY
         // =========================================================
-        if (SIMPLE_TELEMETRY) {
-            teleOpTelemetryManager.updateSimplified(
-                    alliance,
-                    requestedActionState,
-                    activeActionState,
-                    FSMIntake,
-                    FSMShooter,
-                    spindexer,
-                    robot,
-                    shooterPowerAngleCalculator,
-                    turret,
-                    limelight,
-                    loopHz
-            );
-        } else {
-            teleOpTelemetryManager.update(
-                    alliance,
-                    requestedActionState,
-                    activeActionState,
-                    switchTickLog,
-                    colorDetection,
-                    FSMIntake,
-                    FSMShooter,
-                    spindexer,
-                    robot,
-                    shooterPowerAngleCalculator,
-                    turret,
-                    limelight,
-                    loopHz
-            );
-        };
+
     }
 
     @Override
@@ -358,6 +387,15 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.frontRightMotor.setPower(0);
         robot.backLeftMotor.setPower(0);
         robot.backRightMotor.setPower(0);
+        robot.topShooterMotor.setPower(0.0);
+        robot.bottomShooterMotor.setPower(0.0);
+
+        robot.turretMotor.setPower(0.0);
+        /*
+         * Stop Limelight processing if your Limelight wrapper
+         * provides this method.
+         */
+        limelight.stop();
     }
 
     // =========================================================
@@ -528,25 +566,24 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         else {
             robot.LED.setPosition(0.0);   // default black (outside these ranges)
         }
-
-        // limit switch logging
-        if (FSMShooter.turret.isLimitPressed()) {
-            switchTickLog.add(Integer.toString(robot.turretMotor.getCurrentPosition()));
-            if (switchTickLog.size() >= 10) {
-                switchTickLog.remove(0);
-            }
-        }
     }
 
     ///  - Frequency Updates
     private void updateLoopFrequency() {
-        long now = System.currentTimeMillis();
-        if (lastLoopTime != 0) {
-            long dtMs = now - lastLoopTime;
-            if (dtMs > 0) {
-                loopHz = 1000.0 / dtMs;
+        long nowNs =
+                System.nanoTime();
+
+        if (lastLoopTimeNs != 0L) {
+            double deltaTimeSeconds =
+                    (nowNs - lastLoopTimeNs)
+                            / 1_000_000_000.0;
+
+            if (deltaTimeSeconds > 0.0) {
+                loopHz =
+                        1.0 / deltaTimeSeconds;
             }
         }
-        lastLoopTime = now;
+
+        lastLoopTimeNs = nowNs;
     }
 }

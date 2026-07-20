@@ -132,6 +132,10 @@ public class Limelight {
         return null;
     }
 
+    public void stop() {
+        robot.limelight.stop();
+    }
+
     /**
      * Output class to return Pose, offset, ect.
      */
