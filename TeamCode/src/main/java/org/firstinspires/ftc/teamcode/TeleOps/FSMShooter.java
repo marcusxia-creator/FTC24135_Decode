@@ -44,6 +44,8 @@ public class FSMShooter {
 
     public double trimTicks;
 
+    private double shooterMotorSpeed;
+
     // ============================
     // Limelight Tx input (from OpMode loop)
     // ============================
@@ -208,6 +210,8 @@ public class FSMShooter {
         int zone  = shooterPowerLUT.getCurrentZone();
         updateZoneForGoalPose(zone);
 
+
+
         //==========================================================
         // Main FSM
         //==========================================================
@@ -257,7 +261,7 @@ public class FSMShooter {
             case SEQUENCE_SHOOTING:
                 boolean flywheelReady =
                         flyWheelTimer.seconds() >= SPOOLUP_SEC ||
-                                (robot.topShooterMotor.getVelocity() * SHOOTER_RPM_CONVERSION) >= rpm * 0.95;
+                                (shooterMotorSpeed* SHOOTER_RPM_CONVERSION) >= rpm * 0.95;
                 if (!flywheelReady) break;
                 // make a timer to feed balls
                 long now = System.currentTimeMillis();
@@ -419,6 +423,11 @@ public class FSMShooter {
 
         int adjust = (int) Math.round(-1*txToUse * degToTicks);
         return Range.clip(adjust, -txMaxTicks, txMaxTicks);
+    }
+
+    //get shooterMotorVelocity
+    private double getShooterMotorVelocity() {
+        return RobotActionConfig.shooterMotorSpeed;
     }
 
 

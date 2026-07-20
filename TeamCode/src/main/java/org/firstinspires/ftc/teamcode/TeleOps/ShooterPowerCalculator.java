@@ -103,7 +103,7 @@ public class ShooterPowerCalculator {
             return 0.0;
         }
         // Measured RPM from encoder ticks/sec
-        rpmMeasured = robot.topShooterMotor.getVelocity() * tickToRPM;
+        rpmMeasured = RobotActionConfig.shooterMotorSpeed * tickToRPM;
 
         // Voltage - aware max RPM
         double voltage = robot.getBatteryVoltageRobust();

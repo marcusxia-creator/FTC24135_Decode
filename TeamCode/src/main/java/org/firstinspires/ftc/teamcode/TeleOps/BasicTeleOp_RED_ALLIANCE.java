@@ -31,14 +31,13 @@ import java.util.List;
  * Sort shooting
  * Adding Motif Detection to auto
  * Adding Pose2D storage + turret heading from auto to teleOp
- * Turret PIDF
- * Tuning PID values for shooter - coach did
+ * Turret PIDF values for shooter - coach did
  ---------------------------------------------------------------------------
  * Change shooting timing values when hardware is changed for rapid shooting
  * Tuning LUT values when the hardware changes
  */
 @Config
-@TeleOp(name = "---------RED--🐧----------", group = "org.firstinspires.ftc.teamcode")
+@TeleOp(name = "---------RED--🐧---Coach_version-------", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     /// Enum states for robot action state
     public enum RobotActionState {
@@ -66,11 +65,11 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     // For shooter power and angle calculator
     private ShooterPowerCalculator shooterPowerAngleCalculator;
 
-    // for ball color and color detection
+    /// Ball color and color detection
     private BallColor ballColor;
     private ColorDetection colorDetection;
 
-    // for time and frequency
+    /// Time and frequency
     private long lastLoopTime = 0;
     private double loopHz = 0.0;
     private ElapsedTime debounceTimer = new ElapsedTime();
@@ -105,6 +104,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private Pose2D currentPose;
     private double batteryVoltage;
 
+
     //========================================
     //---------- Initialization --------------
     //========================================
@@ -120,6 +120,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.init();                           //Initialize all motors and servos
         robot.initIMU();                        //Initialize control hub IMU
         robot.initPinpoint();                   //Initialize pinpoint
+        robot.initializeBulkReading(hardwareMap);
 
         /// * Transfer the pose 2D from Auto Ops *
         Pose2d endPose = PoseStorage.currentPose;
@@ -136,31 +137,32 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robotDrive = new RobotDrive(robot, gamepadComboInput);
         robotDrive.Init();
 
-        /// 6. color detection------------------------------------------------------------
+        /// 2. color detection------------------------------------------------------------
         colorDetection = new ColorDetection(robot);
 
-        /// 9. limelight--------------------------------------------------------------
+        /// 3. limelight--------------------------------------------------------------
         limelight = new Limelight(robot);
         limelight.initLimelight(24);
         limelight.start();
 
-        /// 2.spindexer-------------------------------------------------------------------
+        /// 4.spindexer-------------------------------------------------------------------
         spindexer = new SpindexerUpd(robot, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, 0);
         spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadComboInput);
 
-        /// 3. turret---------------------------------------------------------------
+        /// 5. turret---------------------------------------------------------------
         turret = new Turret(robot, true);
 
-        /// 4.1. power calculator for shooter------------------------------------------------------------
+        /// 6 power calculator for shooter------------------------------------------------------------
         shooterPowerAngleCalculator = new ShooterPowerCalculator(robot);
-        /// 4. shooter-------------------------------------------------------------
+
+        /// 7. shooter-------------------------------------------------------------
         FSMShooter = new FSMShooter(robot, spindexer, shooterPowerAngleCalculator, gamepadComboInput, turret, limelight);
         FSMShooter.Init();
 
-        /// 5. intake------------------------------------------------------------
+        /// 8. intake------------------------------------------------------------
         FSMIntake = new FSMIntake (robot, spindexer);
 
-        /// 7. alliance selection-----------------------------------------------------------
+        /// 9. alliance selection-----------------------------------------------------------
         alliance = Alliance.RED_ALLIANCE;
         if (alliance == Alliance.RED_ALLIANCE) {
             shooterPowerAngleCalculator.setAlliance(true);
@@ -168,18 +170,18 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             shooterPowerAngleCalculator.setAlliance(false);
         };
 
-        /// 8. robot state----------------------------------------------------------
+        /// 10. robot state----------------------------------------------------------
         actionStates = RobotActionState.Idle;
 
-        /// 10. start adjuster servo at position to avoid soft start
+        /// 11. start adjuster servo at position to avoid soft start
         robot.shooterAdjusterServo.setPosition(0.48);
 
-        /// 11. start kicker servo at position to avoid soft start
+        /// 12. start kicker servo at position to avoid soft start
         robot.kickerServo.setPosition(kickerRetract);
 
+        ///  13. Telemetry------------------------------------------------------------
         telemetry.addData("start pose", PoseStorage.currentPose);
         telemetry.addData("pinpoint", robot.pinpoint.getPosition());
-
         telemetry.update();
     }
 
@@ -220,6 +222,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         // 1. INPUT UPDATE (read buttons + combos)
         // =========================================================
+        robot.clearBulkCache();
         gamepadCo1.readButtons();
         gamepadCo2.readButtons();
         /// combo button LB+ & RB+ config and update
@@ -231,7 +234,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // 2. CONTINUOUS SENSOR / HOUSEKEEPING UPDATES
         // =========================================================
         robot.pinpoint.update();
-        ballColor = BallColor.fromHue(colorDetection.getHue());
+        //ballColor = BallColor.fromHue(colorDetection.getHue());
         updateLoopFrequency();
         currentPose = robot.pinpoint.getPosition();
         currentZone = shooterPowerAngleCalculator.getCurrentZone();
@@ -239,13 +242,15 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         currentTx = limelight.getTargetXForTag(24);
         batteryVoltage = robot.getBatteryVoltageRobust();
 
+        RobotActionConfig.shooterMotorSpeed = robot.topShooterMotor.getVelocity();
+
         // =========================================================
         // 3. DRIVE (always responsive)
         // =========================================================
         robotDrive.DriveLoop();
 
         // =========================================================
-        // FIXME: 5.
+        // FIXME:
         //  4. MODIFIED - PER-ACTION "EXTRAS" (NO FSM STATE FORCING HERE)
         // =========================================================
         switch (activeActionState){
@@ -282,6 +287,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         /// When gamepad back pressed, reset turret.
         /// Otherwise, normal shooter and turret drive
+        /**
         if (gamepadComboInput.getBackSinglePressedAny()) {
             resetTurret = true;
             startingTick = robot.turretMotor.getCurrentPosition(); // latch once on press
@@ -296,7 +302,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             //FSMShooter.setLimelightTx(snap.hasTarget, snap.txDeg);
             FSMShooter.SequenceShooterLoop();
         }
-
+         */
+        ///  No Turret Reset
+        FSMShooter.SequenceShooterLoop();
         // =========================================================
         // 7. NEW! - ACTION STATE TRANSITION MANAGER (GRACEFUL)
         // Refine the order to reduce one loop delay.

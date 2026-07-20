@@ -128,4 +128,6 @@ public class RobotActionConfig {
     public static final double adjSpeed                 = 1500;
     public static final double pressTime                = 0.2;
     public static final double requiredSensors          =3;
+
+    public static double shooterMotorSpeed;
 }
