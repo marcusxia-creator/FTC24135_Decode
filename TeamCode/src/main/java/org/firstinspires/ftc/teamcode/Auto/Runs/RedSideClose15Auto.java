@@ -25,7 +25,7 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterRapidRunMode.SHOOTERSTATE.*;
 import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterSortingRunMode.SORTINGSHOOTERSTATE.*;
 
-@Autonomous(name = "RedSideCloseAuto", group = "Autonomous")
+@Autonomous(name = "15Ball_RedSideCloseAuto", group = "Autonomous")
 public class RedSideClose15Auto extends LinearOpMode {
     public static Pose2d initialPose = new Pose2d(-38.5, 54, Math.toRadians(90));
 

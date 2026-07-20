@@ -20,10 +20,10 @@ public class RedSidePositions {
     public static double Close_IntakeSet2Position4_X = 13;
     public static double Close_IntakeSet2Position4_Y = 58;
 
-    public static double Gate_IntakeSet2Position1_X = 9;
+    public static double Gate_IntakeSet2Position1_X = 8;
     public static double Gate_IntakeSet2Position1_Y = 32;
-    public static double Gate_IntakeSet2Position4_X = 9;
-    public static double Gate_IntakeSet2Position4_Y = 58;
+    public static double Gate_IntakeSet2Position4_X = 8;
+    public static double Gate_IntakeSet2Position4_Y = 52;
 
     public static double IntakeSet3Position1_X = -12;
     public static double IntakeSet3Position1_Y = 40;

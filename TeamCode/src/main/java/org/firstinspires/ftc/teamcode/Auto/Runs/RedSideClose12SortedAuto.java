@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
-@Autonomous(name = "RedSideCloseAuto", group = "Autonomous")
+@Autonomous(name = "12BallSort_RedSideCloseAuto", group = "Autonomous")
 public class RedSideClose12SortedAuto extends LinearOpMode {
     public static Pose2d initialPose = new Pose2d(-38.5, 54, Math.toRadians(90));
 

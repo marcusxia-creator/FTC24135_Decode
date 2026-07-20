@@ -47,8 +47,7 @@ public class RedSideFar15Auto extends LinearOpMode {
 
         robot = new RobotHardware(hardwareMap);
         robot.init();
-        robot.turretInit();
-        robot.pinpoint.setPosition(new Pose2D(DistanceUnit.INCH,64,7.5,AngleUnit.DEGREES,90));
+        robot.turretInit(); 
 
         context = new AutoSpindexerContext();
         turret = new AutoTurretDrive(robot);
@@ -73,44 +72,36 @@ public class RedSideFar15Auto extends LinearOpMode {
         }
 
         TrajectoryActionBuilder IntakeSet1Drive1 = drive.actionBuilder(initialPose)
-                .setTangent(0)
-                .splineToConstantHeading(new Vector2d(IntakeSet1Position1_X, IntakeSet1Position1_Y), Math.toRadians(90));
+                .splineToConstantHeading(new Vector2d(IntakeSet1Position1_X, IntakeSet1Position1_Y), Math.toRadians(0));
 
         TrajectoryActionBuilder IntakeSet1Drive2 = IntakeSet1Drive1.endTrajectory().fresh()
-                .setTangent(0)
-                .splineToConstantHeading(new Vector2d(IntakeSet1Position4_X,IntakeSet1Position4_Y),Math.toRadians(90));
+                .splineToConstantHeading(new Vector2d(IntakeSet1Position4_X,IntakeSet1Position4_Y),Math.toRadians(0));
 
         TrajectoryActionBuilder DriveToShoot1 = IntakeSet1Drive2.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
 
         TrajectoryActionBuilder IntakeHPSet1Drive1 = DriveToShoot1.endTrajectory().fresh()
-                .setTangent(0)
                 .splineToConstantHeading(new Vector2d(IntakeHPPosition1_X, IntakeHPPosition1_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder IntakeHPSet1Drive2 = IntakeHPSet1Drive1.endTrajectory().fresh()
-                .setTangent(0)
                 .splineToConstantHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot2 = IntakeHPSet1Drive2.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
 
         TrajectoryActionBuilder IntakeHPSet2Drive1 = DriveToShoot2.endTrajectory().fresh()
-                .setTangent(0)
-                .splineToConstantHeading(new Vector2d(IntakeHPPosition1_X, IntakeHPPosition1_Y), Math.toRadians(90));
+                .splineToConstantHeading(new Vector2d(IntakeHP2Position1_X, IntakeHP2Position1_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder IntakeHPSet2Drive2 = IntakeHPSet2Drive1.endTrajectory().fresh()
-                .setTangent(0)
-                .splineToConstantHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(90));
+                .splineToConstantHeading(new Vector2d(IntakeHP2Position4_X,IntakeHP2Position4_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot3 = IntakeHPSet2Drive2.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
 
         TrajectoryActionBuilder IntakeHPSet3Drive1 = DriveToShoot3.endTrajectory().fresh()
-                .setTangent(0)
                 .splineToConstantHeading(new Vector2d(IntakeHPPosition1_X, IntakeHPPosition1_Y), Math.toRadians(90));
 
         TrajectoryActionBuilder IntakeHPSet3Drive2 = IntakeHPSet3Drive1.endTrajectory().fresh()
-                .setTangent(0)
                 .splineToConstantHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot4 = IntakeHPSet3Drive2.endTrajectory().fresh()
