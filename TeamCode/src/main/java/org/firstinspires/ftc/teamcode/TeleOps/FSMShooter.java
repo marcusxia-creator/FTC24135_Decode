@@ -1,86 +1,71 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import com.arcrobotics.ftclib.util.LUT;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
+
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
-
-import java.util.Optional;
-
+@Config
 public class FSMShooter {
+
     private final RobotHardware robot;
     private final GamepadComboInput gamepadComboInput;
-    private ShooterPowerCalculator shooterPowerLUT;
+    private final ShooterPowerCalculator shooterPowerCalculator;
     private final Limelight limelight;
+    private final SpindexerUpd spindexer;
 
+    public final TurretUpd turret;
 
+    private final ElapsedTime shootTimer =
+            new ElapsedTime();
 
-    private ElapsedTime shootTimer = new ElapsedTime();
-    private ElapsedTime flyWheelTimer = new ElapsedTime();
+    private final ElapsedTime flywheelTimer =
+            new ElapsedTime();
 
     public static SHOOTERSTATE shooterState;
-    SHOOTERMOTORSTATE shootermotorstate;
-    TURRETSTATE turretState;
-    SpindexerUpd spindexer;
-    public final Turret turret;
 
-    SpindexerUpd.SLOT targetColour = SpindexerUpd.SLOT.Purple;
+    private SHOOTERMOTORSTATE shooterMotorState;
+    private TURRETSTATE turretState;
 
     private double voltage;
-    private double power;                                       //power lut power
-    private double angle;                                       //shooter angle
+    private double power;
+    private double angle;
 
-    // shooting sequence config
-    private int shootCounter;                                   // counter for # ball shooting
-    private long lastFeedTimeMs       = 0;                      // shooting feed time interval time stamp
-
-    LUT<Integer, Long> timeStamp = new LUT<Integer, Long>() {{
-        add(1, FEED_PERIOD_MS_CLOSE);
-        add(2, FEED_PERIOD_MS_FAR);
-    }};
-
-    private long waitTimeMS = 350;
+    private int shootCounter;
+    private long lastFeedTimeMs;
+    private long waitTimeMs;
 
     public double trimTicks;
 
-    private double shooterMotorSpeed;
+    // =========================================================
+    // Limelight TX state
+    // =========================================================
 
-    // ============================
-    // Limelight Tx input (from OpMode loop)
-    // ============================
-    private boolean llHasTarget = false;
-    private double llTxDeg = 0.0;
+    private boolean llHasTarget;
 
-    // optional smoothing
-    private boolean txInit = false;
-    private double txFilt = 0.0;
+    private boolean txInitialized;
+    private double filteredTx;
 
-    private double lastValidTx = 0.0;
-    private long lastValidTimeMs = 0;
+    private double lastValidTx;
+    private long lastValidTimeMs;
 
-    public static double degToTicks = 2.5;   // tune
+    // =========================================================
+    // Dashboard Limelight tuning
+    // =========================================================
+
+    public static double degToTicks = 2.5;
     public static int txMaxTicks = 50;
-    public static double txDeadbandDeg = 3;
+    public static double txDeadbandDeg = 3.0;
 
-    // Tunables (Dashboard if you like)
-    public static double txAlpha = 0.30;// yours
-    // since this is trim, keep smaller
+    public static double txAlpha = 0.30;
+
     public static long txHoldMs = 120;
     public static long txFadeMs = 200;
 
-
-
-    /**
-     * BUTTON FOR SHOOTING
-     * * Button X/Square is local key, --- SHOOTER_IDLE STATE---
-     *   Press 'X/Square' to start spinning the flywheel
-     * * Button X/Square is local key, --- FLYWHEEL STATE---
-     *   Cancle the FLYWHEEL within 1 second
-     * * Button Y/Triangle is local key, --- RAMPUP STATE---
-     *   Press 'Y/Triangle' to toggle ramp up to launch ball to shooter
-     */
-
+    // =========================================================
+    // FSM states
+    // =========================================================
 
     public enum SHOOTERSTATE {
         SHOOTER_IDLE,
@@ -91,278 +76,654 @@ public class FSMShooter {
         KICKER_RETRACT,
         SHOOTER_STOP
     }
-    public enum SHOOTERMOTORSTATE{
+
+    public enum SHOOTERMOTORSTATE {
         RUN,
         STOP
     }
+
     public enum TURRETSTATE {
         AIMING,
         LOCKING
     }
 
-    //Constructor
-    public FSMShooter(RobotHardware robot,
-                      SpindexerUpd spindexer, ShooterPowerCalculator shooterPowerLUT,
-                      GamepadComboInput gamepadComboInput, Turret turret, Limelight limelight) {
+    // =========================================================
+    // Constructor
+    // =========================================================
 
+    public FSMShooter(
+            RobotHardware robot,
+            SpindexerUpd spindexer,
+            ShooterPowerCalculator shooterPowerCalculator,
+            GamepadComboInput gamepadComboInput,
+            TurretUpd turret,
+            Limelight limelight
+    ) {
         this.robot = robot;
         this.spindexer = spindexer;
-        this.shooterPowerLUT = shooterPowerLUT;
-        this.gamepadComboInput = gamepadComboInput;
-        /// New!!
+        this.shooterPowerCalculator =
+                shooterPowerCalculator;
+        this.gamepadComboInput =
+                gamepadComboInput;
         this.turret = turret;
         this.limelight = limelight;
     }
 
+    // =========================================================
+    // Initialization
+    // =========================================================
+
     public void Init() {
-        robot.topShooterMotor.setPower(0);
-        robot.bottomShooterMotor.setPower(0);
-        shooterState = SHOOTERSTATE.SHOOTER_IDLE;
-        shootermotorstate = SHOOTERMOTORSTATE.STOP;
-        turretState = TURRETSTATE.AIMING;
-        trimTicks =0;
+        robot.topShooterMotor.setPower(0.0);
+        robot.bottomShooterMotor.setPower(0.0);
+
+        shooterState =
+                SHOOTERSTATE.SHOOTER_IDLE;
+
+        shooterMotorState =
+                SHOOTERMOTORSTATE.STOP;
+
+        turretState =
+                TURRETSTATE.AIMING;
+
+        trimTicks = 0.0;
+
+        shootCounter = 0;
+        lastFeedTimeMs = 0L;
+
+        llHasTarget = false;
+        txInitialized = false;
+        filteredTx = 0.0;
+        lastValidTx = 0.0;
+        lastValidTimeMs = 0L;
+
+        shootTimer.reset();
+        flywheelTimer.reset();
+
+        turret.resetTurretProfile();
     }
 
+    // =========================================================
+    // Main FSM loop
+    // =========================================================
+
+    /**
+     * Call once during every TeleOp loop.
+     *
+     * Before this method, the main TeleOp should:
+     *
+     * 1. Clear the REV Hub bulk cache
+     * 2. Call robot.pinpoint.update()
+     */
     public void SequenceShooterLoop() {
-        //===========================================================
-        //✅ Add STOPPING to shooter enum
-        //✅ Add stopRequested, holdSpindexerPos, shooterTimer
-        //✅ Add requestGracefulStop() and canExit()
-        //✅ Add enterStoppingState() + handleStoppingState()
-        //✅ In shooter loop: if stopRequested → enter STOPPING
-        //✅ Transition manager: request stop, wait for canExit()
-        //===========================================================
 
-        //==========================================================
-        // Set shooter power
-        //==========================================================
-        voltage = robot.getBatteryVoltageRobust();
-        /// shooter motor power controller
-        power = shooterPowerLUT.getPower();
-        /// shooter motor target rpm, based on distance for fly wheel spool up.
-        double rpm = shooterPowerLUT.getRPM();
-
-        //==========================================================
-        // Set shooter adjuster angle
-        //==========================================================
-        angle = Range.clip(shooterPowerLUT.getShooterAngle(), 0.12, 0.49); // get shooter adjuster angle.
-
-        //==========================================================
-        //Control shooter run/NOT
-        //==========================================================
-        if (shootermotorstate == SHOOTERMOTORSTATE.RUN){
-            robot.topShooterMotor.setPower(power);
-            robot.bottomShooterMotor.setPower(power);
-            robot.shooterAdjusterServo.setPosition(angle);
-        }
-        if (shootermotorstate == SHOOTERMOTORSTATE.STOP) {
-            robot.topShooterMotor.setPower(0);
-            robot.bottomShooterMotor.setPower(0);
-        }
-
-        //==========================================================
-        // Update Spindexer servo
-        //==========================================================
-        spindexer.updateServoStep();
-
-        //==========================================================
-        // HANDLE TURRET
-        //==========================================================
-        boolean aimEnabled =
-                shooterState == SHOOTERSTATE.FLYWHEEL_RUNNING ||
-                        shooterState == SHOOTERSTATE.KICKER_EXTEND   ||
-                        shooterState == SHOOTERSTATE.SEQUENCE_SHOOTING ||
-                        shooterState == SHOOTERSTATE.SHOOT_READY;
+        /*
+         * Handle turret aiming/locking button.
+         */
         turretStateUpdate();
 
-        //get limelight tx adjust
-        Limelight.TxSnapshot snap = limelight.getTxForTag(24);
-        setLimelightTx(snap.hasTarget, snap.txDeg);
-        
-        //========================================================
-        // NEW Turret Trim
-        // Triming/manual control
-        //========================================================
-        int trimInput=0;
-        if (gamepadComboInput.getLbSinglePressedAny()){
-            trimInput+=1;
-            }
-        if (gamepadComboInput.getrbSinglePressedAny()){
-            trimInput-=1;
+        /*
+         * Process the shooter FSM first.
+         *
+         * This updates shooterMotorState before motor power is
+         * written, avoiding a one-loop start/stop delay.
+         */
+        updateShooterFSM();
+
+        /*
+         * ShooterPowerCalculator:
+         *
+         * - Updates distance and zone
+         * - Updates target RPM and adjuster angle
+         * - Updates Dashboard PID gains
+         * - Calculates PID + feedforward power
+         * - Resets PID when shooterMotorState is STOP
+         */
+        boolean shooterEnabled =
+                shooterMotorState
+                        == SHOOTERMOTORSTATE.RUN;
+
+        power =
+                shooterPowerCalculator.getPower(
+                        shooterEnabled
+                );
+
+        voltage =
+                robot.getBatteryVoltageRobust();
+
+        angle =
+                Range.clip(
+                        shooterPowerCalculator
+                                .getShooterAngle(),
+                        0.12,
+                        0.49
+                );
+
+        /*
+         * Set the shooter adjuster every loop so it is in
+         * position before firing.
+         */
+        robot.shooterAdjusterServo.setPosition(angle);
+
+        /*
+         * Apply shooter motor output.
+         */
+        if (shooterEnabled) {
+            robot.topShooterMotor.setPower(power);
+            robot.bottomShooterMotor.setPower(power);
+        } else {
+            robot.topShooterMotor.setPower(0.0);
+            robot.bottomShooterMotor.setPower(0.0);
         }
-        if (turretState == TURRETSTATE.AIMING && aimEnabled) {
-           
-            trimTicks =Range.clip(trimTicks +trimInput*trimStep,-400,400);
 
-            int currentTick = turret.getCurrentTick();
-            int txAdjustTicks = getTxAdjustTicks();
-            int targetTick = (int) (turret.getTargetTick() + trimTicks + txAdjustTicks);
+        /*
+         * Update turret target and cached sensor snapshot after
+         * ShooterPowerCalculator updates the current zone.
+         */
+        updateTurret();
 
-            turret.driveTurretPIDF(currentTick, targetTick);
-        }
-        else {
-            turret.resetTurretProfile();
-            robot.turretMotor.setVelocity(trimInput*adjSpeed);
-        }
-        //=====================================
-        // TODO - Update Zone for shooting interval - not in use, - update the MS in main loop right now.
-        //=====================================
-        int zone  = shooterPowerLUT.getCurrentZone();
-        updateZoneForGoalPose(zone);
+        /*
+         * Apply any new Spindexer target generated by the FSM.
+         */
+        spindexer.updateServoStep();
+    }
 
+    // =========================================================
+    // Shooter FSM
+    // =========================================================
 
-
-        //==========================================================
-        // Main FSM
-        //==========================================================
+    private void updateShooterFSM() {
         switch (shooterState) {
+
             case SHOOTER_IDLE:
-               //Idle state for shooter
-                robot.topShooterMotor.setPower(0);
-                robot.bottomShooterMotor.setPower(0);
-                shootTimer.reset();
+                shooterMotorState =
+                        SHOOTERMOTORSTATE.STOP;
+
                 robot.kickerServo.setPosition(kickerRetract);
 
-                /// New 2.5
-                // ✅ single authoritative reset point
+                /*
+                 * Single authoritative reset location.
+                 */
                 shootCounter = 0;
-                lastFeedTimeMs = 0;
+                lastFeedTimeMs = 0L;
 
                 shootTimer.reset();
-                flyWheelTimer.reset();
+                flywheelTimer.reset();
                 break;
 
             case FLYWHEEL_RUNNING:
-                // Start flywheels (your motor control elsewhere should respond to this state)
-                shootermotorstate = SHOOTERMOTORSTATE.RUN;
-                int targetSlot = 0;
-                spindexer.RuntoPosition(targetSlot);
+                shooterMotorState = SHOOTERMOTORSTATE.RUN;
+
+                /*
+                 * Move Spindexer to its starting slot.
+                 */
+                spindexer.RuntoPosition(0);
+
                 shooterState = SHOOTERSTATE.KICKER_EXTEND;
+
                 shootTimer.reset();
-                flyWheelTimer.reset(); // IMPORTANT: flyWheelTimer should be reset when flywheel starts
+                flywheelTimer.reset();
                 break;
 
             case KICKER_EXTEND:
-                if (shootTimer.seconds() > spindexerServoPerSlotTime) {
-                    robot.kickerServo.setPosition(kickerExtend);
+                shooterMotorState = SHOOTERMOTORSTATE.RUN;
+
+                if (shootTimer.seconds()
+                        > spindexerServoPerSlotTime) {
+
+                    robot.kickerServo.setPosition(
+                            kickerExtend
+                    );
                 }
-                if (shootTimer.seconds() > spindexerServoPerSlotTime*2) {
-                    shooterState = SHOOTERSTATE.SHOOT_READY;
+
+                if (shootTimer.seconds()
+                        > spindexerServoPerSlotTime * 2.0) {
+
+                    shooterState =
+                            SHOOTERSTATE.SHOOT_READY;
                 }
                 break;
+
             case SHOOT_READY:
-                /// use button Y to shoot.
-                if (gamepadComboInput.getYPressedAny()){
-                    shooterState = SHOOTERSTATE.SEQUENCE_SHOOTING;
+                shooterMotorState =
+                        SHOOTERMOTORSTATE.RUN;
+
+                if (gamepadComboInput.getYPressedAny()) {
+                    shooterState =
+                            SHOOTERSTATE.SEQUENCE_SHOOTING;
+
                     shootTimer.reset();
                 }
                 break;
 
             case SEQUENCE_SHOOTING:
-                boolean flywheelReady =
-                        flyWheelTimer.seconds() >= SPOOLUP_SEC ||
-                                (shooterMotorSpeed* SHOOTER_RPM_CONVERSION) >= rpm * 0.95;
-                if (!flywheelReady) break;
-                // make a timer to feed balls
-                long now = System.currentTimeMillis();
-                // --- First ball: shoot immediately once flywheel is ready ---
-                if (shootCounter == 0) {
-                    shootCounter = 1;
-                    lastFeedTimeMs = now;
-                    spindexer.RunToNext();   // feed 1st ball NOW
-                    break;
-                }
-                // --- Next balls: every FEED_PERIOD_MS ---
-                if (now - lastFeedTimeMs >= waitTimeMS) {
-                    shootCounter++;
-                    lastFeedTimeMs = now;
-                    if (shootCounter <= 3) {
-                        spindexer.RunToNext();
-                    } else {
-                        shooterState = SHOOTERSTATE.SHOOTER_STOP;
-                        shootTimer.reset();
-                        // reset these so next time you enter shooting state it works cleanly
-                        shootCounter = 0;
-                        lastFeedTimeMs = 0;
-                    }
-                }
+                shooterMotorState =
+                        SHOOTERMOTORSTATE.RUN;
+
+                updateSequenceShooting();
                 break;
 
             case SHOOTER_STOP:
-                //stop flywheel
-                shootermotorstate = SHOOTERMOTORSTATE.STOP;
-                if (shootTimer.seconds() > spindexerServoPerSlotTime) {
+                /*
+                 * This state change is applied to the motors in
+                 * the current loop, not the next loop.
+                 */
+                shooterMotorState =
+                        SHOOTERMOTORSTATE.STOP;
+
+                if (shootTimer.seconds()
+                        > spindexerServoPerSlotTime) {
+
                     spindexer.resetSlot();
+
                     shootTimer.reset();
-                    shooterState = SHOOTERSTATE.KICKER_RETRACT;
+
+                    shooterState =
+                            SHOOTERSTATE.KICKER_RETRACT;
                 }
                 break;
 
             case KICKER_RETRACT:
-                //=========================================================================
-                // this is the place to reset the spindexer counter
-                // meanwhile spindexer return back to spinderxerPositions[0] - slot 1 position
-                //==========================================================================
-                //=========================================================
-                // the kicker Retract first then return to slot back to 0 position,
-                //=========================================================
-                if (shootTimer.seconds() < 0.05){
-                    robot.kickerServo.setPosition(kickerRetract);
+                shooterMotorState =
+                        SHOOTERMOTORSTATE.STOP;
+
+                double retractTime =
+                        shootTimer.seconds();
+
+                if (retractTime < 0.05) {
+                    robot.kickerServo.setPosition(
+                            kickerRetract
+                    );
                 }
 
-                if (shootTimer.seconds() > 0.35) {
-                    spindexer.RuntoPosition(1); // reset counter in spindexer
+                if (retractTime > 0.35) {
+                    spindexer.RuntoPosition(1);
                 }
-                if(shootTimer.seconds()>0.6){
+
+                if (retractTime > 0.6) {
                     shootTimer.reset();
-                    shooterState = SHOOTERSTATE.SHOOTER_IDLE;
+
+                    shooterState =
+                            SHOOTERSTATE.SHOOTER_IDLE;
                 }
                 break;
 
             default:
-                shootermotorstate = SHOOTERMOTORSTATE.STOP;
-                shooterState = SHOOTERSTATE.SHOOTER_IDLE;
+                shooterMotorState =
+                        SHOOTERMOTORSTATE.STOP;
+
+                shooterState =
+                        SHOOTERSTATE.SHOOTER_IDLE;
                 break;
         }
     }
 
-    //  safe exit in FSMShooter
-    public boolean canExit() {
-        return shooterState == SHOOTERSTATE.SHOOTER_IDLE;
+    // =========================================================
+    // Ball shooting sequence
+    // =========================================================
+
+    private void updateSequenceShooting() {
+        double targetRPM =
+                shooterPowerCalculator.getRPM();
+
+        double measuredRPM =
+                shooterPowerCalculator.getMeasureRPM();
+
+        /*
+         * The target and measured RPM values are from the
+         * previous calculator update, which occurred during the
+         * previous loop. That is sufficient for the ready check.
+         */
+        boolean flywheelAtSpeed =
+                targetRPM > 0.0
+                        && measuredRPM
+                        >= targetRPM * 0.95;
+
+        boolean spoolupTimedOut =
+                flywheelTimer.seconds()
+                        >= SPOOLUP_SEC;
+
+        boolean flywheelReady =
+                flywheelAtSpeed
+                        || spoolupTimedOut;
+
+        if (!flywheelReady) {
+            return;
+        }
+
+        long now =
+                System.currentTimeMillis();
+
+        /*
+         * First ball is fed immediately after the flywheel is
+         * ready.
+         */
+        if (shootCounter == 0) {
+            shootCounter = 1;
+            lastFeedTimeMs = now;
+
+            spindexer.RunToNext();
+
+            return;
+        }
+
+        if (now - lastFeedTimeMs
+                < waitTimeMs) {
+            return;
+        }
+
+        shootCounter++;
+        lastFeedTimeMs = now;
+
+        if (shootCounter <= 3) {
+            spindexer.RunToNext();
+        } else {
+            shooterState =
+                    SHOOTERSTATE.SHOOTER_STOP;
+
+            /*
+             * Stop state timing starts now.
+             */
+            shootTimer.reset();
+
+            shootCounter = 0;
+            lastFeedTimeMs = 0L;
+        }
     }
 
-    //============================================================
-    // helper - get turret state
-    //============================================================
+    // =========================================================
+    // Turret handling
+    // =========================================================
+
+    private void updateTurret() {
+        int zone =
+                shooterPowerCalculator
+                        .getCurrentZone();
+
+        /*
+         * Update feed interval directly from Dashboard config.
+         *
+         * This avoids a LUT that captures old values when the
+         * class is constructed.
+         */
+        waitTimeMs =
+                getTimestampForGoalZone(zone);
+
+        /*
+         * Goal pose must be selected before the turret creates
+         * its one-loop sensor snapshot.
+         */
+        turret.updateZoneForGoalPose(zone);
+
+        /*
+         * Read encoder and Pinpoint data once and calculate:
+         *
+         * - Current encoder position
+         * - Target field angle
+         * - Turret-relative angle
+         * - Base target tick
+         */
+        turret.updateSensorSnapshot();
+
+        boolean aimEnabled =
+                shooterState
+                        == SHOOTERSTATE.FLYWHEEL_RUNNING
+                        || shooterState
+                        == SHOOTERSTATE.KICKER_EXTEND
+                        || shooterState
+                        == SHOOTERSTATE.SHOOT_READY
+                        || shooterState
+                        == SHOOTERSTATE.SEQUENCE_SHOOTING;
+
+        /*
+         * Query Limelight only while automatic aiming is active.
+         */
+        if (aimEnabled) {
+            Limelight.TxSnapshot snapshot =
+                    limelight.getTxForTag(24);
+
+            setLimelightTx(
+                    snapshot.hasTarget,
+                    snapshot.txDeg
+            );
+        } else {
+            setLimelightTx(
+                    false,
+                    Double.NaN
+            );
+        }
+
+        int trimInput = 0;
+
+        if (gamepadComboInput
+                .getLbSinglePressedAny()) {
+            trimInput += 1;
+        }
+
+        if (gamepadComboInput
+                .getrbSinglePressedAny()) {
+            trimInput -= 1;
+        }
+
+        if (turretState == TURRETSTATE.AIMING
+                && aimEnabled) {
+
+            trimTicks =
+                    Range.clip(
+                            trimTicks
+                                    + trimInput
+                                    * trimStep,
+                            -400.0,
+                            400.0
+                    );
+
+            int baseTargetTick =
+                    turret.getTargetTick();
+
+            int txAdjustTicks =
+                    getTxAdjustTicks();
+
+            int finalTargetTick =
+                    baseTargetTick
+                            + (int) Math.round(
+                            trimTicks
+                    )
+                            + txAdjustTicks;
+
+            /*
+             * The updated Turret class uses its cached encoder
+             * position internally.
+             */
+            turret.driveTurretPIDF(
+                    finalTargetTick
+            );
+        } else {
+            /*
+             * Manual or locked control takes ownership of the
+             * motor, so reset the profile before PIDF resumes.
+             */
+            turret.resetTurretProfile();
+
+            robot.turretMotor.setVelocity(
+                    trimInput * adjSpeed
+            );
+        }
+    }
+
+    // =========================================================
+    // Turret-state toggle
+    // =========================================================
 
     public void turretStateUpdate() {
-        if (gamepadComboInput.getBothTriggersReleasedAny()) {
-            turretState = (turretState == TURRETSTATE.LOCKING) ? TURRETSTATE.AIMING : TURRETSTATE.LOCKING;
+        if (gamepadComboInput
+                .getBothTriggersReleasedAny()) {
+
+            turretState =
+                    turretState
+                            == TURRETSTATE.LOCKING
+                            ? TURRETSTATE.AIMING
+                            : TURRETSTATE.LOCKING;
         }
     }
 
-    //============================================================
-    // helper - get zone
-    //============================================================
+    // =========================================================
+    // Feed timing
+    // =========================================================
 
-    public void updateZoneForGoalPose(int zone) {
-        int normalizedZone;
-
+    /**
+     * Zones 1 through 5 use the close feed period.
+     * Zones 6 and 7 use the far feed period.
+     *
+     * These config fields are read directly, so Dashboard
+     * changes apply immediately.
+     */
+    public long getTimestampForGoalZone(int zone) {
         if (zone <= 5) {
-            normalizedZone = 1;
-        }
-        else {
-            normalizedZone = 2;
+            return Math.max(
+                    0L,
+                    FEED_PERIOD_MS_CLOSE
+            );
         }
 
-         waitTimeMS = Optional.ofNullable(timeStamp.get(normalizedZone)).orElse(timeStamp.get(1));
+        return Math.max(
+                0L,
+                FEED_PERIOD_MS_FAR
+        );
     }
 
-    //============================================================
-    // helper - get power
-    //============================================================
+    // =========================================================
+    // Limelight TX filtering
+    // =========================================================
 
-    public double getVoltage () {
+    public void setLimelightTx(
+            boolean hasTarget,
+            double txDegrees
+    ) {
+        llHasTarget =
+                hasTarget
+                        && Double.isFinite(txDegrees);
+
+        long now =
+                System.currentTimeMillis();
+
+        if (!llHasTarget) {
+            return;
+        }
+
+        double safeAlpha =
+                Range.clip(
+                        txAlpha,
+                        0.0,
+                        1.0
+                );
+
+        if (!txInitialized) {
+            filteredTx = txDegrees;
+            txInitialized = true;
+        } else {
+            filteredTx =
+                    safeAlpha * txDegrees
+                            + (1.0 - safeAlpha)
+                            * filteredTx;
+        }
+
+        lastValidTx =
+                filteredTx;
+
+        lastValidTimeMs =
+                now;
+    }
+
+    private int getTxAdjustTicks() {
+        long now =
+                System.currentTimeMillis();
+
+        double txToUse;
+
+        if (llHasTarget) {
+            txToUse =
+                    filteredTx;
+        } else {
+            long lostTimeMs =
+                    now - lastValidTimeMs;
+
+            long safeHoldMs =
+                    Math.max(0L, txHoldMs);
+
+            long safeFadeMs =
+                    Math.max(0L, txFadeMs);
+
+            if (!txInitialized) {
+                txToUse = 0.0;
+            } else if (lostTimeMs <= safeHoldMs) {
+                txToUse =
+                        lastValidTx;
+            } else if (safeFadeMs > 0L
+                    && lostTimeMs
+                    <= safeHoldMs + safeFadeMs) {
+
+                double fadeProgress =
+                        (lostTimeMs - safeHoldMs)
+                                / (double) safeFadeMs;
+
+                txToUse =
+                        lastValidTx
+                                * (1.0 - fadeProgress);
+            } else {
+                txToUse = 0.0;
+            }
+        }
+
+        if (Math.abs(txToUse)
+                < Math.max(0.0, txDeadbandDeg)) {
+            txToUse = 0.0;
+        }
+
+        int adjustment =
+                (int) Math.round(
+                        -txToUse
+                                * degToTicks
+                );
+
+        int safeMaximumTicks =
+                Math.max(0, txMaxTicks);
+
+        return Range.clip(
+                adjustment,
+                -safeMaximumTicks,
+                safeMaximumTicks
+        );
+    }
+
+    // =========================================================
+    // Get LimelightTxFOR LED
+
+    public double getLimelightTxForLED() {
+        if (!llHasTarget) {
+            return Double.NaN;
+        }
+
+        return filteredTx;
+    }
+
+    public boolean hasLimelightTarget() {
+        return llHasTarget;
+    }
+
+    // =========================================================
+    // Public helpers
+    // =========================================================
+
+    public boolean canExit() {
+        return shooterState
+                == SHOOTERSTATE.SHOOTER_IDLE;
+    }
+
+    public void resetTrim() {
+        trimTicks = 0.0;
+    }
+
+    public double getVoltage() {
         return voltage;
     }
 
@@ -370,65 +731,23 @@ public class FSMShooter {
         return power;
     }
 
-    //==========================================================
-    //helper - reset trim
-    //=========================================================
-    public void resetTrim() { trimTicks = 0; }
-
-    //=========================================================
-    //limelight tx adjust helper
-    //1. set limelightTx by setLimelightTx
-    // * Tx snap data class from limelight class, which has two fields: hasTarget boolean and txDeg value
-    //2. get txAdjustTicks by getTxAdjustTicks
-    // * smooth out the tx value based on the Tx delay time
-    // * smooth out the shaking value based on the deadband
-    //=========================================================
-    public void setLimelightTx(boolean hasTarget, double txDeg) {
-        /// limelight Tx snap from limelight class
-        /// the Tx snap data class has two fields: hasTarget boolean and txDeg value
-        llHasTarget = hasTarget;
-        llTxDeg = hasTarget ? txDeg : Double.NaN;
-        /// timestamp
-        long now = System.currentTimeMillis();
-        /// check for valid target
-        if (!hasTarget) return;
-        /// smooth only when valid
-        if (!txInit) { txFilt = txDeg; txInit = true; }
-        txFilt = txAlpha * txDeg + (1.0 - txAlpha) * txFilt;
-        /// store last valid filtered tx
-        lastValidTx = txFilt;
-        lastValidTimeMs = now;
+    public double getTargetRPM() {
+        return shooterPowerCalculator.getRPM();
     }
 
-    private int getTxAdjustTicks() {
-        long now = System.currentTimeMillis();
-        double txToUse;
-        /// handle missing tx delay, if longer than holdMs, fade to 0 depending on how long it has been
-        if (llHasTarget) {
-            txToUse = txFilt;
-        } else {
-            long lostMs = now - lastValidTimeMs;
-
-            if (lostMs <= txHoldMs) {
-                txToUse = lastValidTx;                 // hold
-            } else if (lostMs <= txHoldMs + txFadeMs) {
-                double t = (lostMs - txHoldMs) / (double) txFadeMs; // 0..1
-                txToUse = lastValidTx * (1.0 - t);     // fade to 0
-            } else {
-                txToUse = 0.0;
-            }
-        }
-        ///  handel shaking tx, compare with deadband to prevent shaking, more than deadband, it drives the turret.
-        if (Math.abs(txToUse) < txDeadbandDeg) txToUse = 0.0;
-
-        int adjust = (int) Math.round(-1*txToUse * degToTicks);
-        return Range.clip(adjust, -txMaxTicks, txMaxTicks);
+    public double getMeasuredRPM() {
+        return shooterPowerCalculator.getMeasureRPM();
     }
 
-    //get shooterMotorVelocity
-    private double getShooterMotorVelocity() {
-        return RobotActionConfig.shooterMotorSpeed;
+    public long getWaitTimeMs() {
+        return waitTimeMs;
     }
 
+    public SHOOTERMOTORSTATE getShooterMotorState() {
+        return shooterMotorState;
+    }
 
+    public TURRETSTATE getTurretState() {
+        return turretState;
+    }
 }
