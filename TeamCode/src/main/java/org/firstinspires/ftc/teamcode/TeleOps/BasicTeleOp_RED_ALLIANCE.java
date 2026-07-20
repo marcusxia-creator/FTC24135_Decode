@@ -136,7 +136,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         limelight.start();
 
         /// 4.spindexer-------------------------------------------------------------------
-        spindexer = new SpindexerUpd(robot, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, 0);
+        spindexer = new SpindexerUpd(robot, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, SpindexerUpd.SLOT.Empty, 1);
         spindexerManualControl = new SpindexerManualControl(robot, spindexer, gamepadComboInput);
 
         ///  Alliance selection
