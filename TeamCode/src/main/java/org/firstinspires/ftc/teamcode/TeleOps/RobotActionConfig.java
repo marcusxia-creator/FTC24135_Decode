@@ -20,6 +20,8 @@ public class RobotActionConfig {
     public static double spindexerFullPos               = 1.0;
     public static double spinderxerShootPos             = 0.08;
     public static double[] spindexerPositions           = {spindexerZeroPos, spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5, spindexerFullPos};
+    public static double spindexerIntakePos             = spindexerSlot1;
+    public static double spindexerShootingPos           = spindexerZeroPos;
 
     public static double angleResetPos                  = 0.0;
     public static double slotAngleDelta                 = 0.19;

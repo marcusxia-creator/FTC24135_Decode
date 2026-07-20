@@ -84,6 +84,7 @@ public class FSMIntake {
                             robot.intakeMotor.setPower(0);
                             intakeTimer.reset();
                             intakeStates = IntakeStates.INTAKE_FINISH;
+                            targetSlot = 0;
                             break;
                         }
                     }
@@ -92,10 +93,9 @@ public class FSMIntake {
             case INTAKE_FINISH:
                 time = intakeTimer.seconds();
                 reversing();
-                targetSlot = 0;
-                spindexer.requestServoPosition(spindexerPositions[targetSlot]+spindexerKickerInDelta);
+                spindexer.RuntoPosition(0);
                 // Keep your sequence logic for spindexer parking
-                if (time > spindexerServoPerSlotTime) {
+                if (time > spindexerServoPerSlotTime*3) {
                         intakeStates = IntakeStates.INTAKE_IDLE;
                     }
                 break;
@@ -104,13 +104,8 @@ public class FSMIntake {
                 reversing();
                 time = intakeTimer.seconds();
                 // Keep your sequence logic for spindexer parking
-                if (time > spindexerServoPerSlotTime) {
-                    int targetSlot = 1;
-                    spindexer.requestServoPosition(spindexerPositions[targetSlot]);
-                    if (!spindexer.isServoBusy()){
-                        spindexer.setCurrentPos(1);
+                if (time > spindexerServoPerSlotTime*3) {
                         intakeStates = IntakeStates.INTAKE_IDLE;
-                    }
                 }
                 break;
 
@@ -173,9 +168,9 @@ public class FSMIntake {
     public void requestGracefulStop() {
         // Only request STOP if we are not already stopping/idle
         if (intakeStates == IntakeStates.INTAKE_IDLE) return;
-        if (intakeStates != IntakeStates.INTAKE_FINISH) {
+        if (intakeStates != IntakeStates.INTAKE_STOP) {
             intakeTimer.reset();
-            intakeStates = IntakeStates.INTAKE_FINISH;
+            intakeStates = IntakeStates.INTAKE_STOP;
         }
     }
 }
