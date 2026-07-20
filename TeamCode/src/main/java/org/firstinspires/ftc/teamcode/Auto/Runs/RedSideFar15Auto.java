@@ -47,7 +47,7 @@ public class RedSideFar15Auto extends LinearOpMode {
 
         robot = new RobotHardware(hardwareMap);
         robot.init();
-        robot.turretInit(); 
+        robot.turretInit();
 
         context = new AutoSpindexerContext();
         turret = new AutoTurretDrive(robot);
@@ -72,52 +72,37 @@ public class RedSideFar15Auto extends LinearOpMode {
         }
 
         TrajectoryActionBuilder IntakeSet1Drive1 = drive.actionBuilder(initialPose)
-                .splineToConstantHeading(new Vector2d(IntakeSet1Position1_X, IntakeSet1Position1_Y), Math.toRadians(0));
+                .splineToConstantHeading(new Vector2d(IntakeSet1Position1_X, IntakeSet1Position1_Y), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(IntakeSet1Position4_X,IntakeSet1Position4_Y),Math.toRadians(90));
 
-        TrajectoryActionBuilder IntakeSet1Drive2 = IntakeSet1Drive1.endTrajectory().fresh()
-                .splineToConstantHeading(new Vector2d(IntakeSet1Position4_X,IntakeSet1Position4_Y),Math.toRadians(0));
-
-        TrajectoryActionBuilder DriveToShoot1 = IntakeSet1Drive2.endTrajectory().fresh()
+        TrajectoryActionBuilder DriveToShoot1 = IntakeSet1Drive1.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
 
         TrajectoryActionBuilder IntakeHPSet1Drive1 = DriveToShoot1.endTrajectory().fresh()
-                .splineToConstantHeading(new Vector2d(IntakeHPPosition1_X, IntakeHPPosition1_Y), Math.toRadians(90));
-
-        TrajectoryActionBuilder IntakeHPSet1Drive2 = IntakeHPSet1Drive1.endTrajectory().fresh()
                 .splineToConstantHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(90));
 
-        TrajectoryActionBuilder DriveToShoot2 = IntakeHPSet1Drive2.endTrajectory().fresh()
+        TrajectoryActionBuilder DriveToShoot2 = IntakeHPSet1Drive1.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
 
         TrajectoryActionBuilder IntakeHPSet2Drive1 = DriveToShoot2.endTrajectory().fresh()
-                .splineToConstantHeading(new Vector2d(IntakeHP2Position1_X, IntakeHP2Position1_Y), Math.toRadians(90));
-
-        TrajectoryActionBuilder IntakeHPSet2Drive2 = IntakeHPSet2Drive1.endTrajectory().fresh()
                 .splineToConstantHeading(new Vector2d(IntakeHP2Position4_X,IntakeHP2Position4_Y),Math.toRadians(90));
 
-        TrajectoryActionBuilder DriveToShoot3 = IntakeHPSet2Drive2.endTrajectory().fresh()
+        TrajectoryActionBuilder DriveToShoot3 = IntakeHPSet2Drive1.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
 
         TrajectoryActionBuilder IntakeHPSet3Drive1 = DriveToShoot3.endTrajectory().fresh()
-                .splineToConstantHeading(new Vector2d(IntakeHPPosition1_X, IntakeHPPosition1_Y), Math.toRadians(90));
-
-        TrajectoryActionBuilder IntakeHPSet3Drive2 = IntakeHPSet3Drive1.endTrajectory().fresh()
                 .splineToConstantHeading(new Vector2d(IntakeHPPosition4_X,IntakeHPPosition4_Y),Math.toRadians(90));
 
-        TrajectoryActionBuilder DriveToShoot4 = IntakeHPSet3Drive2.endTrajectory().fresh()
+        TrajectoryActionBuilder DriveToShoot4 = IntakeHPSet3Drive1.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(FarShootingPosition_X, FarShootingPosition_Y),Math.toRadians(FarShootingPosition_Heading));
 
         Action intakeSet1Drive1Action = IntakeSet1Drive1.build();
-        Action intakeSet1Drive2Action = IntakeSet1Drive2.build();
         Action driveToShoot1Action    = DriveToShoot1.build();
         Action intakeHPSet1Drive1Action = IntakeHPSet1Drive1.build();
-        Action intakeHPSet1Drive2Action = IntakeHPSet1Drive2.build();
         Action driveToShoot2Action    = DriveToShoot2.build();
         Action intakeHPSet2Drive1Action = IntakeHPSet2Drive1.build();
-        Action intakeHPSet2Drive2Action = IntakeHPSet2Drive2.build();
         Action driveToShoot3Action    = DriveToShoot3.build();
         Action intakeHPSet3Drive1Action = IntakeHPSet3Drive1.build();
-        Action intakeHPSet3Drive2Action = IntakeHPSet3Drive2.build();
         Action driveToShoot4Action    = DriveToShoot4.build();
 
         waitForStart();
@@ -126,18 +111,18 @@ public class RedSideFar15Auto extends LinearOpMode {
             Actions.runBlocking(
                     new SequentialAction(
                             new ParallelAction(
-                                    turret.TurretRun(68),
+                                    turret.TurretRun(67),
                                     shooter.ShooterOn(FarShotPower),
                                     shooter.ShootFarZone(FarShotPower, 1.6,SHOOTER_INIT,SHOOTER_RUN)
                             ),
-                            shooter.ShootFarZone(FarShotPower, 0,SHOOTER_SWITCH,SHOOTER_END),
-                            shooter.ShooterOff(),
+                            shooter.ShootFarZone(FarShotPower, 0,SHOOTER_SWITCH,SHOOTER_WAIT),
                             new ParallelAction(
-                                    intake.IntakeRun(6),
                                     new SequentialAction(
-                                            intakeSet1Drive1Action,
-                                            intakeSet1Drive2Action
-                                    )
+                                            shooter.ShootFarZone(FarShotPower, 0,SHOOTER_RESET,SHOOTER_END),
+                                            intake.IntakeRun(4)
+                                    ),
+                                    shooter.ShooterOff(),
+                                    intakeSet1Drive1Action
                             ),
                             new ParallelAction(
                                     driveToShoot1Action,
@@ -145,14 +130,13 @@ public class RedSideFar15Auto extends LinearOpMode {
                                     shooter.ShooterOn(FarShotPower),
                                     shooter.ShootFarZone(FarShotPower, 1.6,SHOOTER_INIT,SHOOTER_RUN)
                             ),
-                            shooter.ShootFarZone(FarShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
-                            shooter.ShooterOff(),
+                            shooter.ShootFarZone(FarShotPower, 0,SHOOTER_SWITCH,SHOOTER_WAIT),
                             new ParallelAction(
-                                    intake.IntakeRun(6),
                                     new SequentialAction(
-                                            intakeHPSet1Drive1Action,
-                                            intakeHPSet1Drive2Action
-                                    )
+                                            shooter.ShootFarZone(FarShotPower, 0,SHOOTER_RESET,SHOOTER_END),
+                                            intake.IntakeRun(4)
+                                    ),
+                                    intakeHPSet1Drive1Action
                             ),
                             new ParallelAction(
                                     driveToShoot2Action,
@@ -160,14 +144,13 @@ public class RedSideFar15Auto extends LinearOpMode {
                                     shooter.ShooterOn(FarShotPower),
                                     shooter.ShootFarZone(FarShotPower, 1.6,SHOOTER_INIT,SHOOTER_RUN)
                             ),
-                            shooter.ShootFarZone(FarShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
-                            shooter.ShooterOff(),
+                            shooter.ShootFarZone(FarShotPower, 0,SHOOTER_SWITCH,SHOOTER_WAIT),
                             new ParallelAction(
-                                    intake.IntakeRun(6),
                                     new SequentialAction(
-                                            intakeHPSet2Drive1Action,
-                                            intakeHPSet2Drive2Action
-                                    )
+                                            shooter.ShootFarZone(FarShotPower, 0,SHOOTER_RESET,SHOOTER_END),
+                                            intake.IntakeRun(4)
+                                    ),
+                                    intakeHPSet2Drive1Action
                             ),
                             new ParallelAction(
                                     driveToShoot3Action,
@@ -175,14 +158,13 @@ public class RedSideFar15Auto extends LinearOpMode {
                                     shooter.ShooterOn(FarShotPower),
                                     shooter.ShootFarZone(FarShotPower, 1.6,SHOOTER_INIT,SHOOTER_RUN)
                             ),
-                            shooter.ShootFarZone(FarShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
-                            shooter.ShooterOff(),
+                            shooter.ShootFarZone(FarShotPower, 0,SHOOTER_SWITCH,SHOOTER_WAIT),
                             new ParallelAction(
-                                    intake.IntakeRun(6),
                                     new SequentialAction(
-                                            intakeHPSet3Drive1Action,
-                                            intakeHPSet3Drive2Action
-                                    )
+                                            shooter.ShootFarZone(FarShotPower, 0,SHOOTER_RESET,SHOOTER_END),
+                                            intake.IntakeRun(4)
+                                    ),
+                                    intakeHPSet3Drive1Action
                             ),
                             new ParallelAction(
                                     driveToShoot4Action,

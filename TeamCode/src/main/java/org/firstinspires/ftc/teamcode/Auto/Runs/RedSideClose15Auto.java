@@ -72,8 +72,8 @@ public class RedSideClose15Auto extends LinearOpMode {
         }
 
         TrajectoryActionBuilder DriveToShoot1Builder = drive.actionBuilder(initialPose)
-                .splineToConstantHeading(new Vector2d(-38.5,44),Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(-90));
+                .setTangent(30)
+                .splineToConstantHeading(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(0));
 
         TrajectoryActionBuilder IntakeSet1Drive1Builder = DriveToShoot1Builder.endTrajectory().fresh()
                 .setTangent(0)
@@ -81,7 +81,9 @@ public class RedSideClose15Auto extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position4_X,Close_IntakeSet2Position4_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot2Builder = IntakeSet1Drive1Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y-3), Math.toRadians(CloseShootingPosition_Heading));
+                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position1_X,Close_IntakeSet2Position1_Y),Math.toRadians(-90))
+                .setTangent(-90)
+                .splineToConstantHeading(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(-120));
 
         TrajectoryActionBuilder IntakeGateSet1Drive1Builder = DriveToShoot2Builder.endTrajectory().fresh()
                 .setTangent(Math.toRadians(180-GateIntakePosition_Heading))
@@ -104,7 +106,7 @@ public class RedSideClose15Auto extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(IntakeSet3Position4_X,IntakeSet3Position4_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot5Builder = IntakeSet2Drive1Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(
+                .splineToConstantHeading(
                         new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y),
                         Math.toRadians(CloseShootingPosition_Heading)
                 );
@@ -138,7 +140,6 @@ public class RedSideClose15Auto extends LinearOpMode {
                                     DriveToShoot1
                             ),
                             shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
-                            shooter.ShooterOff(),
                             new ParallelAction(
                                     intake.IntakeRun(2.5),
                                     IntakeSet1Drive1
@@ -149,9 +150,8 @@ public class RedSideClose15Auto extends LinearOpMode {
                                     shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_RUN)
                             ),
                             shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
-                            shooter.ShooterOff(),
                             new ParallelAction(
-                                    intake.IntakeRun(5),
+                                    intake.IntakeRun(3.5),
                                     IntakeGateSet1Drive1
                             ),
                             new ParallelAction(
@@ -160,9 +160,8 @@ public class RedSideClose15Auto extends LinearOpMode {
                                     shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_RUN)
                             ),
                             shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
-                            shooter.ShooterOff(),
                             new ParallelAction(
-                                    intake.IntakeRun(5),
+                                    intake.IntakeRun(3.5),
                                     IntakeGateSet2Drive1
                             ),
                             new ParallelAction(
@@ -171,7 +170,6 @@ public class RedSideClose15Auto extends LinearOpMode {
                                     shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_RUN)
                             ),
                             shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
-                            shooter.ShooterOff(),
                             new ParallelAction(
                                     intake.IntakeRun(2.5),
                                     IntakeSet2Drive1

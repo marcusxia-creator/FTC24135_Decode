@@ -54,6 +54,7 @@ public class AutoShooterFSM {
             SHOOTER_RUN,
             SHOOTER_SWITCH,
             SHOOTER_LAUNCH,
+            SHOOTER_WAIT,
             SHOOTER_RESET,
             SHOOTER_END;
         }
@@ -141,27 +142,25 @@ public class AutoShooterFSM {
                         currentState = SHOOTERSTATE.SHOOTER_LAUNCH;
                     }
                     else {
-                        if (stateTimer2.seconds() > 0.5) {
+                        if (stateTimer2.seconds() > 0.3) {
                             stateTimer2.reset();
-                            currentState = SHOOTERSTATE.SHOOTER_RESET;
+                            currentState = SHOOTERSTATE.SHOOTER_WAIT;
                         }
                     }
                     break;
                 case SHOOTER_LAUNCH:
                     SpindexerRunTo(targetSlot);
                     if (stateTimer2.seconds() > shootSpeed) {
-                        stateTimer.reset();
+                        stateTimer2.reset();
                         currentState = SHOOTERSTATE.SHOOTER_SWITCH;
                     }
                     break;
+                case SHOOTER_WAIT:
+                    stateTimer2.reset();
+                    currentState = SHOOTERSTATE.SHOOTER_RESET;
+                    break;
                 case SHOOTER_RESET:
-                    robot.kickerServo.setPosition(kickerRetract);
-                    if (stateTimer2.seconds() > 0.3) {
-                        SpindexerRunTo(1);
-                        if(stateTimer2.seconds()>0.6){
-                            currentState = SHOOTERSTATE.SHOOTER_END;
-                        }
-                    }
+                    currentState = SHOOTERSTATE.SHOOTER_END;
                     break;
                 case SHOOTER_END:
                     robot.topShooterMotor.setPower(0);
@@ -216,11 +215,11 @@ public class AutoShooterFSM {
     }
 
     public Action ShootFarZone(double ShotPower, double ShooterWaitTime, ShooterRapidRunMode.SHOOTERSTATE startingState, ShooterRapidRunMode.SHOOTERSTATE endState){
-        return new ShooterRapidRunMode(robot, startingState, endState, ShotPower,0.4,ShooterWaitTime, spindexerContext);
+        return new ShooterRapidRunMode(robot, startingState, endState, ShotPower,0.28,ShooterWaitTime, spindexerContext);
     }
 
     public Action ShootCloseZone(double ShotPower, double ShooterWaitTime, ShooterRapidRunMode.SHOOTERSTATE startingState, ShooterRapidRunMode.SHOOTERSTATE endState){
-        return new ShooterRapidRunMode(robot, startingState, endState, ShotPower,0.15,ShooterWaitTime, spindexerContext);
+        return new ShooterRapidRunMode(robot, startingState, endState, ShotPower,0.12,ShooterWaitTime, spindexerContext);
     }
 
     ///Shooter Sorting Run Mode
@@ -307,9 +306,9 @@ public class AutoShooterFSM {
                     break;
                 case SORTINGSHOOTER_RUN:
                     robot.intakeMotor.setPower(ejectSpeed);
-                    if (stateTimer.seconds() > ShooterWaitTime+0.2) {
+                    if (stateTimer.seconds() > ShooterWaitTime+0.4) {
                         robot.kickerServo.setPosition(kickerExtend);
-                        if (stateTimer.seconds() > ShooterWaitTime + 0.5) {
+                        if (stateTimer.seconds() > ShooterWaitTime + 0.7) {
                             stateTimer2.reset();
                             currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_SWITCH;
                         }
@@ -355,12 +354,8 @@ public class AutoShooterFSM {
                     break;
                 case SORTINGSHOOTER_RESET:
                     SpindexerRunTo(5);
-                    if (stateTimer2.seconds() > 0.3) {
-                        robot.kickerServo.setPosition(kickerRetract);
-                        if(stateTimer2.seconds()>1.2){
-                            SpindexerRunTo(1);
+                    if (stateTimer2.seconds() > 0.2) {
                             currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_END;
-                        }
                     }
                     break;
                 case SORTINGSHOOTER_END:

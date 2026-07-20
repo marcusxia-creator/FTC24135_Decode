@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses;
 
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterRapidRunMode.SHOOTERSTATE.SHOOTER_END;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterRapidRunMode.SHOOTERSTATE.SHOOTER_INIT;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterRapidRunMode.SHOOTERSTATE.SHOOTER_RESET;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterRapidRunMode.SHOOTERSTATE.SHOOTER_SWITCH;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterRapidRunMode.SHOOTERSTATE.SHOOTER_WAIT;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.CloseShotPower;
 import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.FarShotPower;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import com.acmerobotics.dashboard.config.Config;
@@ -76,12 +82,8 @@ public class ActionTestAuto extends LinearOpMode {
         if (opModeIsActive()) {
             Actions.runBlocking(
                 new SequentialAction(
-                    intake.IntakeRun(8),
-                    shooter.ShootSorting(0.67, 1.6,SORTINGSHOOTER_INIT,SORTINGSHOOTER_END),
-                    intake.IntakeRun(8),
-                    shooter.ShootSorting(0.67, 1.6,SORTINGSHOOTER_INIT,SORTINGSHOOTER_END),
-                    intake.IntakeRun(8),
-                    shooter.ShootSorting(0.67, 1.6,SORTINGSHOOTER_INIT,SORTINGSHOOTER_END)
+                        shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_END),
+                        intake.IntakeRun(8)
                 )
             );
         }

@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Auto.Runs;
 
 import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterSortingRunMode.SORTINGSHOOTERSTATE.*;
 import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.*;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.Close_IntakeSet2Position4_X;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.Close_IntakeSet2Position4_Y;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 import com.acmerobotics.roadrunner.Action;
@@ -56,7 +58,7 @@ public class RedSideClose12SortedAuto extends LinearOpMode {
         aprilTagDetection.limelightStart();
 
         if (opModeInInit()) {
-            Actions.runBlocking(turret.TurretRun(160));
+            Actions.runBlocking(turret.TurretRun(175));
             robot.spindexerServo.setPosition(spindexerSlot1);
             robot.kickerServo.setPosition(kickerRetract);
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
@@ -75,9 +77,10 @@ public class RedSideClose12SortedAuto extends LinearOpMode {
 
         TrajectoryActionBuilder IntakeSet1Drive1Builder = DriveToShoot1Builder.endTrajectory().fresh()
                 .setTangent(0)
-                .splineToConstantHeading(new Vector2d(Gate_IntakeSet2Position1_X,Gate_IntakeSet2Position1_Y),Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(Gate_IntakeSet2Position4_X,Gate_IntakeSet2Position4_Y),Math.toRadians(90));
-
+                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position1_X,Close_IntakeSet2Position1_Y),Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position4_X,Close_IntakeSet2Position4_Y-4),Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position4_X,Close_IntakeSet2Position4_Y-12),Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(8,54),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot2Builder = IntakeSet1Drive1Builder.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y-3), Math.toRadians(CloseShootingPosition_Heading));
@@ -140,7 +143,7 @@ public class RedSideClose12SortedAuto extends LinearOpMode {
                             shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_SWITCH,SORTINGSHOOTER_END),
                             shooter.ShooterOff(),
                             new ParallelAction(
-                                    intake.IntakeRun(5),
+                                    intake.IntakeRun(4),
                                     IntakeSet2Drive1
                             ),
                             new ParallelAction(
@@ -151,7 +154,7 @@ public class RedSideClose12SortedAuto extends LinearOpMode {
                             shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_SWITCH,SORTINGSHOOTER_END),
                             shooter.ShooterOff(),
                             new ParallelAction(
-                                    intake.IntakeRun(2.5),
+                                    intake.IntakeRun(1.5),
                                     IntakeSet3Drive1
                             ),
                             new ParallelAction(

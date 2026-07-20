@@ -26,9 +26,9 @@ public class AutoIntakeFSM {
     public static class IntakeRunMode implements Action {
         public enum INTAKESTATE {
             INTAKE_INIT,
+            INTAKE_PREP,
             INTAKE_RUN,
             INTAKE_DETECT,
-            INTAKE_UNJAM,
             INTAKE_END
 
         }
@@ -72,13 +72,21 @@ public class AutoIntakeFSM {
                     colorDetection.detectInit();
                     intakeTimer.reset();
                     stateTimer.reset();
-                    SpindexerRunTo(1);
-                    currentState = INTAKESTATE.INTAKE_RUN;
+                    robot.kickerServo.setPosition(kickerRetract);
+                    currentState = INTAKESTATE.INTAKE_PREP;
+                    break;
+                case INTAKE_PREP:
+                    if (stateTimer.seconds() > 0.1) {
+                        SpindexerRunTo(1);
+                        if (stateTimer.seconds()>0.5){
+                            stateTimer.reset();
+                            currentState = INTAKESTATE.INTAKE_RUN;
+                        }
+                    }
                     break;
                 case INTAKE_RUN:
                     colorDetection.updateSlotColors();
-                    robot.kickerServo.setPosition(kickerRetract);
-                    robot.intakeMotor.setPower(0.85);
+                    robot.intakeMotor.setPower(0.95);
                     stateTimer.reset();
                     currentState = INTAKESTATE.INTAKE_DETECT;
                     break;
@@ -87,6 +95,7 @@ public class AutoIntakeFSM {
                         colorDetection.updateSlotColors();
                         spindexerContext.currentGreenSlot = colorDetection.findGreenSlot();
                         spindexerContext.updateShootingInitSlot();
+                        robot.intakeMotor.setPower(0);
                         if (stateTimer.seconds()>0.2) {
                             stateTimer.reset();
                             currentState = INTAKESTATE.INTAKE_END;
@@ -95,6 +104,7 @@ public class AutoIntakeFSM {
                         colorDetection.updateSlotColors();
                         spindexerContext.currentGreenSlot = colorDetection.findGreenSlot();
                         spindexerContext.updateShootingInitSlot();
+                        robot.intakeMotor.setPower(0);
                         if (stateTimer.seconds()>0.2) {
                             stateTimer.reset();
                             currentState = INTAKESTATE.INTAKE_END;
@@ -104,7 +114,6 @@ public class AutoIntakeFSM {
                     }
                     break;
                 case INTAKE_END:
-                    robot.intakeMotor.setPower(0);
                     break;
 
             }
