@@ -71,7 +71,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private long lastLoopTimeNs;
     private double loopHz = 0.0;
     private ElapsedTime debounceTimer = new ElapsedTime();
-    private static double voltage;
 
     /// ----------------------------------------------------------------
     /// For robot action state
@@ -163,24 +162,16 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         /// 8. intake------------------------------------------------------------
         FSMIntake = new FSMIntake (robot, spindexer);
 
-        /// 9. alliance selection-----------------------------------------------------------
-        alliance = Alliance.RED_ALLIANCE;
-        if (alliance == Alliance.RED_ALLIANCE) {
-            shooterPowerAngleCalculator.setAlliance(true);
-        }else{
-            shooterPowerAngleCalculator.setAlliance(false);
-        };
-
-        /// 10. robot state----------------------------------------------------------
+        /// 9. robot state----------------------------------------------------------
         actionStates = RobotActionState.Idle;
 
-        /// 11. start adjuster servo at position to avoid soft start
+        /// 10. start adjuster servo at position to avoid soft start
         robot.shooterAdjusterServo.setPosition(0.48);
 
-        /// 12. start kicker servo at position to avoid soft start
+        /// 11. start kicker servo at position to avoid soft start
         robot.kickerServo.setPosition(kickerRetract);
 
-        ///  13. Telemetry------------------------------------------------------------
+        /// 12. Telemetry------------------------------------------------------------
         telemetry.addData("start pose", PoseStorage.currentPose);
         telemetry.addData("pinpoint", robot.pinpoint.getPosition());
         telemetry.update();
