@@ -32,7 +32,7 @@ public class AprilTagDetection {
         }
     }
 
-    public int findGreenSlot () {
+    public int findGreenSlot() {
         if (tagID == 21) {
             return 0;
         } else if (tagID == 22) {

@@ -7,10 +7,8 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AutoBallColors;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AutoColorDetection;
 
-import org.firstinspires.ftc.teamcode.TeleOps.FSMIntake;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
@@ -18,31 +16,27 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 @Config
 public class AutoIntakeFSM {
     private final RobotHardware robot;
+    private final AutoSpindexerContext spindexerContext;
 
-    public static int currentGreenSlot;
-    public static int shootingInitSlot;
-
-    public AutoIntakeFSM(RobotHardware robot) {
+    public AutoIntakeFSM(RobotHardware robot, AutoSpindexerContext context) {
+        this.spindexerContext = context;
         this.robot = robot;
     }
 
     public static class IntakeRunMode implements Action {
         public enum INTAKESTATE {
             INTAKE_INIT,
+            INTAKE_PREP,
             INTAKE_RUN,
             INTAKE_DETECT,
-            INTAKE_PAUSE,
-            INTAKE_INDEX,
-            INTAKE_SPIN,
-            INTAKE_UNJAM,
             INTAKE_END
 
         }
 
         /// Variables
         private RobotHardware robot;
+        private AutoSpindexerContext spindexerContext;
         private final AutoColorDetection colorDetection;
-        private AutoBallColors ballColors;
 
         private final ElapsedTime stateTimer = new ElapsedTime();
         private final ElapsedTime intakeTimer = new ElapsedTime();
@@ -50,14 +44,12 @@ public class AutoIntakeFSM {
 
         private INTAKESTATE currentState;
 
-        private int targetSlot = 0;
-
         /// Constructor
-        public IntakeRunMode(RobotHardware robot, double maxRunTime) {
+        public IntakeRunMode(RobotHardware robot, double maxRunTime, AutoSpindexerContext spindexerContext) {
             this.robot = robot;
+            this.spindexerContext = spindexerContext;
             this.currentState = INTAKESTATE.INTAKE_INIT;
             this.colorDetection = new AutoColorDetection(robot);
-            this.ballColors = AutoBallColors.UNKNOWN;
             this.maxRunTime = maxRunTime;
         }
 
@@ -73,63 +65,55 @@ public class AutoIntakeFSM {
             }
         }
 
+
         public void FSMIntakeRun() {
-            colorDetection.updateDetection();
             switch (currentState) {
                 case INTAKE_INIT:
                     colorDetection.detectInit();
                     intakeTimer.reset();
-                    SpindexerRunTo(0);
-                    currentState = INTAKESTATE.INTAKE_RUN;
+                    stateTimer.reset();
+                    robot.kickerServo.setPosition(kickerRetract);
+                    currentState = INTAKESTATE.INTAKE_PREP;
+                    break;
+                case INTAKE_PREP:
+                    if (stateTimer.seconds() > 0.1) {
+                        SpindexerRunTo(1);
+                        if (stateTimer.seconds()>0.5){
+                            stateTimer.reset();
+                            currentState = INTAKESTATE.INTAKE_RUN;
+                        }
+                    }
                     break;
                 case INTAKE_RUN:
-                    robot.kickerServo.setPosition(kickerRetract);
-                    robot.intakeMotor.setPower(0.85);
+                    colorDetection.updateSlotColors();
+                    robot.intakeMotor.setPower(0.95);
                     stateTimer.reset();
                     currentState = INTAKESTATE.INTAKE_DETECT;
                     break;
                 case INTAKE_DETECT:
-                    if (colorDetection.isBallPresent()) {
-                        targetSlot++;
-                        stateTimer.reset();
-                        currentState = INTAKESTATE.INTAKE_PAUSE;
+                    if (colorDetection.isSpindexerFull()) {
+                        colorDetection.updateSlotColors();
+                        spindexerContext.currentGreenSlot = colorDetection.findGreenSlot();
+                        spindexerContext.updateShootingInitSlot();
+                        robot.intakeMotor.setPower(0);
+                        if (stateTimer.seconds()>0.2) {
+                            stateTimer.reset();
+                            currentState = INTAKESTATE.INTAKE_END;
+                        }
                     } else if (intakeTimer.seconds() > maxRunTime) {
-                        currentState = INTAKESTATE.INTAKE_END;
+                        colorDetection.updateSlotColors();
+                        spindexerContext.currentGreenSlot = colorDetection.findGreenSlot();
+                        spindexerContext.updateShootingInitSlot();
+                        robot.intakeMotor.setPower(0);
+                        if (stateTimer.seconds()>0.2) {
+                            stateTimer.reset();
+                            currentState = INTAKESTATE.INTAKE_END;
+                        }
                     } else {
                         currentState = INTAKESTATE.INTAKE_RUN;
-                    }
-                    break;
-                case INTAKE_PAUSE:
-                    robot.intakeMotor.setPower(0.4);
-                    if (stateTimer.seconds() > 0.2) {
-                        stateTimer.reset();
-                        currentState = INTAKESTATE.INTAKE_INDEX;
-                    }
-                    break;
-                case INTAKE_INDEX:
-                    if (targetSlot < 3) {
-                        SpindexerRunTo(targetSlot);
-                        stateTimer.reset();
-                        currentState = INTAKESTATE.INTAKE_SPIN;
-                    } else {
-                        stateTimer.reset();
-                        currentState = INTAKESTATE.INTAKE_UNJAM;
-                    }
-                    break;
-                case INTAKE_SPIN:
-                    if (stateTimer.seconds() > 0.3) {
-                        currentState = INTAKESTATE.INTAKE_RUN;
-                    }
-                    break;
-                case INTAKE_UNJAM:
-                    SpindexerRunTo(0);
-                    robot.intakeMotor.setPower(ejectSpeed);
-                    if (stateTimer.seconds() > 0.3) {
-                        currentState = INTAKESTATE.INTAKE_END;
                     }
                     break;
                 case INTAKE_END:
-                    robot.intakeMotor.setPower(intakeStop);
                     break;
 
             }
@@ -139,13 +123,15 @@ public class AutoIntakeFSM {
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             FSMIntakeRun();
             telemetryPacket.put("FSM Intake State", currentState);
-            telemetryPacket.put("Calc Shooting Int Slot", shootingInitSlot);
-            telemetryPacket.put("Detected Green Slot", currentGreenSlot);
+            telemetryPacket.put("Is Spindexer Full",colorDetection.isSpindexerFull());
+            telemetryPacket.put("Calc Shooting Int Slot", spindexerContext.shootingInitSlot);
+            telemetryPacket.put("Detected Green Slot", colorDetection.findGreenSlot());
+            telemetryPacket.put("Transferred Green Slot",spindexerContext.currentGreenSlot);
             return currentState != INTAKESTATE.INTAKE_END;
         }
     }
 
     public Action IntakeRun (double maxTime) {
-        return new IntakeRunMode(robot, maxTime);
+        return new IntakeRunMode(robot, maxTime, spindexerContext);
     }
 }

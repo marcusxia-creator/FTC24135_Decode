@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses;
 
-import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.BlueSidePositions.FarShotPower;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerRetract;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.shooterAdjusterMax;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.spindexerSlot1;
-
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterRapidRunMode.SHOOTERSTATE.SHOOTER_END;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterRapidRunMode.SHOOTERSTATE.SHOOTER_INIT;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterRapidRunMode.SHOOTERSTATE.SHOOTER_RESET;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterRapidRunMode.SHOOTERSTATE.SHOOTER_SWITCH;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterRapidRunMode.SHOOTERSTATE.SHOOTER_WAIT;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.CloseShotPower;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.FarShotPower;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -13,9 +16,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Auto.MecanumDrive;
-//import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
+import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AutoColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterSortingRunMode.SORTINGSHOOTERSTATE.*;
+
 @Config
 @Autonomous(name = "ActionTestAuto", group = "Autonomous")
 public class ActionTestAuto extends LinearOpMode {
@@ -27,8 +32,8 @@ public class ActionTestAuto extends LinearOpMode {
     public AutoTurretDrive turret;
     public MecanumDrive drive;
     public AprilTagDetection aprilTagDetection;
-
-    public int targetGreen;
+    public AutoSpindexerContext context;
+    public AutoColorDetection colorDetection;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -37,23 +42,37 @@ public class ActionTestAuto extends LinearOpMode {
         robot.init();
         robot.turretInit();
 
+        context = new AutoSpindexerContext();
         turret = new AutoTurretDrive(robot);
-        intake = new AutoIntakeFSM(robot);
-        shooter = new AutoShooterFSM(robot);
+        intake = new AutoIntakeFSM(robot,context);
+        shooter = new AutoShooterFSM(robot,context);
+
+        colorDetection = new AutoColorDetection(robot);
+
 
         aprilTagDetection = new AprilTagDetection(robot);
         aprilTagDetection.limelightStart();
 
         if (opModeInInit()) {
-            Actions.runBlocking(turret.TurretRun(90));
-            robot.spindexerServo.setPosition(spindexerSlot1);
+            robot.spindexerServo.setPosition(spindexerSlot2);
             robot.kickerServo.setPosition(kickerRetract);
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
+            colorDetection.detectInit();
             while (opModeInInit()&&!isStopRequested()) {
+                //Actions.runBlocking(turret.TurretRun(68));
+                colorDetection.updateSlotColors();
                 aprilTagDetection.limelightDetect();
-                targetGreen = aprilTagDetection.findGreenSlot();
+                context.currentGreenSlot = colorDetection.findGreenSlot();
+                context.targetGreenSlot = aprilTagDetection.findGreenSlot();
+                context.updateShootingInitSlot();
                 telemetry.addData("Detected ID",aprilTagDetection.tagID);
-                telemetry.addData("Target Green Slot",targetGreen);
+                telemetry.addData("Target Green Slot",context.targetGreenSlot);
+                telemetry.addData("Current Green Slot",colorDetection.findGreenSlot());
+                telemetry.addData("Slot 1 Color",colorDetection.getSlotColor(0));
+                telemetry.addData("Slot 2 Color",colorDetection.getSlotColor(1));
+                telemetry.addData("Slot 3 Color",colorDetection.getSlotColor(2));
+                telemetry.addData("Green Slot", context.currentGreenSlot);
+                telemetry.addData("Calc Starting Slot", context.shootingInitSlot);
                 telemetry.update();
             }
         }
@@ -63,16 +82,8 @@ public class ActionTestAuto extends LinearOpMode {
         if (opModeIsActive()) {
             Actions.runBlocking(
                 new SequentialAction(
-                    turret.TurretRun(68),
-                    intake.IntakeRun(8),
-                    shooter.ShootFarZone(FarShotPower,2, 0,targetGreen),
-                    shooter.ShooterOff(),
-                    intake.IntakeRun(8),
-                    shooter.ShootFarZone(FarShotPower,2, 1,targetGreen),
-                    shooter.ShooterOff(),
-                    intake.IntakeRun(8),
-                    shooter.ShootFarZone(FarShotPower,2, 2,targetGreen),
-                    shooter.ShooterOff()
+                        shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_END),
+                        intake.IntakeRun(8)
                 )
             );
         }

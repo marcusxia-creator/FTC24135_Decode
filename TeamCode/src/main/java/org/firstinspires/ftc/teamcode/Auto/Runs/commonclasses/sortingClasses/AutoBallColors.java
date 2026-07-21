@@ -8,8 +8,8 @@ public enum AutoBallColors {
     UNKNOWN;
 
     public static AutoBallColors fromHue (float hue) {
-        if (greenRangeHigh[0] < hue && hue < greenRangeLow[1]) return GREEN;
-        if (purpleRangeHigh[0] < hue && hue < greenRangeLow[0]) return PURPLE;
+        if (greenRangeLow[0] < hue && hue < greenRangeHigh[1]) return GREEN;
+        if (purpleRangeLow[0] < hue && hue < purpleRangeHigh[1]) return PURPLE;
         return UNKNOWN;
     }
 
