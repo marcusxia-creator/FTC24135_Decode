@@ -28,45 +28,44 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public class RobotDrive {
 
-    private final GamepadEx gamepad_1;
-    private final GamepadEx gamepad_2;
+    private final GamepadComboInput gamepadComboInput;
     private final RobotHardware robot;
 
     private ElapsedTime debounceTimer = new ElapsedTime(); // Timer for debouncing
 
     private boolean startPressed = false;
-    private boolean backPressed = false;
+    private boolean fieldCentric = false;
 
     private double powerFactor;
     private Object drive_power;
 
     private double rotate_Slowness = 0.75;
 
-    public RobotDrive(RobotHardware robot, GamepadEx gamepad_1, GamepadEx gamepad_2) {
+    private final SlewRateLimiter frontLeftLimiter = new SlewRateLimiter(0.2,0.45);
+    private final SlewRateLimiter frontRightLimiter = new SlewRateLimiter(0.2,0.45);
+    private final SlewRateLimiter backLeftLimiter = new SlewRateLimiter(0.2,0.45);
+    private final SlewRateLimiter backRightLimiter = new SlewRateLimiter(0.2,0.45);
+
+    public RobotDrive(RobotHardware robot, GamepadComboInput gamepadComboInput) {
         this.robot = robot;
-        this.gamepad_1 = gamepad_1;
-        this.gamepad_2 = gamepad_2;
+        this.gamepadComboInput = gamepadComboInput;
     }
 
     public void Init() {
-        // Initialize IMU from RobotHardware
-        //iceWaddler = new IceWaddler(robot);
-
-       /* iceWaddler.Init(IceWaddler.CONTROLMODE.POWER,
-                new Pose2D(DistanceUnit.METER,0,0, AngleUnit.DEGREES,0),
-                false);
-
-        */
+        fieldCentric = false;
+        resetDriveSlew();
     }
 
 
     @SuppressLint("DefaultLocale")
     public void DriveLoop() {
         // Toggle control mode
-        if ((gamepad_1.getButton(START) || gamepad_2.getButton(START)) && !startPressed && (!gamepad_1.getButton(LEFT_BUMPER) || !gamepad_2.getButton(LEFT_BUMPER))) {
-            debounceTimer.reset();
+        boolean startNow = gamepadComboInput.getDriverStrSinglePressed() || gamepadComboInput.getOperatorStrSinglePressed();
+        // START toggles field-centric mode.
+        if (startNow && !startPressed ) {
+            fieldCentric = !fieldCentric;
             startPressed = true;
-        } else if (!gamepad_1.getButton(START) || !gamepad_2.getButton(START)) {
+        } else if (!startNow) {
             startPressed = false;
         }
 
@@ -84,84 +83,76 @@ public class RobotDrive {
         }
          */
 
-        if(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.4 || gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0.4){
-            double factor = Math.max(gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER), gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
-            powerFactor = Range.clip(RobotActionConfig.powerFactor *(1.4 - factor),0,1); //1.0 - power reduction will be 0.6 - 0.2
-        }
-        else {
-            powerFactor = RobotActionConfig.powerFactor;
-        }
+        powerFactor = calculatePowerFactor();
         double drive = 0.0;
         double strafe = 0.0;
         double rotate = 0.0;
 
-        // gamepad 1 take priority override gamepad 2
-        if (Math.abs(gamepad_1.getRightY()) > 0.1 || Math.abs(gamepad_1.getRightX()) > 0.1 || Math.abs(gamepad_1.getLeftX()) > 0.1) {
-            drive = deadband(-gamepad_1.getRightY(),0.1);
-            strafe = deadband(gamepad_1.getRightX(),0.1);
-            rotate = deadband(gamepad_1.getLeftX(),0.1) * rotate_Slowness;
-        } else if (Math.abs(gamepad_2.getRightY()) > 0.1 || Math.abs(gamepad_2.getRightX()) > 0.1 || Math.abs(gamepad_2.getLeftX()) > 0.1) {
-            drive = deadband(-gamepad_2.getRightY(),0.1);
-            strafe = deadband(gamepad_2.getRightX(),0.1);
-            rotate = deadband(gamepad_2.getLeftX(),0.1) * rotate_Slowness;
+        // Gamepad 1 has priority over gamepad 2
+        if(gamepadComboInput.getDriverHasDriveInput()) {
+            drive = -gamepadComboInput.getDriverRightStickY();
+            strafe = gamepadComboInput.getDriverRightStickX();
+            rotate = gamepadComboInput.getDriverLeftStickX()*rotate_Slowness;
+        } else if(gamepadComboInput.getOperatorHasDriveInput()) {
+            drive = -gamepadComboInput.getOperatorRightStickY();
+            strafe = gamepadComboInput.getOperatorRightStickX();
+            rotate = gamepadComboInput.getOperatorLeftStickX()*rotate_Slowness;
         }
 
-        //Autoheading, currently disabled
-        /*
-        if(Math.abs(gamepad_1.getLeftY())>0.5||Math.abs(gamepad_1.getLeftY())>0.5){
-            rotate = Range.clip(RobotActionConfig.rotPK*(robot.pinpoint.getHeading(AngleUnit.RADIANS)-shooterPowerCalculator.getAngle()),-1,1);
-        }*/
+        if (fieldCentric) {
+            double headingRadians = Math.toRadians(getRobotHeadingDegrees());
+            double tempDrive = drive * Math.cos(headingRadians) - strafe * Math.sin(headingRadians);
+            double tempStrafe = drive * Math.sin(headingRadians) + strafe * Math.cos(headingRadians);
 
-        // Get robot's current heading
-        double currentHeading = getRobotHeading();
+            drive = tempDrive;
+            strafe = tempStrafe;
+        }
 
-        // Mecanum drive calculations
         setMecanumDrivePower(drive, strafe, rotate, powerFactor);
-        // Update telemetry with the latest data
-        // empty
     }// end of driveloop
 
 
-    private double getRobotHeading() {
-        // Get the robot's heading from IMU
-        // double heading = robot.imu().firstAngle;
-        double heading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-        while (heading > 180.0) {
-            heading -= 360.0;
+    private double calculatePowerFactor() {
+        double trigger1 = gamepadComboInput.getDriverLeftTrigger();
+        double trigger2 = gamepadComboInput.getOperatorLeftTrigger();
+        double trigger = Math.max(trigger1, trigger2);
+
+        if (trigger > 0.4) {
+            return Range.clip(RobotActionConfig.powerFactor * (1.4 - trigger), 0.20, 1.0);
         }
-        while (heading < -180.0) {
-            heading += 360.0;
-        }
+
+        return RobotActionConfig.powerFactor;
+    }
+
+    private double getRobotHeadingDegrees() {
+        double heading = robot.imu
+                .getRobotYawPitchRollAngles()
+                .getYaw(AngleUnit.DEGREES);
+
+        heading = AngleUnit.normalizeDegrees(heading);
+
+        // Keep this sign if your IMU convention needs it.
+        // If field-centric moves backward/sideways incorrectly, remove the negative sign.
         return -heading;
     }
 
-
-    double deadband(double input, double threshold) {
-        if (Math.abs(input) < threshold) { // Ignore small values
+    private double deadband(double input, double threshold) {
+        if (Math.abs(input) < threshold) {
             return 0.0;
         }
         return input;
     }
 
-    double lerp(double current, double target, double accel_Slowness, double decel_Slowness) {
-        double alpha = (Math.abs(target) > Math.abs(current)) ? accel_Slowness : decel_Slowness;
-        return current + alpha * (target - current);
-    }
-
     private void setMecanumDrivePower(double drive, double strafe, double rotate, double powerFactor) {
-        // Determine the drive mode
 
-
-        // Mecanum wheel drive formula
         double desiredFrontLeftPower = drive + strafe + rotate;
         double desiredFrontRightPower = drive - strafe - rotate;
         double desiredBackLeftPower = drive - strafe + rotate;
         double desiredBackRightPower = drive + strafe - rotate;
 
-        // Constrain the power within +-1.0
         double maxPower = Math.max(
                 Math.max(Math.abs(desiredFrontLeftPower), Math.abs(desiredFrontRightPower)),
-                Math.max(Math.abs(desiredBackRightPower), Math.abs(desiredBackLeftPower))
+                Math.max(Math.abs(desiredBackLeftPower), Math.abs(desiredBackRightPower))
         );
 
         if (maxPower > 1.0) {
@@ -171,18 +162,34 @@ public class RobotDrive {
             desiredBackRightPower /= maxPower;
         }
 
-        double frontLeftPower = lerp(robot.frontLeftMotor.getPower(), desiredFrontLeftPower, RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
-        double frontRightPower = lerp(robot.frontRightMotor.getPower(), desiredFrontRightPower,  RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
-        double backLeftPower = lerp(robot.backLeftMotor.getPower(), desiredBackLeftPower,  RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
-        double backRightPower = lerp(robot.backRightMotor.getPower(), desiredBackRightPower,  RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
+        double frontLeftPower = frontLeftLimiter.calculate(desiredFrontLeftPower);
+        double frontRightPower = frontRightLimiter.calculate(desiredFrontRightPower);
+        double backLeftPower = backLeftLimiter.calculate(desiredBackLeftPower);
+        double backRightPower = backRightLimiter.calculate(desiredBackRightPower);
 
+        /** if use lerp method, here is the place to add it.
 
-        // Set motor powers
+         *          lastFL = lerp(lastFL, frontLeft, RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
+         *          lastFR = lerp(lastFR, frontRight, RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
+         *          lastBL = lerp(lastBL, backLeft, RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
+         *          lastBR = lerp(lastBR, backRight, RobotActionConfig.accel_Slowness, RobotActionConfig.decel_Slowness);
+         */
+
         robot.frontLeftMotor.setPower(Range.clip(frontLeftPower * powerFactor, -1.0, 1.0));
         robot.frontRightMotor.setPower(Range.clip(frontRightPower * powerFactor, -1.0, 1.0));
         robot.backLeftMotor.setPower(Range.clip(backLeftPower * powerFactor, -1.0, 1.0));
         robot.backRightMotor.setPower(Range.clip(backRightPower * powerFactor, -1.0, 1.0));
+    }
 
+    public void resetDriveSlew() {
+        frontLeftLimiter.reset(0.0);
+        frontRightLimiter.reset(0.0);
+        backLeftLimiter.reset(0.0);
+        backRightLimiter.reset(0.0);
+    }
+
+    public boolean isFieldCentric() {
+        return fieldCentric;
     }
 
     public double[] getVelocity() {
@@ -194,4 +201,31 @@ public class RobotDrive {
         return velocities;
     }
 
+    public static class SlewRateLimiter {
+
+        private final double accelmaxStep;
+        private final double deaccelMaxStep;
+        private double lastValue = 0.0;
+
+        public SlewRateLimiter(double accelmaxStep, double deaccelMaxStep) {
+            this.accelmaxStep = accelmaxStep;
+            this.deaccelMaxStep = deaccelMaxStep;
+        }
+
+        public double calculate(double target) {
+            double delta = target - lastValue;
+            delta = Range.clip(delta, -deaccelMaxStep, accelmaxStep);
+            lastValue += delta;
+            return lastValue;
+        }
+
+        public void reset(double value) {
+            lastValue = value;
+        }
+    }
+
+    double lerp(double current, double target, double accel_Slowness, double decel_Slowness) {
+        double alpha = (Math.abs(target) > Math.abs(current)) ? accel_Slowness : decel_Slowness;
+        return current + alpha * (target - current);
+    }
 }

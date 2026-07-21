@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.TeleOps.FSMIntake.IntakeStates;
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SHOOTERSTATE;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.SHOOTER_RPM_CONVERSION;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.c;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerRetract;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
 
@@ -89,6 +90,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     ///efficient telemetry
     public static double telemetryInterval;
     public ElapsedTime telemeteryTimer=new ElapsedTime();
+    Pose2D cachedPosition;
 
     /// ----------------------------------------------------------------
     @Override
@@ -101,6 +103,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.initIMU();                    //Initialize control hub IMU
         robot.initPinpoint();               //Initialize pinpoint
         //robot.initExternalIMU();            //Initialize external IMU
+        robot.initializeBulkReading(hardwareMap); //Initialize Bulk Reading
 
         /**
          * Transfer the pose 2D from Auto Ops
@@ -116,7 +119,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         gamepadComboInput = new GamepadComboInput(gamepadCo1,gamepadCo2);
 
         /// 1. robot drive-------------------------------------------------------------
-        robotDrive = new RobotDrive(robot, gamepadCo1, gamepadCo2);
+        robotDrive = new RobotDrive(robot, gamepadComboInput);
         robotDrive.Init();
 
         limelight = new Limelight(robot);
@@ -184,6 +187,16 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         //      FSMIntake.loop()
         //      FSMShooter.loop()
         // =========================================================
+
+        // =========================================================
+        // 1. START A NEW HARDWARE LOOP
+        // =========================================================
+
+        /*
+         * Clear all REV Hub bulk caches exactly once at the
+         * beginning of the loop.
+         */
+        robot.clearBulkCache();
 
         // =========================================================
         // 1. INPUT UPDATE (read buttons + combos)
@@ -256,8 +269,11 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         // 9. TELEMETRY
         // =========================================================
+        cachedPosition = robot.pinpoint.getPosition();
 
-        runTimeTelemetry();
+        runTimeTelemetry(
+                cachedPosition
+        );
         telemetry.addData("loopFreq", loopHz);
         telemetry.update();
     }
@@ -459,7 +475,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         lastLoopTime = now;
     }
 
-    public void runTimeTelemetry(){
+    public void runTimeTelemetry(Pose2D cachedPosition){
         //simplified telemetry for teleop
         if(telemeteryTimer.time()>telemetryInterval){
             telemetry.addData("loop frequency (Hz)", loopHz);
@@ -467,7 +483,13 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
             telemetry.addLine("\n---ROBOT");
             telemetry.addData("Alliance", alliance);
-            telemetry.addData("Pose2D", robot.pinpoint.getPosition());
+            telemetry.addData(
+                    "Pose2D",
+                    "X: %.2f, Y: %.2f, Heading: %.2f°",
+                    cachedPosition.getX(DistanceUnit.INCH),
+                    cachedPosition.getY(DistanceUnit.INCH),
+                    cachedPosition.getHeading(AngleUnit.DEGREES)
+            );
 
             telemetry.addLine("\n---INTAKE");
             telemetry.addData("Intake State", FSMIntake.intakeStates);

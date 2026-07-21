@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -113,6 +114,8 @@ public class RobotHardware {
     public Servo LED;
 
     public Limelight3A limelight;
+
+    private List<LynxModule> allHubs;
 
     private double vEma = 12.0;                 // EMA state
     public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
@@ -263,5 +266,22 @@ public class RobotHardware {
         // EMA smoothing
         vEma = vAlpha * vMed + (1.0 - vAlpha) * vEma;
         return vEma;
+    }
+
+    //bulk reading
+    public void initializeBulkReading(HardwareMap hardwareMap) {
+        allHubs = hardwareMap.getAll(LynxModule.class);
+
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(
+                    LynxModule.BulkCachingMode.MANUAL
+            );
+        }
+    }
+
+    public void clearBulkCache() {
+        for (LynxModule hub : allHubs) {
+            hub.clearBulkCache();
+        }
     }
 }

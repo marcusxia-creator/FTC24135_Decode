@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 //import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.FSMShooter;
+import org.firstinspires.ftc.teamcode.TeleOps.GamepadComboInput;
 import org.firstinspires.ftc.teamcode.TeleOps.LUTPowerCalculator;
 import org.firstinspires.ftc.teamcode.TeleOps.Limelight;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
@@ -68,6 +69,7 @@ public class TestTeleOp extends OpMode {
     private int slotTested = 0;  //which slot ball colour and distance data is read from
 
     public static double adjusterServoPosition = 0.49;
+    private GamepadComboInput gamepadComboInput;
 
     /// Power status
     public enum SHOOTERMOTORSTATE{
@@ -78,19 +80,19 @@ public class TestTeleOp extends OpMode {
     public void init() {
         gamepad_1 = new GamepadEx(gamepad1);
         gamepad_2 = new GamepadEx(gamepad2);
+        gamepadComboInput = new GamepadComboInput(gamepad_1,gamepad_2);
         robot = new RobotHardware(hardwareMap);
         robot.init();
         robot.initIMU();
         robot.initPinpoint();
 
-        robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
+        robotDrive = new RobotDrive(robot, gamepadComboInput);
         robotDrive.Init();
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         powerCalculator = new LUTPowerCalculator(robot);
         shooterPowerLUT = new LUTPowerCalculator(robot);
-        robotDrive = new RobotDrive(robot, gamepad_1, gamepad_2);
         //aprilTagDetection = new AprilTagDetection(robot);
 
         turret = new Turret(robot, true);
