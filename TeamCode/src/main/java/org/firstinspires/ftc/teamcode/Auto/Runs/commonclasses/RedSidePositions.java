@@ -5,7 +5,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 
 @Config
 public class RedSidePositions {
-    public static double CloseShotPower = 0.68;
+    public static double CloseShotPower = 0.69;
     public static double FarShotPower = 0.84;
 
     private final Pose2d redGoalPose  = new Pose2d(-70,70,-45);
@@ -25,11 +25,15 @@ public class RedSidePositions {
     public static double IntakeSet3Position4_X = -10;
     public static double IntakeSet3Position4_Y = 54;
 
+    public static double IntakeHPPosition1_X = 58;
+    public static double IntakeHPPosition1_Y = 24;
     public static double IntakeHPPosition4_X = 58;
-    public static double IntakeHPPosition4_Y = 66;
+    public static double IntakeHPPosition4_Y = 60;
 
+    public static double IntakeHP2Position1_X = 32;
+    public static double IntakeHP2Position1_Y = 24;
     public static double IntakeHP2Position4_X = 44;
-    public static double IntakeHP2Position4_Y = 66;
+    public static double IntakeHP2Position4_Y = 60;
 
     public static double GateIntakePosition_X = 14;
     public static double GateIntakePosition_Y = 61.5;
