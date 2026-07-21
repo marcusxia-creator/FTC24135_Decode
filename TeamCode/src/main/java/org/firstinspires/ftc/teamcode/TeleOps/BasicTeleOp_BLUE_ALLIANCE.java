@@ -97,6 +97,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     private double battertVoltage;
     private Pose2D cachedPosition;
     private static double shooterMeasuredRPM;
+    private double targetAngle;
 
     /// ----------------------------------------------------------------
     @Override
@@ -271,18 +272,19 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         int currentZone = shooterPowerAngleCalculator.getZone();
         int turretCurrentTick = turret.getCurrentTick();
         int turretTargetTick = turret.getTargetTick();
-        currentDistance = shooterPowerAngleCalculator.getDistance();
         currentTx = FSMShooter.getLimelightTxForLED();
-
-        battertVoltage = robot.getBatteryVoltageRobust();
-        shooterMeasuredRPM = shooterPowerAngleCalculator.getMeasureRPM();
-        shooterTargetRPM = shooterPowerAngleCalculator.getRPM();
-        updateLED(currentTx);;
+        updateLED(currentTx);
 
         // =========================================================
         // 9. TELEMETRY
         // =========================================================
         cachedPosition = robot.pinpoint.getPosition();
+        currentDistance = shooterPowerAngleCalculator.getDistance();
+        battertVoltage = robot.getBatteryVoltageRobust();
+        shooterMeasuredRPM = shooterPowerAngleCalculator.getMeasureRPM();
+        shooterTargetRPM = shooterPowerAngleCalculator.getRPM();
+
+        targetAngle = turret.getTurretDriveAngle();
 
         // runTimeTelemetry() calls telemetry.update() itself once telemetryInterval
         // elapses — don't call it again here or telemetry.update() (which pushes to
@@ -495,7 +497,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
                     cachedPosition.getY(DistanceUnit.INCH),
                     cachedPosition.getHeading(AngleUnit.DEGREES)
             );
-            telemetry.addData("Dist_to_Goal", currentDistance);
+            telemetry.addData("Dist_to_Goal", "%,.0f"，currentDistance);
 
             telemetry.addLine("\n---INTAKE");
             telemetry.addData("Intake State", FSMIntake.intakeStates);
@@ -523,6 +525,14 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     // telemetry Manager
     //===========================================================
     public void debugTelemetry(){
+        // Full debug dump — gate it the same way as runTimeTelemetry() so switching
+        // into debug mode can't push telemetry.update() every loop tick.
+        if (telemeteryTimer.time() <= telemetryInterval) return;
+        telemeteryTimer.reset();
+
+        Pose2D pose = robot.pinpoint.getPosition(); // single pinpoint read — was read 3x below (getHeading + getPosition x2)
+        double headingDeg = Math.toDegrees(pose.getHeading(AngleUnit.RADIANS));
+
         telemetry.addData("loop frequency (Hz)", loopHz);
         telemetry.addData("voltage from robot", robot.getBatteryVoltageRobust());
         telemetry.addLine("-----");
@@ -539,39 +549,30 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         telemetry.addData("Slot 2", robot.slotSensor3.checkBall());
         telemetry.addData("Current Pos", robot.spindexerServo.getPosition());
         telemetry.addLine("-----");
-        telemetry.addData("shooter power calculator", shooterPowerAngleCalculator.getPower());
+        // cached value from this loop's SequenceShooterLoop() — shooterPowerAngleCalculator.getPower()
+        // re-runs the shooter PID controller as a side effect, so don't call it just to display it
+        telemetry.addData("shooter power calculator", FSMShooter.getPower());
         telemetry.addData("Shooter Power", robot.topShooterMotor.getPower());
         telemetry.addData("voltage from Shooter", FSMShooter.getVoltage());
-        telemetry.addData("power set point", FSMShooter.getPower_setpoint());
-        shooterTargetRPM = shooterPowerAngleCalculator.getRPM();
-        shooterMeasuredRPM = shooterPowerAngleCalculator.getMeasureRPM();
+        
         telemetry.addData("Shooter Target RPM",shooterTargetRPM);
-        telemetry.addData("Shooter actual RPM",shooterRPM);
-        telemetry.addData("Shooter RPM","%,.0f",robot.topShooterMotor.getVelocity()*SHOOTER_RPM_CONVERSION);
+        telemetry.addData("Shooter actual RPM","%,.0f",shooterMeasuredRPM);
         telemetry.addLine("-----");
         telemetry.addData("Alliance", alliance);
-        telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));
-        telemetry.addData("Pose2D", robot.pinpoint.getPosition());
+        telemetry.addData("current angle", headingDeg);
+        telemetry.addData("Pose2D", pose);
         telemetry.addData("Starting Pose",PoseStorage.currentPose);
-        Pose2D pose = robot.pinpoint.getPosition();
-        double xIn = pose.getX(DistanceUnit.INCH);
-        double yIn = pose.getY(DistanceUnit.INCH);
-        double headingDeg = Math.toDegrees(pose.getHeading(AngleUnit.RADIANS));
         telemetry.addData(
                 "Pose (in)",
                 "X: %.2f  Y: %.2f  H: %.1f°",
-                xIn, yIn, headingDeg
+                pose.getX(DistanceUnit.INCH), pose.getY(DistanceUnit.INCH), headingDeg
         );
-        telemetry.addData("Starting Pose",PoseStorage.currentPose);
-
-
-        telemetry.addData("distance to goal", "%,.0f",shooterPowerAngleCalculator.getDistance());
+        telemetry.addData("distance to goal", "%,.0f",currentDistance);
         telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
         telemetry.addLine("Turret-----------------------------------");
         telemetry.addData("turret target angle", turret.getTargetAngle());
         telemetry.addData("turret drive angle", turret.getTurretDriveAngle());
         telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
-        telemetry.addData("motor PIDF coefficient", robot.turretMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
         telemetry.addData("current motor tick", turret.getCurrentTick());
         telemetry.addData("target motor tick", turret.getTargetTick());
         telemetry.addData("goal pose", turret.getGoalPose());
@@ -580,24 +581,6 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(25));
         telemetry.addData("green slot position", limelight.getGreenSlot());
         telemetry.update();
-    }
-    public void telemetryManagerSimplified() {
-        telemetry.addLine("-----SPINDEXER-----");
-        telemetry.addData("Slot 0", robot.slotSensor1.checkBall());
-        telemetry.addData("Slot 1", robot.slotSensor2.checkBall());
-        telemetry.addData("Slot 2", robot.slotSensor3.checkBall());
-        telemetry.addLine("-----ROBOT STATE-----");
-        telemetry.addData("Action State", actionStates);
-        telemetry.addData("Requested", requestedActionState);
-        telemetry.addData("Active", activeActionState);
-        telemetry.addData("IntakeState", FSMIntake.intakeStates);
-        telemetry.addData("ShooterState", FSMShooter.shooterState);
-        telemetry.addData("IntakeSafe", FSMIntake.canExit());
-        telemetry.addData("ShooterSafe", FSMShooter.canExit());
-        telemetry.addData("distance to goal", shooterPowerAngleCalculator.getDistance());
-        telemetry.addLine("-----SHOOTER STATE-----");
-        telemetry.addData("power set point-NORMED", FSMShooter.getPower_setpoint());
-        telemetry.addData("Shooter Power-LUT OUT", robot.topShooterMotor.getPower());
     }
 
 }

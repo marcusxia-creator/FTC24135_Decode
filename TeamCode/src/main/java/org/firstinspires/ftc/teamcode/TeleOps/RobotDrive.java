@@ -41,10 +41,10 @@ public class RobotDrive {
 
     private double rotate_Slowness = 0.75;
 
-    private final SlewRateLimiter frontLeftLimiter = new SlewRateLimiter(0.2,0.65);
-    private final SlewRateLimiter frontRightLimiter = new SlewRateLimiter(0.2,0.65);
-    private final SlewRateLimiter backLeftLimiter = new SlewRateLimiter(0.2,0.65);
-    private final SlewRateLimiter backRightLimiter = new SlewRateLimiter(0.2,0.65);
+    private final SlewRateLimiter frontLeftLimiter = new SlewRateLimiter(0.2,0.5);
+    private final SlewRateLimiter frontRightLimiter = new SlewRateLimiter(0.2,0.5);
+    private final SlewRateLimiter backLeftLimiter = new SlewRateLimiter(0.2,0.5);
+    private final SlewRateLimiter backRightLimiter = new SlewRateLimiter(0.2,0.5);
 
     public RobotDrive(RobotHardware robot, GamepadComboInput gamepadComboInput) {
         this.robot = robot;
@@ -68,20 +68,6 @@ public class RobotDrive {
         } else if (!startNow) {
             startPressed = false;
         }
-
-        /** Reset IMU heading using button back and reset odometry
-         * * need to remove this feature, as back button reseting imu may interfer with Roadrunner pose estimation.
-         * * back button is using for retracting slide after auto phase and initial start of teleops
-
-        if (gamepad_1.getButton(BACK) || gamepad_2.getButton(BACK) && !backPressed) {
-            //robot.initIMU();
-            //robot.resetDriveEncoders();
-            debounceTimer.reset();
-            backPressed = true;
-        } else if (!gamepad_1.getButton(BACK) || !gamepad_2.getButton(BACK)) {
-            backPressed = false;
-        }
-         */
 
         powerFactor = calculatePowerFactor();
         double drive = 0.0;
