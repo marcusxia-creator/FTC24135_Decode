@@ -50,13 +50,14 @@ public class LUTPowerCalculator {
      */
     private final LUT<Integer, Integer> targetRPM = new LUT<Integer, Integer>() {{
         /// RPM is measured based on 13v
-        add(7, RPM7);
-        add(6, RPM6); // 5200
-        add(5, RPM5); // 4450
-        add(4, RPM4); // 4440
-        add(3, RPM3); // 4470
-        add(2, RPM2); // 3890
-        add(1, RPM1); // 3750
+        add(8, RPM8); //4540
+        add(7, RPM7); //4400
+        add(6, RPM6); //4300
+        add(5, RPM5); //3750
+        add(4, RPM4); //3600
+        add(3, RPM3); //3450
+        add(2, RPM2); //3200
+        add(1, RPM1); //3150
         add(0, RPM0); ///change this later
     }};
 
@@ -67,7 +68,7 @@ public class LUTPowerCalculator {
         add(6, shooterAdjusterMax);
         add(5, shooterAdjusterMax);
         add(4, shooterAdjusterMax);
-        add(3, shooterAdjusterMid);
+        add(3, shooterAdjusterMax);
         add(2, shooterAdjusterMid);
         add(1, shooterAdjusterMin);
         add(0, shooterAdjusterMax);
@@ -95,8 +96,9 @@ public class LUTPowerCalculator {
         else if (distance > MID && distance <= MidPoint) zone   = 3;
         else if (distance > MidPoint && distance <= FAR) zone   = 4;
         else if (distance > FAR && distance <= FAR_EDGE) zone   = 5;
-        else if (distance > FAR_ZONE_CLOSE && distance <= FAR_ZONE_MID) zone = 6;
-        else if (distance > FAR_ZONE_MID && distance <= FAR_ZONE_FAR) zone = 7;
+        else if (distance > FAR_ZONE_TOUCH && distance <= FAR_ZONE_CLOSE) zone = 6;
+        else if (distance > FAR_ZONE_CLOSE && distance <= FAR_ZONE_MID) zone = 7;
+        else if (distance > FAR_ZONE_MID && distance <= FAR_ZONE_FAR) zone = 8;
         else zone = 0;
     }
 

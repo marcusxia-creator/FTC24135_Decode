@@ -47,6 +47,31 @@ public class FSMShooter {
 
     public double trim;
 
+    // =========================================================
+    // Limelight TX state
+    // =========================================================
+
+    private boolean llHasTarget;
+
+    private boolean txInitialized;
+    private double filteredTx;
+
+    private double lastValidTx;
+    private long lastValidTimeMs;
+
+    // =========================================================
+    // Dashboard Limelight tuning
+    // =========================================================
+
+    public static double degToTicks = 2.5;
+    public static int txMaxTicks = 50;
+    public static double txDeadbandDeg = 3.0;
+
+    public static double txAlpha = 0.30;
+
+    public static long txHoldMs = 120;
+    public static long txFadeMs = 200;
+
 
 
     /**
@@ -102,6 +127,11 @@ public class FSMShooter {
         turretState = TURRETSTATE.AIMING;
         trim =0;
         loopTimer = new ElapsedTime();
+        llHasTarget = false;
+        txInitialized = false;
+        filteredTx = 0.0;
+        lastValidTx = 0.0;
+        lastValidTimeMs = 0L;
     }
 
 
@@ -120,16 +150,15 @@ public class FSMShooter {
         // Set shooter adjuster angle
         //==========================================================
         angle = Range.clip(shooterPowerLUT.getShooterAngle(), 0.12, 0.49); // get shooter adjuster angle.
-
+        robot.shooterAdjusterServo.setPosition(angle);
         //==========================================================
         //Control shooter run/NOT
         //==========================================================
-        if (shootermotorstate == SHOOTERMOTORSTATE.RUN){
+        boolean shooterEnabled = shootermotorstate == SHOOTERMOTORSTATE.RUN;
+        if (shooterEnabled){
             robot.topShooterMotor.setPower(power);
             robot.bottomShooterMotor.setPower(power);
-            robot.shooterAdjusterServo.setPosition(angle);
-        }
-        if (shootermotorstate == SHOOTERMOTORSTATE.STOP) {
+        } else {
             robot.topShooterMotor.setPower(0);
             robot.bottomShooterMotor.setPower(0);
         }
@@ -144,69 +173,35 @@ public class FSMShooter {
                         shooterState == SHOOTERSTATE.SHOOT_READY;
         turretStateUpdate();
 
-        //========================================================
-        // NEW Turret Trim
-        // Triming/manual control
-        //========================================================
-         /** Depreciated!!
-        if ((gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
-                || gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER))
-                && isButtonDebounced()){
-            trimInput+=1;
-        }
-        if ((gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER)
-                || gamepad_2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-                && isButtonDebounced()){
-            trimInput-=1;
-        }
-
-        if (turretState == TURRETSTATE.AIMING && aimEnabled) {
-            trim=Range.clip(trim+trimInput*trimStep,-400,400);
-            int currentTick = turret.getCurrentTick();
-            int targetTick = (int) (turret.getTargetTick() + trim);
-            turret.driveTurretPID(currentTick, targetTick);
-        }
-        else {
-            robot.turretMotor.setVelocity(trimInput*adjSpeed);
-            ///turret.driveTurretPID(turret.getCurrentTick(), turret.getTargetTick());
-        }
-
-        if (turretState == TURRETSTATE.AIMING && aimEnabled) {
-            int currentTick = turret.getCurrentTick();
-            int targetTick = turret.getTargetTick();
-            turret.driveTurretPID(currentTick, targetTick);
-        }
-        if (turretState == TURRETSTATE.LOCKING) {
-            robot.turretMotor.setPower(0);
-            ///turret.driveTurretPID(turret.getCurrentTick(), turret.getTargetTick());
-        }
-         */
-         //get limelight tx adjust
-        //Limelight.TxSnapshot snap = limelight.getTxForTag(24);
-        //setLimelightTx(snap.hasTarget, snap.txDeg);
-
         int trimInput=0;
 
         if (turretState == TURRETSTATE.AIMING && aimEnabled) {
-            if ((gamepad_1.getButton(GamepadKeys.Button.LEFT_BUMPER)
-                || gamepad_2.getButton(GamepadKeys.Button.LEFT_BUMPER))
-                && isButtonDebounced()){
+            //set limelight
+            Limelight.TxSnapshot snap = limelight.getTxForTag(24);
+            setLimelightTx(snap.hasTarget, snap.txDeg);
+
+            if (gamepadComboInput
+                    .getLbSinglePressedAny()){
                 trimInput+=1;
             }
-            if (gamepad_1.getButton(GamepadKeys.Button.RIGHT_BUMPER)
-                || gamepad_2.getButton(GamepadKeys.Button.RIGHT_BUMPER)
-                && isButtonDebounced()){
+            if (gamepadComboInput
+                    .getrbSinglePressedAny()){
                 trimInput-=1;
             }
             trim=Range.clip(trim +trimInput*trimStep,-400,400);
+            // tx from limelight
+            int txAdjustTicks =
+                    getTxAdjustTicks();
 
             int currentTick = turret.getCurrentTick();
-            int targetTick = (int) (turret.getTargetTick() + trim);
+            int targetTick = (int) (turret.getTargetTick() + trim + txAdjustTicks);
+
 
             turret.driveTurretPID(currentTick, targetTick, loopTimer.seconds());
             loopTimer.reset();
         }
         else {
+            setLimelightTx(false, Double.NaN);
             robot.turretMotor.setVelocity(trimInput*adjSpeed);
         }
         //=====================================
@@ -221,8 +216,7 @@ public class FSMShooter {
         switch (shooterState) {
             case SHOOTER_IDLE:
                //Idle state for shooter
-                robot.topShooterMotor.setPower(0);
-                robot.bottomShooterMotor.setPower(0);
+                shootermotorstate = SHOOTERMOTORSTATE.STOP;
                 shootTimer.reset();
                 robot.kickerServo.setPosition(kickerRetract);
 
@@ -258,19 +252,18 @@ public class FSMShooter {
 
             case SHOOT_READY:
                 /// use button Y to shoot.
-                if ((gamepad_1.getButton(GamepadKeys.Button.Y)
-                        || gamepad_2.getButton(GamepadKeys.Button.Y))
-                        && isButtonDebounced()){
+                if (gamepadComboInput.getYPressedAny()){
                     shooterState = SHOOTERSTATE.SHOOTING;
                     shootTimer.reset();
                 }
                 break;
 
             case SHOOTING:
+                double measuredRPM = shooterPowerLUT.getMeasureRPM();
                 boolean flywheelReady =
                         flyWheelTimer.seconds() >= SPOOLUP_SEC ||
-                                (robot.topShooterMotor.getVelocity() * LUTPowerCalculator.tickToRPM) >= rpm * 0.95;
-                if (!flywheelReady) break;
+                                measuredRPM  >= rpm * 0.95;
+                if (!flywheelReady) return;
                 // make a timer to feed balls
                 long now = System.currentTimeMillis();
                 // --- First ball: shoot immediately once flywheel is ready ---
@@ -291,7 +284,7 @@ public class FSMShooter {
                         shootTimer.reset();
                         // reset these so next time you enter shooting state it works cleanly
                         shootCounter = 0;
-                        lastFeedTimeMs = 0;
+                        lastFeedTimeMs = 0L;
                     }
                 }
                 break;
@@ -390,20 +383,30 @@ public class FSMShooter {
     // * smooth out the tx value based on the Tx delay time
     // * smooth out the shaking value based on the deadband
     //=========================================================
-    /*
-    public void setLimelightTx(boolean hasTarget, double txDeg) {
-        llHasTarget = hasTarget;
-        llTxDeg = hasTarget ? txDeg : Double.NaN;
+
+    public void setLimelightTx(
+            boolean hasTarget,
+            double txDegrees
+    ) {
+        llHasTarget = hasTarget && Double.isFinite(txDegrees);
 
         long now = System.currentTimeMillis();
-        if (!hasTarget) return;
 
-        // smooth only when valid
-        if (!txInit) { txFilt = txDeg; txInit = true; }
-        txFilt = txAlpha * txDeg + (1.0 - txAlpha) * txFilt;
+        if (!llHasTarget) {
+            return;
+        }
 
-        // store last valid filtered tx
-        lastValidTx = txFilt;
+        double safeAlpha = Range.clip(txAlpha,0.0,1.0);
+
+        if (!txInitialized) {
+            filteredTx = txDegrees;
+            txInitialized = true;
+        } else {
+            filteredTx = safeAlpha * txDegrees + (1.0 - safeAlpha) * filteredTx;
+        }
+
+        lastValidTx = filteredTx;
+
         lastValidTimeMs = now;
     }
 
@@ -413,7 +416,7 @@ public class FSMShooter {
         double txToUse;
 
         if (llHasTarget) {
-            txToUse = txFilt;
+            txToUse = filteredTx;
         } else {
             long lostMs = now - lastValidTimeMs;
 
@@ -432,5 +435,18 @@ public class FSMShooter {
         int adjust = (int) Math.round(-1*txToUse * degToTicks);
         return Range.clip(adjust, -txMaxTicks, txMaxTicks);
     }
-     */
+    // =========================================================
+    // Get LimelightTxFOR LED
+
+    public double getLimelightTxForLED() {
+        if (!llHasTarget) {
+            return Double.NaN;
+        }
+
+        return filteredTx;
+    }
+
+    public boolean hasLimelightTarget() {
+        return llHasTarget;
+    }
 }

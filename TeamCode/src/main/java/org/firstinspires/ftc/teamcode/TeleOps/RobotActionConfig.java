@@ -50,7 +50,7 @@ public class RobotActionConfig {
 
     public static final double SPOOLUP_SEC              = 1.25;
     //shooter adjustor
-    public static double shooterAdjusterMax             = 0.47;
+    public static double shooterAdjusterMax             = 0.49;
     public static double shooterAdjusterMin             = 0.14; //new 0.14 ; old : 0.06
     public static double shooterAdjusterMid             = 0.35; //new 0.35
     public static double shooterFactorThreshold         = 0.95;
@@ -108,7 +108,8 @@ public class RobotActionConfig {
     public static double CLOSE                    = 57.0;
     public static double closeEdge                = 36.0;
 
-    public static double FAR_ZONE_CLOSE             = 120.0;
+    public static double FAR_ZONE_TOUCH             = 118.0;
+    public static double FAR_ZONE_CLOSE             = 125.0;
     public static double FAR_ZONE_MID               = 144;
     public static double FAR_ZONE_FAR               = 167.0;
 
@@ -116,11 +117,12 @@ public class RobotActionConfig {
     public static int RPM0            = 3700; ///all minus 200 rpm with upgraded hardware
     public static int RPM1            = 3150;
     public static int RPM2            = 3200;
-    public static int RPM3            = 3400;
-    public static int RPM4            = 3850;
-    public static int RPM5            = 4000;
-    public static int RPM6            = 4450;
-    public static int RPM7            = 4600;
+    public static int RPM3            = 3450;
+    public static int RPM4            = 3600;
+    public static int RPM5            = 3750;
+    public static int RPM6            = 4300;
+    public static int RPM7            = 4400;
+    public static int RPM8            = 4540;
 
     public static final double farPower                 = 0.78;     // 3920 - 0.8  @ 12.73
     public static final double midPower                 = 0.73;     // 3360 - 0.70 @ 12.82
