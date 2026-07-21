@@ -264,7 +264,13 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         // 8. LED STATUS (non-blocking)
         // =========================================================
-        updateLED();
+        // read each hardware/derived value once per loop and share it
+        // across LED status + telemetry instead of re-querying per use
+        int currentZone = shooterPowerAngleCalculator.getZone();
+        boolean hasTarget = limelight.llresult();
+        int turretCurrentTick = turret.getCurrentTick();
+        int turretTargetTick = turret.getTargetTick();
+        updateLED(currentZone, hasTarget, turretCurrentTick, turretTargetTick);
 
         // =========================================================
         // 9. TELEMETRY
@@ -272,7 +278,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         cachedPosition = robot.pinpoint.getPosition();
 
         runTimeTelemetry(
-                cachedPosition
+                cachedPosition, currentZone, turretCurrentTick, turretTargetTick
         );
         telemetry.addData("loopFreq", loopHz);
         telemetry.update();
@@ -436,18 +442,20 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         return false;
     }
     ///  - LED Update
-    private void updateLED() {
+    private void updateLED(int zone, boolean hasTarget, int turretCurrentTick, int turretTargetTick) {
 
-        if (shooterPowerAngleCalculator.getZone() == 0 && Math.abs(turret.getTargetTick() - turret.getCurrentTick())<10 && !limelight.llresult()) {
+        boolean turretAligned = Math.abs(turretTargetTick - turretCurrentTick) < 10;
+
+        if (zone == 0 && turretAligned && !hasTarget) {
             //Distance outside shooting zone and no limelight, white alert
             robot.LED.setPosition(1.0); // white colour
-        } else if (shooterPowerAngleCalculator.getZone() == 0 && limelight.llresult() && Math.abs(turret.getTargetTick() - turret.getCurrentTick())<10){
+        } else if (zone == 0 && hasTarget && turretAligned){
             robot.LED.setPosition(0.333); // orange
-        } else if (shooterPowerAngleCalculator.getZone() > 0 && limelight.llresult() && Math.abs(turret.getTargetTick() - turret.getCurrentTick())<10){
+        } else if (zone > 0 && hasTarget && turretAligned){
             robot.LED.setPosition(0.5); // green
-        } else if (shooterPowerAngleCalculator.getZone() > 0 && limelight.llresult() && Math.abs(turret.getTargetTick() - turret.getCurrentTick())>10) {
+        } else if (zone > 0 && hasTarget && !turretAligned) {
             robot.LED.setPosition(0.388); // yellow
-        } else if (shooterPowerAngleCalculator.getZone() > 0 && !limelight.llresult() && Math.abs(turret.getTargetTick() - turret.getCurrentTick())<10) {
+        } else if (zone > 0 && !hasTarget && turretAligned) {
             robot.LED.setPosition(0.288); // red
         } else { //Default black
             robot.LED.setPosition(0.0);
@@ -475,7 +483,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         lastLoopTime = now;
     }
 
-    public void runTimeTelemetry(Pose2D cachedPosition){
+    public void runTimeTelemetry(Pose2D cachedPosition, int zone, int turretCurrentTick, int turretTargetTick){
         //simplified telemetry for teleop
         if(telemeteryTimer.time()>telemetryInterval){
             telemetry.addData("loop frequency (Hz)", loopHz);
@@ -496,14 +504,14 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
             telemetry.addLine("\n---SHOOTER");
             telemetry.addData("ShooterState", FSMShooter.shooterState);
-            telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
+            telemetry.addData("Shooter Zone", zone);
             telemetry.addData("Shooter Target RPM",shooterPowerAngleCalculator.getRPM());
             telemetry.addData("Shooter actual RPM",shooterPowerAngleCalculator.getMeasureRPM());
 
             telemetry.addLine("\n---TURRET");
             telemetry.addData("Turret state", FSMShooter.turretState);
             telemetry.addData("Turret trim", FSMShooter.trim);
-            telemetry.addData("Turret error", turret.getCurrentTick()-turret.getTargetTick());
+            telemetry.addData("Turret error", turretCurrentTick-turretTargetTick);
 
             telemetry.addLine("\n---SPINDEXER");
             telemetry.addData("SD Current Pos", robot.spindexerServo.getPosition());
