@@ -55,13 +55,13 @@ public class AutoIntakeFSM {
 
         public void SpindexerRunTo(int slot) {
             if (slot == 0) {
-                robot.spindexerServo.setPosition(spindexerSlot1);
+                robot.spindexerServo.setPosition(spindexerSlot0);
             }
             if (slot == 1) {
-                robot.spindexerServo.setPosition(spindexerSlot2);
+                robot.spindexerServo.setPosition(spindexerSlot1);
             }
             if (slot == 2) {
-                robot.spindexerServo.setPosition(spindexerSlot3);
+                robot.spindexerServo.setPosition(spindexerSlot2);
             }
         }
 

@@ -96,19 +96,19 @@ public class AutoShooterFSM {
 
         public void SpindexerRunTo(int slot) {
             if (slot == 0) {
-                robot.spindexerServo.setPosition(spindexerSlot1);
+                robot.spindexerServo.setPosition(spindexerSlot0);
             }
             if (slot == 1) {
-                robot.spindexerServo.setPosition(spindexerSlot2);
+                robot.spindexerServo.setPosition(spindexerSlot1);
             }
             if (slot == 2) {
-                robot.spindexerServo.setPosition(spindexerSlot3);
+                robot.spindexerServo.setPosition(spindexerSlot2);
             }
             if (slot == 3){
-                robot.spindexerServo.setPosition(spindexerSlot4);
+                robot.spindexerServo.setPosition(spindexerSlot3);
             }
             if (slot == 4){
-                robot.spindexerServo.setPosition(spindexerSlot5);
+                robot.spindexerServo.setPosition(spindexerSlot4);
             }
             if (slot == 5) {
                 robot.spindexerServo.setPosition(spindexerFullPos);
@@ -269,22 +269,22 @@ public class AutoShooterFSM {
 
         public void SpindexerRunTo(int slot) {
             if (slot == 0) {
-                robot.spindexerServo.setPosition(spindexerSlot1);
+                robot.spindexerServo.setPosition(spindexerSlot0);
             }
             if (slot == 1) {
-                robot.spindexerServo.setPosition(spindexerSlot2);
+                robot.spindexerServo.setPosition(spindexerSlot1);
             }
             if (slot == 2) {
-                robot.spindexerServo.setPosition(spindexerSlot3);
+                robot.spindexerServo.setPosition(spindexerSlot2);
             }
             if (slot == 3){
-                robot.spindexerServo.setPosition(spindexerSlot4);
+                robot.spindexerServo.setPosition(spindexerSlot3);
             }
             if (slot == 4){
-                robot.spindexerServo.setPosition(spindexerSlot5);
+                robot.spindexerServo.setPosition(spindexerSlot4);
             }
             if (slot == 5) {
-                robot.spindexerServo.setPosition(spindexerSlot6);
+                robot.spindexerServo.setPosition(spindexerSlot5);
             }
             if (slot == 6) {
                 robot.spindexerServo.setPosition(spindexerFullPos);

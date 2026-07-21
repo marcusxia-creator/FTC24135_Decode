@@ -41,10 +41,10 @@ public class RobotDrive {
 
     private double rotate_Slowness = 0.75;
 
-    private final SlewRateLimiter frontLeftLimiter = new SlewRateLimiter(0.2,0.45);
-    private final SlewRateLimiter frontRightLimiter = new SlewRateLimiter(0.2,0.45);
-    private final SlewRateLimiter backLeftLimiter = new SlewRateLimiter(0.2,0.45);
-    private final SlewRateLimiter backRightLimiter = new SlewRateLimiter(0.2,0.45);
+    private final SlewRateLimiter frontLeftLimiter = new SlewRateLimiter(0.2,0.65);
+    private final SlewRateLimiter frontRightLimiter = new SlewRateLimiter(0.2,0.65);
+    private final SlewRateLimiter backLeftLimiter = new SlewRateLimiter(0.2,0.65);
+    private final SlewRateLimiter backRightLimiter = new SlewRateLimiter(0.2,0.65);
 
     public RobotDrive(RobotHardware robot, GamepadComboInput gamepadComboInput) {
         this.robot = robot;

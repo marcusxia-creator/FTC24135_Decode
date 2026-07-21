@@ -58,7 +58,7 @@ public class RedSideClose12SortedAuto extends LinearOpMode {
         aprilTagDetection.limelightStart();
 
         if (opModeInInit()) {
-            Actions.runBlocking(turret.TurretRun(175));
+            Actions.runBlocking(turret.TurretRun(167));
             robot.spindexerServo.setPosition(spindexerSlot1);
             robot.kickerServo.setPosition(kickerRetract);
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
