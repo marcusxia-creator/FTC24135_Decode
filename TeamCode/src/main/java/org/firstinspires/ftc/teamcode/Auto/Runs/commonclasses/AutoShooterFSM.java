@@ -215,11 +215,11 @@ public class AutoShooterFSM {
     }
 
     public Action ShootFarZone(double ShotPower, double ShooterWaitTime, ShooterRapidRunMode.SHOOTERSTATE startingState, ShooterRapidRunMode.SHOOTERSTATE endState){
-        return new ShooterRapidRunMode(robot, startingState, endState, ShotPower,0.28,ShooterWaitTime, spindexerContext);
+        return new ShooterRapidRunMode(robot, startingState, endState, ShotPower,0.4,ShooterWaitTime, spindexerContext);
     }
 
     public Action ShootCloseZone(double ShotPower, double ShooterWaitTime, ShooterRapidRunMode.SHOOTERSTATE startingState, ShooterRapidRunMode.SHOOTERSTATE endState){
-        return new ShooterRapidRunMode(robot, startingState, endState, ShotPower,0.12,ShooterWaitTime, spindexerContext);
+        return new ShooterRapidRunMode(robot, startingState, endState, ShotPower,0.15,ShooterWaitTime, spindexerContext);
     }
 
     ///Shooter Sorting Run Mode
@@ -299,7 +299,7 @@ public class AutoShooterFSM {
                     spindexerContext.updateShootingInitSlot();
                     sortingStartingSlot = spindexerContext.getShootingInitSlot();
                     targetSlot = sortingStartingSlot;
-                    SpindexerRunTo(targetSlot);
+                    SpindexerRunTo(sortingStartingSlot);
                     shooterTimer.reset();
                     stateTimer.reset();
                     currentState = SORTINGSHOOTERSTATE.SORTINGSHOOTER_RUN;

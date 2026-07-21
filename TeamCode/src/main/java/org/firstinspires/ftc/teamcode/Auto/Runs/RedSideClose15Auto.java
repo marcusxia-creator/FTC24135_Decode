@@ -58,7 +58,7 @@ public class RedSideClose15Auto extends LinearOpMode {
         aprilTagDetection.limelightStart();
 
         if (opModeInInit()) {
-            Actions.runBlocking(turret.TurretRun(155));
+            Actions.runBlocking(turret.TurretRun(45));
             robot.spindexerServo.setPosition(spindexerSlot1);
             robot.kickerServo.setPosition(kickerRetract);
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
@@ -81,9 +81,7 @@ public class RedSideClose15Auto extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position4_X,Close_IntakeSet2Position4_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot2Builder = IntakeSet1Drive1Builder.endTrajectory().fresh()
-                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position1_X,Close_IntakeSet2Position1_Y),Math.toRadians(-90))
-                .setTangent(-90)
-                .splineToConstantHeading(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(-120));
+                .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder IntakeGateSet1Drive1Builder = DriveToShoot2Builder.endTrajectory().fresh()
                 .setTangent(Math.toRadians(180-GateIntakePosition_Heading))
@@ -106,7 +104,7 @@ public class RedSideClose15Auto extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(IntakeSet3Position4_X,IntakeSet3Position4_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder DriveToShoot5Builder = IntakeSet2Drive1Builder.endTrajectory().fresh()
-                .splineToConstantHeading(
+                .strafeToLinearHeading(
                         new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y),
                         Math.toRadians(CloseShootingPosition_Heading)
                 );
