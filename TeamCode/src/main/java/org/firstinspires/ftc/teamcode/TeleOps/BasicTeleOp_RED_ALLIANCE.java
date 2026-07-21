@@ -554,7 +554,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                 "X: %.2f  Y: %.2f  H: %.1f°",
                 xIn, yIn, headingDeg
         );
-        telemetry.addData("Starting Pose",PoseStorage.currentPose);
+        //telemetry.addData("Starting Pose",PoseStorage.currentPose);
 
 
         telemetry.addData("distance to goal", "%,.0f",shooterPowerAngleCalculator.getDistance());

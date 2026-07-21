@@ -21,6 +21,7 @@ public class RobotActionConfig {
     public static double spindexerSlot4     = 0.675;
     public static double spindexerSlot5     = 0.83899857;
     public static double spindexerSlot6     = 1.0;  //六七
+    public static double spindexerFullPos     = 1.0;  //六七
     public static double[] spindexerSlots   = {spindexerSlot0, spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5, spindexerSlot6};
 
     //Special Spindexer Positions
