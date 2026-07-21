@@ -101,6 +101,7 @@ public class FSMShooter {
         shootermotorstate = SHOOTERMOTORSTATE.STOP;
         turretState = TURRETSTATE.AIMING;
         trim =0;
+        loopTimer = new ElapsedTime();
     }
 
 
@@ -110,6 +111,7 @@ public class FSMShooter {
         // Set shooter power
         //==========================================================
         voltage = robot.getBatteryVoltageRobust();
+
         /// shooter motor power controller
         power = shooterPowerLUT.getPower(); //get shooter power based on distance Zone and PID+FF power, shooterPowerAngleCalculator.getPower();
         double rpm = shooterPowerLUT.getRPM();
