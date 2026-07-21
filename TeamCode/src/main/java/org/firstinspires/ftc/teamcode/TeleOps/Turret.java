@@ -85,6 +85,8 @@ public class Turret {
     public static double MPmaxDeltaT=20;//max change in target value, to filter out erroneous target tick changes
     int lastTargetTick = 0;//to find dT_t/dt
 
+    
+
     public Turret (RobotHardware robot, boolean isRedAlliance) {
         this.robot = robot;
         pidController = new PIDController(kPTurret, kITurret, kDTurret);
