@@ -136,14 +136,20 @@ public class TurretTestTeleOp extends OpMode {
         switch(mode){
             case MANUAL:
                 robot.turretMotor.setPower(gamepad_1.getLeftX());
+                break;
+
             case PID:
                 turret.driveTurretPID(currentTick,targetTick,loopTime);
                 turret.updatePidFromDashboard();
                 break;
+
             case MOTIONPROFILE:
                 turret.driveTurretMP(currentTick,targetTick,loopTime);
                 break;
+
+            case LIMELIGHT:
                 //Limelight not implemented
+                break;
         }
         updateLoopFrequency();
         writeTelemetry();

@@ -40,7 +40,7 @@ public class Turret {
     //kp 0.004
     //ks 0.0001
     //kv 0.005
-    public static double kPTurret = 0.0055, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.01, kVTurret = 0.00; // turret motor drive pidcontroller
+    public static double kPTurret = 0.0055, kITurret = 0, kDTurret = 0.0003, kSTurret = 0.01, kVTurret = 0.001; // turret motor drive pidcontroller
     public static double kP_motor = 20, kI_motor = 0, kD_motor = 0.01, kF = 2; // turret motor pidf
     public static double staticFThreshold=2; //The velocity threshold at which the turret is considered stationary
     private final double THETA = Math.atan(turret_Center_Y_Offset / turret_Center_X_Offset);
@@ -81,6 +81,7 @@ public class Turret {
     public static double MPaccel=3000; //Acceleration when accelerationg
     public static double MPdecel=3000; //Acceleration when decelerating
     public static double MPmaxSpeed=800; //Max speed to request of the motor in ticks/s, excluding derivative
+    public static double MPKv=2; //Factor for Kv correction
     public static double MPtickTime=0.0067;//Usual time/tick for derivative, switch to timer if possible
     public static double MPmaxDeltaT=20;//max change in target value, to filter out erroneous target tick changes
     int lastTargetTick = 0;//to find dT_t/dt
@@ -160,7 +161,7 @@ public class Turret {
         double vel=robot.turretMotor.getVelocity();
         // Feedforward should NOT be based on absolute targetTicks (too large).
         // Use direction + error assist.
-        double ff = Math.abs(vel)>=staticFThreshold?(kSTurret * Math.signum(errorTicks)) + (kVTurret * dTt):0;
+        double ff = (Math.abs(vel)>=staticFThreshold?(kSTurret * Math.signum(errorTicks)):0) + (kVTurret * dTt);
         double power = pidController.calculate(currentTick, targetTick);
         double output = power + ff;
         robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
@@ -175,8 +176,8 @@ public class Turret {
 
         double deltaTt=targetTick-lastTargetTick;
         double tTvel=(deltaTt)/loopTime;
-        double derivativeCorrection = (Math.abs(deltaTt)<MPmaxDeltaT)?tTvel:0;
-        robot.turretMotor.setVelocity(profileDirection*profileSpeed+derivativeCorrection);
+        double derivativeCorrection = (Math.abs(deltaTt)<MPmaxDeltaT)?tTvel*MPKv:0;
+        robot.turretMotor.setVelocity((profileDirection*profileSpeed)+derivativeCorrection);
         lastTargetTick=targetTick;
     }
 
