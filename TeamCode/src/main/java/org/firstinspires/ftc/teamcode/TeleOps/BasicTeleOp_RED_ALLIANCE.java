@@ -450,7 +450,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             //Distance outside shooting zone and no limelight, white alert
             robot.LED.setPosition(1.0); // white colour
         } else if (zone == 0 && hasTarget && turretAligned){
-            robot.LED.setPosition(0.333); // orange
+            robot.LED.setPosition(0.722); // orange
         } else if (zone > 0 && hasTarget && turretAligned){
             robot.LED.setPosition(0.5); // green
         } else if (zone > 0 && hasTarget && !turretAligned) {
