@@ -137,9 +137,9 @@ public class RobotActionConfig {
     public static double turretKI = 0.0;
     public static double turretKD = 0.0001;
 
-    public static double turretKS = 0.05;
-    public static double turretKV = 0.0002;
-    public static double turretKA = 0.00001;
+    public static double turretKS = 0.01;
+    public static double turretKV = 0.002;
+    public static double turretKA = 0.0001;
 
     public static double turretMaxVelocity = 1000.0;
     public static double turretMaxAcceleration = 2000.0;
