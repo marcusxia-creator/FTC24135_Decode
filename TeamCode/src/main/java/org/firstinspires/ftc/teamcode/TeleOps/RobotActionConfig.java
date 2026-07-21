@@ -101,28 +101,28 @@ public class RobotActionConfig {
     public static final Pose2D blueCloseGoalPose        = new Pose2D(DistanceUnit.INCH, -60, -64, AngleUnit.DEGREES, 0);
     public static final Pose2D blueFarGoalPose          = new Pose2D(DistanceUnit.INCH, -66, -62, AngleUnit.DEGREES, 0);
 
-    public static double FAR_EDGE                 = 105.0;
-    public static double FAR                      = 92.0;
-    public static double MidPoint                 = 82.0;
-    public static double MID                      = 68.0; ///72.0
-    public static double CLOSE                    = 57.0;
-    public static double closeEdge                = 36.0;
+    public static double FAR_EDGE                       = 105.0;
+    public static double FAR                            = 92.0;
+    public static double MidPoint                       = 82.0;
+    public static double MID                            = 68.0; ///72.0
+    public static double CLOSE                          = 57.0;
+    public static double closeEdge                      = 36.0;
 
-    public static double FAR_ZONE_TOUCH             = 118.0;
-    public static double FAR_ZONE_CLOSE             = 125.0;
-    public static double FAR_ZONE_MID               = 144;
-    public static double FAR_ZONE_FAR               = 167.0;
+    public static double FAR_ZONE_TOUCH                     = 118.0;
+    public static double FAR_ZONE_CLOSE                 = 125.0;
+    public static double FAR_ZONE_MID                   = 144;
+    public static double FAR_ZONE_FAR                   = 167.0;
 
-    public static double RPMFactor    = 1.0;
-    public static int RPM0            = 3700; ///all minus 200 rpm with upgraded hardware
-    public static int RPM1            = 3150;
-    public static int RPM2            = 3200;
-    public static int RPM3            = 3450;
-    public static int RPM4            = 3600;
-    public static int RPM5            = 3750;
-    public static int RPM6            = 4300;
-    public static int RPM7            = 4400;
-    public static int RPM8            = 4540;
+    public static double RPMFactor                      = 1.0;
+    public static int RPM0                              = 3700; ///all minus 200 rpm with upgraded hardware
+    public static int RPM1                              = 3150;
+    public static int RPM2                              = 3200;
+    public static int RPM3                              = 3450;
+    public static int RPM4                              = 3600;
+    public static int RPM5                              = 3750;
+    public static int RPM6                              = 4300;
+    public static int RPM7                              = 4400;
+    public static int RPM8                              = 4540;
 
     public static final double farPower                 = 0.78;     // 3920 - 0.8  @ 12.73
     public static final double midPower                 = 0.73;     // 3360 - 0.70 @ 12.82
@@ -142,4 +142,5 @@ public class RobotActionConfig {
     public static final double trimStep                 = 10;
     public static final double adjSpeed                 = 1500;
     public static final double pressTime                = 0.2;
+    public static double telemetryInterval              = 0.1;
 }

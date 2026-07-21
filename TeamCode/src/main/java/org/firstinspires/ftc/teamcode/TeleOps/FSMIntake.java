@@ -36,18 +36,15 @@ public class FSMIntake {
     public static ElapsedTime intakeTimer = new ElapsedTime();
 
     private final RobotHardware robot;
-    private final GamepadEx gamepad_1;
-    private final GamepadEx gamepad_2;
+
     private double intakeRPM;
     private boolean reversing = false;
     private boolean stopMoveRequested = false;
 
     boolean recorded;
 
-    public FSMIntake(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot) {
+    public FSMIntake(RobotHardware robot) {
         this.robot = robot;
-        this.gamepad_1 = gamepad_1;
-        this.gamepad_2 = gamepad_2;
     }
 
     public void loop() {

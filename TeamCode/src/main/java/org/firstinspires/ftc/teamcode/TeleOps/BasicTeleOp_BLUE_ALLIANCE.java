@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.SHOOTER_R
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerRetract;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.telemetryInterval;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -25,6 +26,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
+
 
 /**
  * Making the sequence shooting go slot 5-4-3 (intaking) 3-2-1 (shooting)
@@ -84,7 +86,6 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
 
     /// for dashboard
     public static double shooterRPM;
-    public static int shooterTargetRPM;
 
     ///efficient telemetry
     public static double telemetryInterval;
@@ -97,6 +98,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     private double battertVoltage;
     private Pose2D cachedPosition;
     private static double shooterMeasuredRPM;
+    private int shooterTargetRPM;
     private double targetAngle;
 
     /// ----------------------------------------------------------------
@@ -104,6 +106,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     public void init() {
         /// For telemetry
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        telemetryInterval = telemetryInterval;
         /// For robot hardware initialization
         robot = new RobotHardware(hardwareMap);
         robot.init();                       //Initialize all motors and servos
@@ -143,7 +146,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         FSMShooter.Init();
 
         /// 5. intake------------------------------------------------------------
-        FSMIntake = new FSMIntake(gamepadCo1, gamepadCo2, robot);
+        FSMIntake = new FSMIntake(robot);
 
         /// 7. alliance selection-----------------------------------------------------------
         alliance = Alliance.BLUE_ALLIANCE;
@@ -280,7 +283,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         // =========================================================
         cachedPosition = robot.pinpoint.getPosition();
         currentDistance = shooterPowerAngleCalculator.getDistance();
-        battertVoltage = robot.getBatteryVoltageRobust();
+        //battertVoltage = robot.getBatteryVoltageRobust();
         shooterMeasuredRPM = shooterPowerAngleCalculator.getMeasureRPM();
         shooterTargetRPM = shooterPowerAngleCalculator.getRPM();
 
@@ -497,7 +500,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
                     cachedPosition.getY(DistanceUnit.INCH),
                     cachedPosition.getHeading(AngleUnit.DEGREES)
             );
-            telemetry.addData("Dist_to_Goal", "%,.0f"，currentDistance);
+            telemetry.addData("Dist_to_Goal","%,.0f",currentDistance);
 
             telemetry.addLine("\n---INTAKE");
             telemetry.addData("Intake State", FSMIntake.intakeStates);
@@ -567,7 +570,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
                 "X: %.2f  Y: %.2f  H: %.1f°",
                 pose.getX(DistanceUnit.INCH), pose.getY(DistanceUnit.INCH), headingDeg
         );
-        telemetry.addData("distance to goal", "%,.0f",currentDistance);
+        telemetry.addData("distance to goal","%,.0f",currentDistance);
         telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
         telemetry.addLine("Turret-----------------------------------");
         telemetry.addData("turret target angle", turret.getTargetAngle());

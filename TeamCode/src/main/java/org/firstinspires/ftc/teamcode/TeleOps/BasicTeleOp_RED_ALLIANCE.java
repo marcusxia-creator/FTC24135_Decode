@@ -93,12 +93,14 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private Pose2D cachedPosition;
     private double shooterMeasuredRPM;
     private int shooterTargetRPM;
+    private double targetAngle;
 
     /// ----------------------------------------------------------------
     @Override
     public void init() {
         /// For telemetry
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        telemetryInterval = RobotActionConfig.telemetryInterval;
         /// For robot hardware initialization
         robot = new RobotHardware(hardwareMap);
         robot.init();                       //Initialize all motors and servos
@@ -139,7 +141,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         FSMShooter.Init();
 
         /// 5. intake------------------------------------------------------------
-        FSMIntake = new FSMIntake(gamepadCo1, gamepadCo2, robot);
+        FSMIntake = new FSMIntake(robot);
 
         /// 7. alliance selection-----------------------------------------------------------
         alliance = Alliance.RED_ALLIANCE;
@@ -152,6 +154,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.shooterAdjusterServo.setPosition(0.48);
 
         robot.kickerServo.setPosition(kickerRetract);
+
+        
 
     }
 
@@ -269,18 +273,19 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         int currentZone = shooterPowerAngleCalculator.getZone();
         int turretCurrentTick = turret.getCurrentTick();
         int turretTargetTick = turret.getTargetTick();
-        currentDistance = shooterPowerAngleCalculator.getDistance();
         currentTx = FSMShooter.getLimelightTxForLED();
-
-        battertVoltage = robot.getBatteryVoltageRobust();
-        shooterMeasuredRPM = shooterPowerAngleCalculator.getMeasureRPM();
-        shooterTargetRPM = shooterPowerAngleCalculator.getRPM();
         updateLED(currentTx);
 
         // =========================================================
         // 9. TELEMETRY
         // =========================================================
         cachedPosition = robot.pinpoint.getPosition();
+        currentDistance = shooterPowerAngleCalculator.getDistance();
+        //battertVoltage = robot.getBatteryVoltageRobust();
+        shooterMeasuredRPM = shooterPowerAngleCalculator.getMeasureRPM();
+        shooterTargetRPM = shooterPowerAngleCalculator.getRPM();
+
+        targetAngle = turret.getTurretDriveAngle();
 
         // runTimeTelemetry() calls telemetry.update() itself once telemetryInterval
         // elapses — don't call it again here or telemetry.update() (which pushes to
@@ -494,7 +499,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                     cachedPosition.getY(DistanceUnit.INCH),
                     cachedPosition.getHeading(AngleUnit.DEGREES)
             );
-            telemetry.addData("Dist_to_Goal", currentDistance);
+            telemetry.addData("Dist_to_Goal","%,.0f",currentDistance);
 
             telemetry.addLine("\n---INTAKE");
             telemetry.addData("Intake State", FSMIntake.intakeStates);
