@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.util.LUT;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -14,12 +12,9 @@ public class FSMShooter {
     private final RobotHardware robot;
     private final GamepadComboInput gamepadComboInput;
     private LUTPowerCalculator shooterPowerLUT;
-    private final GamepadEx gamepad_1;
-    private final GamepadEx gamepad_2;
 
     private ElapsedTime shootTimer = new ElapsedTime();
     private ElapsedTime flyWheelTimer = new ElapsedTime();
-    private ElapsedTime debounceTimer = new ElapsedTime();
 
     public static SHOOTERSTATE shooterState;
     SHOOTERMOTORSTATE shootermotorstate;
@@ -43,7 +38,7 @@ public class FSMShooter {
 
     private long waitTimeMS = 350;
 
-    private boolean LRTriggerBoolean = false;
+    private boolean txAssistEngaged = false;
 
     public double trim;
 
@@ -63,7 +58,7 @@ public class FSMShooter {
     // Dashboard Limelight tuning
     // =========================================================
 
-    public static double degToTicks = 2.5;
+    public static double txdegToTicks = 2.4; //
     public static int txMaxTicks = 50;
     public static double txDeadbandDeg = 3.0;
 
@@ -72,6 +67,8 @@ public class FSMShooter {
     public static long txHoldMs = 120;
     public static long txFadeMs = 200;
 
+    public static int txAssistEngageTicks = 13;
+    public static int txAssistDisengageTicks = 15;
 
 
     /**
@@ -106,11 +103,9 @@ public class FSMShooter {
     }
 
     //Constructor
-    public FSMShooter(GamepadEx gamepad_1, GamepadEx gamepad_2, RobotHardware robot,
+    public FSMShooter(RobotHardware robot,
                       LUTPowerCalculator shooterPowerLUT,
                       GamepadComboInput gamepadComboInput, Turret turret, Limelight limelight) {
-        this.gamepad_1 = gamepad_1;
-        this.gamepad_2 = gamepad_2;
         this.robot = robot;
         this.shooterPowerLUT = shooterPowerLUT;
         this.gamepadComboInput = gamepadComboInput;
@@ -140,7 +135,6 @@ public class FSMShooter {
         //==========================================================
         // Set shooter power
         //==========================================================
-        voltage = robot.getBatteryVoltageRobust();
 
         /// shooter motor power controller
         power = shooterPowerLUT.getPower(); //get shooter power based on distance Zone and PID+FF power, shooterPowerAngleCalculator.getPower();
@@ -189,13 +183,29 @@ public class FSMShooter {
                 trimInput-=1;
             }
             trim=Range.clip(trim +trimInput*trimStep,-400,400);
+
             // tx from limelight
             int txAdjustTicks =
                     getTxAdjustTicks();
 
             int currentTick = turret.getCurrentTick();
-            int targetTick = (int) (turret.getTargetTick() + trim + txAdjustTicks);
+            int baseTargetTick = (int) (turret.getTargetTick() + trim);
+            int tickError = Math.abs(baseTargetTick - currentTick);
 
+            // Hysteresis: only start tx-assist once close in (engage), and only
+            // drop it if it drifts well past that point (disengage) — prevents
+            // chatter right at the boundary between coarse and fine aiming.
+            if (txAssistEngaged) {
+                if (tickError > txAssistDisengageTicks) {
+                    txAssistEngaged = false;
+                }
+            } else {
+                if (tickError <= txAssistEngageTicks) {
+                    txAssistEngaged = true;
+                }
+            }
+
+            int targetTick = txAssistEngaged ? baseTargetTick + txAdjustTicks : baseTargetTick;
 
             turret.driveTurretPID(currentTick, targetTick, loopTimer.seconds());
             loopTimer.reset();
@@ -323,9 +333,7 @@ public class FSMShooter {
     //============================================================
 
     public void turretStateUpdate() {
-        if (((gamepad_1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.7 && gamepad_1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.7))
-        || (gamepad_2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.7 && gamepad_2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.7) && isButtonDebounced() && !LRTriggerBoolean) {
-            LRTriggerBoolean = !LRTriggerBoolean;
+        if (gamepadComboInput.getBothTriggersRisingEdgeAny()) {
             if (turretState == TURRETSTATE.LOCKING){
                 turretState =  TURRETSTATE.AIMING;
             } else{
@@ -365,14 +373,6 @@ public class FSMShooter {
 
     public double getPower() {
         return power;
-    }
-
-    public boolean isButtonDebounced() {
-        if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
-            debounceTimer.reset();
-            return true;
-        }
-        return false;
     }
 
     //=========================================================
@@ -432,7 +432,7 @@ public class FSMShooter {
 
         if (Math.abs(txToUse) < txDeadbandDeg) txToUse = 0.0;
 
-        int adjust = (int) Math.round(-1*txToUse * degToTicks);
+        int adjust = (int) Math.round(-1*txToUse * txdegToTicks);
         return Range.clip(adjust, -txMaxTicks, txMaxTicks);
     }
     // =========================================================

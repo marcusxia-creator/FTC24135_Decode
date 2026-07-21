@@ -59,7 +59,6 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
     private RobotDrive robotDrive;
     FSMShooter FSMShooter;
     FSMIntake FSMIntake;
-    //private TurretUpd turret;
     private Turret turret;
     public Limelight limelight;
     /// ----------------------------------------------------------------
@@ -133,14 +132,13 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         limelight.start();
 
         /// 3. turret---------------------------------------------------------------
-        //turret = new TurretUpd(robot);
         turret = new Turret(robot, false);
 
         /// 4.1. power calculator for shooter------------------------------------------------------------
         shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
 
         /// 4. shooter-------------------------------------------------------------
-        FSMShooter = new FSMShooter(gamepadCo1, gamepadCo2, robot, shooterPowerAngleCalculator, gamepadComboInput, turret, limelight);
+        FSMShooter = new FSMShooter(robot, shooterPowerAngleCalculator, gamepadComboInput, turret, limelight);
         FSMShooter.Init();
 
         /// 5. intake------------------------------------------------------------
@@ -271,7 +269,6 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         // read each hardware/derived value once per loop and share it
         // across LED status + telemetry instead of re-querying per use
         int currentZone = shooterPowerAngleCalculator.getZone();
-        boolean hasTarget = limelight.llresult();
         int turretCurrentTick = turret.getCurrentTick();
         int turretTargetTick = turret.getTargetTick();
         currentDistance = shooterPowerAngleCalculator.getDistance();
@@ -287,10 +284,12 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         // =========================================================
         cachedPosition = robot.pinpoint.getPosition();
 
+        // runTimeTelemetry() calls telemetry.update() itself once telemetryInterval
+        // elapses — don't call it again here or telemetry.update() (which pushes to
+        // both Driver Station and FTC Dashboard) runs unthrottled every loop.
         runTimeTelemetry(
                 cachedPosition, currentZone, turretCurrentTick, turretTargetTick
         );
-        telemetry.update();
     }
 
     @Override
@@ -407,22 +406,17 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
 
     private void buttonUpdate() {
         boolean ShootPressed =
-                (gamepadCo1.getButton(GamepadKeys.Button.X) || gamepadCo2.getButton(GamepadKeys.Button.X))
-                        && isButtonDebounced();
+                (gamepadComboInput.getXPressedAny());
         boolean intakePressed =
-                (gamepadCo1.getButton(GamepadKeys.Button.DPAD_LEFT) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_LEFT))
-                        && isButtonDebounced();
+                (gamepadComboInput.getDpadLeftPressedAny());
         boolean reversePressed =
-                (gamepadCo1.getButton(GamepadKeys.Button.DPAD_RIGHT) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_RIGHT))
-                        && isButtonDebounced();
+                (gamepadComboInput.getDpadRightPressedAny());
         boolean idlePressed =
-                (gamepadCo1.getButton(GamepadKeys.Button.B) || gamepadCo2.getButton(GamepadKeys.Button.B))
-                        && isButtonDebounced();
+                (gamepadComboInput.getBPressedAny());
         boolean dpDown =
-                ((gamepadCo1.getButton(GamepadKeys.Button.DPAD_DOWN) || gamepadCo2.getButton(GamepadKeys.Button.DPAD_DOWN))
-                        && isButtonDebounced());
+                (gamepadComboInput.getDpadDownPressedAny());
         boolean turretReset =
-                ((gamepadComboInput.getDriverBackSinglePressed()));
+                (gamepadComboInput.getDriverBackSinglePressed());
 
         boolean sortPressed = gamepadComboInput.getOperatorLbXComboPressed(); // combo - LB+X for sorted shooting. Assume this is edge-based already
         if (ShootPressed) requestedActionState = RobotActionState.Shooting;

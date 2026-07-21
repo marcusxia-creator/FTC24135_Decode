@@ -88,7 +88,7 @@ public class Turret {
     public Turret (RobotHardware robot, boolean isRedAlliance) {
         this.robot = robot;
         pidController = new PIDController(kPTurret, kITurret, kDTurret);
-        pidController.setTolerance(5.0);
+        pidController.setTolerance(3.0);
 
 
         // Set motor PIDF once using your existing pidf field

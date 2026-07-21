@@ -23,6 +23,12 @@ public class LUTPowerCalculator {
     private double distance;
     private int zone = 0;
 
+    // updateDistanceAndZone() is called from getPower(), getShooterAngle(), and
+    // getDistance() — all invoked within the same loop tick. Guard against
+    // recomputing the same pinpoint-derived distance/zone 2-3x per tick.
+    private long lastZoneComputeNanos = -1;
+    private static final long ZONE_RECOMPUTE_GUARD_NANOS = 1_000_000; // 1ms
+
     public static final double tickToRPM = SHOOTER_RPM_CONVERSION;
     private final int maxVelocityRPM = shooterMaxRPM;
 
@@ -144,7 +150,6 @@ public class LUTPowerCalculator {
     }
 
     public double getDistance(){
-        updateDistanceAndZone();
         return distance;
     }
 
@@ -158,7 +163,6 @@ public class LUTPowerCalculator {
 
     public double getShooterAngle() {
         ///int safeZone = Math.max(0, Math.min(zone, 3));
-        updateDistanceAndZone();
         return Optional.ofNullable(targetShootingAngle.get(zone)).orElse(shooterAdjusterMax);
     }
 

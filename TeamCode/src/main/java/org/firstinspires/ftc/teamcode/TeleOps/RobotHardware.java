@@ -122,6 +122,13 @@ public class RobotHardware {
     public  double vMinAccept = 10.5;            // discard anything below this as junk
     public  double vDefault   = 12.0;           // fallback
 
+    // Throttle for getBatteryVoltageRobust(): voltage sensor reads are live,
+    // blocking hub commands (not covered by clearBulkCache()), and battery
+    // voltage doesn't need re-reading every loop tick.
+    private final List<Double> voltageReadBuffer = new ArrayList<>();
+    private long lastVoltageReadMs = 0;
+    private static final long VOLTAGE_READ_INTERVAL_MS = 250;
+
     public RobotHardware(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap; // store the hardwareMap reference
         /**Set up motors**/
@@ -257,12 +264,18 @@ public class RobotHardware {
     }
 
     public double getBatteryVoltageRobust() {
-        List<Double> vals = new ArrayList<>();
+        long now = System.currentTimeMillis();
+        if (now - lastVoltageReadMs < VOLTAGE_READ_INTERVAL_MS) {
+            return vEma;   // reuse last reading — voltage sensor reads are live hub commands
+        }
+        lastVoltageReadMs = now;
+
+        voltageReadBuffer.clear();
         for (VoltageSensor vs : voltageSensors) {
             double v = vs.getVoltage();
-            if (v > vMinAccept) vals.add(v);        // keep plausible readings only
+            if (v > vMinAccept) voltageReadBuffer.add(v);   // keep plausible readings only
         }
-        double vMed = vals.isEmpty() ? vDefault : median(vals);
+        double vMed = voltageReadBuffer.isEmpty() ? vDefault : median(voltageReadBuffer);
         // EMA smoothing
         vEma = vAlpha * vMed + (1.0 - vAlpha) * vEma;
         return vEma;

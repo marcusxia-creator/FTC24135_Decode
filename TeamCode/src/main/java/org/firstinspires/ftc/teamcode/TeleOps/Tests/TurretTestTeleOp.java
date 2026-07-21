@@ -31,7 +31,6 @@ import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
 import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.Turret;
-import org.firstinspires.ftc.teamcode.TeleOps.TurretUpd;
 
 @Config
 @TeleOp (name = "turretTestTeleop", group = "org.firstinspires.ftc.teamcode")
