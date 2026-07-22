@@ -36,6 +36,9 @@ public class Turret {
     private final double angleToTick = 1.0 / tickToAngle;
     private double conversionFactor = 39.3700787;
 
+    private double turretDriveAngle;
+    private double getTurretMotorAngle;
+
     //0.00001 0 0.005 0.2 2
     //kp 0.004
     //ks 0.0001

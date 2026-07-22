@@ -13,7 +13,6 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -36,8 +35,6 @@ import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 @Config
 @TeleOp(name = "---------RED--🐧----------", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOp_RED_ALLIANCE extends OpMode {
-
-
     /// Enum states for robot action state
     public enum RobotActionState {
         Shooting,
@@ -91,7 +88,12 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private Pose2D cachedPosition;
     private double shooterMeasuredRPM;
     private int shooterTargetRPM;
-    private double targetAngle;
+    private double turretDriveAngle;
+    private int turretCurrentTick;
+    private int turretTargetTick;
+    private double turretTargetAngle;
+    private double turretMotorAngle;
+
 
     /// ----------------------------------------------------------------
     @Override
@@ -268,9 +270,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         // read each hardware/derived value once per loop and share it
         // across LED status + telemetry instead of re-querying per use
-        int currentZone = shooterPowerAngleCalculator.getZone();
-        int turretCurrentTick = turret.getCurrentTick();
-        int turretTargetTick = turret.getTargetTick();
+        currentZone = shooterPowerAngleCalculator.getZone();
         currentTx = FSMShooter.getLimelightTxForLED();
         updateLED(currentTx);
 
@@ -283,14 +283,21 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         shooterMeasuredRPM = shooterPowerAngleCalculator.getMeasureRPM();
         shooterTargetRPM = shooterPowerAngleCalculator.getRPMTarget();
 
-        targetAngle = turret.getTurretDriveAngle();
+        turretCurrentTick = turret.getCurrentTick();
+        turretTargetTick = turret.getTargetTick();
+        turretDriveAngle = turret.getTurretDriveAngle();
+        turretTargetAngle = turret.getTargetAngle();
+        turretMotorAngle = turret.getTurretMotorAngle();
 
         // runTimeTelemetry() calls telemetry.update() itself once telemetryInterval
         // elapses — don't call it again here or telemetry.update() (which pushes to
         // both Driver Station and FTC Dashboard) runs unthrottled every loop.
+        /**
         runTimeTelemetry(
                 cachedPosition, currentZone, turretCurrentTick, turretTargetTick
         );
+         */
+        debugTelemetry();
     }
 
     @Override
@@ -534,7 +541,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         double headingDeg = Math.toDegrees(pose.getHeading(AngleUnit.RADIANS));
 
         telemetry.addData("loop frequency (Hz)", loopHz);
-        telemetry.addData("voltage from robot", robot.getBatteryVoltageRobust());
         telemetry.addLine("-----");
         telemetry.addData("Action State", actionStates);
         telemetry.addData("Requested", requestedActionState);
@@ -554,9 +560,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("shooter power calculator", FSMShooter.getPower());
         telemetry.addData("Shooter Power", robot.topShooterMotor.getPower());
         telemetry.addData("voltage from Shooter", FSMShooter.getVoltage());
-        telemetry.addData("power set point", FSMShooter.getPower_setpoint());
-        telemetry.addData("Shooter Target RPM",shooterPowerAngleCalculator.getRPMTarget());
-        telemetry.addData("Shooter actual RPM","%,.0f",shooterPowerAngleCalculator.getMeasureRPM());
+        telemetry.addData("Shooter Target RPM",shooterTargetRPM);
+        telemetry.addData("Shooter actual RPM","%,.0f",shooterMeasuredRPM);
         telemetry.addLine("-----");
         telemetry.addData("Alliance", alliance);
         telemetry.addData("current angle", headingDeg);
@@ -567,20 +572,19 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                 "X: %.2f  Y: %.2f  H: %.1f°",
                 pose.getX(DistanceUnit.INCH), pose.getY(DistanceUnit.INCH), headingDeg
         );
-        telemetry.addData("distance to goal", "%,.0f",shooterPowerAngleCalculator.getDistance());
-        telemetry.addData("Shooter Zone", shooterPowerAngleCalculator.getZone());
+        telemetry.addData("distance to goal", "%,.0f",currentDistance);
+        telemetry.addData("Shooter Zone", currentZone);
         telemetry.addLine("Turret-----------------------------------");
-        telemetry.addData("turret target angle", turret.getTargetAngle());
-        telemetry.addData("turret drive angle", turret.getTurretDriveAngle());
-        telemetry.addData("turret motor angle", turret.getTurretMotorAngle());
-        telemetry.addData("motor PIDF coefficient", robot.turretMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
-        telemetry.addData("current motor tick", turret.getCurrentTick());
-        telemetry.addData("target motor tick", turret.getTargetTick());
+        telemetry.addData("turret target angle", turretTargetAngle);
+        telemetry.addData("turret drive angle", turretDriveAngle);
+        telemetry.addData("turret motor angle", turretMotorAngle);
+        //telemetry.addData("motor PIDF coefficient", robot.turretMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
+        telemetry.addData("current motor tick", turretCurrentTick);
+        telemetry.addData("target motor tick", turretTargetTick);
         telemetry.addData("goal pose", turret.getGoalPose());
         telemetry.addLine("-----------------------------------------");
         ///telemetry.addData("limelight output", "%,.1f",limelight.normalizedPose2D(DistanceUnit.INCH));
-        telemetry.addData("limelight angle Tx", limelight.getTargetXForTag(24));
-        telemetry.addData("green slot position", limelight.getGreenSlot());
+        telemetry.addData("limelight angle Tx", currentTx);
         telemetry.update();
     }
 

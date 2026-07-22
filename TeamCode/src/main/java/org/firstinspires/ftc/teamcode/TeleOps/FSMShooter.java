@@ -159,12 +159,10 @@ public class FSMShooter {
             Limelight.TxSnapshot snap = limelight.getTxForTag(24);
             setLimelightTx(snap.hasTarget, snap.txDeg);
 
-            if (gamepadComboInput
-                    .getLbSinglePressedAny()){
+            if (gamepadComboInput.getLbSinglePressedAny()){
                 trimInput+=1;
             }
-            if (gamepadComboInput
-                    .getrbSinglePressedAny()){
+            if (gamepadComboInput.getrbSinglePressedAny()){
                 trimInput-=1;
             }
             trim=Range.clip(trim +trimInput*trimStep,-400,400);
