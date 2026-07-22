@@ -13,16 +13,16 @@ public class RobotActionConfig {
     public static double DEBOUNCE_THRESHOLD             = 0.25;
 
     //New spindexer values untested
-    public static double spindexerzeropos   = 0.0;
-    public static double spindexerSlot0     = 0.0;
-    public static double spindexerSlot1     = 0.17;
-    public static double spindexerSlot2     = 0.345;
-    public static double spindexerSlot3     = 0.51;
-    public static double spindexerSlot4     = 0.675;
-    public static double spindexerSlot5     = 0.83899857;
-    public static double spindexerSlot6     = 1.0;  //六七
-    public static double spindexerFullPos     = 1.0;  //六七
-    public static double[] spindexerSlots   = {spindexerSlot0, spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5, spindexerSlot6};
+    public static double spindexerzeropos               = 0.0;
+    public static double spindexerSlot0                 = 0.0;
+    public static double spindexerSlot1                 = 0.17;
+    public static double spindexerSlot2                 = 0.345;
+    public static double spindexerSlot3                 = 0.51;
+    public static double spindexerSlot4                 = 0.675;
+    public static double spindexerSlot5                 = 0.838;
+    public static double spindexerSlot6                 = 1.0;  //六七
+    public static double spindexerFullPos               = 1.0;  //六七
+    public static double[] spindexerSlots               = {spindexerSlot0, spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5, spindexerSlot6};
 
     //Special Spindexer Positions
     public static double spindexerStowPos               = spindexerSlot1; //Position between slots 1 and 2 to prevent balls from falling out under acceleration
@@ -45,8 +45,8 @@ public class RobotActionConfig {
     public static double intakeStop                     = 0;
     public static double ejectSpeed                     = -0.7;
     //shooter timer
-    public static long FEED_PERIOD_MS_CLOSE       = 200; // 250
-    public static long FEED_PERIOD_MS_FAR         = 600; // 400 250
+    public static long FEED_PERIOD_MS_CLOSE             = 200; // 250
+    public static long FEED_PERIOD_MS_FAR               = 600; // 400 250
 
     public static final double SPOOLUP_SEC              = 1.25;
     //shooter adjustor
@@ -108,7 +108,7 @@ public class RobotActionConfig {
     public static double CLOSE                          = 57.0;
     public static double closeEdge                      = 36.0;
 
-    public static double FAR_ZONE_TOUCH                     = 118.0;
+    public static double FAR_ZONE_TOUCH                 = 118.0;
     public static double FAR_ZONE_CLOSE                 = 125.0;
     public static double FAR_ZONE_MID                   = 144;
     public static double FAR_ZONE_FAR                   = 167.0;
@@ -136,11 +136,26 @@ public class RobotActionConfig {
     public static final int shooterMaxRPM               = 5200; //at 13.1 volts, power : 1
     public static final double REF_VOLTAGE              = 13.1;
 
-    public static final double aimingAngleThrehold      = 5;
-    public static final double turretCameraRadius       = 0.1778;// for limelight aiming angle correction
+    public static final double aimingAngleThrehold      = 5;                // for limelight aiming angle correction in turret
+    public static final double turretCameraRadius       = 0.1778;           // for limelight aiming angle correction in turret
 
-    public static final double trimStep                 = 10;
-    public static final double adjSpeed                 = 1500;
-    public static final double pressTime                = 0.2;
-    public static double telemetryInterval              = 0.1;
+    public static final double trimStep                 = 10;               // trim step in FSM
+    public static final double adjSpeed                 = 1500;             // trim speed in FSM
+    public static double telemetryInterval              = 0.1;              // telemetry refresh interval in main loop
+
+    // =========================================================
+    // Dashboard Limelight assisted aiming engage parameters in FSM shooter
+    // Dashboard Limelight tuning
+    // =========================================================
+
+    public static double txdegToTicks                   = 2.4; //
+    public static int txMaxTicks                        = 50;
+    public static double txDeadbandDeg                  = 3.0;
+
+    public static double txAlpha                        = 0.30;
+
+    public static long txHoldMs                         = 100;
+    public static long txFadeMs                         = 200;
+    public static int txAssistEngageTicks               = 13;
+    public static int txAssistDisengageTicks            = 15;
 }

@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.arcrobotics.ftclib.util.LUT;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -10,28 +9,44 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
-
-import java.util.Optional;
 @Config
 public class LUTPowerCalculator {
-
-    private final RobotHardware robot;
-
-    // PID on normalized velocity (0..1)
-    private final PIDController pid;
-
-    private double distance;
-    private int zone = 0;
-
     // updateDistanceAndZone() is called from getPower(), getShooterAngle(), and
     // getDistance() — all invoked within the same loop tick. Guard against
     // recomputing the same pinpoint-derived distance/zone 2-3x per tick.
-    private long lastZoneComputeNanos = -1;
-    private static final long ZONE_RECOMPUTE_GUARD_NANOS = 1_000_000; // 1ms
+    /// use a shooterZone enum for clarity and dashboard tuning.
+    public enum ShooterZone {
+        ZONE_0(0),
+        ZONE_1(1),
+        ZONE_2(2),
+        ZONE_3(3),
+        ZONE_4(4),
+        ZONE_5(5),
+        ZONE_6(6),
+        ZONE_7(7),
+        ZONE_8(8);
+
+        private final int number;
+
+        ShooterZone(int number) {
+            this.number = number;
+        }
+
+        public int getNumber() {
+            return number;
+        }
+    }
+
+    private final RobotHardware robot;
+    // PID on normalized velocity (0..1)
+    private final PIDController pid;
 
     public static final double tickToRPM = SHOOTER_RPM_CONVERSION;
     private final int maxVelocityRPM = shooterMaxRPM;
 
+    private double distance;
+    private ShooterZone  currentZone = ShooterZone.ZONE_0;
+    private double shooterAdjusterAngle;
     private int rpmTarget;
     private double rpmMeasured;
 
@@ -50,35 +65,6 @@ public class LUTPowerCalculator {
     public static double kVShooter = 1.0;  // scale from targetNorm to power (roughly 1.0 if perfect)
     // --------------------------------
 
-    /**
-     * LUT values goes from farest from goal to closes from goal
-     * higher zone is further from goal
-     */
-    private final LUT<Integer, Integer> targetRPM = new LUT<Integer, Integer>() {{
-        /// RPM is measured based on 13v
-        add(8, RPM8); //4540
-        add(7, RPM7); //4400
-        add(6, RPM6); //4300
-        add(5, RPM5); //3750
-        add(4, RPM4); //3600
-        add(3, RPM3); //3450
-        add(2, RPM2); //3200
-        add(1, RPM1); //3150
-        add(0, RPM0); ///change this later
-    }};
-
-    //0.05
-    //0.53
-    private final LUT<Integer, Double> targetShootingAngle = new LUT<Integer, Double>() {{
-        add(7, shooterAdjusterMax);
-        add(6, shooterAdjusterMax);
-        add(5, shooterAdjusterMax);
-        add(4, shooterAdjusterMax);
-        add(3, shooterAdjusterMax);
-        add(2, shooterAdjusterMid);
-        add(1, shooterAdjusterMin);
-        add(0, shooterAdjusterMax);
-    }};
 
     //===================================================
     //Constructor
@@ -92,35 +78,81 @@ public class LUTPowerCalculator {
         actualGoalPose = (isRedAlliance) ? redGoalPose : blueGoalPose;
     }
 
+    // Calculate the distance
     private void updateDistanceAndZone() {
         double dx = robot.pinpoint.getPosX(DistanceUnit.INCH) - actualGoalPose.getX(DistanceUnit.INCH);
         double dy = robot.pinpoint.getPosY(DistanceUnit.INCH) - actualGoalPose.getY(DistanceUnit.INCH);
         distance = Math.hypot(dx, dy);
 
-        if (distance > closeEdge && distance <= CLOSE) zone     = 1;
-        else if (distance > CLOSE && distance <= MID) zone      = 2;
-        else if (distance > MID && distance <= MidPoint) zone   = 3;
-        else if (distance > MidPoint && distance <= FAR) zone   = 4;
-        else if (distance > FAR && distance <= FAR_EDGE) zone   = 5;
-        else if (distance > FAR_ZONE_TOUCH && distance <= FAR_ZONE_CLOSE) zone = 6;
-        else if (distance > FAR_ZONE_CLOSE && distance <= FAR_ZONE_MID) zone = 7;
-        else if (distance > FAR_ZONE_MID && distance <= FAR_ZONE_FAR) zone = 8;
-        else zone = 0;
+        currentZone = calculateZone(distance);
+    }
+    // Determine the zone based on the distance
+    private ShooterZone calculateZone(double distance) {
+        if (!Double.isFinite(distance) || distance < 0.0) {
+            return ShooterZone.ZONE_0;
+        }
+        if (distance > closeEdge && distance <= CLOSE) {
+            return ShooterZone.ZONE_1;
+        }
+        if (distance > CLOSE && distance <= MID) {
+            return ShooterZone.ZONE_2;
+        }
+        if (distance > MID && distance <= MidPoint) {
+            return ShooterZone.ZONE_3;
+        }
+        if (distance > MidPoint && distance <= FAR) {
+            return ShooterZone.ZONE_4;
+        }
+        if (distance > FAR && distance <= FAR_EDGE) {
+            return ShooterZone.ZONE_5;
+        }
+
+        /*
+         * Intentional distance gap:
+         *
+         * FAR_EDGE < distance <= FAR_ZONE_CLOSE
+         *
+         * returns ZONE_0.
+         */
+        if (distance > FAR_ZONE_TOUCH  && distance <= FAR_ZONE_CLOSE) {
+            return ShooterZone.ZONE_6;
+        }
+        if (distance > FAR_ZONE_CLOSE  && distance <= FAR_ZONE_MID ) {
+            return ShooterZone.ZONE_7;
+        }
+        /*
+         * Replace these limits with your actual zone-8 limits.
+         */
+        if (distance > FAR_ZONE_MID  && distance <= FAR_ZONE_FAR) {
+            return ShooterZone.ZONE_8;
+        }
+        return ShooterZone.ZONE_0;
     }
 
-    public double getPower() {
+    // update the power based on the distance and zone
+    public double getPower(){
+        return getPower(true);
+    }
+    public double getPower(boolean enabled) {
         if (robot == null || robot.pinpoint == null || robot.topShooterMotor == null) return 0.0;
-        updateDistanceAndZone();
-        rpmTarget = Optional.ofNullable(targetRPM.get(zone)).orElse(0);
-        rpmTarget=(int)Math.round(RPMFactor*rpmTarget);
+
+        //updatePIDParameters();// apply live PID changes from FTC dashboard
+
+        updateState();// update distance and shooter Zone
+
+        /*
+         * Apply the Dashboard RPM adjustment factor.
+         */
+        double safeRPMFactor = Math.max(0.0, RPMFactor);
+        rpmTarget = (int) Math.round(safeRPMFactor * rpmTarget );
+
         // If not shooting, return 0 and reset PID so it doesn't "wind up"
-        if (rpmTarget <= 0) {
+        if (!enabled || rpmTarget <= 0) {
             pid.reset();
             return 0.0;
         }
-
         // Measured RPM from encoder ticks/sec
-        rpmMeasured = robot.topShooterMotor.getVelocity() * tickToRPM;
+        rpmMeasured = Math.abs(robot.topShooterMotor.getVelocity())* tickToRPM;
 
         // Voltage - aware max RPM
         double voltage = robot.getBatteryVoltageRobust();
@@ -145,15 +177,53 @@ public class LUTPowerCalculator {
         return clamp(output, -1.0, 1.0);
     }
 
+    private void updateState() {
+        updateDistanceAndZone();
+        rpmTarget = getTargetRpmForZone(currentZone);
+        shooterAdjusterAngle = getShooterAngleForZone(currentZone);
+    }
+
+    private int getTargetRpmForZone(ShooterZone zone) {
+        switch (zone) {
+            case ZONE_8: return RPM8;
+            case ZONE_7: return RPM7;
+            case ZONE_6: return RPM6;
+            case ZONE_5: return RPM5;
+            case ZONE_4: return RPM4;
+            case ZONE_3: return RPM3;
+            case ZONE_2: return RPM2;
+            case ZONE_1: return RPM1;
+            case ZONE_0:
+            default:
+                return RPM0;
+        }
+    }
+    private double getShooterAngleForZone(ShooterZone zone) {
+        switch (zone) {
+            case ZONE_1:
+                return shooterAdjusterMin;
+            case ZONE_2:
+                return shooterAdjusterMid;
+            case ZONE_3:
+            case ZONE_4:
+            case ZONE_5:
+            case ZONE_6:
+            case ZONE_7:
+            case ZONE_8:
+            case ZONE_0:
+            default:
+                return shooterAdjusterMax;
+        }
+    }
     public int getZone(){
-        return zone;
+        return currentZone.getNumber();
     }
 
     public double getDistance(){
         return distance;
     }
 
-    public int getRPM() {
+    public int getRPMTarget() {
         return rpmTarget;
     }
 
@@ -162,8 +232,7 @@ public class LUTPowerCalculator {
     }
 
     public double getShooterAngle() {
-        ///int safeZone = Math.max(0, Math.min(zone, 3));
-        return Optional.ofNullable(targetShootingAngle.get(zone)).orElse(shooterAdjusterMax);
+        return shooterAdjusterAngle;
     }
 
     private static double clamp01(double x) {
