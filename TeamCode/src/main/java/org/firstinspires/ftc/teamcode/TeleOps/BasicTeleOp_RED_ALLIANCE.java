@@ -540,7 +540,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // re-runs the shooter PID controller as a side effect, so don't call it just to display it
         telemetry.addData("shooter power calculator", FSMShooter.getPower());
         telemetry.addData("Shooter Power", robot.topShooterMotor.getPower());
-        telemetry.addData("voltage from Shooter", FSMShooter.getVoltage());
         telemetry.addData("Shooter Target RPM",shooterTargetRPM);
         telemetry.addData("Shooter actual RPM","%,.0f",shooterMeasuredRPM);
         telemetry.addLine("-----");
