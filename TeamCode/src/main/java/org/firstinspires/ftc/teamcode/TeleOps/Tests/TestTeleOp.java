@@ -17,12 +17,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 //import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
-import org.firstinspires.ftc.teamcode.TeleOps.FSMShooter;
 import org.firstinspires.ftc.teamcode.TeleOps.GamepadComboInput;
 import org.firstinspires.ftc.teamcode.TeleOps.LUTPowerCalculator;
 import org.firstinspires.ftc.teamcode.TeleOps.Limelight;
-import org.firstinspires.ftc.teamcode.TeleOps.Sensors.BallColor;
-import org.firstinspires.ftc.teamcode.TeleOps.Sensors.ColorDetection;
 
 import org.firstinspires.ftc.teamcode.TeleOps.RobotDrive;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
@@ -255,7 +252,7 @@ public class TestTeleOp extends OpMode {
         if (gamepad_2.getButton(GamepadKeys.Button.X) && isButtonDebounced()) {
             finetune = false;
             pidstatus = true;
-            targetShooterRPM = shooterPowerLUT.getRPM();
+            targetShooterRPM = shooterPowerLUT.getRPMTarget();
         }
         if (gamepad_2.getButton(GamepadKeys.Button.Y) && isButtonDebounced()) {
             finetune = false;
