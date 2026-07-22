@@ -58,7 +58,7 @@ public class RedSideClose12SortedAuto extends LinearOpMode {
         aprilTagDetection.limelightStart();
 
         if (opModeInInit()) {
-            Actions.runBlocking(turret.TurretRun(162));
+            Actions.runBlocking(turret.TurretRun(167));
             robot.spindexerServo.setPosition(spindexerSlot1);
             robot.kickerServo.setPosition(kickerRetract);
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
@@ -127,10 +127,9 @@ public class RedSideClose12SortedAuto extends LinearOpMode {
                             new ParallelAction(
                                     turret.TurretRun(45),
                                     shooter.ShooterOn(CloseShotPower),
-                                    shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_INIT,SORTINGSHOOTER_RUN),
                                     DriveToShoot1
                             ),
-                            shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_SWITCH,SORTINGSHOOTER_END),
+                            shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_INIT,SORTINGSHOOTER_END),
                             shooter.ShooterOff(),
                             new ParallelAction(
                                     intake.IntakeRun(2.5),
@@ -138,10 +137,9 @@ public class RedSideClose12SortedAuto extends LinearOpMode {
                             ),
                             new ParallelAction(
                                     DriveToShoot2,
-                                    shooter.ShooterOn(CloseShotPower),
-                                    shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_INIT,SORTINGSHOOTER_RUN)
+                                    shooter.ShooterOn(CloseShotPower)
                             ),
-                            shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_SWITCH,SORTINGSHOOTER_END),
+                            shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_INIT,SORTINGSHOOTER_END),
                             shooter.ShooterOff(),
                             new ParallelAction(
                                     intake.IntakeRun(4),
@@ -149,10 +147,9 @@ public class RedSideClose12SortedAuto extends LinearOpMode {
                             ),
                             new ParallelAction(
                                     DriveToShoot3,
-                                    shooter.ShooterOn(CloseShotPower),
-                                    shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_INIT,SORTINGSHOOTER_RUN)
+                                    shooter.ShooterOn(CloseShotPower)
                             ),
-                            shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_SWITCH,SORTINGSHOOTER_END),
+                            shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_INIT,SORTINGSHOOTER_END),
                             shooter.ShooterOff(),
                             new ParallelAction(
                                     intake.IntakeRun(1.5),
@@ -160,10 +157,9 @@ public class RedSideClose12SortedAuto extends LinearOpMode {
                             ),
                             new ParallelAction(
                                     DriveToShoot4,
-                                    shooter.ShooterOn(CloseShotPower),
-                                    shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_INIT,SORTINGSHOOTER_RUN)
+                                    shooter.ShooterOn(CloseShotPower)
                             ),
-                            shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_SWITCH,SORTINGSHOOTER_END),
+                            shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_INIT,SORTINGSHOOTER_END),
                             new ParallelAction(
                                     shooter.ShooterOff(),
                                     LeaveDrive

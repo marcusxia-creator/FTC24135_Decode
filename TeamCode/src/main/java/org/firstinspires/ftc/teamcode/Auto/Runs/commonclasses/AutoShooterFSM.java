@@ -215,7 +215,7 @@ public class AutoShooterFSM {
     }
 
     public Action ShootFarZone(double ShotPower, double ShooterWaitTime, ShooterRapidRunMode.SHOOTERSTATE startingState, ShooterRapidRunMode.SHOOTERSTATE endState){
-        return new ShooterRapidRunMode(robot, startingState, endState, ShotPower,0.4,ShooterWaitTime, spindexerContext);
+        return new ShooterRapidRunMode(robot, startingState, endState, ShotPower,0.35,ShooterWaitTime, spindexerContext);
     }
 
     public Action ShootCloseZone(double ShotPower, double ShooterWaitTime, ShooterRapidRunMode.SHOOTERSTATE startingState, ShooterRapidRunMode.SHOOTERSTATE endState){

@@ -32,15 +32,15 @@ public class RedSidePositions {
 
     public static double IntakeHP2Position1_X = 32;
     public static double IntakeHP2Position1_Y = 24;
-    public static double IntakeHP2Position4_X = 44;
+    public static double IntakeHP2Position4_X = 50;
     public static double IntakeHP2Position4_Y = 60;
 
     public static double GateIntakePosition_X = 14;
     public static double GateIntakePosition_Y = 61.5;
     public static double GateIntakePosition_Heading = 120;
 
-    public static double FarShootingPosition_X = 58;
-    public static double FarShootingPosition_Y = 12;
+    public static double FarShootingPosition_X = 52;
+    public static double FarShootingPosition_Y = 16;
     public static double FarShootingPosition_Heading = 90;
 
     public static double CloseShootingPosition_X = -10;

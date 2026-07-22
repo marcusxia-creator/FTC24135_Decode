@@ -163,9 +163,9 @@ public class RobotHardware {
         imu.initialize(new IMU.Parameters(revHubOrientationOnRobot));
 
         LED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
-        slotSensor1 = new SlotSensor(hardwareMap, "Front_Color_Sensor");
-        slotSensor2 = new SlotSensor(hardwareMap, "Right_Color_Sensor");
-        slotSensor3 = new SlotSensor(hardwareMap, "Left_Color_Sensor");
+        slotSensor1 = new SlotSensor(hardwareMap, "Left_Color_Sensor");
+        slotSensor2 = new SlotSensor(hardwareMap, "Front_Color_Sensor");
+        slotSensor3 = new SlotSensor(hardwareMap, "Right_Color_Sensor");
         slotSensors = Arrays.asList(slotSensor1,slotSensor2,slotSensor3);
         limitSwitch = hardwareMap.get(DigitalChannel.class, "Limit_Switch");
         limitSwitch.setMode(DigitalChannel.Mode.INPUT);
