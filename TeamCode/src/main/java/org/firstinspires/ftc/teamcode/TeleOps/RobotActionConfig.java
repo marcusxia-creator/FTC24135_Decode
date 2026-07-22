@@ -47,21 +47,18 @@ public class RobotActionConfig {
     //shooter timer
     public static long FEED_PERIOD_MS_CLOSE             = 200; // 250
     public static long FEED_PERIOD_MS_FAR               = 600; // 400 250
-
     public static final double SPOOLUP_SEC              = 1.25;
     //shooter adjustor
     public static double shooterAdjusterMax             = 0.49;
     public static double shooterAdjusterMin             = 0.14; //new 0.14 ; old : 0.06
     public static double shooterAdjusterMid             = 0.35; //new 0.35
-    public static double shooterFactorThreshold         = 0.95;
-    //drive train power
+    public static double shooterAdjusterInitial         = 0.48;
+    //drive train power parameters
     public static double powerFactor                    = 1;
     public static double accel_Slowness                 = 0.5;
     public static double decel_Slowness                 = 0.67;
 
-    public static double getDistanceThreshold           =0.02;
-
-
+    // shooting power curve match parameter
     public static double a                              = 0.0001320186;
     public static double b                              = -0.01961813;
     public static double c                              = 1.431126;
@@ -70,37 +67,37 @@ public class RobotActionConfig {
     //Colour Profiles
     public static int[] greenRangeLow                   = {120, 130};
     public static int[] greenRangeHigh                  = {135, 160};
-
     public static int[] purpleRangeLow                  = {115, 118};
     public static int[] purpleRangeHigh                 = {170, 230};
-
+    //Color Sensors Number
     public static int requiredSensors                   = 3;
 
+    // Threshold & Conversion
     public static double BALL_PRESENT_THRESHOLD_MM      = 50;
     public static final double INTAKE_TICKS_PER_REV     = 145.1;
     public static final double INTAKE_RPM_CONVERSION    = 60.0 / INTAKE_TICKS_PER_REV;
     public static final double SHOOTER_RPM_CONVERSION   = (60.0 / 28.0);
-
 
     //Motif IDs
     public static int GPPid                             = 21;
     public static int PGPid                             = 22;
     public static int PPGid                             = 23;
 
+    // Reset Pose2D
     public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, -64, 8, AngleUnit.DEGREES, 0);
     public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, -64, 8, AngleUnit.DEGREES, 0);
 
     ///public static final Pose2D blueAllianceResetPose    = new Pose2D(DistanceUnit.INCH, 9, -48.5, AngleUnit.DEGREES, 0);
     ///public static final Pose2D redAllianceResetPose     = new Pose2D(DistanceUnit.INCH, 9, 48.5, AngleUnit.DEGREES, 0);
 
-    //-64 66 works
-            //-63 66 previous
+    //goal target Pose 2D
     public static final Pose2D redCloseGoalPose         = new Pose2D(DistanceUnit.INCH, -60, 64, AngleUnit.DEGREES, 0);
     public static final Pose2D redFarGoalPose           = new Pose2D(DistanceUnit.INCH, -66, 62, AngleUnit.DEGREES, 0);
 
     public static final Pose2D blueCloseGoalPose        = new Pose2D(DistanceUnit.INCH, -60, -64, AngleUnit.DEGREES, 0);
     public static final Pose2D blueFarGoalPose          = new Pose2D(DistanceUnit.INCH, -66, -62, AngleUnit.DEGREES, 0);
 
+    //Zone distance
     public static double FAR_EDGE                       = 105.0;
     public static double FAR                            = 92.0;
     public static double MidPoint                       = 82.0;
@@ -113,6 +110,7 @@ public class RobotActionConfig {
     public static double FAR_ZONE_MID                   = 144;
     public static double FAR_ZONE_FAR                   = 167.0;
 
+    //shooting RPM for each Zone
     public static double RPMFactor                      = 1.0;
     public static int RPM0                              = 3700; ///all minus 200 rpm with upgraded hardware
     public static int RPM1                              = 3150;
@@ -130,30 +128,30 @@ public class RobotActionConfig {
     public static final double OZPower                  = 0.5;
     public static final double FZPower                  = 0.93;
 
-    public static final double turret_Center_X_Offset   = 0.0127;
-    public static final double turret_Center_Y_Offset   = 0.028575;
-
+    //Shooter PID Voltage
     public static final int shooterMaxRPM               = 5200; //at 13.1 volts, power : 1
     public static final double REF_VOLTAGE              = 13.1;
 
-    public static final double aimingAngleThrehold      = 5;                // for limelight aiming angle correction in turret
-    public static final double turretCameraRadius       = 0.1778;           // for limelight aiming angle correction in turret
+    //Turret Physical offset
+    public static final double turret_Center_X_Offset   = 0.0127;
+    public static final double turret_Center_Y_Offset   = 0.028575;
 
     public static final double trimStep                 = 10;               // trim step in FSM
     public static final double adjSpeed                 = 1500;             // trim speed in FSM
+    //Telemetry
     public static double telemetryInterval              = 0.1;              // telemetry refresh interval in main loop
 
     // =========================================================
     // Dashboard Limelight assisted aiming engage parameters in FSM shooter
     // Dashboard Limelight tuning
     // =========================================================
+    public static final double aimingAngleThrehold      = 5;                // for limelight aiming angle correction in turret
+    public static final double turretCameraRadius       = 0.1778;           // for limelight aiming angle correction in turret
 
     public static double txdegToTicks                   = 2.4; //
     public static int txMaxTicks                        = 50;
     public static double txDeadbandDeg                  = 3.0;
-
     public static double txAlpha                        = 0.30;
-
     public static long txHoldMs                         = 100;
     public static long txFadeMs                         = 200;
     public static int txAssistEngageTicks               = 13;
