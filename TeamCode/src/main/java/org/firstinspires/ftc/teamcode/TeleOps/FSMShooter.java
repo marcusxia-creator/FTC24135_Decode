@@ -23,10 +23,9 @@ public class FSMShooter {
     public final Turret turret;
     private final Limelight limelight;
 
-    private double voltage;
     private double power;   //power lut power
     private double angle;   //shooter angle
-    private double power_setpoint=0; //not actually be used
+
     // shooting sequence config
     private int shootCounter; // counter for # ball shooting
     private long lastFeedTimeMs = 0; // shooting feed time interval time stamp
@@ -38,20 +37,15 @@ public class FSMShooter {
     }};
 
     private long waitTimeMS = 350;
-
-    private boolean txAssistEngaged = false;
-
     public double trim;
 
     // =========================================================
     // Limelight TX state
     // =========================================================
-
+    private boolean txAssistEngaged = false;
     private boolean llHasTarget;
-
     private boolean txInitialized;
     private double filteredTx;
-
     private double lastValidTx;
     private long lastValidTimeMs;
 
@@ -60,8 +54,6 @@ public class FSMShooter {
      * * Button X/Square is local key, --- SHOOTER_IDLE STATE---
      *   Press 'X/Square' to start spinning the flywheel
      * * Button X/Square is local key, --- FLYWHEEL STATE---
-     *   Cancle the FLYWHEEL within 1 second
-     * * Button Y/Triangle is local key, --- RAMPUP STATE---
      *   Press 'Y/Triangle' to toggle ramp up to launch ball to shooter
      */
 
@@ -93,7 +85,6 @@ public class FSMShooter {
         this.robot = robot;
         this.shooterPowerLUT = shooterPowerLUT;
         this.gamepadComboInput = gamepadComboInput;
-        /// New!!
         this.turret = turret;
         this.limelight = limelight;
     }
@@ -113,16 +104,17 @@ public class FSMShooter {
         lastValidTimeMs = 0L;
     }
 
-
-
     public void SequenceShooterLoop() {
         //==========================================================
         // Set shooter power
         //==========================================================
-
         /// shooter motor power controller
+        //shootermotorstate is set in the FSM.
         boolean shooterEnabled = shootermotorstate == SHOOTERMOTORSTATE.RUN;
-        power = shooterPowerLUT.getPower(shooterEnabled); //get shooter power based on distance Zone and PID+FF power, shooterPowerAngleCalculator.getPower();
+
+        //getPower() - Update the distance and zone
+        //based on zone, find the shooting power & shooting adjustor angle
+        power = shooterPowerLUT.getPower(shooterEnabled);
         double rpmTarget = shooterPowerLUT.getRPMTarget();
 
         //==========================================================
@@ -130,10 +122,10 @@ public class FSMShooter {
         //==========================================================
         angle = shooterPowerLUT.getShooterAngle(); // get shooter adjuster angle.
         robot.shooterAdjusterServo.setPosition(angle);
-        //==========================================================
-        //Control shooter run/NOT
-        //==========================================================
 
+        //==========================================================
+        // Control shooter run/NOT
+        //==========================================================
         if (shooterEnabled){
             robot.topShooterMotor.setPower(power);
             robot.bottomShooterMotor.setPower(power);
@@ -326,7 +318,8 @@ public class FSMShooter {
     }
 
     //============================================================
-    // helper - get zone
+    // helper - get zone for shooting goal pose
+    // called in MainTeleop Loop
     //============================================================
 
     public void updateZoneForGoalPose(int zone) {
@@ -345,14 +338,6 @@ public class FSMShooter {
     //============================================================
     // helper - get power
     //============================================================
-
-    public double getPower_setpoint () {
-        return power_setpoint;
-    }
-
-    public double getVoltage () {
-        return voltage;
-    }
 
     public double getPower() {
         return power;

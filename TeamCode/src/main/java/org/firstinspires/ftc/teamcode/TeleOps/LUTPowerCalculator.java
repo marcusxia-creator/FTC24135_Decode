@@ -86,6 +86,7 @@ public class LUTPowerCalculator {
 
         currentZone = calculateZone(distance);
     }
+
     // Determine the zone based on the distance
     private ShooterZone calculateZone(double distance) {
         if (!Double.isFinite(distance) || distance < 0.0) {
@@ -130,9 +131,12 @@ public class LUTPowerCalculator {
     }
 
     // update the power based on the distance and zone
+    // loop in FSMshooter for updates
+    // getpower for compatiblity with FSMshooter
     public double getPower(){
         return getPower(true);
     }
+
     public double getPower(boolean enabled) {
         if (robot == null || robot.pinpoint == null || robot.topShooterMotor == null) return 0.0;
 
@@ -177,6 +181,7 @@ public class LUTPowerCalculator {
         return clamp(output, -1.0, 1.0);
     }
 
+    // updateState() is called from getPower() & Loop in FSMshooter
     private void updateState() {
         updateDistanceAndZone();
         rpmTarget = getTargetRpmForZone(currentZone);

@@ -137,6 +137,7 @@ public class Turret {
         return (robot.turretMotor.getCurrentPosition() * tickToAngle);
     }
 
+    ////!TODO - Used in TestTeleOp - can be removed
     public void driveTurretMotor(){
         /** OLD METHOD
         //updatePidFromDashboard();
@@ -157,6 +158,7 @@ public class Turret {
         robot.turretMotor.setPower(1);
     }
 
+    /// Main Method for turret
     public void driveTurretPID(int currentTick, int targetTick, double loopTime) {
         //updatePidFromDashboard();
         double dTt=(targetTick-lastTargetTick)/loopTime;
@@ -171,6 +173,7 @@ public class Turret {
         robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
     }
 
+    //!TODO - Use in Turret Test TeleOp - can be removed
     public void driveTurretMP(int currentTick, int targetTick, double loopTime) {
         //Experimental motion-profile velocity driven turret, needs turret in velocity mode
         int error=Math.abs(targetTick - currentTick);
@@ -185,6 +188,7 @@ public class Turret {
         lastTargetTick=targetTick;
     }
 
+    //Not in use
     public void driveTurretLimelight() {
         LLResult llResult = robot.limelight.getLatestResult();
         int targetTicks;
@@ -205,7 +209,7 @@ public class Turret {
     }
 
     public int getTargetTick () {
-        return (int)Math.round(Range.clip(getTurretDriveAngle(), -180, 180) * angleToTick);
+        return (int)Math.round(Range.clip(getTurretDriveAngle(), -178, 178) * angleToTick);
     }
 
     public int getCurrentTick () {
@@ -221,20 +225,16 @@ public class Turret {
         double turretcentX = robot.pinpoint.getPosX(DistanceUnit.INCH) + turretXOffSet;
         double turretcentY = robot.pinpoint.getPosY(DistanceUnit.INCH) + turretYOffSet;
         return Math.toDegrees(Math.atan2((goalPose.getY(DistanceUnit.INCH)-turretcentY), (goalPose.getX(DistanceUnit.INCH)-turretcentX)));
-        //FIXME OLD
-        //return Math.toDegrees(Math.atan2((goalPose.getY(DistanceUnit.INCH)-robot.pinpoint.getPosY(DistanceUnit.INCH)), (goalPose.getX(DistanceUnit.INCH)-robot.pinpoint.getPosX(DistanceUnit.INCH))));
     }
 
     public void updateZoneForGoalPose(int zone) {
         int normalizedZone;
-
         if (zone <= 5) {
             normalizedZone = 1;
         }
         else {
             normalizedZone = 2;
         }
-
         goalPose = Optional.ofNullable(targetPose.get(normalizedZone)).orElse(targetPose.get(1));
     }
 
