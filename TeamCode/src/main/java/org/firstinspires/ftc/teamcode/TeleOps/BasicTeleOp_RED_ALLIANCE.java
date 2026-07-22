@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMIntake.IntakeStates;
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SHOOTERSTATE;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.SHOOTER_RPM_CONVERSION;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerRetract;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
@@ -12,7 +11,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -283,7 +281,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         currentDistance = shooterPowerAngleCalculator.getDistance();
         //battertVoltage = robot.getBatteryVoltageRobust();
         shooterMeasuredRPM = shooterPowerAngleCalculator.getMeasureRPM();
-        shooterTargetRPM = shooterPowerAngleCalculator.getRPM();
+        shooterTargetRPM = shooterPowerAngleCalculator.getRPMTarget();
 
         targetAngle = turret.getTurretDriveAngle();
 
@@ -557,7 +555,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addData("Shooter Power", robot.topShooterMotor.getPower());
         telemetry.addData("voltage from Shooter", FSMShooter.getVoltage());
         telemetry.addData("power set point", FSMShooter.getPower_setpoint());
-        telemetry.addData("Shooter Target RPM",shooterPowerAngleCalculator.getRPM());
+        telemetry.addData("Shooter Target RPM",shooterPowerAngleCalculator.getRPMTarget());
         telemetry.addData("Shooter actual RPM","%,.0f",shooterPowerAngleCalculator.getMeasureRPM());
         telemetry.addLine("-----");
         telemetry.addData("Alliance", alliance);
