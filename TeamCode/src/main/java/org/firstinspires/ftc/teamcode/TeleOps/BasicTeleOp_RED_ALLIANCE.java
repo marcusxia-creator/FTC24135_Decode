@@ -2,9 +2,7 @@ package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMIntake.IntakeStates;
 import static org.firstinspires.ftc.teamcode.TeleOps.FSMShooter.SHOOTERSTATE;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.blueAllianceResetPose;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.kickerRetract;
-import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.redAllianceResetPose;
+import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -21,17 +19,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 
 /**
- * Making the sequence shooting go slot 5-4-3 (intaking) 3-2-1 (shooting)
- * Put blue alliance code (Turret, LUT, ect)
- * Sort shooting
- * Adding Motif Detection to auto
  * Adding Pose2D storage + turret heading from auto to teleOp
  * Turret PIDF
- * Tuning PID values for shooter - coach did
  ---------------------------------------------------------------------------
  * Change shooting timing values when hardware is changed for rapid shooting
  * Tuning LUT values when the hardware changes
  */
+
 @Config
 @TeleOp(name = "---------RED--🐧----------", group = "org.firstinspires.ftc.teamcode")
 public class BasicTeleOp_RED_ALLIANCE extends OpMode {
@@ -63,8 +57,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private long lastLoopTime = 0;
     private double loopHz = 0.0;
     private double loopTime = 0.0;
-    private ElapsedTime debounceTimer = new ElapsedTime();
-    private static double voltage;
 
     /// ----------------------------------------------------------------
     /// For robot action state
@@ -84,7 +76,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     private int currentZone;
     private double currentDistance;
     private double currentTx;
-    private double battertVoltage;
     private Pose2D cachedPosition;
     private double shooterMeasuredRPM;
     private int shooterTargetRPM;
@@ -151,11 +142,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         actionStates = RobotActionState.Idle;
 
         /// 10. start adjuster servo at position to avoid soft start
-        robot.shooterAdjusterServo.setPosition(0.48);
+        robot.shooterAdjusterServo.setPosition(shooterAdjusterInitial);
 
         robot.kickerServo.setPosition(kickerRetract);
-
-        
 
     }
 
@@ -172,8 +161,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         //OPERATION FLOW
         // 1.Buttons → requestedActionState
         // 2.Transition manager:-> requests graceful stops -> waits for canExit() ->commits activeActionState
-        //                     -> calls onEnterActionState()
-        // 3. Pre-loop switch ->only adds behaviour, never changes FSM states
+        //                      -> calls onEnterActionState()
+        // 3. Pre-loop switch   -> only adds behaviour, never changes FSM states
         // --------VISUAL MIND MODEL-------------------------------
         //      [Buttons]
         //      ↓
@@ -194,9 +183,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
 
         // =========================================================
-        // 1. START A NEW HARDWARE LOOP
+        // 1. START A NEW HARDWARE LOOP - Bulk Reading
         // =========================================================
-
         /*
          * Clear all REV Hub bulk caches exactly once at the
          * beginning of the loop.
@@ -219,7 +207,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         robot.pinpoint.update();
         updateLoopFrequency();
-
 
         // =========================================================
         // 4. DRIVE (always responsive)
@@ -252,9 +239,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         // 7. ZONE STATUS
         // =========================================================
-        int zone = shooterPowerAngleCalculator.getZone();
-        turret.updateZoneForGoalPose(zone);
-        FSMShooter.updateZoneForGoalPose(zone);
+        currentZone = shooterPowerAngleCalculator.getZone();
+        turret.updateZoneForGoalPose(currentZone);
+        FSMShooter.updateZoneForGoalPose(currentZone);
 
         //Turret PIDF Config
         turret.updatePidFromDashboard();
@@ -270,12 +257,11 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         // =========================================================
         // read each hardware/derived value once per loop and share it
         // across LED status + telemetry instead of re-querying per use
-        currentZone = shooterPowerAngleCalculator.getZone();
         currentTx = FSMShooter.getLimelightTxForLED();
         updateLED(currentTx);
 
         // =========================================================
-        // 9. TELEMETRY
+        // 9. TELEMETRY & Parameters
         // =========================================================
         cachedPosition = robot.pinpoint.getPosition();
         currentDistance = shooterPowerAngleCalculator.getDistance();
@@ -289,9 +275,12 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         turretTargetAngle = turret.getTargetAngle();
         turretMotorAngle = turret.getTurretMotorAngle();
 
-        // runTimeTelemetry() calls telemetry.update() itself once telemetryInterval
-        // elapses — don't call it again here or telemetry.update() (which pushes to
-        // both Driver Station and FTC Dashboard) runs unthrottled every loop.
+        // =========================================================================
+        // runTimeTelemetry() calls telemetry.update() itself
+        // — don't call it again here or telemetry.update()
+        // telemetryInterval - 0.1s
+        // both Driver Station and FTC Dashboard) runs throttled 0.1s refresh - 10Hz.
+        // =========================================================================
         /**
         runTimeTelemetry(
                 cachedPosition, currentZone, turretCurrentTick, turretTargetTick
@@ -306,6 +295,9 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         robot.frontRightMotor.setPower(0);
         robot.backLeftMotor.setPower(0);
         robot.backRightMotor.setPower(0);
+        robot.turretMotor.setPower(0);
+        robot.topShooterMotor.setPower(0);
+        robot.bottomShooterMotor.setPower(0);
     }
 
     // =========================================================
@@ -421,7 +413,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                 (gamepadComboInput.getDpadRightPressedAny());
         boolean idlePressed =
                 (gamepadComboInput.getBPressedAny());
-        boolean dpDown =
+        boolean resetAlliance =
                 (gamepadComboInput.getDpadDownPressedAny());
         boolean turretReset =
                 (gamepadComboInput.getDriverBackSinglePressed());
@@ -433,7 +425,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         if (idlePressed)     requestedActionState = RobotActionState.Idle;
 
         // Dpad down pose reset stays immediate (that's fine)
-        if (dpDown) {
+        if (resetAlliance) {
             if (alliance == Alliance.RED_ALLIANCE) {
                 robot.pinpoint.setPosition(redAllianceResetPose);
             }
@@ -444,14 +436,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     }
 
     ///  helper functions
-    /// - button debounce
-    public boolean isButtonDebounced() {
-        if (debounceTimer.seconds() > RobotActionConfig.DEBOUNCE_THRESHOLD) {
-            debounceTimer.reset();
-            return true;
-        }
-        return false;
-    }
     ///  - LED Update
     private void updateLED(double tx) {
 
@@ -475,9 +459,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
 
     ///  - Frequency Updates
     private void updateLoopFrequency() {
-
         long now = System.currentTimeMillis();
-
         if (lastLoopTime != 0) {
             long dtMs = now - lastLoopTime;
             loopTime=(double)dtMs/1000;
@@ -485,7 +467,6 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                 loopHz = 1000.0 / dtMs;
             }
         }
-
         lastLoopTime = now;
     }
 
@@ -529,7 +510,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
     }
 
     //===========================================================
-    // telemetry Manager
+    // Debug telemetry Manager
     //===========================================================
     public void debugTelemetry(){
         // Full debug dump — gate it the same way as runTimeTelemetry() so switching
