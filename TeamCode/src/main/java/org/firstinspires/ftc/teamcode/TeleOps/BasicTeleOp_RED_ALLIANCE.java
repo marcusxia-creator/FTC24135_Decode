@@ -565,7 +565,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         telemetry.addLine("-----");
         telemetry.addData("Alliance", alliance);
         telemetry.addData("current angle", headingDeg);
-        telemetry.addData("Pose2D", pose);
+        telemetry.addData("Pose2D", "X: %.2f  Y: %.2f  H: %.1f°",
+                pose.getX(DistanceUnit.MM),pose.getY(DistanceUnit.MM),pose.getHeading(AngleUnit.DEGREES));
         telemetry.addData("Starting Pose",PoseStorage.currentPose);
         telemetry.addData(
                 "Pose (in)",
