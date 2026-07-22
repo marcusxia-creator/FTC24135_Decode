@@ -22,6 +22,7 @@ public class FSMShooter {
     TURRETSTATE turretState;
     public final Turret turret;
     private final Limelight limelight;
+    private final int goalTagId;
 
     private double power;   //power lut power
     private double angle;   //shooter angle
@@ -81,12 +82,14 @@ public class FSMShooter {
     //Constructor
     public FSMShooter(RobotHardware robot,
                       LUTPowerCalculator shooterPowerLUT,
-                      GamepadComboInput gamepadComboInput, Turret turret, Limelight limelight) {
+                      GamepadComboInput gamepadComboInput, Turret turret, Limelight limelight,
+                      boolean isRedAlliance) {
         this.robot = robot;
         this.shooterPowerLUT = shooterPowerLUT;
         this.gamepadComboInput = gamepadComboInput;
         this.turret = turret;
         this.limelight = limelight;
+        this.goalTagId = isRedAlliance ? 24 : 25;
     }
 
     public void Init() {
@@ -148,7 +151,7 @@ public class FSMShooter {
 
         if (turretState == TURRETSTATE.AIMING && aimEnabled) {
             //set limelight
-            Limelight.TxSnapshot snap = limelight.getTxForTag(24);
+            Limelight.TxSnapshot snap = limelight.getTxForTag(goalTagId);
             setLimelightTx(snap.hasTarget, snap.txDeg);
 
             if (gamepadComboInput.getLbSinglePressedAny()){
@@ -171,11 +174,11 @@ public class FSMShooter {
             // drop it if it drifts well past that point (disengage) — prevents
             // chatter right at the boundary between coarse and fine aiming.
             if (txAssistEngaged) {
-                if (tickError > txAssistDisengageTicks) {
+                if (tickError > txAssistDisengageTicks || !snap.hasTarget) {
                     txAssistEngaged = false;
                 }
             } else {
-                if (tickError <= txAssistEngageTicks) {
+                if (tickError <= txAssistEngageTicks && snap.hasTarget) {
                     txAssistEngaged = true;
                 }
             }
@@ -398,9 +401,15 @@ public class FSMShooter {
             }
         }
 
-        if (Math.abs(txToUse) < txDeadbandDeg) txToUse = 0.0;
+        // Soft deadband: subtract the threshold instead of hard-zeroing below it,
+        // so the output is continuous across the deadband edge instead of jumping
+        // straight from 0 to txDeadbandDeg's worth of ticks (was causing oscillation
+        // when tx hovered right around the deadband).
+        double shapedTx = Math.abs(txToUse) <= txDeadbandDeg
+                ? 0.0
+                : Math.signum(txToUse) * (Math.abs(txToUse) - txDeadbandDeg);
 
-        int adjust = (int) Math.round(-1*txToUse * txdegToTicks);
+        int adjust = (int) Math.round(-1*shapedTx * txdegToTicks);
         return Range.clip(adjust, -txMaxTicks, txMaxTicks);
     }
     // =========================================================

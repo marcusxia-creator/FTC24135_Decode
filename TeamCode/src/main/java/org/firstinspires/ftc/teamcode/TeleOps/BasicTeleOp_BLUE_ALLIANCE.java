@@ -126,7 +126,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         shooterPowerAngleCalculator = new LUTPowerCalculator(robot);
 
         /// 4. shooter-------------------------------------------------------------
-        FSMShooter = new FSMShooter(robot, shooterPowerAngleCalculator, gamepadComboInput, turret, limelight);
+        FSMShooter = new FSMShooter(robot, shooterPowerAngleCalculator, gamepadComboInput, turret, limelight, false);
         FSMShooter.Init();
 
         /// 5. intake------------------------------------------------------------

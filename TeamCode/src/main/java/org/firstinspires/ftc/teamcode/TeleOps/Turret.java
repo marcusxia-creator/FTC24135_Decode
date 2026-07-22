@@ -169,6 +169,14 @@ public class Turret {
         // Use direction + error assist.
         double ff = Math.abs(vel)>=staticFThreshold?(kSTurret * Math.signum(errorTicks)) + (kVTurret * dTt):0;
         double power = pidController.calculate(currentTick, targetTick);
+
+        // Within tolerance: cut power instead of chasing a target that's
+        // drifting by a few ticks each loop from odometry/vision noise.
+        if (pidController.atSetPoint()) {
+            robot.turretMotor.setPower(0);
+            return;
+        }
+
         double output = power + ff;
         robot.turretMotor.setPower(Range.clip(output, -1.0, 1.0));
     }

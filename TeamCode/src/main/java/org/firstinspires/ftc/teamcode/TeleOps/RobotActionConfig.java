@@ -150,10 +150,10 @@ public class RobotActionConfig {
 
     public static double txdegToTicks                   = 2.4; //
     public static int txMaxTicks                        = 50;
-    public static double txDeadbandDeg                  = 3.0;
+    public static double txDeadbandDeg                  = 2.0;
     public static double txAlpha                        = 0.30;
     public static long txHoldMs                         = 100;
     public static long txFadeMs                         = 200;
-    public static int txAssistEngageTicks               = 13;
-    public static int txAssistDisengageTicks            = 15;
+    public static int txAssistEngageTicks               = 5;
+    public static int txAssistDisengageTicks            = 25;
 }
