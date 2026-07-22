@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+
 import com.arcrobotics.ftclib.util.LUT;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -53,23 +54,6 @@ public class FSMShooter {
 
     private double lastValidTx;
     private long lastValidTimeMs;
-
-    // =========================================================
-    // Dashboard Limelight tuning
-    // =========================================================
-
-    public static double txdegToTicks = 2.4; //
-    public static int txMaxTicks = 50;
-    public static double txDeadbandDeg = 3.0;
-
-    public static double txAlpha = 0.30;
-
-    public static long txHoldMs = 120;
-    public static long txFadeMs = 200;
-
-    public static int txAssistEngageTicks = 13;
-    public static int txAssistDisengageTicks = 15;
-
 
     /**
      * BUTTON FOR SHOOTING
@@ -137,18 +121,19 @@ public class FSMShooter {
         //==========================================================
 
         /// shooter motor power controller
-        power = shooterPowerLUT.getPower(); //get shooter power based on distance Zone and PID+FF power, shooterPowerAngleCalculator.getPower();
-        double rpm = shooterPowerLUT.getRPM();
+        boolean shooterEnabled = shootermotorstate == SHOOTERMOTORSTATE.RUN;
+        power = shooterPowerLUT.getPower(shooterEnabled); //get shooter power based on distance Zone and PID+FF power, shooterPowerAngleCalculator.getPower();
+        double rpmTarget = shooterPowerLUT.getRPMTarget();
 
         //==========================================================
         // Set shooter adjuster angle
         //==========================================================
-        angle = Range.clip(shooterPowerLUT.getShooterAngle(), 0.12, 0.49); // get shooter adjuster angle.
+        angle = shooterPowerLUT.getShooterAngle(); // get shooter adjuster angle.
         robot.shooterAdjusterServo.setPosition(angle);
         //==========================================================
         //Control shooter run/NOT
         //==========================================================
-        boolean shooterEnabled = shootermotorstate == SHOOTERMOTORSTATE.RUN;
+
         if (shooterEnabled){
             robot.topShooterMotor.setPower(power);
             robot.bottomShooterMotor.setPower(power);
@@ -272,7 +257,7 @@ public class FSMShooter {
                 double measuredRPM = shooterPowerLUT.getMeasureRPM();
                 boolean flywheelReady =
                         flyWheelTimer.seconds() >= SPOOLUP_SEC ||
-                                measuredRPM  >= rpm * 0.95;
+                                measuredRPM  >= rpmTarget * 0.95;
                 if (!flywheelReady) return;
                 // make a timer to feed balls
                 long now = System.currentTimeMillis();
