@@ -103,7 +103,7 @@ public class AutoIntakeFSM {
                         colorDetection.updateSlotColors();
                         spindexerContext.currentGreenSlot = colorDetection.findGreenSlot();
                         spindexerContext.updateShootingInitSlot();
-                        if (stateTimer.seconds()>0.2) {
+                        if (stateTimer.seconds()>0.3) {
                             stateTimer.reset();
                             currentState = INTAKESTATE.INTAKE_END;
                         }

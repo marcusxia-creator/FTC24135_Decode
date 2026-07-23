@@ -89,7 +89,7 @@ public class FSMShooter {
         this.gamepadComboInput = gamepadComboInput;
         this.turret = turret;
         this.limelight = limelight;
-        this.goalTagId = isRedAlliance ? 24 : 25;
+        this.goalTagId = isRedAlliance ? 24 : 20;
     }
 
     public void Init() {
@@ -222,7 +222,7 @@ public class FSMShooter {
                 shootermotorstate = SHOOTERMOTORSTATE.RUN;
                 /// 07/18/2026 Set spindexer to shooter start slot pos
                 robot.spindexerServo.setPosition(spindexerShootStartPos);
-                if (shootTimer.seconds()>0.3) {
+                if (shootTimer.seconds()>0.35) {
                     shooterState = SHOOTERSTATE.KICKER_EXTEND;
                     shootTimer.reset();
                     flyWheelTimer.reset();

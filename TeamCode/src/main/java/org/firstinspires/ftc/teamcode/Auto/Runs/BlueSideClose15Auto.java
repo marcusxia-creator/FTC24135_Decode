@@ -20,14 +20,13 @@ import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
-import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.*;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.BlueSidePositions.*;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterRapidRunMode.SHOOTERSTATE.*;
-import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterSortingRunMode.SORTINGSHOOTERSTATE.*;
 
-@Autonomous(name = "15Ball_RedSideCloseAuto", group = "Autonomous")
-public class RedSideClose15Auto extends LinearOpMode {
-    public static Pose2d initialPose = new Pose2d(-38.5, 54, Math.toRadians(90));
+@Autonomous(name = "15Ball_BlueSideCloseAuto", group = "Autonomous")
+public class BlueSideClose15Auto extends LinearOpMode {
+    public static Pose2d initialPose = new Pose2d(-38.5, -54, Math.toRadians(-90));
 
     public RobotHardware robot;
 
@@ -58,7 +57,7 @@ public class RedSideClose15Auto extends LinearOpMode {
         aprilTagDetection.limelightStart();
 
         if (opModeInInit()) {
-            Actions.runBlocking(turret.TurretRun(45));
+            Actions.runBlocking(turret.TurretRun(-45));
             robot.spindexerServo.setPosition(spindexerSlot1);
             robot.kickerServo.setPosition(kickerRetract);
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
@@ -72,36 +71,36 @@ public class RedSideClose15Auto extends LinearOpMode {
         }
 
         TrajectoryActionBuilder DriveToShoot1Builder = drive.actionBuilder(initialPose)
-                .setTangent(30)
+                .setTangent(Math.toRadians(-30))
                 .splineToConstantHeading(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(0));
 
         TrajectoryActionBuilder IntakeSet1Drive1Builder = DriveToShoot1Builder.endTrajectory().fresh()
                 .setTangent(0)
-                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position1_X,Close_IntakeSet2Position1_Y),Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position4_X,Close_IntakeSet2Position4_Y),Math.toRadians(90));
+                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position1_X,Close_IntakeSet2Position1_Y),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position4_X,Close_IntakeSet2Position4_Y),Math.toRadians(-90));
 
         TrajectoryActionBuilder DriveToShoot2Builder = IntakeSet1Drive1Builder.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(CloseShootingPosition_Heading));
 
         TrajectoryActionBuilder IntakeGateSet1Drive1Builder = DriveToShoot2Builder.endTrajectory().fresh()
                 .setTangent(Math.toRadians(180-GateIntakePosition_Heading))
-                .splineTo(new Vector2d(GateIntakePosition_X,GateIntakePosition_Y),Math.toRadians(90));
+                .splineTo(new Vector2d(GateIntakePosition_X,GateIntakePosition_Y),Math.toRadians(-90));
 
         TrajectoryActionBuilder DriveToShoot3Builder = IntakeGateSet1Drive1Builder.endTrajectory().fresh()
-                .setTangent(Math.toRadians(-90))
+                .setTangent(Math.toRadians(90))
                 .splineTo(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(-GateIntakePosition_Heading));
 
         TrajectoryActionBuilder IntakeGateSet2Drive1Builder = DriveToShoot3Builder.endTrajectory().fresh()
                 .setTangent(Math.toRadians(180-GateIntakePosition_Heading))
-                .splineTo(new Vector2d(GateIntakePosition_X,GateIntakePosition_Y),Math.toRadians(90));
+                .splineTo(new Vector2d(GateIntakePosition_X,GateIntakePosition_Y),Math.toRadians(-90));
 
         TrajectoryActionBuilder DriveToShoot4Builder = IntakeGateSet2Drive1Builder.endTrajectory().fresh()
-                .setTangent(Math.toRadians(-90))
+                .setTangent(Math.toRadians(90))
                 .splineTo(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(-GateIntakePosition_Heading));
 
         TrajectoryActionBuilder IntakeSet2Drive1Builder = DriveToShoot4Builder.endTrajectory().fresh()
-                .splineToConstantHeading(new Vector2d(IntakeSet3Position1_X,IntakeSet3Position1_Y),Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(IntakeSet3Position4_X,IntakeSet3Position4_Y),Math.toRadians(90));
+                .splineToConstantHeading(new Vector2d(IntakeSet3Position1_X,IntakeSet3Position1_Y),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(IntakeSet3Position4_X,IntakeSet3Position4_Y),Math.toRadians(-90));
 
         TrajectoryActionBuilder DriveToShoot5Builder = IntakeSet2Drive1Builder.endTrajectory().fresh()
                 .strafeToLinearHeading(
@@ -111,7 +110,7 @@ public class RedSideClose15Auto extends LinearOpMode {
 
         TrajectoryActionBuilder LeaveDriveBuilder = DriveToShoot5Builder.endTrajectory().fresh()
                 .strafeToLinearHeading(
-                        new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y + 16),
+                        new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y - 16),
                         Math.toRadians(CloseShootingPosition_Heading)
                 );
 
@@ -132,9 +131,9 @@ public class RedSideClose15Auto extends LinearOpMode {
             Actions.runBlocking(
                     new SequentialAction(
                             new ParallelAction(
-                                    turret.TurretRun(45),
+                                    turret.TurretRun(-45),
                                     shooter.ShooterOn(CloseShotPower),
-                                    shooter.ShootCloseZone(CloseShotPower, 0,SHOOTER_INIT,SHOOTER_RUN),
+                                    shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_RUN),
                                     DriveToShoot1
                             ),
                             shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
@@ -145,7 +144,7 @@ public class RedSideClose15Auto extends LinearOpMode {
                             new ParallelAction(
                                     DriveToShoot2,
                                     shooter.ShooterOn(CloseShotPower),
-                                    shooter.ShootCloseZone(CloseShotPower, 0,SHOOTER_INIT,SHOOTER_RUN)
+                                    shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_RUN)
                             ),
                             shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                             new ParallelAction(
@@ -155,7 +154,7 @@ public class RedSideClose15Auto extends LinearOpMode {
                             new ParallelAction(
                                     DriveToShoot3,
                                     shooter.ShooterOn(CloseShotPower),
-                                    shooter.ShootCloseZone(CloseShotPower, 0,SHOOTER_INIT,SHOOTER_RUN)
+                                    shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_RUN)
                             ),
                             shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                             new ParallelAction(
@@ -165,7 +164,7 @@ public class RedSideClose15Auto extends LinearOpMode {
                             new ParallelAction(
                                     DriveToShoot4,
                                     shooter.ShooterOn(CloseShotPower),
-                                    shooter.ShootCloseZone(CloseShotPower, 0,SHOOTER_INIT,SHOOTER_RUN)
+                                    shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_RUN)
                             ),
                             shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                             new ParallelAction(
@@ -175,7 +174,7 @@ public class RedSideClose15Auto extends LinearOpMode {
                             new ParallelAction(
                                     DriveToShoot5,
                                     shooter.ShooterOn(CloseShotPower),
-                                    shooter.ShootCloseZone(CloseShotPower, 0,SHOOTER_INIT,SHOOTER_RUN)
+                                    shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_RUN)
                             ),
                             shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                             new ParallelAction(
@@ -191,4 +190,3 @@ public class RedSideClose15Auto extends LinearOpMode {
         }
     }
 }
-

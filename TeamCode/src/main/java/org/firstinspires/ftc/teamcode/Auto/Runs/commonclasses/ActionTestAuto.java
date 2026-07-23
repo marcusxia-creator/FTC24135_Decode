@@ -54,7 +54,7 @@ public class ActionTestAuto extends LinearOpMode {
         aprilTagDetection.limelightStart();
 
         if (opModeInInit()) {
-            robot.spindexerServo.setPosition(spindexerSlot2);
+            robot.spindexerServo.setPosition(spindexerSlot0);
             robot.kickerServo.setPosition(kickerRetract);
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
             colorDetection.detectInit();
@@ -82,7 +82,11 @@ public class ActionTestAuto extends LinearOpMode {
         if (opModeIsActive()) {
             Actions.runBlocking(
                 new SequentialAction(
-                        shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_END),
+                        shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_INIT,SORTINGSHOOTER_END),
+                        intake.IntakeRun(8),
+                        shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_INIT,SORTINGSHOOTER_END),
+                        intake.IntakeRun(8),
+                        shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_INIT,SORTINGSHOOTER_END),
                         intake.IntakeRun(8)
                 )
             );

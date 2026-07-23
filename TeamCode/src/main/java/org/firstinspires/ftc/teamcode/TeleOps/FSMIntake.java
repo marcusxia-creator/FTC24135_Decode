@@ -57,8 +57,10 @@ public class FSMIntake {
             case INTAKE_PREP:
                 // Ensure we start at a clean position
                 robot.spindexerServo.setPosition(spindexerIntakePos);
-                intakeTimer.reset();
-                intakeStates = IntakeStates.INTAKE_START;
+                if (Math.abs(robot.spindexerServo.getPosition()-spindexerIntakePos)<0.02) {
+                    intakeTimer.reset();
+                    intakeStates = IntakeStates.INTAKE_START;
+                }
                 break;
 
             case INTAKE_START:

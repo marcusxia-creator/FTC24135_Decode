@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.Auto.Runs;
 
 import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.AutoShooterFSM.ShooterSortingRunMode.SORTINGSHOOTERSTATE.*;
-import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.*;
-import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.Close_IntakeSet2Position4_X;
-import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.RedSidePositions.Close_IntakeSet2Position4_Y;
+import static org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.BlueSidePositions.*;
 import static org.firstinspires.ftc.teamcode.TeleOps.RobotActionConfig.*;
 
 import com.acmerobotics.roadrunner.Action;
@@ -25,9 +23,9 @@ import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.sortingClasses.AprilTagDetection;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 
-@Autonomous(name = "12BallSort_RedSideCloseAuto", group = "Autonomous")
-public class RedSideClose12SortedAuto extends LinearOpMode {
-    public static Pose2d initialPose = new Pose2d(-38.5, 54, Math.toRadians(90));
+@Autonomous(name = "12BallSort_BlueSideCloseAuto", group = "Autonomous")
+public class BlueSideClose12SortedAuto extends LinearOpMode {
+    public static Pose2d initialPose = new Pose2d(-38.5, -54, Math.toRadians(-90));
 
     public RobotHardware robot;
 
@@ -58,7 +56,7 @@ public class RedSideClose12SortedAuto extends LinearOpMode {
         aprilTagDetection.limelightStart();
 
         if (opModeInInit()) {
-            Actions.runBlocking(turret.TurretRun(167));
+            Actions.runBlocking(turret.TurretRun(-167));
             robot.spindexerServo.setPosition(spindexerSlot1);
             robot.kickerServo.setPosition(kickerRetract);
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
@@ -72,15 +70,15 @@ public class RedSideClose12SortedAuto extends LinearOpMode {
         }
 
         TrajectoryActionBuilder DriveToShoot1Builder = drive.actionBuilder(initialPose)
-                .splineToConstantHeading(new Vector2d(-38.5,44),Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(-90));
+                .splineToConstantHeading(new Vector2d(-38.5,-44),Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(CloseShootingPosition_X,CloseShootingPosition_Y),Math.toRadians(90));
 
         TrajectoryActionBuilder IntakeSet1Drive1Builder = DriveToShoot1Builder.endTrajectory().fresh()
                 .setTangent(0)
-                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position1_X,Close_IntakeSet2Position1_Y),Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position4_X,Close_IntakeSet2Position4_Y-4),Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position4_X,Close_IntakeSet2Position4_Y-12),Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(8,54),Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position1_X,Close_IntakeSet2Position1_Y),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position4_X,Close_IntakeSet2Position4_Y+4),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(Close_IntakeSet2Position4_X,Close_IntakeSet2Position4_Y+12),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(8,-54),Math.toRadians(-90))
                 .waitSeconds(0.5);
 
         TrajectoryActionBuilder DriveToShoot2Builder = IntakeSet1Drive1Builder.endTrajectory().fresh()
@@ -88,15 +86,15 @@ public class RedSideClose12SortedAuto extends LinearOpMode {
 
         TrajectoryActionBuilder IntakeSet2Drive1Builder = DriveToShoot2Builder.endTrajectory().fresh()
                 .setTangent(0)
-                .splineToConstantHeading(new Vector2d(IntakeSet1Position1_X,IntakeSet1Position1_Y),Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(IntakeSet1Position4_X,IntakeSet1Position4_Y),Math.toRadians(90));
+                .splineToConstantHeading(new Vector2d(IntakeSet1Position1_X,IntakeSet1Position1_Y),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(IntakeSet1Position4_X,IntakeSet1Position4_Y),Math.toRadians(-90));
 
         TrajectoryActionBuilder DriveToShoot3Builder = IntakeSet2Drive1Builder.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y), Math.toRadians(CloseShootingPosition_Heading));
 
         TrajectoryActionBuilder IntakeSet3Drive1Builder = DriveToShoot3Builder.endTrajectory().fresh()
-                .splineToConstantHeading(new Vector2d(IntakeSet3Position1_X,IntakeSet3Position1_Y),Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(IntakeSet3Position4_X,IntakeSet3Position4_Y),Math.toRadians(90));
+                .splineToConstantHeading(new Vector2d(IntakeSet3Position1_X,IntakeSet3Position1_Y),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(IntakeSet3Position4_X,IntakeSet3Position4_Y),Math.toRadians(-90));
 
         TrajectoryActionBuilder DriveToShoot4Builder = IntakeSet3Drive1Builder.endTrajectory().fresh()
                 .strafeToLinearHeading(
@@ -106,7 +104,7 @@ public class RedSideClose12SortedAuto extends LinearOpMode {
 
         TrajectoryActionBuilder LeaveDriveBuilder = DriveToShoot4Builder.endTrajectory().fresh()
                 .strafeToLinearHeading(
-                        new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y + 16),
+                        new Vector2d(CloseShootingPosition_X, CloseShootingPosition_Y - 16),
                         Math.toRadians(CloseShootingPosition_Heading)
                 );
 
@@ -125,7 +123,7 @@ public class RedSideClose12SortedAuto extends LinearOpMode {
             Actions.runBlocking(
                     new SequentialAction(
                             new ParallelAction(
-                                    turret.TurretRun(45),
+                                    turret.TurretRun(-45),
                                     shooter.ShooterOn(CloseShotPower),
                                     DriveToShoot1
                             ),
@@ -173,4 +171,3 @@ public class RedSideClose12SortedAuto extends LinearOpMode {
         }
     }
 }
-
