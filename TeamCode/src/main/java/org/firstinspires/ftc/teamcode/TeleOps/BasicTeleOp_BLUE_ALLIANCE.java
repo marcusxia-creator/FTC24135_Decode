@@ -116,7 +116,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         robotDrive.Init();
 
         limelight = new Limelight(robot);
-        limelight.initLimelight(25);
+        limelight.initLimelight(20);
         limelight.start();
 
         /// 3. turret---------------------------------------------------------------

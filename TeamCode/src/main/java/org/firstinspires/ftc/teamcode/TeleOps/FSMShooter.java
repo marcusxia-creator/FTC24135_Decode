@@ -89,7 +89,7 @@ public class FSMShooter {
         this.gamepadComboInput = gamepadComboInput;
         this.turret = turret;
         this.limelight = limelight;
-        this.goalTagId = isRedAlliance ? 24 : 25;
+        this.goalTagId = isRedAlliance ? 24 : 20;
     }
 
     public void Init() {
