@@ -25,7 +25,7 @@ public class RobotActionConfig {
     public static double[] spindexerSlots               = {spindexerSlot0, spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5, spindexerSlot6};
 
     //Special Spindexer Positions
-    public static double spindexerStowPos               = spindexerSlot1; //Position between slots 1 and 2 to prevent balls from falling out under acceleration
+    public static double spindexerStowPos               = 0.08; //Position between slots 1 and 2 to prevent balls from falling out under acceleration
     public static double spindexerIntakePos             = spindexerSlot1;
     public static double spindexerShootStartPos         = 0.0;
     public static double spindexerClearanceOffset       = 0.0;     //distance between tha shoot pos and the earlier cleared slot, used in stopping. Might switch to a list of cleared positions

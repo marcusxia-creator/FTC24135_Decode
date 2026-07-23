@@ -134,7 +134,7 @@ public class RedSideClose15Auto extends LinearOpMode {
                             new ParallelAction(
                                     turret.TurretRun(45),
                                     shooter.ShooterOn(CloseShotPower),
-                                    shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_RUN),
+                                    shooter.ShootCloseZone(CloseShotPower, 0,SHOOTER_INIT,SHOOTER_RUN),
                                     DriveToShoot1
                             ),
                             shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
@@ -145,7 +145,7 @@ public class RedSideClose15Auto extends LinearOpMode {
                             new ParallelAction(
                                     DriveToShoot2,
                                     shooter.ShooterOn(CloseShotPower),
-                                    shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_RUN)
+                                    shooter.ShootCloseZone(CloseShotPower, 0,SHOOTER_INIT,SHOOTER_RUN)
                             ),
                             shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                             new ParallelAction(
@@ -155,7 +155,7 @@ public class RedSideClose15Auto extends LinearOpMode {
                             new ParallelAction(
                                     DriveToShoot3,
                                     shooter.ShooterOn(CloseShotPower),
-                                    shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_RUN)
+                                    shooter.ShootCloseZone(CloseShotPower, 0,SHOOTER_INIT,SHOOTER_RUN)
                             ),
                             shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                             new ParallelAction(
@@ -165,7 +165,7 @@ public class RedSideClose15Auto extends LinearOpMode {
                             new ParallelAction(
                                     DriveToShoot4,
                                     shooter.ShooterOn(CloseShotPower),
-                                    shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_RUN)
+                                    shooter.ShootCloseZone(CloseShotPower, 0,SHOOTER_INIT,SHOOTER_RUN)
                             ),
                             shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                             new ParallelAction(
@@ -175,7 +175,7 @@ public class RedSideClose15Auto extends LinearOpMode {
                             new ParallelAction(
                                     DriveToShoot5,
                                     shooter.ShooterOn(CloseShotPower),
-                                    shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_INIT,SHOOTER_RUN)
+                                    shooter.ShootCloseZone(CloseShotPower, 0,SHOOTER_INIT,SHOOTER_RUN)
                             ),
                             shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                             new ParallelAction(

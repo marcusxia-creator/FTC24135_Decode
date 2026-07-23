@@ -5,7 +5,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 
 @Config
 public class RedSidePositions {
-    public static double CloseShotPower = 0.69;
+    public static double CloseShotPower = 0.68;
     public static double FarShotPower = 0.84;
 
     private final Pose2d redGoalPose  = new Pose2d(-70,70,-45);
