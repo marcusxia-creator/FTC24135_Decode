@@ -1,5 +1,15 @@
 ## TeamCode Module
 
+## Notes to FTC 24135
+TeleOps control prep for Provincial Competition
+TeleOps control -   Robot drive
+                -   FSM Despoist Arm - Color Sensor - Limit Switch
+                -   FSM Intake Arm
+                -   Semi Auto to specimen scoring point - RoadRunner0.56
+                -   Semi Auto to specimen pick up point - RoadRunner0.56
+AutoOps         - RoadRunner 0.56
+
+##
 Welcome!
 
 This module, TeamCode, is the place where you will write/paste the code for your team's

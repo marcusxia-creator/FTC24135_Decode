@@ -1,143 +1,224 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
+
+
+import java.util.Collections;
 
 /*
 Hardware config:
 Motor:
 Control hub motor:
-                port 0: FL_Motor
-                port 1: BL_motor
-                port 2: FR_Motor
-                port 3: BR_Motor
+                port 0: BR_motor
+                port 1: BL_Motor
+                port 2: FL_Motor
+                port 3: FR_Motor
 Expansion hub motor:
-                port 0 VS_Motor_Left
-                port 1: VS_Motor_Right
+                port 0: Turret_Motor
+                port 1: Intake_Motor
+                port 2: Bottom_Shooter_Motor
+                port 3: Top_Shooter_Motor
 
 Servo:
-Control hub:
-                port 0: Intake_Wrist_Servo
-                port 1: Intake_Arm_Left_Servo
-                port 2: Intake_Slide_Left_Servo
-                port 3: Deposit_Claw_Servo
-                port 4: Deposit_Arm_Servo
+Control hub servo:
+                port 0: Empty
+                port 1: Empty
+                port 2: Empty
+                port 3: Empty
+                port 4: Empty
+                port 5: Kicker_Servo
+
+Expansion hub servo:
+                port 0: Spindexer_Servo
+                port 1: Shooter_Adjuster_Servo
+                port 2: Empty
+                port 3: goBilda_LED_Light
+                port 4: Empty
                 port 5: Empty
 
-Expansion hub:
-                port 0: Empty
-                port 1: Intake_Slide_Right_Servo
-                port 2: Deposit_Wrist_Servo
-                port 3: Intake_Claw_Servo
-                port 4: Intake_Rotation_Servo
-                port 5: Intake_Arm_Right_Servo
-
-
 I2C port
-control hub
+EXP hub:
+                port 0: external_imu
+Control hub:
                 port 0: control hub imu
-                port 1: pinpoint odometry computer
-                port 2: Color_Sensor
+                port 1: Pinpoint (odometry computer)
+                port 2: Empty
+                port 3: Color_Sensor
+Digital Port
+Control hub
+                port 7: Empty
 
  */
 
 public class RobotHardware {
-    //Drive chassis motor
+    //motors
     public DcMotorEx frontLeftMotor;
     public DcMotorEx backLeftMotor;
     public DcMotorEx frontRightMotor;
     public DcMotorEx backRightMotor;
+    public Servo kickerServo;
+    public ServoImplEx spindexerServo;
+    public Servo shooterAdjusterServo;
+    public DcMotorEx intakeMotor;
+    public DcMotorEx turretMotor;
 
-    public DcMotorEx liftMotorLeft;// Vertical Slide Motor
-    public DcMotorEx liftMotorRight;// Vertical Slide Motor
+    public DcMotorEx topShooterMotor;
+    public DcMotorEx bottomShooterMotor;
 
-    //Intake servos
-    public Servo intakeLeftSlideServo;
-    public Servo intakeRightSlideServo;
-    public Servo intakeLeftArmServo;
-    public Servo intakeRightArmServo;
-    public Servo intakeRotationServo;
-    public Servo intakeClawServo;
-    public Servo intakeWristServo;
+    private RevHubOrientationOnRobot revHubOrientationOnRobot;
+    public DigitalChannel limitSwitch;
 
-    //Deposit servos
-    public Servo depositArmServo;
-    public Servo depositWristServo;
-    public Servo depositClawServo;
+    //public ColorSensor colorSensor;// Color Sensor
+    ///for debug colorSensor
+    public SlotSensor slotSensor1;
+    public SlotSensor slotSensor2;
+    public SlotSensor slotSensor3;
+    public List<SlotSensor> slotSensors;
 
-    public ColorSensor colorSensor;// Color Sensor
+    //Legacy colour sensors, kept for auto errors
+    public ColorSensor colorSensor;
+    public DistanceSensor distanceSensor;
+
+    ///public DigitalChannel limitSwitch;// Limit Switch
 
     public IMU imu; //IMU
+    public BNO055IMU external_imu;
+    public GoBildaPinpointDriver pinpoint;
+
     public HardwareMap hardwareMap;
+    public ArrayList <VoltageSensor> voltageSensors;
 
-    public void init(HardwareMap hardwareMap) {
+    public Servo LED;
 
+    public Limelight3A limelight;
+
+    private List<LynxModule> allHubs;
+
+    private double vEma = 12.0;                 // EMA state
+    public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
+    public  double vMinAccept = 10.5;            // discard anything below this as junk
+    public  double vDefault   = 12.0;           // fallback
+
+    // Throttle for getBatteryVoltageRobust(): voltage sensor reads are live,
+    // blocking hub commands (not covered by clearBulkCache()), and battery
+    // voltage doesn't need re-reading every loop tick.
+    private final List<Double> voltageReadBuffer = new ArrayList<>();
+    private long lastVoltageReadMs = 0;
+    private static final long VOLTAGE_READ_INTERVAL_MS = 250;
+
+    public RobotHardware(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap; // store the hardwareMap reference
         /**Set up motors**/
+    }
+
+
+    public void init() {
         //Drive train motors
         frontLeftMotor = hardwareMap.get(DcMotorEx.class, "FL_Motor");
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "BL_Motor");
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
-        //Lift motors
-        liftMotorLeft = hardwareMap.get(DcMotorEx.class,"VS_Left_Motor");
-        liftMotorRight = hardwareMap.get(DcMotorEx.class, "VS_Right_Motor");
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
+        turretMotor = hardwareMap.get(DcMotorEx.class, "Turret_Motor");
 
+        //Servos
+        //angleServo = hardwareMap.get(Servo.class, "Angle_Servo");
+        kickerServo = hardwareMap.get(Servo.class, "Kicker_Servo");
+        spindexerServo = hardwareMap.get(ServoImplEx.class, "Spindexer_Servo");
+        shooterAdjusterServo = hardwareMap.get(Servo.class, "Shooter_Adjuster_Servo");
 
-        /**set servos**/
-        //Intake servo
-        intakeLeftSlideServo = hardwareMap.get(Servo.class, "Intake_Slide_Left_Servo");
-        intakeRightSlideServo = hardwareMap.get(Servo.class, "Intake_Slide_Right_Servo");
-        intakeLeftArmServo = hardwareMap.get(Servo.class, "Intake_Arm_Left_Servo");
-        intakeRightArmServo = hardwareMap.get(Servo.class, "Intake_Arm_Right_Servo");
-        intakeWristServo = hardwareMap.get(Servo.class, "Intake_Wrist_Servo");
-        intakeRotationServo = hardwareMap.get(Servo.class, "Intake_Rotation_Servo");
-        intakeClawServo = hardwareMap.get(Servo.class, "Intake_Claw_Servo");
-        //Deposit servo
-        depositArmServo = hardwareMap.get(Servo.class, "Deposit_Arm_Servo");
-        depositWristServo = hardwareMap.get(Servo.class, "Deposit_Wrist_Servo");
-        depositClawServo = hardwareMap.get(Servo.class, "Deposit_Claw_Servo");
-        //Color sensor
-        colorSensor = hardwareMap.get(ColorSensor.class, "Color_Sensor");
+        topShooterMotor = hardwareMap.get(DcMotorEx.class, "Top_Shooter_Motor");
+        bottomShooterMotor = hardwareMap.get(DcMotorEx.class, "Bottom_Shooter_Motor");
 
-        //set motor mode and motor direction
-        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed
-        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);  // Reverse the left motor if needed
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        imu = hardwareMap.get(IMU.class, "imu");
 
-        //Reset the drive train motor encoders
+        revHubOrientationOnRobot = new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                RevHubOrientationOnRobot.UsbFacingDirection.LEFT);
+
+        imu.initialize(new IMU.Parameters(revHubOrientationOnRobot));
+
+        LED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
+        slotSensor1 = new SlotSensor(hardwareMap, "Left_Color_Sensor");
+        slotSensor2 = new SlotSensor(hardwareMap, "Front_Color_Sensor");
+        slotSensor3 = new SlotSensor(hardwareMap, "Right_Color_Sensor");
+        slotSensors = Arrays.asList(slotSensor1,slotSensor2,slotSensor3);
+        limitSwitch = hardwareMap.get(DigitalChannel.class, "Limit_Switch");
+        limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+
+        limelight = hardwareMap.get(Limelight3A.class, "LimeLight3A");
+
+        voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
+        /// Reset the drive motor encoders
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        //Set drive train motor run mode
+        /// Set drive motor run mode
         frontLeftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
         backLeftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); //set motor mode
         frontRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
         backRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
+        /// config drive motor set front left motor reverse
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        //set servo direction - intake and deposit
-        intakeRightArmServo.setDirection(Servo.Direction.REVERSE);
-        intakeLeftSlideServo.setDirection(Servo.Direction.REVERSE);
+        /// brake instead of coast when drive power hits 0
+        frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        //set slide motors to RUN_TO_POSITION for vertical slide motor
-        liftMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        /// config intake motor
+        intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        //Reset the motor encoder
-        liftMotorLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotorRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
-        //Set the run mode of the motors
-        liftMotorLeft.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        liftMotorRight.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        /// config turret motor
+        turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        //turretMotor.setTargetPositionTolerance(3);
 
-        // set robot motor power 0
+        /// set run mode of shooter Motor
+        topShooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        bottomShooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        topShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        bottomShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        topShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        ///set servo direction
+        shooterAdjusterServo.setDirection(Servo.Direction.REVERSE);
+        kickerServo.setDirection(Servo.Direction.REVERSE);
+
+        ///set spindexer servo PWM
+        spindexerServo.setPwmRange(new PwmControl.PwmRange(500,2500));
+
+        /** set drive motor 0 */
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
@@ -152,10 +233,74 @@ public class RobotHardware {
         IMU.Parameters myIMUparameters;
         myIMUparameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                        RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
+                        RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
                 ));
         imu.initialize(myIMUparameters);
         imu.resetYaw();
+    }
+
+    public void initExternalIMU(){
+        external_imu = hardwareMap.get(BNO055IMU.class, "external_imu");
+        BNO055IMU.Parameters myBNOIMUparameters = new BNO055IMU.Parameters();
+        myBNOIMUparameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        myBNOIMUparameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        myBNOIMUparameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample OpMode
+        myBNOIMUparameters.loggingEnabled      = true;
+        myBNOIMUparameters.loggingTag          = "IMU";
+        myBNOIMUparameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        external_imu.initialize(myBNOIMUparameters);
+    }
+
+    public void initPinpoint() {
+        pinpoint.setOffsets(38.1, -184.15, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        //pinpoint.resetPosAndIMU();
+    }
+
+    public void turretInit() {
+        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    private static double median(List<Double> xs) {
+        Collections.sort(xs);
+        int n = xs.size();
+        return n == 0 ? Double.NaN : (n % 2 == 1 ? xs.get(n/2) : 0.5*(xs.get(n/2-1)+xs.get(n/2)));
+    }
+
+    public double getBatteryVoltageRobust() {
+        long now = System.currentTimeMillis();
+        if (now - lastVoltageReadMs < VOLTAGE_READ_INTERVAL_MS) {
+            return vEma;   // reuse last reading — voltage sensor reads are live hub commands
+        }
+        lastVoltageReadMs = now;
+
+        voltageReadBuffer.clear();
+        for (VoltageSensor vs : voltageSensors) {
+            double v = vs.getVoltage();
+            if (v > vMinAccept) voltageReadBuffer.add(v);   // keep plausible readings only
+        }
+        double vMed = voltageReadBuffer.isEmpty() ? vDefault : median(voltageReadBuffer);
+        // EMA smoothing
+        vEma = vAlpha * vMed + (1.0 - vAlpha) * vEma;
+        return vEma;
+    }
+
+    //bulk reading
+    public void initializeBulkReading(HardwareMap hardwareMap) {
+        allHubs = hardwareMap.getAll(LynxModule.class);
+
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(
+                    LynxModule.BulkCachingMode.MANUAL
+            );
+        }
+    }
+
+    public void clearBulkCache() {
+        for (LynxModule hub : allHubs) {
+            hub.clearBulkCache();
+        }
     }
 }
