@@ -30,7 +30,7 @@ public class RedSidePositions {
     public static double IntakeHPPosition4_X = 58;
     public static double IntakeHPPosition4_Y = 60;
 
-    public static double IntakeHP2Position1_X = 32;
+    public static double IntakeHP2Position1_X = 50;
     public static double IntakeHP2Position1_Y = 24;
     public static double IntakeHP2Position4_X = 50;
     public static double IntakeHP2Position4_Y = 60;
