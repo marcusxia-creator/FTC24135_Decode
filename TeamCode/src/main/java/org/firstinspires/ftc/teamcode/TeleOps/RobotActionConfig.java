@@ -116,9 +116,9 @@ public class RobotActionConfig {
     public static int RPM0                              = 3700; ///all minus 200 rpm with upgraded hardware
     public static int RPM1                              = 3150;
     public static int RPM2                              = 3200;
-    public static int RPM3                              = 3450;
-    public static int RPM4                              = 3600;
-    public static int RPM5                              = 3750;
+    public static int RPM3                              = 3500;     //3400
+    public static int RPM4                              = 3750;     //3600
+    public static int RPM5                              = 3850;     //3750
     public static int RPM6                              = 4300;
     public static int RPM7                              = 4400;
     public static int RPM8                              = 4540;
