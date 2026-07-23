@@ -8,6 +8,11 @@ public class BlueSidePositions {
     public static double CloseShotPower = 0.69;
     public static double FarShotPower = 0.84;
 
+    public static int TurretFarInitAngle = -67;
+    public static int TurretFarAngle = -68;
+    public static int TurretCloseAngle = -48;
+    public static int TurretObeliskAngle = -169;
+
     private final Pose2d blueGoalPose  = new Pose2d(-70,-70,45);
 
     public static double IntakeSet1Position1_X = 36;

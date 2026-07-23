@@ -58,7 +58,7 @@ public class RedSideClose15Auto extends LinearOpMode {
         aprilTagDetection.limelightStart();
 
         if (opModeInInit()) {
-            Actions.runBlocking(turret.TurretRun(45));
+            Actions.runBlocking(turret.TurretRun(TurretCloseAngle));
             robot.spindexerServo.setPosition(spindexerSlot1);
             robot.kickerServo.setPosition(kickerRetract);
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
@@ -132,7 +132,7 @@ public class RedSideClose15Auto extends LinearOpMode {
             Actions.runBlocking(
                     new SequentialAction(
                             new ParallelAction(
-                                    turret.TurretRun(45),
+                                    turret.TurretRun(TurretCloseAngle),
                                     shooter.ShooterOn(CloseShotPower),
                                     shooter.ShootCloseZone(CloseShotPower, 0,SHOOTER_INIT,SHOOTER_RUN),
                                     DriveToShoot1
@@ -149,7 +149,7 @@ public class RedSideClose15Auto extends LinearOpMode {
                             ),
                             shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                             new ParallelAction(
-                                    intake.IntakeRun(3.5),
+                                    intake.IntakeRun(3),
                                     IntakeGateSet1Drive1
                             ),
                             new ParallelAction(
@@ -159,7 +159,7 @@ public class RedSideClose15Auto extends LinearOpMode {
                             ),
                             shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                             new ParallelAction(
-                                    intake.IntakeRun(3.5),
+                                    intake.IntakeRun(3),
                                     IntakeGateSet2Drive1
                             ),
                             new ParallelAction(
@@ -169,7 +169,7 @@ public class RedSideClose15Auto extends LinearOpMode {
                             ),
                             shooter.ShootCloseZone(CloseShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                             new ParallelAction(
-                                    intake.IntakeRun(2.5),
+                                    intake.IntakeRun(2),
                                     IntakeSet2Drive1
                             ),
                             new ParallelAction(

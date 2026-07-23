@@ -112,61 +112,55 @@ public class RedSideFar15Auto extends LinearOpMode {
             Actions.runBlocking(
                     new SequentialAction(
                             new ParallelAction(
-                                    turret.TurretRun(67),
+                                    turret.TurretRun(TurretFarInitAngle),
                                     shooter.ShooterOn(FarShotPower),
                                     shooter.ShootFarZone(FarShotPower, 1,SHOOTER_INIT,SHOOTER_RUN)
                             ),
-                            shooter.ShootFarZone(FarShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_WAIT),
+                            shooter.ShootFarZone(FarShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                             new ParallelAction(
-                                    new SequentialAction(
-                                            shooter.ShootFarZone(FarShotPower, 0,SHOOTER_RESET,SHOOTER_END),
-                                            intake.IntakeRun(2)
-                                    ),
+                                    intake.IntakeRun(2),
                                     shooter.ShooterOff(),
                                     intakeSet1Drive1Action
                             ),
                             new ParallelAction(
                                     driveToShoot1Action,
-                                    turret.TurretRun(68),
+                                    turret.TurretRun(TurretFarAngle),
                                     shooter.ShooterOn(FarShotPower),
                                     shooter.ShootFarZone(FarShotPower, 0,SHOOTER_INIT,SHOOTER_RUN)
                             ),
-                            shooter.ShootFarZone(FarShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_WAIT),
+                            shooter.ShootFarZone(FarShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                             new ParallelAction(
-                                    intake.IntakeRun(2.5),
+                                    intake.IntakeRun(2),
+                                    shooter.ShooterOff(),
                                     intakeHPSet1Drive1Action
                             ),
                             new ParallelAction(
                                     driveToShoot2Action,
-                                    turret.TurretRun(68),
+                                    turret.TurretRun(TurretFarAngle),
                                     shooter.ShooterOn(FarShotPower),
                                     shooter.ShootFarZone(FarShotPower, 0.1,SHOOTER_INIT,SHOOTER_RUN)
                             ),
-                            shooter.ShootFarZone(FarShotPower, 0,SHOOTER_SWITCH,SHOOTER_WAIT),
+                            shooter.ShootFarZone(FarShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                             new ParallelAction(
-                                    new SequentialAction(
-                                            shooter.ShootFarZone(FarShotPower, 0,SHOOTER_RESET,SHOOTER_END),
-                                            intake.IntakeRun(2.5)
-                                    ),
+                                    intake.IntakeRun(2),
+                                    shooter.ShooterOff(),
                                     intakeHPSet2Drive1Action
                             ),
                             new ParallelAction(
                                     driveToShoot3Action,
-                                    turret.TurretRun(68),
+                                    turret.TurretRun(TurretFarAngle),
                                     shooter.ShooterOn(FarShotPower),
                                     shooter.ShootFarZone(FarShotPower, 0,SHOOTER_INIT,SHOOTER_RUN)
                             ),
-                            shooter.ShootFarZone(FarShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_WAIT),
+                            shooter.ShootFarZone(FarShotPower, 0.1,SHOOTER_SWITCH,SHOOTER_END),
                             new ParallelAction(
-                                    new SequentialAction(
-                                            shooter.ShootFarZone(FarShotPower, 0,SHOOTER_RESET,SHOOTER_END),
-                                            intake.IntakeRun(2.5)
-                                    ),
+                                    intake.IntakeRun(2),
+                                    shooter.ShooterOff(),
                                     intakeHPSet3Drive1Action
                             ),
                             new ParallelAction(
                                     driveToShoot4Action,
-                                    turret.TurretRun(68),
+                                    turret.TurretRun(TurretFarAngle),
                                     shooter.ShooterOn(FarShotPower),
                                     shooter.ShootFarZone(FarShotPower, 0,SHOOTER_INIT,SHOOTER_RUN)
                             ),

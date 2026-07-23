@@ -56,7 +56,7 @@ public class BlueSideClose12SortedAuto extends LinearOpMode {
         aprilTagDetection.limelightStart();
 
         if (opModeInInit()) {
-            Actions.runBlocking(turret.TurretRun(-167));
+            Actions.runBlocking(turret.TurretRun(TurretObeliskAngle));
             robot.spindexerServo.setPosition(spindexerSlot1);
             robot.kickerServo.setPosition(kickerRetract);
             robot.shooterAdjusterServo.setPosition(shooterAdjusterMax);
@@ -123,7 +123,7 @@ public class BlueSideClose12SortedAuto extends LinearOpMode {
             Actions.runBlocking(
                     new SequentialAction(
                             new ParallelAction(
-                                    turret.TurretRun(-45),
+                                    turret.TurretRun(TurretCloseAngle),
                                     shooter.ShooterOn(CloseShotPower),
                                     DriveToShoot1
                             ),
@@ -140,7 +140,7 @@ public class BlueSideClose12SortedAuto extends LinearOpMode {
                             shooter.ShootSorting(CloseShotPower, 0.1,SORTINGSHOOTER_INIT,SORTINGSHOOTER_END),
                             shooter.ShooterOff(),
                             new ParallelAction(
-                                    intake.IntakeRun(4),
+                                    intake.IntakeRun(3.5),
                                     IntakeSet2Drive1
                             ),
                             new ParallelAction(
