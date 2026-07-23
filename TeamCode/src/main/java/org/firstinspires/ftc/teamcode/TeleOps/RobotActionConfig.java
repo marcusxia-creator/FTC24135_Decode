@@ -25,7 +25,7 @@ public class RobotActionConfig {
     public static double[] spindexerSlots               = {spindexerSlot0, spindexerSlot1, spindexerSlot2, spindexerSlot3, spindexerSlot4, spindexerSlot5, spindexerSlot6};
 
     //Special Spindexer Positions
-    public static double spindexerStowPos               = 0.08; //Position between slots 1 and 2 to prevent balls from falling out under acceleration
+    public static double spindexerStowPos               = 0.04; //Position between slots 1 and 2 to prevent balls from falling out under acceleration
     public static double spindexerIntakePos             = spindexerSlot1;
     public static double spindexerShootStartPos         = 0.0;
     public static double spindexerClearanceOffset       = 0.0;     //distance between tha shoot pos and the earlier cleared slot, used in stopping. Might switch to a list of cleared positions
@@ -52,6 +52,7 @@ public class RobotActionConfig {
     public static double shooterAdjusterMax             = 0.49;
     public static double shooterAdjusterMin             = 0.14; //new 0.14 ; old : 0.06
     public static double shooterAdjusterMid             = 0.35; //new 0.35
+    public static double shooterAdjusterZone3           = 0.42;
     public static double shooterAdjusterInitial         = 0.48;
     //drive train power parameters
     public static double powerFactor                    = 1;
@@ -105,10 +106,10 @@ public class RobotActionConfig {
     public static double CLOSE                          = 57.0;
     public static double closeEdge                      = 36.0;
 
-    public static double FAR_ZONE_TOUCH                 = 118.0;
-    public static double FAR_ZONE_CLOSE                 = 125.0;
-    public static double FAR_ZONE_MID                   = 144;
-    public static double FAR_ZONE_FAR                   = 167.0;
+    public static double FAR_ZONE_TOUCH                 = 128.0;
+    public static double FAR_ZONE_CLOSE                 = 146.0;
+    public static double FAR_ZONE_MID                   = 158.0;
+    public static double FAR_ZONE_FAR                   = 164.0;
 
     //shooting RPM for each Zone
     public static double RPMFactor                      = 1.0;

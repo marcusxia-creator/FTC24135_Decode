@@ -210,6 +210,7 @@ public class LUTPowerCalculator {
             case ZONE_2:
                 return shooterAdjusterMid;
             case ZONE_3:
+                return shooterAdjusterZone3;
             case ZONE_4:
             case ZONE_5:
             case ZONE_6:

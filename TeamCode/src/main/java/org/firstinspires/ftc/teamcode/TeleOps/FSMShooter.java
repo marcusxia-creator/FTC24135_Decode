@@ -222,7 +222,7 @@ public class FSMShooter {
                 shootermotorstate = SHOOTERMOTORSTATE.RUN;
                 /// 07/18/2026 Set spindexer to shooter start slot pos
                 robot.spindexerServo.setPosition(spindexerShootStartPos);
-                if (shootTimer.seconds()>0.3) {
+                if (shootTimer.seconds()>0.35) {
                     shooterState = SHOOTERSTATE.KICKER_EXTEND;
                     shootTimer.reset();
                     flyWheelTimer.reset();
