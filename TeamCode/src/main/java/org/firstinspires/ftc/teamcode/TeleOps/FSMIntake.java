@@ -65,8 +65,10 @@ public class FSMIntake {
                 boolean jammed = isIntakeJammmed();
                 HandleIntaking(jammed); // This manages motor power internally
                 intakeTimer.reset();
-                //go straight to capture, might fuse states
-                intakeStates = IntakeStates.INTAKE_CAPTURE;
+                if(intakeTimer.seconds()>0.4){
+                    //Give spindexer time to move and clear sensors
+                    intakeStates = IntakeStates.INTAKE_CAPTURE;
+                }
                 break;
 
             case INTAKE_CAPTURE:
@@ -85,11 +87,10 @@ public class FSMIntake {
 
             case INTAKE_STOP:
                 robot.intakeMotor.setPower(ejectSpeed);
-                double time = intakeTimer.seconds();
-                //Park spindexer at travel pos
+                //Park spindexer at stow pos
                 robot.spindexerServo.setPosition(spindexerStowPos);
                 //Might need delay here
-                if (time > 0.4) {
+                if (intakeTimer.seconds() > 0.2) {
                     intakeStates = IntakeStates.INTAKE_IDLE;
                     intakeTimer.reset();
                 }

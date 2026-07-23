@@ -288,7 +288,7 @@ public class FSMShooter {
                 robot.kickerServo.setPosition(kickerRetract);
 
                 if (shootTimer.seconds() > kickerRetractDelay) {
-                    robot.spindexerServo.setPosition(spindexerIntakePos); //Park spindexer at intake pos
+                    robot.spindexerServo.setPosition(spindexerStowPos); //Park spindexer at stow
                     shootTimer.reset();
                     shooterState = SHOOTERSTATE.SHOOTER_IDLE;
                 }
