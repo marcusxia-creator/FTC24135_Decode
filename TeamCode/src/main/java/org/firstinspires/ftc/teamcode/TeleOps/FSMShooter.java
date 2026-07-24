@@ -98,7 +98,7 @@ public class FSMShooter {
         shooterState = SHOOTERSTATE.SHOOTER_IDLE;
         shootermotorstate = SHOOTERMOTORSTATE.STOP;
         turretState = TURRETSTATE.AIMING;
-        trim =0;
+        trim=0;
         loopTimer = new ElapsedTime();
         llHasTarget = false;
         txInitialized = false;
