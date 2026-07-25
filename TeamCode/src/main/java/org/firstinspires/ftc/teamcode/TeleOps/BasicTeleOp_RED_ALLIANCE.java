@@ -286,7 +286,8 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
                 cachedPosition, currentZone, turretCurrentTick, turretTargetTick
         );
          */
-        debugTelemetry();
+        //debugTelemetry();
+        runTimeTelemetry(cachedPosition,currentZone,turretCurrentTick,turretTargetTick,currentTx);
     }
 
     @Override
@@ -470,7 +471,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
         lastLoopTime = now;
     }
 
-    public void runTimeTelemetry(Pose2D cachedPosition, int zone, int turretCurrentTick, int turretTargetTick){
+    public void runTimeTelemetry(Pose2D cachedPosition, int zone, int turretCurrentTick, int turretTargetTick, double limelightTx){
         //simplified telemetry for teleop
         if(telemeteryTimer.time()>telemetryInterval){
             telemetry.addData("loop frequency (Hz)", loopHz);
@@ -500,6 +501,7 @@ public class BasicTeleOp_RED_ALLIANCE extends OpMode {
             telemetry.addData("Turret state", FSMShooter.turretState);
             telemetry.addData("Turret trim", FSMShooter.trim);
             telemetry.addData("Turret error", turretCurrentTick-turretTargetTick);
+            telemetry.addData("Limelight Tx", limelightTx);
 
             telemetry.addLine("\n---SPINDEXER");
             telemetry.addData("SD Current Pos", robot.spindexerServo.getPosition());
