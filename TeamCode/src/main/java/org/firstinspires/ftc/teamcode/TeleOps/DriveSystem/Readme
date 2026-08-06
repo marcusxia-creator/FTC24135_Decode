@@ -1,0 +1,176 @@
+1. DriveSystem Structure
+Notice the folder names are simple English words that are easy for students to recognize:
+
+DriveSystem – everything related to automated driving
+Path – where to drive
+Profile – how fast to drive
+PID – how to correct errors
+Utilities – shared helper functions
+
+DriveSystem/
+│
+├── DriveMotionController.java      <-- Main controller
+│
+├── Path/
+│   ├── DrivePath.java
+│   ├── DrivePathState.java
+│   ├── StraightLinePath.java
+│   ├── CubicBezierPath.java
+│   └── MultiSegmentPath.java
+│
+├── Profile/
+│   ├── MotionProfile.java
+│   ├── MotionState.java
+│   ├── TrapezoidalProfile.java
+│   └── SCurveProfile.java
+│
+├── FEEDforward/
+│   └── FeedforwardCalculator.java
+│── Tuning/
+│   └── DriveFeedforwardTuner.java
+|   └── FeedforwardPlotGenerator.java
+│
+└── Utilities/
+    ├── MotionMath.java
+    └── AngleUtil.java
+
+The drivesystem is acutally coordinating:
+    * Motion profile
+    * Feedforward
+    * PID feedback
+    * Path following
+    * Coordinate transforms
+    * Mecanum kinematics
+    * Voltage compensation
+    * Completion detection
+    * Cancellation logic
+
+2. Development Order:
+    1. DrivePath.java               - interface:define the method contract
+    2. DrivePathState.java          -
+    3. StraightLinePath.java
+    4. MotionState.java
+    5. MotionProfile.java
+    6. TrapezoidalProfile.java
+    7. PIDController1D.java
+    8. HeadingPIDController.java
+    9. FeedforwardCalculator.java
+    10. AutoDriveController.java
+    11. CubicBezierPath.java
+
+3. Control logic:
+                DriveMotionController
+                        │
+          ┌─────────────┴─────────────┐
+          │                           │
+      MotionProfile              DrivePath (interface)
+          │                           │
+          │          ┌────────────────┴────────────────┐
+          │          │                                 │
+          │     StraightLinePath                CubicBezierPath
+          │          │                                 │
+          └──────────┴─────────────────────────────────┘
+                         │
+                  DrivePathState
+                         │
+                    PID Controller
+                         │
+                     Mecanum Drive
+                         |
+                         |
+                         |
+                         \/
+
+
+4. Code Logic
+    * DrivePath is interface force other implements need to have the method defined in
+      the DrivePath interface
+      an interface does not implement the method. It only declares that the method exists.
+
+    * DrivePathState is the state of the path data container object providing the path information
+      package storage.
+
+    ┌───────────────────────────────┐
+    │ DrivePathState                │
+    │-------------------------------│
+    │ distanceAlongPathMM = 400     │
+    │ xMM = 825                     │
+    │ yMM = 510                     │
+    │ tangentX = 0.82               │
+    │ tangentY = 0.57               │
+    │ curvature = 0                 │
+    └───────────────────────────────┘
+
+    * StraightlinePath is the implementation of the DrivePath interface
+    * CubicBezierPath is the implementation of the DrivePath interface
+    * both implementations are forced to have the same method defined in the interface
+
+                DrivePath (interface) - contrains  "DrivePathState" method
+                          │
+           "Every path must return a DrivePathState"
+                          │
+              ┌───────────┴───────────┐
+              │                       │
+      StraightLinePath         CubicBezierPath
+              │                       │
+              │ return                │ return
+              ▼                       ▼
+                DrivePathState
+                      │
+                      ▼
+            DriveMotionController
+
+5. Motion Profile
+    * MotionState is the data container object returned by every motion-profile implementation.
+
+    * MotionProfile is the interface that future profiles such as TrapezoidalProfile and SCurveProfile will implement.
+
+    MotionState:
+        Time
+         ↓
+        MotionProfile
+         ↓
+        MotionState: distance, velocity, acceleration
+         ↓
+        DrivePath
+         ↓
+        DrivePathState: X, Y, tangent, curvature
+
+
+6. Architecture:
+                Motion Profile
+                --------------
+                Input : Time
+                Output: MotionState
+
+                MotionState
+                -----------
+                Distance Along Path
+                Velocity
+                Acceleration
+
+                    ↓
+
+                Drive Path
+                ----------
+                Input : Distance Along Path
+                Output: DrivePathState
+
+                DrivePathState
+                --------------
+                X
+                Y
+                Tangent
+                Curvature
+
+                    ↓
+
+                Drive Controller
+                ----------------
+                Input:
+                    MotionState
+                    DrivePathState
+                    Current Pinpoint Pose
+
+                Output:
+                    Mecanum Motor Powers
