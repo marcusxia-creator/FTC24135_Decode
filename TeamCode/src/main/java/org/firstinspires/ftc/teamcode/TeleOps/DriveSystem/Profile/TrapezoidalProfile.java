@@ -18,6 +18,11 @@ package org.firstinspires.ftc.teamcode.TeleOps.DriveSystem.Profile;
  * 1. Accelerate
  * 2. Decelerate
  *
+ * The profile can also start and/or end at a nonzero velocity. This is
+ * what lets TrajectoryPlanner chain several segments together without
+ * the robot fully stopping at every waypoint: segment N's end velocity
+ * becomes segment N+1's start velocity.
+ *
  * Units:
  * - distance: millimetres
  * - velocity: millimetres per second
@@ -30,6 +35,8 @@ public final class TrapezoidalProfile implements MotionProfile {
     private static final double MINIMUM_VALUE = 0.000001;
 
     private final double totalDistanceMM;
+    private final double startVelocityMMPerSecond;
+    private final double endVelocityMMPerSecond;
     private final double maximumVelocityMMPerSecond;
     private final double maximumAccelerationMMPerSecondSquared;
     private final double maximumDecelerationMMPerSecondSquared;
@@ -62,9 +69,14 @@ public final class TrapezoidalProfile implements MotionProfile {
 
     private final boolean triangularProfile;
 
-    ///Constructor
+    /**
+     * Full constructor, allowing nonzero start/end velocity so
+     * segments can be chained without stopping at every waypoint.
+     */
     public TrapezoidalProfile(
             double totalDistanceMM,
+            double startVelocityMMPerSecond,
+            double endVelocityMMPerSecond,
             double maximumVelocityMMPerSecond,
             double maximumAccelerationMMPerSecondSquared,
             double maximumDecelerationMMPerSecondSquared
@@ -74,6 +86,11 @@ public final class TrapezoidalProfile implements MotionProfile {
         this.maximumAccelerationMMPerSecondSquared = Math.max(MINIMUM_VALUE,maximumAccelerationMMPerSecondSquared);
         this.maximumDecelerationMMPerSecondSquared = Math.max(MINIMUM_VALUE,maximumDecelerationMMPerSecondSquared);
 
+        this.startVelocityMMPerSecond =
+                clamp(startVelocityMMPerSecond, 0.0, this.maximumVelocityMMPerSecond);
+
+        this.endVelocityMMPerSecond =
+                clamp(endVelocityMMPerSecond, 0.0, this.maximumVelocityMMPerSecond);
 
         /*
          * Handle a zero-distance move.
@@ -90,32 +107,28 @@ public final class TrapezoidalProfile implements MotionProfile {
             triangularProfile = false;
             return;
         }
-        /*
-         * Time required to accelerate from zero to maximum velocity.
-         * v = a * t
-         * t = v / a
-         */
-        double timeToMaximumVelocityDuringAcceleration = this.maximumVelocityMMPerSecond/this.maximumAccelerationMMPerSecondSquared;
+
+        double v0 = this.startVelocityMMPerSecond;
+        double vEnd = this.endVelocityMMPerSecond;
 
         /*
-         * Distance required to accelerate from zero to maximum velocity.
-         * distance = 0.5 * acceleration * time²
+         * Distance required to accelerate from v0 to maximum velocity.
+         * v² = v0² + 2*a*d
+         * d = (v² - v0²) / (2*a)
          */
         double distanceToMaximumVelocityDuringAcceleration =
-                0.5* this.maximumAccelerationMMPerSecondSquared* timeToMaximumVelocityDuringAcceleration* timeToMaximumVelocityDuringAcceleration;
-        /*
-         * Calculate the time and distance required to stop from the
-         * requested maximum velocity.
-         */
-        double timeToStopFromMaximumVelocity =
-                this.maximumVelocityMMPerSecond
-                        / this.maximumDecelerationMMPerSecondSquared;
+                (this.maximumVelocityMMPerSecond * this.maximumVelocityMMPerSecond
+                        - v0 * v0)
+                        / (2.0 * this.maximumAccelerationMMPerSecondSquared);
 
+        /*
+         * Distance required to decelerate from maximum velocity down
+         * to the requested end velocity.
+         */
         double distanceToStopFromMaximumVelocity =
-                0.5
-                        * this.maximumDecelerationMMPerSecondSquared
-                        * timeToStopFromMaximumVelocity
-                        * timeToStopFromMaximumVelocity;
+                (this.maximumVelocityMMPerSecond * this.maximumVelocityMMPerSecond
+                        - vEnd * vEnd)
+                        / (2.0 * this.maximumDecelerationMMPerSecondSquared);
 
         double minimumDistanceNeededForMaximumVelocity =
                 distanceToMaximumVelocityDuringAcceleration
@@ -130,95 +143,121 @@ public final class TrapezoidalProfile implements MotionProfile {
         ){
             triangularProfile = true;
             /*
-             * For unequal acceleration and deceleration:
+             * For unequal acceleration and deceleration, and nonzero
+             * start/end velocity:
              *
-             * acceleration distance:
-             *      dA = vPeak^2 / (2 * acceleration)
-             *
-             * deceleration distance:
-             *      dD = vPeak^2 / (2 * deceleration)
-             *
-             * total distance:
-             *      totalDistance = dA + dD
+             * accel distance:   dA = (vPeak² - v0²)   / (2 * aAccel)
+             * decel distance:   dD = (vPeak² - vEnd²) / (2 * aDecel)
+             * total distance:   D  = dA + dD
              *
              * Solving for peak velocity:
              *
-             * vPeak^2 =
-             *      2 * totalDistance * acceleration * deceleration
+             * vPeak² =
+             *      2*aAccel*aDecel*D + aDecel*v0² + aAccel*vEnd²
              *      ------------------------------------------------
-             *                 acceleration + deceleration
+             *                 aAccel + aDecel
+             *
+             * (Reduces to the original zero-boundary-velocity formula
+             * when v0 = vEnd = 0.)
              */
-            peakVelocityMMPerSecond =
-                    Math.sqrt(
-                            2.0
-                                    * this.totalDistanceMM
-                                    * this.maximumAccelerationMMPerSecondSquared
-                                    * this.maximumDecelerationMMPerSecondSquared
-                                    / (
-                                    this.maximumAccelerationMMPerSecondSquared
-                                            + this.maximumDecelerationMMPerSecondSquared
-                            )
+            double peakVelocitySquared =
+                    (2.0 * this.maximumAccelerationMMPerSecondSquared
+                            * this.maximumDecelerationMMPerSecondSquared
+                            * this.totalDistanceMM
+                            + this.maximumDecelerationMMPerSecondSquared * v0 * v0
+                            + this.maximumAccelerationMMPerSecondSquared * vEnd * vEnd)
+                            / (
+                            this.maximumAccelerationMMPerSecondSquared
+                                    + this.maximumDecelerationMMPerSecondSquared
                     );
 
-            accelerationTimeSeconds = peakVelocityMMPerSecond / this.maximumAccelerationMMPerSecondSquared;
+            if (peakVelocitySquared < v0 * v0
+                    || peakVelocitySquared < vEnd * vEnd) {
+                throw new IllegalArgumentException(
+                        "Requested start/end velocities are not "
+                                + "reachable within the given distance "
+                                + "and acceleration limits."
+                );
+            }
+
+            peakVelocityMMPerSecond = Math.sqrt(peakVelocitySquared);
+
+            accelerationTimeSeconds =
+                    (peakVelocityMMPerSecond - v0)
+                            / this.maximumAccelerationMMPerSecondSquared;
 
             cruiseTimeSeconds = 0;
 
             decelerationTimeSeconds =
-                    peakVelocityMMPerSecond
+                    (peakVelocityMMPerSecond - vEnd)
                             / this.maximumDecelerationMMPerSecondSquared;
+
+            if (accelerationTimeSeconds < 0.0
+                    || decelerationTimeSeconds < 0.0) {
+                throw new IllegalArgumentException(
+                        "Requested start/end velocities are not "
+                                + "reachable within the given distance "
+                                + "and acceleration limits."
+                );
+            }
+
             accelerationDistanceMM =
-                    peakVelocityMMPerSecond
-                            * peakVelocityMMPerSecond
-                            / (
-                            2.0
-                                    * this.maximumAccelerationMMPerSecondSquared
-                    );
+                    (peakVelocityMMPerSecond * peakVelocityMMPerSecond
+                            - v0 * v0)
+                            / (2.0 * this.maximumAccelerationMMPerSecondSquared);
 
             cruiseDistanceMM = 0.0;
 
             decelerationDistanceMM =
-                    peakVelocityMMPerSecond
-                            * peakVelocityMMPerSecond
-                            / (
-                            2.0
-                                    * this.maximumDecelerationMMPerSecondSquared
-                    );
+                    (peakVelocityMMPerSecond * peakVelocityMMPerSecond
+                            - vEnd * vEnd)
+                            / (2.0 * this.maximumDecelerationMMPerSecondSquared);
 
         } else {
                 triangularProfile = false;
 
-                peakVelocityMMPerSecond =
-                        this.maximumVelocityMMPerSecond;
+                peakVelocityMMPerSecond = this.maximumVelocityMMPerSecond;
 
                 accelerationTimeSeconds =
-                        timeToMaximumVelocityDuringAcceleration;
+                        (peakVelocityMMPerSecond - v0)
+                                / this.maximumAccelerationMMPerSecondSquared;
 
                 decelerationTimeSeconds =
-                        timeToStopFromMaximumVelocity;
+                        (peakVelocityMMPerSecond - vEnd)
+                                / this.maximumDecelerationMMPerSecondSquared;
 
-                accelerationDistanceMM =
-                        distanceToMaximumVelocityDuringAcceleration;
+                accelerationDistanceMM = distanceToMaximumVelocityDuringAcceleration;
 
-                decelerationDistanceMM =
-                        distanceToStopFromMaximumVelocity;
+                decelerationDistanceMM = distanceToStopFromMaximumVelocity;
 
-                cruiseDistanceMM =
-                        this.totalDistanceMM
-                                - accelerationDistanceMM
-                                - decelerationDistanceMM;
+                cruiseDistanceMM = this.totalDistanceMM - accelerationDistanceMM - decelerationDistanceMM;
 
-                cruiseTimeSeconds =
-                        cruiseDistanceMM
-                                / peakVelocityMMPerSecond;
+                cruiseTimeSeconds = cruiseDistanceMM / peakVelocityMMPerSecond;
         }
 
-        totalTimeSeconds =
-                accelerationTimeSeconds
-                        + cruiseTimeSeconds
-                        + decelerationTimeSeconds;
+        totalTimeSeconds = accelerationTimeSeconds + cruiseTimeSeconds + decelerationTimeSeconds;
 
     }
+
+/**
+ * Convenience constructor for a profile that starts and ends at rest,
+ * with separate acceleration and deceleration limits.
+ */
+public TrapezoidalProfile(
+        double totalDistanceMM,
+        double maximumVelocityMMPerSecond,
+        double maximumAccelerationMMPerSecondSquared,
+        double maximumDecelerationMMPerSecondSquared
+    ) {
+    this(
+            totalDistanceMM,
+            0.0,
+            0.0,
+            maximumVelocityMMPerSecond,
+            maximumAccelerationMMPerSecondSquared,
+            maximumDecelerationMMPerSecondSquared
+    );
+}
 /**
  * Convenience constructor that uses the same value for
  * acceleration and deceleration.
@@ -267,10 +306,12 @@ public MotionState getMotionState(
                 maximumAccelerationMMPerSecondSquared;
 
         double velocity =
-                acceleration * validTimeSeconds;
+                startVelocityMMPerSecond
+                        + acceleration * validTimeSeconds;
 
         double distance =
-                0.5* acceleration* validTimeSeconds* validTimeSeconds;
+                startVelocityMMPerSecond * validTimeSeconds
+                        + 0.5* acceleration* validTimeSeconds* validTimeSeconds;
 
         return createMotionState(
                 validTimeSeconds,
@@ -280,12 +321,9 @@ public MotionState getMotionState(
         );
     }
 
-    double accelerationEndTimeSeconds =
-            accelerationTimeSeconds;
+    double accelerationEndTimeSeconds = accelerationTimeSeconds;
 
-    double cruiseEndTimeSeconds =
-            accelerationTimeSeconds
-                    + cruiseTimeSeconds;
+    double cruiseEndTimeSeconds = accelerationTimeSeconds + cruiseTimeSeconds;
 
     /*
      * ========================================================
@@ -345,13 +383,16 @@ public MotionState getMotionState(
          * Profile complete
          * ========================================================
          *
-         * Keep the reference at the final path position so PID can
-         * finish correcting the actual robot position.
+         * Keep the reference at the final path position so PID/LQR
+         * can finish correcting the actual robot position. Report
+         * the requested end velocity (not always zero) so a segment
+         * that hands off into the next one at speed doesn't
+         * misreport itself as stopped.
          */
         return new MotionState(
                 totalTimeSeconds,
                 totalDistanceMM,
-                0.0,
+                endVelocityMMPerSecond,
                 0.0,
                 1.0
         );
@@ -417,6 +458,14 @@ private MotionState createMotionState(
 
     public double getPeakVelocityMMPerSecond() {
         return peakVelocityMMPerSecond;
+    }
+
+    public double getStartVelocityMMPerSecond() {
+        return startVelocityMMPerSecond;
+    }
+
+    public double getEndVelocityMMPerSecond() {
+        return endVelocityMMPerSecond;
     }
 
     public double getAccelerationTimeSeconds() {

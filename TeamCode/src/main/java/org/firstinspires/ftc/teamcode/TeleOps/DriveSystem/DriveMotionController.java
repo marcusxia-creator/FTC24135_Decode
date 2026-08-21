@@ -5,52 +5,57 @@ package org.firstinspires.ftc.teamcode.TeleOps.DriveSystem;
  * DriveSystem/
  * │
  * ├── DriveMotionController.java      <-- Main controller
+ * ├── RobotVelocity.java
  * │
  * ├── Path/
  * │   ├── DrivePath.java
  * │   ├── DrivePathState.java
  * │   ├── StraightLinePath.java
- * │   ├── CubicBezierPath.java
- * │   └── MultiSegmentPath.java
+ * │   └── CubicBezierPath.java
  * │
  * ├── Profile/
  * │   ├── MotionProfile.java
  * │   ├── MotionState.java
- * │   ├── TrapezoidalProfile.java
- * │   └── SCurveProfile.java
+ * │   └── TrapezoidalProfile.java
  * │
- * ├── PID/
- * │   ├── PIDController1D.java
- * │   ├── HeadingPIDController.java
+ * ├── Feedforward/
  * │   └── FeedforwardCalculator.java
  * │
- * └── Utilities/
- *     ├── MotionMath.java
- *     └── AngleUtil.java
+ * ├── LQR/
+ * │   └── LQRController1D.java
+ * │
+ * └── Trajectory/
+ *     ├── CompositeDrivePath.java
+ *     ├── TrajectorySegment.java
+ *     ├── TrajectoryPlanner.java
+ *     ├── TrajectoryProfile.java
+ *     ├── DriveTrajectory.java
+ *     └── TrajectoryBuilder.java
  */
 
 import com.acmerobotics.dashboard.config.Config;
-import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.TeleOps.DriveSystem.Feedforward.FeedforwardCalculator;
+import org.firstinspires.ftc.teamcode.TeleOps.DriveSystem.LQR.LQRController1D;
 import org.firstinspires.ftc.teamcode.TeleOps.DriveSystem.Path.DrivePath;
 import org.firstinspires.ftc.teamcode.TeleOps.DriveSystem.Path.DrivePathState;
 import org.firstinspires.ftc.teamcode.TeleOps.DriveSystem.Path.StraightLinePath;
 import org.firstinspires.ftc.teamcode.TeleOps.DriveSystem.Profile.MotionProfile;
 import org.firstinspires.ftc.teamcode.TeleOps.DriveSystem.Profile.MotionState;
 import org.firstinspires.ftc.teamcode.TeleOps.DriveSystem.Profile.TrapezoidalProfile;
+import org.firstinspires.ftc.teamcode.TeleOps.DriveSystem.Trajectory.DriveTrajectory;
 
 /**
  * Controls a mecanum drivetrain along a DrivePath using:
  *
  * - time-based motion profile
  * - translation feedforward
- * - X and Y PID tracking
- * - heading PID
+ * - X and Y LQR state-feedback tracking
+ * - heading LQR state-feedback tracking
  *
  * Internal units:
  *
@@ -73,43 +78,47 @@ public final class DriveMotionController {
      * ============================================================
      */
 
-    public static double maximumVelocityMMPerSecond =
-            1200.0;
-
-    public static double maximumAccelerationMMPerSecondSquared =
-            1800.0;
-
-    public static double maximumDecelerationMMPerSecondSquared =
-            1400.0;
+    public static double maximumVelocityMMPerSecond =                       1200.0;
+    public static double maximumAccelerationMMPerSecondSquared =            1800.0;
+    public static double maximumDecelerationMMPerSecondSquared =            1400.0;
 
     /*
      * ============================================================
-     * Translation PID
+     * Translation LQR
      * ============================================================
+     *
+     * X and Y are each modeled as an independent double integrator
+     * (position error, velocity error). qPosition/qVelocity/rControl
+     * are the LQR cost weights; LQRController1D derives Kp/Kd from
+     * them internally.
+     *
+     * Heads-up: these do NOT tune like the old PID gains. Start small
+     * (qVelocity = 0) and retune cautiously on a real field -- LQR's
+     * velocity term uses true measured velocity, so even a small
+     * qVelocity produces noticeably more damping than the old PID
+     * D-term ever did.
      */
 
-    public static double translationKP = 0.006;
-    public static double translationKI = 0.0;
-    public static double translationKD = 0.00015;
+    public static double translationQPosition = 0.00002;
+    public static double translationQVelocity = 0.0;
+    public static double translationRControl = 1.0;
 
     /*
-     * Limit the PID correction independently from feedforward.
+     * Limit the LQR correction independently from feedforward.
      */
-    public static double maximumTranslationPIDOutput =
-            0.45;
+    public static double maximumTranslationPIDOutput =                      0.45;
 
     /*
      * ============================================================
-     * Heading PID
+     * Heading LQR
      * ============================================================
      */
 
-    public static double headingKP = 2.5;
-    public static double headingKI = 0.0;
-    public static double headingKD = 0.08;
+    public static double headingQPosition = 4.0;
+    public static double headingQVelocity = 0.0;
+    public static double headingRControl = 1.0;
 
-    public static double maximumHeadingOutput =
-            0.60;
+    public static double maximumHeadingOutput =                             0.60;
 
     /*
      * ============================================================
@@ -122,9 +131,7 @@ public final class DriveMotionController {
      */
 
     public static double translationKS = 0.06;
-    public static double translationKV =
-            1.0 / 1500.0;
-
+    public static double translationKV = 1.0 / 1500.0;
     public static double translationKA = 0.0;
 
     /*
@@ -134,10 +141,7 @@ public final class DriveMotionController {
      */
 
     public static double positionToleranceMM = 15.0;
-
-    public static double headingToleranceRadians =
-            Math.toRadians(1.5);
-
+    public static double headingToleranceRadians = Math.toRadians(1.5);
     public static double settleTimeSeconds = 0.20;
 
     /*
@@ -145,7 +149,7 @@ public final class DriveMotionController {
      *
      * Set to zero to disable.
      */
-    public static double timeoutSeconds = 5.0;
+    public static double timeoutSeconds = 2.0;
 
     /*
      * Maximum final drivetrain output.
@@ -154,29 +158,29 @@ public final class DriveMotionController {
 
     /*
      * ============================================================
-     * FTCLib PID controllers
+     * LQR state-feedback controllers
      * ============================================================
      */
 
-    private final PIDController xPID =
-            new PIDController(
-                    translationKP,
-                    translationKI,
-                    translationKD
+    private final LQRController1D xLQR =
+            new LQRController1D(
+                    translationQPosition,
+                    translationQVelocity,
+                    translationRControl
             );
 
-    private final PIDController yPID =
-            new PIDController(
-                    translationKP,
-                    translationKI,
-                    translationKD
+    private final LQRController1D yLQR =
+            new LQRController1D(
+                    translationQPosition,
+                    translationQVelocity,
+                    translationRControl
             );
 
-    private final PIDController headingPID =
-            new PIDController(
-                    headingKP,
-                    headingKI,
-                    headingKD
+    private final LQRController1D headingLQR =
+            new LQRController1D(
+                    headingQPosition,
+                    headingQVelocity,
+                    headingRControl
             );
 
     private final FeedforwardCalculator translationFeedforward =
@@ -203,11 +207,8 @@ public final class DriveMotionController {
      * ============================================================
      */
 
-    private final ElapsedTime profileTimer =
-            new ElapsedTime();
-
-    private final ElapsedTime settleTimer =
-            new ElapsedTime();
+    private final ElapsedTime profileTimer = new ElapsedTime();
+    private final ElapsedTime settleTimer = new ElapsedTime();
 
     private boolean active = false;
     private boolean settling = false;
@@ -328,12 +329,13 @@ public final class DriveMotionController {
         this.activePath = drivePath;
         this.activeMotionProfile = motionProfile;
 
-        updatePIDCoefficients();
+        updateLQRCoefficients();
         updateFeedforwardCoefficients();
 
-        xPID.reset();
-        yPID.reset();
-        headingPID.reset();
+        /*
+         * LQR has no memory between moves (no integral accumulator),
+         * unlike PID, so there is nothing to reset here.
+         */
 
         profileTimer.reset();
         settleTimer.reset();
@@ -348,18 +350,48 @@ public final class DriveMotionController {
     }
 
     /**
+     * Starts following a complete multi-segment DriveTrajectory built
+     * by TrajectoryBuilder.
+     *
+     * DriveTrajectory's CompositeDrivePath already implements
+     * DrivePath and its TrajectoryProfile already implements
+     * MotionProfile, so this is a thin wrapper around start().
+     */
+    public void startTrajectory(
+            DriveTrajectory trajectory
+    ) {
+        if (trajectory == null) {
+            throw new IllegalArgumentException(
+                    "DriveTrajectory cannot be null."
+            );
+        }
+
+        start(
+                trajectory.getFinalTargetPose(),
+                trajectory.getCompositeDrivePath(),
+                trajectory.getTrajectoryProfile()
+        );
+    }
+
+    /**
      * Performs one controller update.
      *
      * Call once every TeleOp loop while isActive() is true.
+     *
+     * currentVelocity must be a real measurement (for example from the
+     * Pinpoint odometry computer), not a zero placeholder -- the LQR
+     * velocity term compares it directly against the planned velocity,
+     * so a fake zero would inject a phantom error every loop.
      */
     public void update(
-            Pose2D currentPose
+            Pose2D currentPose,
+            RobotVelocity currentVelocity
     ) {
-        if (!active || currentPose == null) {
+        if (!active || currentPose == null || currentVelocity == null) {
             return;
         }
 
-        updatePIDCoefficients();
+        updateLQRCoefficients();
         updateFeedforwardCoefficients();
 
         double elapsedTimeSeconds =
@@ -376,7 +408,7 @@ public final class DriveMotionController {
 
         /*
          * Ask the active path where that distance is located on
-         * the field.
+         * the field as X and Y.
          */
         DrivePathState pathState =
                 activePath.getPathState(
@@ -420,16 +452,26 @@ public final class DriveMotionController {
                 plannedYMM - currentYMM;
 
         /*
-         * FTCLib calculate(measurement, setPoint).
+         * Planned velocity acts along the path tangent, so it must be
+         * split into X and Y components before it can be compared
+         * against the robot's measured field-frame velocity.
          */
-        xPIDOutput = xPID.calculate(
-                currentXMM,
-                plannedXMM
+        double xVelocityErrorMMPerSecond =
+                plannedVelocityMMPerSecond * pathState.getTangentX()
+                        - currentVelocity.getVxMMPerSecond();
+
+        double yVelocityErrorMMPerSecond =
+                plannedVelocityMMPerSecond * pathState.getTangentY()
+                        - currentVelocity.getVyMMPerSecond();
+
+        xPIDOutput = xLQR.calculate(
+                xTrackingErrorMM,
+                xVelocityErrorMMPerSecond
         );
 
-        yPIDOutput = yPID.calculate(
-                currentYMM,
-                plannedYMM
+        yPIDOutput = yLQR.calculate(
+                yTrackingErrorMM,
+                yVelocityErrorMMPerSecond
         );
 
         xPIDOutput = clamp(
@@ -496,15 +538,18 @@ public final class DriveMotionController {
                 );
 
         /*
-         * Passing measurement = 0 and setpoint = wrapped error makes
-         * FTCLib produce:
-         *
-         * PID error = wrappedHeadingError - 0
+         * There is no heading motion profile yet, so the target
+         * heading velocity is always zero.
          */
+        double headingVelocityErrorRadiansPerSecond =
+                0.0
+                        - currentVelocity
+                                .getHeadingVelocityRadiansPerSecond();
+
         headingPIDOutput =
-                headingPID.calculate(
-                        0.0,
-                        finalHeadingErrorRadians
+                headingLQR.calculate(
+                        finalHeadingErrorRadians,
+                        headingVelocityErrorRadiansPerSecond
                 );
 
         headingPIDOutput = clamp(
@@ -561,9 +606,10 @@ public final class DriveMotionController {
         cancelled = true;
         completedSuccessfully = false;
 
-        xPID.reset();
-        yPID.reset();
-        headingPID.reset();
+        /*
+         * LQR has no memory between moves, unlike PID's integral
+         * term, so there is nothing to reset here.
+         */
 
         setMotorOutputsToZero();
     }
@@ -721,30 +767,23 @@ public final class DriveMotionController {
     /**
      * Allows FTC Dashboard gain changes to take effect while running.
      */
-    private void updatePIDCoefficients() {
-        xPID.setPID(
-                translationKP,
-                translationKI,
-                translationKD
+    private void updateLQRCoefficients() {
+        xLQR.setCoefficients(
+                translationQPosition,
+                translationQVelocity,
+                translationRControl
         );
 
-        yPID.setPID(
-                translationKP,
-                translationKI,
-                translationKD
+        yLQR.setCoefficients(
+                translationQPosition,
+                translationQVelocity,
+                translationRControl
         );
 
-        headingPID.setPID(
-                headingKP,
-                headingKI,
-                headingKD
-        );
-
-        xPID.setTolerance(positionToleranceMM);
-        yPID.setTolerance(positionToleranceMM);
-
-        headingPID.setTolerance(
-                headingToleranceRadians
+        headingLQR.setCoefficients(
+                headingQPosition,
+                headingQVelocity,
+                headingRControl
         );
     }
 

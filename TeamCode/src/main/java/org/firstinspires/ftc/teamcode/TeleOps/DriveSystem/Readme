@@ -1,4 +1,5 @@
-1. DriveSystem Structure
+Phase 1 Development  - Single Segment Path + Motion Profile + Drive controller
+1. DriveSystem Structure - Single Path
 Notice the folder names are simple English words that are easy for students to recognize:
 
 DriveSystem – everything related to automated driving
@@ -174,3 +175,88 @@ The drivesystem is acutally coordinating:
 
                 Output:
                     Mecanum Motor Powers
+
+Phase 2 Trajectory build Development
+
+1. Structure
+    drivesystem
+    │
+    ├── DriveMotionController.java
+    │
+    ├── path
+    │   ├── DrivePath.java
+    │   ├── DrivePathState.java
+    │   ├── StraightLinePath.java
+    │   ├── CubicBezierPath.java
+    │   └── CompositeDrivePath.java
+    │
+    ├── trajectory
+    │   ├── TrajectoryBuilder.java
+    │   ├── DriveTrajectory.java
+    │   ├── TrajectorySegment.java
+    │   ├── TrajectoryPlanner.java
+    │   └── TrajectoryProfile.java
+    │
+    ├── profile
+    │   ├── MotionProfile.java
+    │   ├── MotionState.java
+    │   └── TrapezoidalProfile.java
+    │
+    ├── feedforward
+    │   └── FeedforwardCalculator.java
+    │
+    └── DriveMotionController.java
+
+2. Workflow
+    TrajectoryBuilder
+            │
+            ▼
+    Build DriveTrajectory
+            │
+            ▼
+    TrajectoryPlanner
+            │
+            ▼
+    CompositeDrivePath
+            │
+            ▼
+    TrajectoryProfile
+            │
+            ▼
+    DriveMotionController
+            │
+            ▼
+            Robot
+
+    Notes:
+    Each class has a single responsibility:
+    - DrivePath: "Where should the robot travel?"
+    - TrajectoryBuilder: "How do I assemble a complete trajectory?"
+    - TrajectoryPlanner: "How fast should the robot travel at each point?"
+    - TrajectoryProfile: "Where should the robot be at time t?"
+    - DriveMotionController: "How do I make the robot follow that trajectory?"
+
+    DriveTrajectory would internally contain:
+
+    CompositeDrivePath
+    TrajectoryProfile
+    final target pose
+    total distance
+    total time
+    waypoint list
+    motion constraints
+
+    This keeps DriveMotionController simple and makes the API much cleaner as your framework grows.
+    I think this will make the library easier to maintain and much easier for your FTC students to understand.
+
+    DriveTrajectory the central object that represents everything needed for autonomous or semi-autonomous motion.
+
+    DriveTrajectory would internally contain:
+
+        CompositeDrivePath
+        TrajectoryProfile
+        final target pose
+        total distance
+        total time
+        waypoint list
+        motion constraints

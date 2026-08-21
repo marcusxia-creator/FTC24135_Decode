@@ -10,9 +10,11 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
 import org.firstinspires.ftc.teamcode.TeleOps.DriveSystem.DriveMotionController;
+import org.firstinspires.ftc.teamcode.TeleOps.DriveSystem.RobotVelocity;
 
 /**
  * Test TeleOp for DriveMotionController.
@@ -392,8 +394,18 @@ public class MotionDriveTeleOp extends OpMode {
      */
     private void runSemiAutoDrive() {
 
+        RobotVelocity currentVelocity =
+                new RobotVelocity(
+                        robot.pinpoint.getVelX(DistanceUnit.MM),
+                        robot.pinpoint.getVelY(DistanceUnit.MM),
+                        robot.pinpoint.getHeadingVelocity(
+                                UnnormalizedAngleUnit.RADIANS
+                        )
+                );
+
         driveMotionController.update(
-                currentPose
+                currentPose,
+                currentVelocity
         );
 
         applyDriveMotorPowers(
