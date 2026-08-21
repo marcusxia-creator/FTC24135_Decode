@@ -79,30 +79,16 @@ public class RobotHardware {
     public DcMotorEx backLeftMotor;
     public DcMotorEx frontRightMotor;
     public DcMotorEx backRightMotor;
-    public Servo kickerServo;
-    public ServoImplEx spindexerServo;
-    public Servo shooterAdjusterServo;
     public DcMotorEx intakeMotor;
-    public DcMotorEx turretMotor;
-
-    public DcMotorEx topShooterMotor;
-    public DcMotorEx bottomShooterMotor;
-
-    private RevHubOrientationOnRobot revHubOrientationOnRobot;
-    public DigitalChannel limitSwitch;
 
     //public ColorSensor colorSensor;// Color Sensor
     ///for debug colorSensor
 
     //Legacy colour sensors, kept for auto errors
-    public ColorSensor colorSensor;
-    public DistanceSensor distanceSensor;
 
     ///public DigitalChannel limitSwitch;// Limit Switch
 
     public IMU imu; //IMU
-    public BNO055IMU external_imu;
-    public GoBildaPinpointDriver pinpoint;
 
     public HardwareMap hardwareMap;
     public ArrayList <VoltageSensor> voltageSensors;
@@ -133,15 +119,6 @@ public class RobotHardware {
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
-
-        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        imu = hardwareMap.get(IMU.class, "imu");
-
-        revHubOrientationOnRobot = new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.LEFT);
-
-        imu.initialize(new IMU.Parameters(revHubOrientationOnRobot));
 
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
         /// Reset the drive motor encoders
@@ -191,17 +168,6 @@ public class RobotHardware {
     }
 
 
-    public void initPinpoint() {
-        pinpoint.setOffsets(38.1, -184.15, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
-        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
-        //pinpoint.resetPosAndIMU();
-    }
-
-    public void turretInit() {
-        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
-
     private static double median(List<Double> xs) {
         Collections.sort(xs);
         int n = xs.size();
@@ -234,12 +200,6 @@ public class RobotHardware {
             hub.setBulkCachingMode(
                     LynxModule.BulkCachingMode.MANUAL
             );
-        }
-    }
-
-    public void clearBulkCache() {
-        for (LynxModule hub : allHubs) {
-            hub.clearBulkCache();
         }
     }
 }

@@ -71,7 +71,7 @@ public class ChassisTest extends OpMode {
         robot = new RobotHardware(hardwareMap);
         robot.init();                       //Initialize all motors and servos
         robot.initIMU();                    //Initialize control hub IMU
-        robot.initPinpoint();               //Initialize pinpoint
+
         //robot.initExternalIMU();            //Initialize external IMU
 
         /**
@@ -98,15 +98,12 @@ public class ChassisTest extends OpMode {
 
         /// 8. robot state----------------------------------------------------------
 
-        /// 10. start adjuster servo at position to avoid soft start
-        robot.shooterAdjusterServo.setPosition(shooterAdjusterInitial);
-
-        robot.kickerServo.setPosition(kickerRetract);
 
     }
 
     @Override
     public void loop() {
+        gamepadComboInput.update();
         double intakePower = robot.intakeMotor.getPower();
         if (gamepadComboInput.getDpadLeftPressedAny()){
             intakePower += 0.1;
@@ -118,8 +115,6 @@ public class ChassisTest extends OpMode {
         robot.intakeMotor.setPower(Range.clip(intakePower, -1, 1));
 
 
-        robot.clearBulkCache();
-
         // =========================================================
         // 2. INPUT UPDATE (read buttons + combos)
         // =========================================================
@@ -129,8 +124,7 @@ public class ChassisTest extends OpMode {
 
         // =========================================================
         // 3. CONTINUOUS SENSOR / HOUSEKEEPING UPDATES
-        // =========================================================
-        robot.pinpoint.update();
+
         updateLoopFrequency();
 
         // =========================================================
@@ -146,7 +140,6 @@ public class ChassisTest extends OpMode {
         // =========================================================
         // 9. TELEMETRY & Parameters
         // =========================================================
-        cachedPosition = robot.pinpoint.getPosition();
 
         // =========================================================================
         // runTimeTelemetry() calls telemetry.update() itself
@@ -246,7 +239,6 @@ public class ChassisTest extends OpMode {
             telemetry.addData("Turret error", turretCurrentTick-turretTargetTick);
 
             telemetry.addLine("\n---SPINDEXER");
-            telemetry.addData("SD Current Pos", robot.spindexerServo.getPosition());
 
             telemetry.update();
             telemeteryTimer.reset();
@@ -262,28 +254,20 @@ public class ChassisTest extends OpMode {
         if (telemeteryTimer.time() <= telemetryInterval) return;
         telemeteryTimer.reset();
 
-        Pose2D pose = robot.pinpoint.getPosition(); // single pinpoint read — was read 3x below (getHeading + getPosition x2)
-        double headingDeg = Math.toDegrees(pose.getHeading(AngleUnit.RADIANS));
+
 
         telemetry.addData("loop frequency (Hz)", loopHz);
         telemetry.addLine("-----");
         telemetry.addLine("-----");
-        telemetry.addData("Current Pos", robot.spindexerServo.getPosition());
+
         telemetry.addLine("-----");
         // cached value from this loop's SequenceShooterLoop() — shooterPowerAngleCalculator.getPower()
         // re-runs the shooter PID controller as a side effect, so don't call it just to display it
-        telemetry.addData("Shooter Power", robot.topShooterMotor.getPower());
+
         telemetry.addData("Shooter Target RPM",shooterTargetRPM);
         telemetry.addData("Shooter actual RPM","%,.0f",shooterMeasuredRPM);
         telemetry.addLine("-----");
-        telemetry.addData("current angle", headingDeg);
-        telemetry.addData("Pose2D", "X: %.2f  Y: %.2f  H: %.1f°",
-                pose.getX(DistanceUnit.MM),pose.getY(DistanceUnit.MM),pose.getHeading(AngleUnit.DEGREES));
-        telemetry.addData(
-                "Pose (in)",
-                "X: %.2f  Y: %.2f  H: %.1f°",
-                pose.getX(DistanceUnit.INCH), pose.getY(DistanceUnit.INCH), headingDeg
-        );
+
         telemetry.addData("distance to goal", "%,.0f",currentDistance);
         telemetry.addData("Shooter Zone", currentZone);
         telemetry.addLine("Turret-----------------------------------");
