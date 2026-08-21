@@ -93,10 +93,6 @@ public class RobotHardware {
 
     //public ColorSensor colorSensor;// Color Sensor
     ///for debug colorSensor
-    public SlotSensor slotSensor1;
-    public SlotSensor slotSensor2;
-    public SlotSensor slotSensor3;
-    public List<SlotSensor> slotSensors;
 
     //Legacy colour sensors, kept for auto errors
     public ColorSensor colorSensor;
@@ -110,11 +106,6 @@ public class RobotHardware {
 
     public HardwareMap hardwareMap;
     public ArrayList <VoltageSensor> voltageSensors;
-
-    public Servo LED;
-
-    public Limelight3A limelight;
-
     private List<LynxModule> allHubs;
 
     private double vEma = 12.0;                 // EMA state
@@ -142,16 +133,6 @@ public class RobotHardware {
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
-        turretMotor = hardwareMap.get(DcMotorEx.class, "Turret_Motor");
-
-        //Servos
-        //angleServo = hardwareMap.get(Servo.class, "Angle_Servo");
-        kickerServo = hardwareMap.get(Servo.class, "Kicker_Servo");
-        spindexerServo = hardwareMap.get(ServoImplEx.class, "Spindexer_Servo");
-        shooterAdjusterServo = hardwareMap.get(Servo.class, "Shooter_Adjuster_Servo");
-
-        topShooterMotor = hardwareMap.get(DcMotorEx.class, "Top_Shooter_Motor");
-        bottomShooterMotor = hardwareMap.get(DcMotorEx.class, "Bottom_Shooter_Motor");
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         imu = hardwareMap.get(IMU.class, "imu");
@@ -161,16 +142,6 @@ public class RobotHardware {
                 RevHubOrientationOnRobot.UsbFacingDirection.LEFT);
 
         imu.initialize(new IMU.Parameters(revHubOrientationOnRobot));
-
-        LED = hardwareMap.get(Servo.class, "goBilda_LED_Light");
-        slotSensor1 = new SlotSensor(hardwareMap, "Left_Color_Sensor");
-        slotSensor2 = new SlotSensor(hardwareMap, "Front_Color_Sensor");
-        slotSensor3 = new SlotSensor(hardwareMap, "Right_Color_Sensor");
-        slotSensors = Arrays.asList(slotSensor1,slotSensor2,slotSensor3);
-        limitSwitch = hardwareMap.get(DigitalChannel.class, "Limit_Switch");
-        limitSwitch.setMode(DigitalChannel.Mode.INPUT);
-
-        limelight = hardwareMap.get(Limelight3A.class, "LimeLight3A");
 
         voltageSensors = new ArrayList<>(hardwareMap.getAll(VoltageSensor.class));
         /// Reset the drive motor encoders
@@ -197,27 +168,6 @@ public class RobotHardware {
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-
-        /// config turret motor
-        turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        //turretMotor.setTargetPositionTolerance(3);
-
-        /// set run mode of shooter Motor
-        topShooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        bottomShooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        topShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        bottomShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        topShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        ///set servo direction
-        shooterAdjusterServo.setDirection(Servo.Direction.REVERSE);
-        kickerServo.setDirection(Servo.Direction.REVERSE);
-
-        ///set spindexer servo PWM
-        spindexerServo.setPwmRange(new PwmControl.PwmRange(500,2500));
-
         /** set drive motor 0 */
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
@@ -240,17 +190,6 @@ public class RobotHardware {
         imu.resetYaw();
     }
 
-    public void initExternalIMU(){
-        external_imu = hardwareMap.get(BNO055IMU.class, "external_imu");
-        BNO055IMU.Parameters myBNOIMUparameters = new BNO055IMU.Parameters();
-        myBNOIMUparameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        myBNOIMUparameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        myBNOIMUparameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample OpMode
-        myBNOIMUparameters.loggingEnabled      = true;
-        myBNOIMUparameters.loggingTag          = "IMU";
-        myBNOIMUparameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        external_imu.initialize(myBNOIMUparameters);
-    }
 
     public void initPinpoint() {
         pinpoint.setOffsets(38.1, -184.15, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
