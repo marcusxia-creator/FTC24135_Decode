@@ -16,7 +16,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Auto.Runs.commonclasses.PoseStorage;
 
 
 /**
@@ -101,9 +100,10 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         /**
          * Transfer the pose 2D from Auto Ops
          */
-        Pose2d endPose = PoseStorage.currentPose;
-        double heading_Radiant = endPose.heading.toDouble();
-        Pose2D startingPose = new Pose2D(DistanceUnit.MM, PoseStorage.currentPose.position.x*25.4, PoseStorage.currentPose.position.y*25.4, AngleUnit.DEGREES, Math.toDegrees(heading_Radiant));
+        //Pose2d endPose = PoseStorage.currentPose;
+        //double heading_Radiant = endPose.heading.toDouble();
+        //Pose2D startingPose = new Pose2D(DistanceUnit.MM, PoseStorage.currentPose.position.x*25.4, PoseStorage.currentPose.position.y*25.4, AngleUnit.DEGREES, Math.toDegrees(heading_Radiant));
+        Pose2D startingPose = new Pose2D(DistanceUnit.MM, 0*25.4, 0*25.4, AngleUnit.DEGREES, Math.toDegrees(0.0));
         robot.pinpoint.setPosition(startingPose);
 
         /// 0. gamepad---------------------------------------------------------------
@@ -545,7 +545,7 @@ public class BasicTeleOp_BLUE_ALLIANCE extends OpMode {
         telemetry.addData("current angle", headingDeg);
         telemetry.addData("Pose2D", "X: %.2f  Y: %.2f  H: %.1f°",
                 pose.getX(DistanceUnit.MM),pose.getY(DistanceUnit.MM),pose.getHeading(AngleUnit.DEGREES));
-        telemetry.addData("Starting Pose",PoseStorage.currentPose);
+        //telemetry.addData("Starting Pose",PoseStorage.currentPose);
         telemetry.addData(
                 "Pose (in)",
                 "X: %.2f  Y: %.2f  H: %.1f°",
