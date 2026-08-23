@@ -85,7 +85,7 @@ The readme.md file located in the [/TeamCode/src/main/java/org/firstinspires/ftc
   When selecting a project all of the related files appear in the left pane of the workspace 
   underneath a directory with the chosen project name.
   This is useful for example for ConceptExternalHardwareClass which has a dependency upon
-  RobotHardware.  This feature simplifies the usage of this Concept example by automatically
+  org.firstinspires.ftc.teamcode.TeleOp.Subsystems.RobotHardware.  This feature simplifies the usage of this Concept example by automatically
   pulling in dependent classes.
 * Adds support for AndyMark ToF, IMU, and Color sensors.
 * The Driver Station app indicates if WiFi is disabled on the device.
@@ -542,7 +542,7 @@ This is a bug fix only release to address the following four issues.
   * Pressing the "OK" button in the popup window will return to the main screen of the Driver Station and allow an OpMode to be run again immediately, without the need to perform a "Restart Robot"
 * Adds new Java sample to demonstrate using a hardware class to abstract robot actuators, and share them across multiple OpModes.
   * Sample OpMode is [ConceptExternalHardwareClass.java](FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/ConceptExternalHardwareClass.java)
-  * Abstracted hardware class is [RobotHardware.java](FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/RobotHardware.java)
+  * Abstracted hardware class is [org.firstinspires.ftc.teamcode.TeleOp.Subsystems.RobotHardware.java](FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/org.firstinspires.ftc.teamcode.TeleOp.Subsystems.RobotHardware.java)
 * Updates RobotAutoDriveByGyro_Linear Java sample to use REV Control/Expansion hub IMU.
 * Updates Vuforia samples to reference PowerPlay assets and have correct names and field locations of image targets.
 * Updates TensorFlow samples to reference PowerPlay assets.
