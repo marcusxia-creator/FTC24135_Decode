@@ -1,8 +1,5 @@
 package CommandBase.PrebuiltActions;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import CommandBase.Action;
 
 public class ActionParallel implements Action {
@@ -14,7 +11,7 @@ public class ActionParallel implements Action {
 
     TERMINATIONTYPE terminationType;
     Action[] actionList;
-    public ActionParallel(TERMINATIONTYPE terminationType, boolean removeWhenFinished, Action... actions) {
+    public ActionParallel(TERMINATIONTYPE terminationType, Action... actions) {
         this.terminationType=terminationType;
         actionList=actions;
     }

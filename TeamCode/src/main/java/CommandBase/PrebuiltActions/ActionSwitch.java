@@ -35,11 +35,17 @@ public class ActionSwitch implements Action{
         int currentPos=switchPos.get();
         //Switch if needed
         if(currentPos!=lastPos){
-            actionList[lastPos].shutdown();
-            actionList[currentPos].init();
+            if(0<=lastPos&&lastPos<actionList.length) {
+                actionList[lastPos].shutdown();
+            }
+            if(0<=currentPos&&currentPos<actionList.length) {
+                actionList[currentPos].init();
+            }
             lastPos=currentPos;
         }
-        actionList[currentPos].loop();
+        if(0<=currentPos&&currentPos<actionList.length) {
+            actionList[currentPos].loop();
+        }
     }
 
     @Override

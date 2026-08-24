@@ -11,6 +11,11 @@ public class SampleScheduledOpmode extends OpMode {
 
     @Override
     public void init(){
+        //Setup command tree here
+    }
+
+    @Override
+    public void start() {
         rootAction.init();
     }
 

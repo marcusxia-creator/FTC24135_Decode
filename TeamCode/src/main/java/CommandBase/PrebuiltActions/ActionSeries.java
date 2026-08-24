@@ -6,46 +6,50 @@ import java.util.Arrays;
 import CommandBase.Action;
 
 public class ActionSeries implements Action {
-    ArrayList<Action> actionList;
+    Action[] actionList;
+    int index;
 
     public ActionSeries(Action... actions){
-        actionList=new ArrayList<>(Arrays.asList(actions));
+        actionList=actions;
+        index=0;
     }
 
-    public ArrayList<Action> getActionList() {
+    public Action[] getActionList() {
         return actionList;
     }
 
     public void setActionList(Action... actions){
-        actionList=new ArrayList<>(Arrays.asList(actions));
-    }
-
-    public void setActionList(ArrayList<Action> actionList){
-        this.actionList=actionList;
+        actionList=actions;
     }
 
     @Override
     public void init() {
-        actionList.get(0).init();
+        index=0;
+        actionList[0].init();
     }
 
     @Override
     public void loop() {
-        actionList.get(0).loop();
-        if(actionList.size()>1&&actionList.get(0).finished()){//Only move on to next action if there is one left in the queue
-            actionList.get(0).shutdown();
-            actionList.remove(0);
-            actionList.get(0).init();
-        }}
+        if(index<actionList.length) {
+            actionList[index].loop();
+            if(actionList[index].finished()){//Only move on to next action if there is one left in the queue
+                actionList[index].shutdown();
+                index+=1;
+                if(index<actionList.length){
+                    actionList[index].init();
+                }
+            }
+        }
+    }
 
 
     @Override
     public void shutdown(){
-        actionList.get(0).shutdown();
+        actionList[index].shutdown();
     }
 
     @Override
     public boolean finished() {
-        return actionList.size()==1 && actionList.get(0).finished();
+        return index>actionList.length;
     }
 }
