@@ -34,9 +34,9 @@ public class IntakeTestTeleOp extends CommandOpMode {
 
         robotDrive.setDefaultCommand(new RobotDriveCommand(
                 robotDrive,
-                () -> gamepad.getLeftY(),
-                () -> gamepad.getLeftX(),
-                () -> gamepad.getRightX()
+                () -> -gamepad.getRightY(),
+                () -> gamepad.getRightX(),
+                () -> gamepad.getLeftX()
         ));
 
         new GamepadButton(gamepad, GamepadKeys.Button.RIGHT_BUMPER)
