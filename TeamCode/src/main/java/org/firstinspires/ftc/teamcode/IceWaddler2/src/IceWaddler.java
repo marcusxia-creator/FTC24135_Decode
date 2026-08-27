@@ -3,6 +3,12 @@ package org.firstinspires.ftc.teamcode.IceWaddler2.src;
 import static org.firstinspires.ftc.teamcode.IceWaddler2.IWConfig.*;
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
+import static java.lang.Math.PI;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -153,7 +159,7 @@ public class IceWaddler {
     }
 
     ///Directly write powers into motors, used for tuning
-    class PowerDrive implements Action{
+    public class PowerDrive implements Action{
         Supplier<Double> FL_Power;
         Supplier<Double> BL_Power;
         Supplier<Double> FR_Power;
@@ -164,6 +170,13 @@ public class IceWaddler {
             this.FR_Power=FR_Power;
             this.BL_Power=BL_Power;
             this.BR_Power=BR_Power;
+        }
+
+        public PowerDrive(Supplier<Double> powerSupply){
+            this.FL_Power=powerSupply;
+            this.FR_Power=powerSupply;
+            this.BL_Power=powerSupply;
+            this.BR_Power=powerSupply;
         }
 
         @Override
@@ -216,7 +229,7 @@ public class IceWaddler {
     }
 
     /// Runs by target acceleration, not recommended for use anywhere
-    class AccelDrive implements Action{
+    public class AccelDrive implements Action{
         Supplier<Acceleration> targetAcceleration;
         public AccelDrive(Supplier<Acceleration> targetAcceleration){
             this.targetAcceleration=targetAcceleration;
@@ -271,7 +284,7 @@ public class IceWaddler {
     }
 
     /// Runs by target velocity, recommended for TeleOp driver control
-    class VelDrive implements Action{
+    public class VelDrive implements Action{
         Supplier<Velocity> targetVelSupply;
         public VelDrive(Supplier<Velocity> targetVelSupply){
             this.targetVelSupply=targetVelSupply;
@@ -302,7 +315,7 @@ public class IceWaddler {
         }
     }
 
-    class Brake implements Action{
+    public class Brake implements Action{
         public Brake(){
         }
 
@@ -325,6 +338,31 @@ public class IceWaddler {
             return false;
         }
     }
+
+    public TelemetryPacket drawField(){
+        double x=currentSituation.getPosition().getX().getValue(in);
+        double y=currentSituation.getPosition().getY().getValue(in);
+        double h=currentSituation.getPosition().getHeading().getValue(rad);
+        TelemetryPacket packet= new TelemetryPacket(true);
+        packet.fieldOverlay()
+                .setAlpha(0.25)
+                .setFill("white")
+                .fillPolygon(   new double[]{x, x+9*sin(h), x+sqrt(162)*sin(h+PI/4),    x+sqrt(162)*sin(h+3*PI/4),  x+sqrt(162)*sin(h-3*PI/4),  x+sqrt(162)*sin(h-PI/4),    x+9*sin(h)},
+                        new double[]{y, y+9*cos(h), y+sqrt(162)*cos(h+PI/4),    y+sqrt(162)*cos(h+3*PI/4),  y+sqrt(162)*cos(h-3*PI/4),  y+sqrt(162)*cos(h-PI/4),    y+9*cos(h)})
+                .setAlpha(1)
+                .setStroke("white")
+                .setStrokeWidth(2)
+                .strokePolygon( new double[]{x, x+9*sin(h), x+sqrt(162)*sin(h+PI/4),    x+sqrt(162)*sin(h+3*PI/4),  x+sqrt(162)*sin(h-3*PI/4),  x+sqrt(162)*sin(h-PI/4),    x+9*sin(h)},
+                        new double[]{y, y+9*cos(h), y+sqrt(162)*cos(h+PI/4),    y+sqrt(162)*cos(h+3*PI/4),  y+sqrt(162)*cos(h-3*PI/4),  y+sqrt(162)*cos(h-PI/4),    y+9*cos(h)})
+                .setStroke("red")
+                .strokeLine(x,y,x+6*currentSituation.getVelocity().getX().getValueSI(),y+6*currentSituation.getVelocity().getY().getValueSI())
+                .setStroke("blue")
+                .strokeLine(x,y,x+20*currentSituation.getAcceleration().getX().getValueSI(),y+20*currentSituation.getAcceleration().getY().getValueSI())
+                .setStroke("green")
+                .setStrokeWidth(1);
+        return packet;
+    }
+
 
     //Helper methods
     private PIDController fromCoeffs(PIDCoefficients Coeffs){

@@ -5,144 +5,132 @@ import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Un
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.teamcode.CommandBase.Action;
+import org.firstinspires.ftc.teamcode.CommandBase.PrebuiltActions.ActionParallel;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.IceWaddler;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.NormalizedAngle;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Position;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Vector;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.*;
 import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
+import org.threeten.bp.Instant;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 @TeleOp(name="Motor Power Calibration", group="IceWaddler")
 @Config
-public class MotorCalibration extends LinearOpMode {
-    public static Scalar lowPowerTestingRange=new Scalar(0.7, field);//Field length available for low speed calibration
-    public static Scalar highPowerTestingRange=new Scalar(0.5, field);//Field length available for high speed calibration, recommended to be a bit shorter to leave margin for error
-
+public class MotorCalibration extends OpMode {
     RobotHardware robot = new RobotHardware(hardwareMap);
 
     IceWaddler waddler;
-    boolean stopRequested=false;
-    double power=0.1;
+
+    double power;
+
+    //logging
+    boolean logging;
+    String filepath;
+    private BufferedWriter csvWriter;
+
+    FtcDashboard dashboard;
+
+    Action rootAction;
 
     @Override
-    public void runOpMode() {
+    public void init() {
         robot.init(hardwareMap);
 
-        telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        robot.driveTrain.init();
+
+        dashboard=FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
         telemetry.addData("Status", "Initialized");
-        telemetry.addLine("Motor Power Calibration will calibrate over "+lowPowerTestingRange.getValue(m)+" m at low speed," +
-                "and "+highPowerTestingRange.getValue(m) +" m at high speed");
-        telemetry.addLine("Start to begin low power calibration");
-        telemetry.update();
 
-        waddler=new IceWaddler(robot.driveTrain, robot.localizer);
+        waddler = new IceWaddler(robot.driveTrain, robot.localizer);
 
-        waddler.init(IceWaddler.CONTROLMODE.STBY,
-                new Position(new Vector(0,0,m), new NormalizedAngle(0, deg)),
+        waddler.init(new Position(new Vector(0, 0, m), new NormalizedAngle(0, deg)),
                 true);
 
-        waddler.loop();
+        logging=false;
+        filepath = String.format("../sdcard/FIRST/%s.csv", Instant.now());
 
-        waitForStart();
+        try {
+            csvWriter = new BufferedWriter(new FileWriter(filepath));
 
-        // Low power calibration
-        while (power<0.5&&opModeIsActive()) {
-            robot.driveTrain.writePowers(power,power,power,power);
-            while(waddler.getCurrentSituation().getPosition().getY().lessThanOrEqual(lowPowerTestingRange.multiply(0.5))&&opModeIsActive()){
-                waddler.loop();
-                checkStop();
-                logData(false);
-            }
-            power=-power;
-            robot.driveTrain.writePowers(power,power,power,power);
-            while(waddler.getCurrentSituation().getVelocity().getY().greaterThan(new Scalar(0,metersPerSecond))&&opModeIsActive()){
-                waddler.loop();
-                checkStop();
-                logData(false);
-            }
-            processStop();
-            power=power-0.05;
-            robot.driveTrain.writePowers(power,power,power,power);
-            while(waddler.getCurrentSituation().getPosition().getY().greaterThanOrEqual(lowPowerTestingRange.multiply(0.5))&&opModeIsActive()){
-                waddler.loop();
-                checkStop();
-                logData(true);
-            }
-            power=-power;
-            robot.driveTrain.writePowers(power,power,power,power);
-            while(waddler.getCurrentSituation().getVelocity().getY().lessThan(new Scalar(0,metersPerSecond))){
-                waddler.loop();
-                checkStop();
-                logData(true);
-            }
-            processStop();
-            power=power+0.05;
+            csvWriter.write("Power,Vel,Acc");
+            csvWriter.newLine();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        stopRequested=true;
-        telemetry.addLine("Low speed calibration complete, start high speed calibration");
-        processStop();
-        waddler.init(IceWaddler.CONTROLMODE.STBY,
-                new Position(new Vector(0,0,m), new NormalizedAngle(0, deg)),
-                true);
-        while (power<1&&opModeIsActive()) {
-            robot.driveTrain.writePowers(power,power,power,power);
-            while(waddler.getCurrentSituation().getPosition().getY().lessThanOrEqual(lowPowerTestingRange.multiply(0.5))&&opModeIsActive()){
-                waddler.loop();
-                checkStop();
-                logData(false);
-            }
-            power=-power;
-            robot.driveTrain.writePowers(power,power,power,power);
-            while(waddler.getCurrentSituation().getVelocity().getY().greaterThan(new Scalar(0,metersPerSecond))&&opModeIsActive()){
-                waddler.loop();
-                checkStop();
-                logData(false);
-            }
-            processStop();
-            power=power-0.05;
-            robot.driveTrain.writePowers(power,power,power,power);
-            while(waddler.getCurrentSituation().getPosition().getY().greaterThanOrEqual(lowPowerTestingRange.multiply(0.5))&&opModeIsActive()){
-                waddler.loop();
-                checkStop();
-                logData(true);
-            }
-            power=-power;
-            robot.driveTrain.writePowers(power,power,power,power);
-            while(waddler.getCurrentSituation().getVelocity().getY().lessThan(new Scalar(0,metersPerSecond))&&opModeIsActive()){
-                waddler.loop();
-                checkStop();
-                logData(true);
-            }
-            processStop();
-            power=power+0.05;
-        }
+
+        rootAction=new ActionParallel(ActionParallel.TERMINATIONTYPE.NONE,
+                waddler.new PowerDrive(() -> (double) gamepad1.right_stick_y),
+                new Action() {
+                    @Override
+                    public void init() {
+
+                    }
+
+                    @Override
+                    public void loop() {
+                        power=gamepad1.right_stick_y;
+                        robot.driveTrain.writePowers(power,power,power,power);
+
+                        if(gamepad1.a){logging=true;}
+                        if(gamepad1.b){logging=false;}
+
+                        telemetry.addLine(logging?"Currently logging to "+filepath+", press B to stop logging":"Currently not logging, press A to start logging");
+                        telemetry.addData("Power", power);
+                        telemetry.addData("Velocity", robot.frontLeftMotor.getVelocity());
+                        telemetry.addData("Acceleration", waddler.getCurrentSituation().getAcceleration().getY().getValueSI());
+                        telemetry.update();
+
+                        dashboard.sendTelemetryPacket(waddler.drawField());
+
+                        if(logging){
+                            try {
+                                csvWriter.write(String.format("%f9,%f9,%f9",
+                                        power,robot.frontLeftMotor.getVelocity(),waddler.getCurrentSituation().getAcceleration().getY().getValueSI()));
+                                csvWriter.newLine();
+                            }
+                            catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public boolean finished() {
+                        return false;
+                    }
+
+                    @Override
+                    public void shutdown() {
+                        try {
+                            csvWriter.flush();
+                            csvWriter.close();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+                );
     }
 
-    void checkStop(){
-        if(gamepad1.b||gamepad2.b){
-            stopRequested=true;
-        }
+    @Override
+    public void start() {
+        rootAction.init();
     }
 
-    void processStop() {
-        if (stopRequested) {
-            waddler.zeroPower();
-            telemetry.addLine("Stopped, press a to proceed");
-            telemetry.update();
-            while (!(gamepad1.a || gamepad2.a)) {
-            }
-            stopRequested = false;
-        }
+    public void loop(){
+        rootAction.loop();
     }
 
-    void logData(boolean reversed){
-        telemetry.addData("Power", (reversed?-1:1)*power);
-        telemetry.addData("Motor tick rate", (reversed?-1:1)*robot.frontLeftMotor.getVelocity());
-        telemetry.addData("Acceleration", (reversed?-1:1)*waddler.getCurrentSituation().getAcceleration().getY().getValueSI());
-        telemetry.update();
+    public void stop(){
+        rootAction.shutdown();
     }
 }
