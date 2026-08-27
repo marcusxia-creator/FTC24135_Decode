@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import static org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measurement.Units.Unit.deg;
-import static org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measurement.Units.Unit.in;
+import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.deg;
+import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.in;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
@@ -15,13 +15,13 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Hardware.Examples.ExampleDriveTrain;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Hardware.Examples.OTOS;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Hardware.IWDriveTrain;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Hardware.IWLocalizer;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measurement.SpecialMeasurements.NormalizedAngle;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Position;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler2.src.Math.Measurement.Vector;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples.ExampleDriveTrain;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples.OTOS;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWDriveTrain;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWLocalizer;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.NormalizedAngle;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Position;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Vector;
 
 import java.util.List;
 import java.util.ArrayList;
