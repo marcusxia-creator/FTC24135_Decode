@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.IceWaddler2.src;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.METER;
 import static org.firstinspires.ftc.teamcode.IceWaddler2.IWConfig.*;
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
@@ -14,17 +15,11 @@ import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.CommandBase.Action;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWDriveTrain;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWLocalizer;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Acceleration;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Position;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Situation;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Velocity;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Vector;
-
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.*;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.*;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
+
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.*;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -42,18 +37,15 @@ public class IceWaddler {
     // Situations
     Situation lastSituation;    //Situation during the last tick, used to interpolate accelerations and velocities, if needed
     Situation currentSituation; //Current situation, from odometry
+    Situation lastTargetSituation; //Used for derivatives in controllers
     Situation targetSituation;  //Target situation to drive motors. Position is null
+    PathingPoint targetPathingPoint; //Used to transfer information while transitioning between pathing segments
     // Note: All situation objects should be field centric
 
-    // Velocity -> Acceleration PID Controllers
-    PIDController vController;
-    PIDController vAngController;
-
-    // Position -> Velocity PID Controllers
-    PIDController pController;
-    PIDController pAngController;
-
     public boolean fieldCentric;
+
+    // Storage variables for action querying
+    Movement currentAction;
 
     /// Creates a new "waddler", and defines the hardware to interface
     /// @param driveTrain An implementation of IWDriveTrain
@@ -83,13 +75,6 @@ public class IceWaddler {
         ));
         localizer.update();
         lastSituation=localizer.getSituation();// To avoid not defined errors in later derivatives
-
-        //Define PID controllers
-        vController=fromCoeffs(vControllerCoeff);
-        vAngController=fromCoeffs(vAngControllerCoeff);
-
-        pController=fromCoeffs(pControllerCoeff);
-        pAngController=fromCoeffs(pAngControllerCoeff);
 
         targetSituation=new Situation(null,null,null);
     }
@@ -134,8 +119,9 @@ public class IceWaddler {
         }
     }
 
-    ///Runs updates on odo and ticktime. Needs to be run every loop
+    ///Runs updates on odo and ticktime. Needs to be run every loop, preferably before any other methods
     public void update(){
+        lastTargetSituation=targetSituation;
         updateTimer();
         updateOdo();
     }
@@ -264,14 +250,9 @@ public class IceWaddler {
     private void writeVel(){
 
         Velocity current=currentSituation.getVelocity();
+        Velocity lastTarget=lastTargetSituation.getVelocity();
         Velocity target=targetSituation.getVelocity();
-        targetSituation.setAcceleration(new Acceleration(
-                new Vector(
-                        vController.calculate(current.getX().getValueSI(),target.getX().getValueSI()),
-                        vController.calculate(current.getY().getValueSI(),target.getY().getValueSI()),
-                        metersPerSecondSquared),
-                new Scalar(vAngController.calculate(current.getAngVel().getValueSI(),target.getAngVel().getValueSI()),radiansPerSecondSquared)
-        ));
+        targetSituation.setAcceleration(target.sub(lastTarget).differentiate(tickTime).add(accelerationController.getCorrection(target.sub(current))));
         limitAcceleration();
         writeAccel();
     }
@@ -315,6 +296,7 @@ public class IceWaddler {
         }
     }
 
+    ///Holds Velocity at Zero
     public class Brake implements Action{
         public Brake(){
         }
@@ -338,6 +320,88 @@ public class IceWaddler {
             return false;
         }
     }
+
+    /// Motion Action
+    public class MotionAction implements Action{
+        Movement movement;
+
+        public MotionAction(Movement movement){
+            this.movement=movement;
+        }
+
+        @Override
+        public void init() {
+            movement.init(targetPathingPoint);
+            targetPathingPoint=movement.getTargetPoint();
+            targetSituation.setPosition(targetPathingPoint.getPosition());
+            currentAction=movement;
+        }
+
+        @Override
+        public void loop(){
+            update();
+            movement.loop(currentSituation);
+            targetSituation.setVelocity(movement.getTargetVel());
+            writeVel();
+        }
+
+        @Override
+        public void shutdown(){
+            zeroPower();
+            currentAction=null;
+        }
+
+        @Override
+        public boolean finished() {
+            return movement.finished();
+        }
+    }
+/*
+    public class Line implements Movement{
+        PathingPoint startPoint;
+        PathingPoint endPoint;
+        MotionProfile motionProfile;
+        HeadingProfile headingProfile;
+
+        //LineParams
+        Scalar totalDistance;
+        Scalar A;
+        Scalar B;
+        Scalar C;
+
+        public Line(PathingPoint startPoint, MotionProfile motionProfile, HeadingProfile headingProfile, PathingPoint endPoint){
+            this.startPoint=startPoint;
+            this.motionProfile=motionProfile;
+            this.headingProfile=headingProfile;
+            this.endPoint=endPoint;
+        }
+
+        public Line(MotionProfile motionProfile, HeadingProfile headingProfile, PathingPoint endPoint){
+            this.motionProfile=motionProfile;
+            this.headingProfile=headingProfile;
+            this.endPoint=endPoint;
+        }
+
+        @Override
+        public void init(PathingPoint lastPathingPoint) {
+            if(startPoint==null){
+                startPoint=lastPathingPoint;
+            }
+            //Init Line Params
+            totalDistance=endPoint.getPosition().sub(startPoint.getPosition()).mag();
+            Vector startingPos=startPoint.getPosition().getLinPos();
+            Vector endingPos=endPoint.getPosition().getLinPos();
+            A = startingPos.getY().sub(endingPos.getY());
+            B = endingPos.getX().sub(startingPos.getX());
+            C = startingPos.getX().multiply(endingPos.getY()).sub(endingPos.getX().multiply(startingPos.getY()));
+
+            //Init profiles
+            motionProfile.init(startPoint.getVelocity(),endPoint.getVelocity(),totalDistance);
+            headingProfile.init(startPoint.getPosition().getAngPos(),endPoint.getPosition().getAngPos(),totalDistance);
+        }
+
+    }
+ */
 
     public TelemetryPacket drawField(){
         double x=currentSituation.getPosition().getX().getValue(in);

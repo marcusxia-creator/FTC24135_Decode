@@ -2,18 +2,20 @@ package org.firstinspires.ftc.teamcode.IceWaddler2;
 
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
-
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.AccelerationController;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.MotorController;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Acceleration;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Velocity;
+
+import java.util.function.Function;
 
 public class IWConfig {
-    // Velocity -> Acceleration Controllers
-    public static PIDCoefficients vControllerCoeff    = new PIDCoefficients(0.5, 0, 1);
-    public static PIDCoefficients vAngControllerCoeff = new PIDCoefficients(0.08, 0, 1);
+    // Acceleration -> Motor Power Controller
+    public static MotorController motorController;
 
-    // Position -> Velocity Controllers
-    public static PIDCoefficients pControllerCoeff    = new PIDCoefficients(10, 0, 1);
-    public static PIDCoefficients pAngControllerCoeff = new PIDCoefficients(15, 0, 1);
+    // Velocity -> Acceleration Error Correction
+    public static AccelerationController accelerationController;
 
     // General constraints
     public static Scalar maxAccel               = new Scalar(3, metersPerSecondSquared); //Maximum acceleration before wheels slip

@@ -34,7 +34,7 @@ public class IWMath{
         return new NormalizedAngle(atan(value),rad);
     }
 
-    /// Unlike other code, outputs from this function are measured from the x-axis counterclockwise, to stay consistent other trigonometric functions.
+    /// Unlike other code, outputs from this function are measured from the x-axis counterclockwise, to stay consistent with other trigonometric functions.
     /// Mitigate this discrepancy by adjusting parameter order and signs<br>
     /// Output examples:<br>
     /// {@code (1,0)}   outputs {@code 0.0°}<br>
