@@ -21,15 +21,15 @@ public class GamepadDriver {
     }
 
     public double driveX(){
-        return activeGamepad().right_stick_x;
+        return -activeGamepad().right_stick_x*0.5;
     }
 
     public double driveY(){
-        return activeGamepad().right_stick_y;
+        return -activeGamepad().right_stick_y*0.5;
     }
 
     public double driveRot(){
-        return activeGamepad().left_stick_x;
+        return activeGamepad().left_stick_x*0.5;
     }
 
     public boolean intakeStart(){

@@ -12,7 +12,7 @@ import CommandBase.Action;
 import CommandBase.PrebuiltActions.*;
 
 @TeleOp(name="Sample Command Based OpMode")
-@Disabled
+
 public class SchedulerTest extends OpMode {
     Action rootAction; //Set this to desired action
 
@@ -28,12 +28,28 @@ public class SchedulerTest extends OpMode {
         robot=new RobotHardware(hardwareMap);
         gamepad=new GamepadDriver(gamepad1,gamepad2);
 
+        robot.init();
+
         drive=new RobotDrive(robot,gamepad::driveX,gamepad::driveY,gamepad::driveRot);
         intake=new Intake(robot);
 
         rootAction=new ActionParallel(ActionParallel.TERMINATIONTYPE.NONE,
                 drive.manualDrive,
-                new ActivatableAction(gamepad::intakeStart, gamepad::cancel, intake.runIntake)
+                new ActivatableAction(gamepad::intakeStart, gamepad::cancel, intake.runIntake),
+                new Action() {
+                    @Override
+                    public void init() {}
+                    @Override
+                    public void loop() {
+                        telemetry.addData("Intake Power",robot.intakeMotor.getPower());
+                        telemetry.update();
+                    }
+                    @Override
+                    public boolean finished() {return false;}
+                    @Override
+                    public void shutdown() {
+                    }
+                }
         );
     }
 

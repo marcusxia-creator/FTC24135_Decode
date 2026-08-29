@@ -24,7 +24,7 @@ public class Intake {
 
         @Override
         public void init() {
-            motor.setPower(1);
+            motor.setPower(0.3);
         }
 
         @Override
