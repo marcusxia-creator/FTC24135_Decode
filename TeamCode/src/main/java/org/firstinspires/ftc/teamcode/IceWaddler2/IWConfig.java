@@ -3,10 +3,13 @@ package org.firstinspires.ftc.teamcode.IceWaddler2;
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.AccelerationController;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.HeadingController;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.LatPositionController;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.MotorController;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Acceleration;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Velocity;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.HeadingProfile;
 
 import java.util.function.Function;
 
@@ -16,6 +19,10 @@ public class IWConfig {
 
     // Velocity -> Acceleration Error Correction
     public static AccelerationController accelerationController;
+
+    // Positional error -> Velocity Correction
+    public static LatPositionController latPosController;
+    public static HeadingController headingController;
 
     // General constraints
     public static Scalar maxAccel               = new Scalar(3, metersPerSecondSquared); //Maximum acceleration before wheels slip

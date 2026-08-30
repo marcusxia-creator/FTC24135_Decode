@@ -200,10 +200,10 @@ public class IceWaddler {
         Scalar rot=robotCentricAcc.getAngAcc().multiply(wheelPivotRadius).div(new Scalar(1,rad)); //Find linear acceleration needed to reach required angular acceleration
         List<Double> motorVels=driveTrain.getVelocities();
         driveTrain.writePowers(
-                calculatePower(forward.add(strafe).add(rot),motorVels.get(0)),
-                calculatePower(forward.sub(strafe).add(rot),motorVels.get(1)),
-                calculatePower(forward.sub(strafe).sub(rot),motorVels.get(2)),
-                calculatePower(forward.add(strafe).sub(rot),motorVels.get(3))
+                calculatePower((forward).add(strafe).add(rot),motorVels.get(0)),
+                calculatePower((forward).sub(strafe).add(rot),motorVels.get(1)),
+                calculatePower((forward).sub(strafe).sub(rot),motorVels.get(2)),
+                calculatePower((forward).add(strafe).sub(rot),motorVels.get(3))
         );
     }
 
@@ -356,30 +356,32 @@ public class IceWaddler {
             return movement.finished();
         }
     }
-/*
+
     public class Line implements Movement{
         PathingPoint startPoint;
         PathingPoint endPoint;
         MotionProfile motionProfile;
         HeadingProfile headingProfile;
+        String[] tags;
 
         //LineParams
         Scalar totalDistance;
+        Scalar latError;
         Scalar A;
         Scalar B;
         Scalar C;
 
-        public Line(PathingPoint startPoint, MotionProfile motionProfile, HeadingProfile headingProfile, PathingPoint endPoint){
-            this.startPoint=startPoint;
-            this.motionProfile=motionProfile;
-            this.headingProfile=headingProfile;
-            this.endPoint=endPoint;
+        public Line(PathingPoint startPoint, MotionProfile motionProfile, HeadingProfile headingProfile, PathingPoint endPoint, String[] tags) {
+            this.startPoint = startPoint;
+            this.motionProfile = motionProfile;
+            this.headingProfile = headingProfile;
+            this.endPoint = endPoint;
+            this.tags = tags;
         }
 
-        public Line(MotionProfile motionProfile, HeadingProfile headingProfile, PathingPoint endPoint){
-            this.motionProfile=motionProfile;
-            this.headingProfile=headingProfile;
-            this.endPoint=endPoint;
+        @Override
+        public PathingPoint getTargetPoint() {
+            return endPoint;
         }
 
         @Override
@@ -400,8 +402,42 @@ public class IceWaddler {
             headingProfile.init(startPoint.getPosition().getAngPos(),endPoint.getPosition().getAngPos(),totalDistance);
         }
 
-    }
- */
+            @Override
+            public void loop(Situation currentSituation) {
+                update();
+            }
+
+            @Override
+                public Velocity getTargetVel () {
+                    latError = (currentSituation.getPosition().getX().multiply(A).add(currentSituation.getPosition().getY().multiply(B))).add(C).div(
+                            A.pow(2).add(B.pow(2)).pow(0.5)); //From Desmos graph https://www.desmos.com/calculator/uw6fymsdjv
+                    Scalar latCorrection = latPosController.getCorrection(latError);
+                    return new Velocity(
+                            new Vector(latCorrection, motionProfile.getVel(getCompletion())).rotateBy(startPoint.getPosition().getLinPos().angleTo(endPoint.getPosition().getLinPos())),
+                            headingController.getCorrection(headingProfile.getAng(getCompletion()).sub(currentSituation.getPosition().getHeading()))
+                    );
+                }
+
+                @Override
+                public Scalar getDistanceTravelled () {
+                    return currentSituation.getPosition().getLinPos().sub(endPoint.getPosition().getLinPos()).mag().pow(2).sub(latError.pow(2)).pow(0.5);
+                }
+
+                @Override
+                public double getCompletion () {
+                    return getDistanceTravelled().div(totalDistance).getValueSI();
+                }
+
+                @Override
+                public String[] getTags () {
+                    return tags;
+                }
+
+                @Override
+                public boolean finished () {
+                    return totalDistance.sub(getDistanceTravelled()).lessThanOrEqual(defaultDistThreshold);
+                }
+            }
 
     public TelemetryPacket drawField(){
         double x=currentSituation.getPosition().getX().getValue(in);

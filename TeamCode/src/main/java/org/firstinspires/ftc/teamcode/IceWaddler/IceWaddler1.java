@@ -218,7 +218,6 @@ public class IceWaddler1 {
         else {
             lonCorrection = maxSpeed;
         }
-        //PID will handle acceleration
 
         //Rotation control, changes linearly over distance
         double modOffset = 0; //To minimize required movement, see Desmos graph https://www.desmos.com/calculator/zbjvqscngx

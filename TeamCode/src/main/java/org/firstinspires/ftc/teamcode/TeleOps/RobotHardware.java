@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.deg;
-import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.in;
+import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
@@ -14,11 +14,15 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Auto.lib.GoBildaPinpointDriver;
+import org.firstinspires.ftc.teamcode.Auto.lib.GoBildaPinpointDriver.*;
 import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples.ExampleDriveTrain;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples.OTOS;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples.goBildaOdoComputer;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWDriveTrain;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWLocalizer;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.NormalizedAngle;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Position;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Vector;
@@ -94,7 +98,8 @@ public class RobotHardware {
     public IMU imu; //IMU
     public HardwareMap hardwareMap;
     public ArrayList <VoltageSensor> voltageSensors;
-    public SparkFunOTOS odo; //Gobilda Pinpoint if needed
+    //public SparkFunOTOS odo;
+    public GoBildaPinpointDriver odo; //Gobilda Pinpoint if needed
     public IceWaddler1.IWLocalizer IWodo;//legacy icewaddler for error management
 
     public IWLocalizer localizer;
@@ -153,12 +158,13 @@ public class RobotHardware {
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
 
-        // odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo"); with pinpoint computer
-        odo = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
+        odo = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint"); //with pinpoint computer
+        //odo = hardwareMap.get(SparkFunOTOS.class, "sensor_otos"); //With OTOS
 
-        IWodo = new IceWaddler1.IWLocalizer(odo);
+        //IWodo = new IceWaddler1.IWLocalizer(odo);
 
-        localizer = new OTOS(new Position(new Vector(-0.45, -6.57, in), new NormalizedAngle(0, deg)),odo);
+        //localizer = new OTOS(new Position(new Vector(-0.45, -6.57, in), new NormalizedAngle(0, deg)),odo);
+        localizer = new goBildaOdoComputer(odo, new Scalar(-19,cm),new Scalar(-3,cm), GoBildaOdometryPods.goBILDA_SWINGARM_POD, EncoderDirection.FORWARD, EncoderDirection.FORWARD);
         driveTrain = new ExampleDriveTrain(this);
     }// End of init
 
@@ -174,23 +180,5 @@ public class RobotHardware {
                 ));
         imu.initialize(myIMUparameters);
         imu.resetYaw();
-    }
-
-    private static double median(List<Double> xs) {
-        Collections.sort(xs);
-        int n = xs.size();
-        return n == 0 ? Double.NaN : (n % 2 == 1 ? xs.get(n/2) : 0.5*(xs.get(n/2-1)+xs.get(n/2)));
-    }
-
-    public double getBatteryVoltageRobust() {
-        List<Double> vals = new ArrayList<>();
-        for (VoltageSensor vs : voltageSensors) {
-            double v = vs.getVoltage();
-            if (v > vMinAccept) vals.add(v);        // keep plausible readings only
-        }
-        double vMed = vals.isEmpty() ? vDefault : median(vals);
-        // EMA smoothing
-        vEma = vAlpha * vMed + (1.0 - vAlpha) * vEma;
-        return vEma;
     }
 }

@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Vector;
 ///An implementation of the goBilda pinpoint odometry computer, for use with IceWaddler
 public class goBildaOdoComputer implements IWLocalizer {
     GoBildaPinpointDriver odo;
-    goBildaOdoComputer(GoBildaPinpointDriver odo, Scalar odoXOffset, Scalar odoYOffset, GoBildaPinpointDriver.GoBildaOdometryPods pods, GoBildaPinpointDriver.EncoderDirection xEncoderDirection, GoBildaPinpointDriver.EncoderDirection yEncoderDirection){
+    public goBildaOdoComputer(GoBildaPinpointDriver odo, Scalar odoXOffset, Scalar odoYOffset, GoBildaPinpointDriver.GoBildaOdometryPods pods, GoBildaPinpointDriver.EncoderDirection xEncoderDirection, GoBildaPinpointDriver.EncoderDirection yEncoderDirection){
         this.odo=odo;
         odo.setOffsets(odoXOffset.getValue(mm), odoYOffset.getValue(mm));
         odo.setEncoderResolution(pods);
