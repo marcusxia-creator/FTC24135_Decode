@@ -11,13 +11,13 @@ public class LiftSubsystem extends SubsystemBase {
     private final double Ticks_Per_MM = Actual_Ticks_Per_Revolution / Spool_Circumference_MM; //0.96
     private final RobotHardware robot;
     private final PIDFController pidfLift;
-    private double targetPositionUp = 720 * Ticks_Per_MM;
+    private double targetPositionUp = 200 * Ticks_Per_MM;
     private int targetPositionDown = 0;
     private double targetPosition = targetPositionDown;
 
     private final double POSITION_TOLERANCE_TICKS = 5.0;
     private final double VELOCITY_TOLERANCE_TICKS_PER_SEC = 10.0;
-    private double kP = 0.02, kI = 0, kD = 0, kF = 0.2;
+    private double kP = 0.015, kI = 0, kD = 0, kF = 0;
 
     public LiftSubsystem(RobotHardware robot) {
         this.robot = robot;
@@ -44,5 +44,28 @@ public class LiftSubsystem extends SubsystemBase {
     public void stop (){
         robot.leftLiftMotor.setPower(0);
         robot.rightLiftMotor.setPower(0);
+    }
+    public double getCurrentPositionTicks() {
+        return robot.leftLiftMotor.getCurrentPosition();
+    }
+
+    public double getTargetPositionMM() {
+        return targetPosition / Ticks_Per_MM;
+    }
+    public double getTargetTick () {
+        return targetPosition;
+    }
+
+    public double getCurrentTick (){
+        return getCurrentPositionTicks();
+    }
+    public double getCurrentPositionMM() {
+        return getCurrentPositionTicks() / Ticks_Per_MM;
+    }
+    public double getErrorMM() {
+        return getTargetPositionMM() - getCurrentPositionMM();
+    }
+    public double getErrorTick(){
+        return getTargetTick() - getCurrentTick();
     }
 }

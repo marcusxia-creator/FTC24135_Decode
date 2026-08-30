@@ -54,12 +54,21 @@ public class IntakeTestTeleOp extends CommandOpMode {
         new GamepadButton(gamepad, GamepadKeys.Button.Y)
             .whenPressed(new InstantCommand (lift :: extendLift, lift));
         new GamepadButton(gamepad, GamepadKeys.Button.X)
-            .whenPressed(new InstantCommand(lift :: lowerLift, intake));
+            .whenPressed(new InstantCommand(lift :: lowerLift, lift));
     }
     @Override
     public void run (){
         super.run();
+
         telemetry.addData("Intake Power", intake.getIntakePower());
+        telemetry.addLine("-----------Lift in MM-----------");
+        telemetry.addData("Target Lift Position MM", lift.getTargetPositionMM());
+        telemetry.addData("Current Lift Position MM", lift.getCurrentPositionMM());
+        telemetry.addData("Error MM", lift.getErrorMM());
+        telemetry.addLine("-----------Lift in Ticks-----------");
+        telemetry.addData("Target Lift Position", lift.getTargetTick());
+        telemetry.addData("Current Lift Position", lift.getCurrentTick());
+        telemetry.addData("Error", lift.getErrorTick());
         telemetry.update();
     }
 }
