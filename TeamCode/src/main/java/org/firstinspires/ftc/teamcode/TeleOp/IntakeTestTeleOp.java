@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.arcrobotics.ftclib.drivebase.RobotDrive;
+import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.Subsystem;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
@@ -40,13 +41,17 @@ public class IntakeTestTeleOp extends CommandOpMode {
         ));
 
         new GamepadButton(gamepad, GamepadKeys.Button.RIGHT_BUMPER)
-                .whenPressed(new InstantCommand(() -> intake.runRollers(1.0),intake))
+                .whileHeld(new RunCommand(intake :: runRollers,intake))
                 .whenReleased(new InstantCommand(intake :: stop,intake));
+        new GamepadButton (gamepad, GamepadKeys.Button.DPAD_UP)
+                .whenPressed (new InstantCommand(() -> intake.increasePower(), intake));
+        new GamepadButton (gamepad, GamepadKeys.Button.DPAD_DOWN)
+                .whenPressed(new InstantCommand(()-> intake.decreasePower(), intake));
+    }
+    @Override
+    public void run (){
+        super.run();
+        telemetry.addData("Intake Power", intake.getIntakePower());
+        telemetry.update();
     }
 }
-
-
-
-
-
-
