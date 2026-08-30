@@ -13,6 +13,7 @@ import com.seattlesolvers.solverslib.command.button.GamepadButton;
 
 import org.firstinspires.ftc.teamcode.TeleOp.Commands.RobotDriveCommand;
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.RobotDriveSubsystem;
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.RobotHardware;
 
@@ -21,6 +22,7 @@ import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.RobotHardware;
 public class IntakeTestTeleOp extends CommandOpMode {
 
     private RobotDriveSubsystem robotDrive;
+    private LiftSubsystem lift;
     private IntakeSubsystem intake;
     private GamepadEx gamepad;
 
@@ -32,6 +34,7 @@ public class IntakeTestTeleOp extends CommandOpMode {
         robotDrive = new RobotDriveSubsystem(robot);
         intake = new IntakeSubsystem(robot);
         gamepad = new GamepadEx(gamepad1);
+        lift = new LiftSubsystem(robot);
 
         robotDrive.setDefaultCommand(new RobotDriveCommand(
                 robotDrive,
@@ -47,6 +50,11 @@ public class IntakeTestTeleOp extends CommandOpMode {
                 .whenPressed (new InstantCommand(() -> intake.increasePower(), intake));
         new GamepadButton (gamepad, GamepadKeys.Button.DPAD_DOWN)
                 .whenPressed(new InstantCommand(()-> intake.decreasePower(), intake));
+
+        new GamepadButton(gamepad, GamepadKeys.Button.Y)
+            .whenPressed(new InstantCommand (lift :: extendLift, lift));
+        new GamepadButton(gamepad, GamepadKeys.Button.X)
+            .whenPressed(new InstantCommand(lift :: lowerLift, intake));
     }
     @Override
     public void run (){
