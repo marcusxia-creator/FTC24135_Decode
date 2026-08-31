@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.IceWaddler2.src.Math;
 
-import static java.lang.Math.*;
+import static org.apache.commons.math3.util.FastMath.*;
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.NormalizedAngle;

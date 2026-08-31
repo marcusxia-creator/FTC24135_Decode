@@ -8,12 +8,12 @@ import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Dimensions;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit;
 
-public class NormalizedAngle{
+public class PositiveAngle {
     double value;
 
-    /// Creates a normalized angle object, which stores a value in SI base units and its dimension<br
-    /// Angles are normalized about 0 radians or degrees, and always fall between -180° and 180°, or -\pi and \pi radians
-    public NormalizedAngle(double value, Unit unit) {
+    /// Creates a positive angle object, which stores a value in SI base units and its dimension<br
+    /// Angles are modulod around a full rotation, and always fall between 0° and 360°, or 0 and 2\pi radians
+    public PositiveAngle(double value, Unit unit) {
         if(unit.getDimensions()==angle){
             this.value=unit.convertToSI(value);
             normalize();
@@ -22,7 +22,7 @@ public class NormalizedAngle{
         }
     }
 
-    public NormalizedAngle(Scalar scalar){
+    public PositiveAngle(Scalar scalar){
         if(scalar.getDimensions()==angle){
             this.value=scalar.getValueSI();
             normalize();
@@ -31,21 +31,21 @@ public class NormalizedAngle{
         }
     }
 
-    public NormalizedAngle(PositiveAngle angle){
-        this.value=angle.getValueSI();
+    public PositiveAngle(NormalizedAngle normalizedAngle){
+        this.value=normalizedAngle.getValueSI();
         normalize();
     }
 
-    public PositiveAngle toPositiveAngle(){
-        return new PositiveAngle(this);
-    }
-
     void normalize(){
-        value=floorMod(value+PI,2*PI)-PI;
+        value=floorMod(value,2*PI);
     }
 
     public Scalar toScalar(){
         return new Scalar(value, angle.SIBaseUnit());
+    }
+
+    public NormalizedAngle toNormalizedAngle(){
+        return new NormalizedAngle(this);
     }
 
     public double getValue(Unit unit) {
@@ -57,20 +57,20 @@ public class NormalizedAngle{
         return toScalar().getValueSI();
     }
 
-    public NormalizedAngle add(NormalizedAngle angle){
-        return new NormalizedAngle(value+angle.value, Dimensions.angle.SIBaseUnit());
+    public PositiveAngle add(PositiveAngle angle){
+        return new PositiveAngle(value+angle.value, Dimensions.angle.SIBaseUnit());
     }
 
-    public NormalizedAngle sub(NormalizedAngle angle){
-        return new NormalizedAngle(value-angle.value, Dimensions.angle.SIBaseUnit());
+    public PositiveAngle sub(NormalizedAngle angle){
+        return new PositiveAngle(value-angle.value, Dimensions.angle.SIBaseUnit());
     }
 
-    public NormalizedAngle multiply(double factor){
-        return new NormalizedAngle(value*factor, angle.SIBaseUnit());
+    public PositiveAngle multiply(double factor){
+        return new PositiveAngle(value*factor, angle.SIBaseUnit());
     }
 
-    public NormalizedAngle div(double factor){
-        return new NormalizedAngle(value/factor, angle.SIBaseUnit());
+    public PositiveAngle div(double factor){
+        return new PositiveAngle(value/factor, angle.SIBaseUnit());
     }
 
     public Scalar multiply(Scalar scalar){
@@ -79,5 +79,21 @@ public class NormalizedAngle{
 
     public Scalar div(Scalar scalar){
         return new Scalar(value/scalar.getValueSI(), angle.div(scalar.getDimensions()).SIBaseUnit());
+    }
+
+    public Boolean greaterThan(PositiveAngle angle){
+        return value>angle.value;
+    }
+
+    public Boolean greaterThanOrEqual(PositiveAngle angle){
+        return value>=angle.value;
+    }
+
+    public Boolean lessThan(PositiveAngle angle){
+        return value<angle.value;
+    }
+
+    public Boolean lessThanOrEqual(PositiveAngle angle){
+        return value<=angle.value;
     }
 }

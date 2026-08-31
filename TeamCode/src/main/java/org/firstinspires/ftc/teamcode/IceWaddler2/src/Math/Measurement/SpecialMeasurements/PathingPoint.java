@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Un
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.metersPerSecond;
 
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Dimensions;
 
 /// A measurement used to store the position and velocity of the robot while following a path. The velocity is assumed to be perfectly tangental to the path
 public class PathingPoint {
@@ -13,7 +14,7 @@ public class PathingPoint {
 
     public PathingPoint(Position position, Scalar velocity){
         this.position=position;
-        if(!velocity.getDimensions().equals(velocity)){throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot accept a scalar with dimensions %s and SI base units %s as velocity", velocity.getDimensions().toString(), velocity.getDimensions().SIBaseUnitStr()));}
+        if(!velocity.getDimensions().equals(Dimensions.velocity)){throw new DimMismatch(velocity.getDimensions(),"velocity");}
         this.velocity=velocity;
     }
 

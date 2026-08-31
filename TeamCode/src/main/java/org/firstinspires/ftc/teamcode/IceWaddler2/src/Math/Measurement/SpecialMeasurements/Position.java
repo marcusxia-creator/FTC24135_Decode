@@ -14,7 +14,7 @@ public class Position {
     /// Creates a Position object, thot combines a linear and angular position
     /// @throws RuntimeException unitError if linPos vector does not have spacial dimensions
     public Position(Vector linPos, NormalizedAngle angPos){
-        if(!linPos.getDimensions().equals(length)){throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot accept a vector with dimensions %s and SI base units %s as a linear position", linPos.getDimensions().toString(), linPos.getDimensions().SIBaseUnitStr()));}
+        if(!linPos.getDimensions().equals(length)){throw new DimMismatch(linPos.getDimensions(),"linear position");}
         this.linPos=linPos;
         this.angPos=angPos;
     }
@@ -54,7 +54,7 @@ public class Position {
     /// for a small change in position d**P** and small change in time dt, usually a tick, returns d**P**/dt, or velocity.
     /// @throws RuntimeException unitError if dt is not in the dimension of time
     public Velocity differentiate(Scalar dt){
-        if(!linPos.getDimensions().equals(time)){throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot accept a vector with dimensions %s and SI base units %s as the derivative of time", dt.getDimensions().toString(), dt.getDimensions().SIBaseUnitStr()));}
+        if(!dt.getDimensions().equals(time)){throw new DimMismatch(dt.getDimensions(),"derivative of time");}
         return new Velocity(linPos.div(dt),angPos.toScalar().div(dt));
     }
 

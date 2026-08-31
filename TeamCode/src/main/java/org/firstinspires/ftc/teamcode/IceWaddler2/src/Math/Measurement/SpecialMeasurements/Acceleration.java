@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialM
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Dimensions.acceleration;
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Dimensions.angAcceleration;
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Dimensions.time;
+import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Dimensions.velocity;
 
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.DimlessVector;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
@@ -16,8 +17,8 @@ public class Acceleration {
     /// @throws RuntimeException unitError if linAcc vector does not have dimensions of acceleration
     /// @throws RuntimeException unitError if angAcc vector does not have dimensions of angular acceleration
     public Acceleration(Vector linAcc, Scalar angAcc){
-        if(!linAcc.getDimensions().equals(acceleration)){throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot accept a vector with dimensions %s and SI base units %s as a linear acceleration", linAcc.getDimensions().toString(), linAcc.getDimensions().SIBaseUnitStr()));}
-        if(!angAcc.getDimensions().equals(angAcceleration)){throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot accept a vector with dimensions %s and SI base units %s as an angular acceleration", angAcc.getDimensions().toString(), angAcc.getDimensions().SIBaseUnitStr()));}
+        if(!linAcc.getDimensions().equals(acceleration)){throw new DimMismatch(linAcc.getDimensions(),"linear acceleration");}
+        if(!angAcc.getDimensions().equals(angAcceleration)){throw new DimMismatch(linAcc.getDimensions(),"angular acceleration");}
         this.linAcc=linAcc;
         this.angAcc=angAcc;
     }
@@ -65,7 +66,7 @@ public class Acceleration {
     /// for a small change in time dt, usually a tick, returns the change in velocity
     /// @throws RuntimeException unitError if dt is not in the dimension of time
     public Velocity integrate(Scalar dt){
-        if(!dt.getDimensions().equals(time)){throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot accept a vector with dimensions %s and SI base units %s as the derivative of time", dt.getDimensions().toString(), dt.getDimensions().SIBaseUnitStr()));}
+        if(!dt.getDimensions().equals(time)){throw new DimMismatch(dt.getDimensions(),"derivative of time");}
         return new Velocity(linAcc.multiply(dt),angAcc.multiply(dt));
     }
 

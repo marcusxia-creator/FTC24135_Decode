@@ -9,7 +9,8 @@ public interface Movement {
 
     PathingPoint getTargetPoint();
 
-    void loop(Situation currentSituation);
+    ///All heavy calculations should happen or int getTargetVel here to save computation power
+    void loop(Situation currentSituation, Scalar tickTime);
 
     Velocity getTargetVel();
 

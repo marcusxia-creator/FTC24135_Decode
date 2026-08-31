@@ -1,13 +1,10 @@
 package org.firstinspires.ftc.teamcode.IceWaddler2.src;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.METER;
+import static org.apache.commons.math3.util.FastMath.*;
 import static org.firstinspires.ftc.teamcode.IceWaddler2.IWConfig.*;
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
 import static java.lang.Math.PI;
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-import static java.lang.Math.sqrt;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.controller.PIDController;
@@ -332,15 +329,15 @@ public class IceWaddler {
         @Override
         public void init() {
             movement.init(targetPathingPoint);
-            targetPathingPoint=movement.getTargetPoint();
             targetSituation.setPosition(targetPathingPoint.getPosition());
+            targetPathingPoint=movement.getTargetPoint();
             currentAction=movement;
         }
 
         @Override
         public void loop(){
             update();
-            movement.loop(currentSituation);
+            movement.loop(currentSituation,tickTime);
             targetSituation.setVelocity(movement.getTargetVel());
             writeVel();
         }
@@ -349,6 +346,7 @@ public class IceWaddler {
         public void shutdown(){
             zeroPower();
             currentAction=null;
+            targetPathingPoint=movement.getTargetPoint();
         }
 
         @Override
@@ -356,88 +354,6 @@ public class IceWaddler {
             return movement.finished();
         }
     }
-
-    public class Line implements Movement{
-        PathingPoint startPoint;
-        PathingPoint endPoint;
-        MotionProfile motionProfile;
-        HeadingProfile headingProfile;
-        String[] tags;
-
-        //LineParams
-        Scalar totalDistance;
-        Scalar latError;
-        Scalar A;
-        Scalar B;
-        Scalar C;
-
-        public Line(PathingPoint startPoint, MotionProfile motionProfile, HeadingProfile headingProfile, PathingPoint endPoint, String[] tags) {
-            this.startPoint = startPoint;
-            this.motionProfile = motionProfile;
-            this.headingProfile = headingProfile;
-            this.endPoint = endPoint;
-            this.tags = tags;
-        }
-
-        @Override
-        public PathingPoint getTargetPoint() {
-            return endPoint;
-        }
-
-        @Override
-        public void init(PathingPoint lastPathingPoint) {
-            if(startPoint==null){
-                startPoint=lastPathingPoint;
-            }
-            //Init Line Params
-            totalDistance=endPoint.getPosition().sub(startPoint.getPosition()).mag();
-            Vector startingPos=startPoint.getPosition().getLinPos();
-            Vector endingPos=endPoint.getPosition().getLinPos();
-            A = startingPos.getY().sub(endingPos.getY());
-            B = endingPos.getX().sub(startingPos.getX());
-            C = startingPos.getX().multiply(endingPos.getY()).sub(endingPos.getX().multiply(startingPos.getY()));
-
-            //Init profiles
-            motionProfile.init(startPoint.getVelocity(),endPoint.getVelocity(),totalDistance);
-            headingProfile.init(startPoint.getPosition().getAngPos(),endPoint.getPosition().getAngPos(),totalDistance);
-        }
-
-            @Override
-            public void loop(Situation currentSituation) {
-                update();
-            }
-
-            @Override
-                public Velocity getTargetVel () {
-                    latError = (currentSituation.getPosition().getX().multiply(A).add(currentSituation.getPosition().getY().multiply(B))).add(C).div(
-                            A.pow(2).add(B.pow(2)).pow(0.5)); //From Desmos graph https://www.desmos.com/calculator/uw6fymsdjv
-                    Scalar latCorrection = latPosController.getCorrection(latError);
-                    return new Velocity(
-                            new Vector(latCorrection, motionProfile.getVel(getCompletion())).rotateBy(startPoint.getPosition().getLinPos().angleTo(endPoint.getPosition().getLinPos())),
-                            headingController.getCorrection(headingProfile.getAng(getCompletion()).sub(currentSituation.getPosition().getHeading()))
-                    );
-                }
-
-                @Override
-                public Scalar getDistanceTravelled () {
-                    return currentSituation.getPosition().getLinPos().sub(endPoint.getPosition().getLinPos()).mag().pow(2).sub(latError.pow(2)).pow(0.5);
-                }
-
-                @Override
-                public double getCompletion () {
-                    return getDistanceTravelled().div(totalDistance).getValueSI();
-                }
-
-                @Override
-                public String[] getTags () {
-                    return tags;
-                }
-
-                @Override
-                public boolean finished () {
-                    return totalDistance.sub(getDistanceTravelled()).lessThanOrEqual(defaultDistThreshold);
-                }
-            }
 
     public TelemetryPacket drawField(){
         double x=currentSituation.getPosition().getX().getValue(in);
