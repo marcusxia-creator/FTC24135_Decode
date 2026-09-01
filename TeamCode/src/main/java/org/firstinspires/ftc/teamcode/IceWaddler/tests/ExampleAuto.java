@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1;
 import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1.Action.ACTIONTYPE;
 import org.firstinspires.ftc.teamcode.IceWaddler.tests.Paths.ExamplePath;
-import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
+import org.firstinspires.ftc.teamcode.Subsystems.RobotHardware;
 
 @TeleOp(name="Example Auto", group="Icewaddler Tests")
 public class ExampleAuto extends OpMode {

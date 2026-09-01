@@ -2,19 +2,26 @@ package org.firstinspires.ftc.teamcode.IceWaddler2;
 
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
+import com.acmerobotics.dashboard.config.Config;
+
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.AccelerationController;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.HeadingController;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.LatPositionController;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.PrebuiltControllers.*;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
 
+@Config
 public class IWConfig {
     // Velocity -> Acceleration Error Correction
-    public static AccelerationController accelerationController=new proportionalAccController(new Scalar(-10,perSecond),new Scalar(-10,perSecond));
+    public static double linAccelKP=10;
+    public static double angAccelKP=10;
+    public static AccelerationController accelerationController=new proportionalAccController(new Scalar(-linAccelKP,perSecond),new Scalar(-angAccelKP,perSecond));
 
     // Positional error -> Velocity Correction
-    public static LatPositionController latPosController= new proportionaLatController(new Scalar(-10,perSecond));
-    public static HeadingController headingController= new proportionaHeadingController(new Scalar(-10,perSecond));
+    public static double latPosKP=10;
+    public static double headingKP=10;
+    public static LatPositionController latPosController= new proportionaLatController(new Scalar(-latPosKP,perSecond));
+    public static HeadingController headingController= new proportionaHeadingController(new Scalar(-headingKP,perSecond));
 
     // General constraints
     public static Scalar maxAccel               = new Scalar(8, metersPerSecondSquared); //Maximum acceleration before wheels slip

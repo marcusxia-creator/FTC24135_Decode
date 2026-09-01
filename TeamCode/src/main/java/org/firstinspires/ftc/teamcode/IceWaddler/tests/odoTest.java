@@ -22,7 +22,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1;
 import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1.CONTROLMODE;
-import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
+import org.firstinspires.ftc.teamcode.Subsystems.RobotHardware;
 
 import java.util.ArrayList;
 

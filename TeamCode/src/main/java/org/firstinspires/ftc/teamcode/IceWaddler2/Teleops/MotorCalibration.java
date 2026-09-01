@@ -7,7 +7,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.teamcode.CommandBase.Action;
 import org.firstinspires.ftc.teamcode.CommandBase.PrebuiltActions.ActionParallel;
@@ -15,7 +14,7 @@ import org.firstinspires.ftc.teamcode.CommandBase.PrebuiltActions.ActivatableAct
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.IceWaddler;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.*;
-import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
+import org.firstinspires.ftc.teamcode.Subsystems.RobotHardware;
 import org.threeten.bp.Instant;
 
 import java.io.BufferedWriter;
@@ -29,16 +28,20 @@ public class MotorCalibration extends OpMode {
 
     IceWaddler waddler;
 
-    double power;
-
     //logging
-    boolean logging;
     String filepath;
     private BufferedWriter csvWriter;
+
+    Scalar distPerTick;
 
     FtcDashboard dashboard;
 
     Action rootAction;
+
+    double power;
+    double velocity;
+    double acceleration;
+    boolean slipping;
 
     @Override
     public void init() {
@@ -56,7 +59,6 @@ public class MotorCalibration extends OpMode {
         waddler.init(new Position(new Vector(0, 0, m), new NormalizedAngle(0, deg)),
                 true);
 
-        logging = false;
         filepath = String.format("../sdcard/FIRST/%s.csv", Instant.now());
 
         try {
@@ -70,7 +72,17 @@ public class MotorCalibration extends OpMode {
 
         rootAction = new ActionParallel(ActionParallel.TERMINATIONTYPE.NONE,
                 waddler.new PowerDrive(() -> (double) gamepad1.right_stick_y),
-                new ActivatableAction(() -> gamepad1.a, () -> gamepad1.b, new logger()));
+                new ActivatableAction(() -> gamepad1.a, () -> gamepad1.b, new logger()),
+                new telemetryDriver());
+    }
+
+    @Override
+    public void init_loop() {
+        waddler.update();
+        if(robot.frontLeftMotor.getVelocity()!=0){
+            distPerTick=waddler.getCurrentSituation().getPosition().getY().div(robot.frontLeftMotor.getVelocity());
+            telemetry.addData("Current conversion Factor Estimation", String.format("%f m/tick", distPerTick.getValue(m)));
+        }
     }
 
     @Override
@@ -78,59 +90,58 @@ public class MotorCalibration extends OpMode {
         rootAction.init();
     }
 
+    @Override
     public void loop() {
         rootAction.loop();
     }
 
+    @Override
     public void stop() {
         rootAction.shutdown();
+
+        try {
+            csvWriter.flush();
+            csvWriter.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     class logger implements Action {
         public logger(){}
 
         @Override
-        public void init() {
-
-        }
-
-        @Override
         public void loop() {
-            power = gamepad1.right_stick_y;
-            robot.driveTrain.writePowers(power, power, power, power);
-
-            telemetry.addLine(logging ? "Currently logging to " + filepath + ", press B to stop logging" : "Currently not logging, press A to start logging");
-            telemetry.addData("Power", power);
-            telemetry.addData("Velocity", robot.frontLeftMotor.getVelocity());
-            telemetry.addData("Acceleration", waddler.getCurrentSituation().getAcceleration().getY().getValueSI());
-            telemetry.update();
-
-            dashboard.sendTelemetryPacket(waddler.drawField());
-
-            if (logging) {
+            if(!slipping) {
                 try {
                     csvWriter.write(String.format("%f9,%f9,%f9",
-                            power, robot.frontLeftMotor.getVelocity(), waddler.getCurrentSituation().getAcceleration().getY().getValueSI()));
+                            power, velocity, acceleration));
                     csvWriter.newLine();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
+    }
+
+    class telemetryDriver implements Action{
+        public telemetryDriver(){}
 
         @Override
-        public boolean finished() {
-            return false;
-        }
+        public void loop() {
+            power=gamepad1.right_stick_y;
+            velocity=robot.frontLeftMotor.getVelocity();
+            acceleration=waddler.getCurrentSituation().getAcceleration().getY().getValueSI();
+            slipping=waddler.getCurrentSituation().getVelocity().getY().div(new Scalar(velocity,perSecond)).lessThanOrEqual(distPerTick.multiply(0.9));
 
-        @Override
-        public void shutdown() {
-            try {
-                csvWriter.flush();
-                csvWriter.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            telemetry.addLine("Currently logging to " + filepath + ", press B to stop logging");
+            telemetry.addData("Power", power);
+            telemetry.addData("Velocity", velocity);
+            telemetry.addData("Acceleration", acceleration);
+            telemetry.addData("Slipping",slipping);
+            telemetry.update();
+
+            dashboard.sendTelemetryPacket(waddler.drawField());
         }
     }
 }

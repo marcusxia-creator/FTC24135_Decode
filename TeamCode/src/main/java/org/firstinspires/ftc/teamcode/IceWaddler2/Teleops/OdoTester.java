@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.IceWaddler2.src.IceWaddler;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.NormalizedAngle;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Position;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Vector;
-import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
+import org.firstinspires.ftc.teamcode.Subsystems.RobotHardware;
 
 
 @TeleOp(name="Odo Tester", group="IceWaddler")

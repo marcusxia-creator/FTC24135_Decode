@@ -135,6 +135,12 @@ public class IceWaddler {
         return currentSituation;
     }
 
+    public Situation getTargetSituation(){
+        return targetSituation;
+    }
+
+    public Movement getCurrentAction(){return currentAction;}
+
     // Power methods
     ///Sets all motors to 0 power
     public void zeroPower(){
@@ -163,9 +169,6 @@ public class IceWaddler {
         }
 
         @Override
-        public void init() {}
-
-        @Override
         public void loop() {
             update();
             driveTrain.runPowers(
@@ -179,11 +182,6 @@ public class IceWaddler {
         @Override
         public void shutdown() {
             zeroPower();
-        }
-
-        @Override
-        public boolean finished() {
-            return false;
         }
     }
 
@@ -218,9 +216,6 @@ public class IceWaddler {
         }
 
         @Override
-        public void init() {}
-
-        @Override
         public void loop() {
             update();
             if(fieldCentric) {
@@ -234,11 +229,6 @@ public class IceWaddler {
         @Override
         public void shutdown() {
             zeroPower();
-        }
-
-        @Override
-        public boolean finished() {
-            return false;
         }
     }
 
@@ -268,9 +258,6 @@ public class IceWaddler {
         }
 
         @Override
-        public void init() {}
-
-        @Override
         public void loop() {
             update();
             if(fieldCentric) {
@@ -284,11 +271,6 @@ public class IceWaddler {
         @Override
         public void shutdown() {
             zeroPower();
-        }
-
-        @Override
-        public boolean finished() {
-            return false;
         }
     }
 

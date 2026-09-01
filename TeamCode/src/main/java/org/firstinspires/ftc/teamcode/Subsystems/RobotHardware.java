@@ -1,10 +1,8 @@
-package org.firstinspires.ftc.teamcode.TeleOps;
+package org.firstinspires.ftc.teamcode.Subsystems;
 
-import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.deg;
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -18,20 +16,12 @@ import org.firstinspires.ftc.teamcode.Auto.lib.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Auto.lib.GoBildaPinpointDriver.*;
 import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples.ExampleDriveTrain;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples.OTOS;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples.goBildaOdoComputer;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWDriveTrain;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWLocalizer;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.NormalizedAngle;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Position;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Vector;
 
-import java.util.List;
 import java.util.ArrayList;
-
-
-import java.util.Collections;
 
 /*
 Hardware config:

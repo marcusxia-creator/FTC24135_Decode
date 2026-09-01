@@ -4,7 +4,7 @@ import static org.firstinspires.ftc.teamcode.IceWaddler2.IWConfig.maxAccel;
 
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWDriveTrain;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
-import org.firstinspires.ftc.teamcode.TeleOps.RobotHardware;
+import org.firstinspires.ftc.teamcode.Subsystems.RobotHardware;
 
 import java.util.Arrays;
 import java.util.List;
