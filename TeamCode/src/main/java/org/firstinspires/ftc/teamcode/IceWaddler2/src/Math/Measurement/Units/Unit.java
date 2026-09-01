@@ -116,4 +116,5 @@ public class Unit {
     public static Unit metersPerSecondSquared=m.div(s.pow(2));
     public static Unit degreesPerSecondSquared=deg.div(s.pow(2));
     public static Unit radiansPerSecondSquared=rad.div(s.pow(2));
+    public static Unit perSecond=new Unit(1,rate);
 }

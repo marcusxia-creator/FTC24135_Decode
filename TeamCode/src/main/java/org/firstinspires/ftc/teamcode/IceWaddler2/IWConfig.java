@@ -5,22 +5,19 @@ import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Un
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.AccelerationController;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.HeadingController;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.LatPositionController;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.MotorController;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.PrebuiltControllers.*;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
 
 public class IWConfig {
-    // Acceleration -> Motor Power Controller
-    public static MotorController motorController;
-
     // Velocity -> Acceleration Error Correction
-    public static AccelerationController accelerationController;
+    public static AccelerationController accelerationController=new proportionalAccController(new Scalar(-10,perSecond),new Scalar(-10,perSecond));
 
     // Positional error -> Velocity Correction
-    public static LatPositionController latPosController;
-    public static HeadingController headingController;
+    public static LatPositionController latPosController= new proportionaLatController(new Scalar(-10,perSecond));
+    public static HeadingController headingController= new proportionaHeadingController(new Scalar(-10,perSecond));
 
     // General constraints
-    public static Scalar maxAccel               = new Scalar(3, metersPerSecondSquared); //Maximum acceleration before wheels slip
+    public static Scalar maxAccel               = new Scalar(8, metersPerSecondSquared); //Maximum acceleration before wheels slip
     public static Scalar maxAngAccel            = new Scalar(1, radiansPerSecondSquared); //Maximum angular acceleration before wheels slip
     public static Scalar wheelPivotRadius       = new Scalar(10.5, in); //The distance between the pivot point and each of the wheels, or half the length of the diagonal
 

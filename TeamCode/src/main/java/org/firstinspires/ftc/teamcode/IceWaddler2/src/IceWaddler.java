@@ -138,7 +138,7 @@ public class IceWaddler {
     // Power methods
     ///Sets all motors to 0 power
     public void zeroPower(){
-        driveTrain.writePowers(0,0,0,0);
+        driveTrain.runPowers(0,0,0,0);
     }
 
     ///Directly write powers into motors, used for tuning
@@ -168,7 +168,7 @@ public class IceWaddler {
         @Override
         public void loop() {
             update();
-            driveTrain.writePowers(
+            driveTrain.runPowers(
                     FL_Power.get(),
                     FR_Power.get(),
                     BL_Power.get(),
@@ -195,12 +195,11 @@ public class IceWaddler {
         Scalar strafe=robotCentricAcc.getX();
         Scalar forward=robotCentricAcc.getY();
         Scalar rot=robotCentricAcc.getAngAcc().multiply(wheelPivotRadius).div(new Scalar(1,rad)); //Find linear acceleration needed to reach required angular acceleration
-        List<Double> motorVels=driveTrain.getVelocities();
-        driveTrain.writePowers(
-                calculatePower((forward).add(strafe).add(rot),motorVels.get(0)),
-                calculatePower((forward).sub(strafe).add(rot),motorVels.get(1)),
-                calculatePower((forward).sub(strafe).sub(rot),motorVels.get(2)),
-                calculatePower((forward).add(strafe).sub(rot),motorVels.get(3))
+        driveTrain.runAccel(
+                (forward).add(strafe).add(rot),
+                (forward).sub(strafe).add(rot),
+                (forward).sub(strafe).sub(rot),
+                (forward).add(strafe).sub(rot)
         );
     }
 
@@ -383,11 +382,6 @@ public class IceWaddler {
     //Helper methods
     private PIDController fromCoeffs(PIDCoefficients Coeffs){
         return new PIDController(Coeffs.p, Coeffs.i, Coeffs.d);
-    }
-
-    private double calculatePower(Scalar acceleration, double currentVel){
-        //Will implement based on fit later, currently write acceleration to motors directly
-        return acceleration.div(maxAccel).getValueSI();
     }
 
     ///limits acceleration within the bounds specified in the config
