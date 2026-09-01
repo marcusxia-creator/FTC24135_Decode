@@ -48,7 +48,7 @@ public class ExampleDriveTrain implements IWDriveTrain {
     }
 
     @Override
-    public void runAccels(Scalar FL_Accel, Scalar BL_Accel, Scalar FR_Accel, Scalar BR_Accel) {
+    public void runAccel(Scalar FL_Accel, Scalar BL_Accel, Scalar FR_Accel, Scalar BR_Accel) {
         robot.frontLeftMotor.setPower(powerController(FL_Accel,robot.frontLeftMotor.getVelocity()));
         robot.backLeftMotor.setPower(powerController(BL_Accel,robot.backLeftMotor.getVelocity()));
         robot.frontRightMotor.setPower(powerController(FR_Accel,robot.frontRightMotor.getVelocity()));

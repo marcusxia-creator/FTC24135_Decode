@@ -10,18 +10,18 @@ import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.DimMismatch;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.MotionProfile;
 
-public class maxSpeedMotionProfile implements MotionProfile {
+public class maxSpeedMP implements MotionProfile {
     Scalar maxSpeed;
     Scalar startSpeed;
     Scalar endSpeed;
     Scalar totalDist;
 
-    public maxSpeedMotionProfile(Scalar maxSpeed) {
+    public maxSpeedMP(Scalar maxSpeed) {
         if (!maxSpeed.getDimensions().equals(velocity)) {throw new DimMismatch(maxSpeed.getDimensions(), "max speed");}
         this.maxSpeed=maxSpeed;
     }
 
-    public maxSpeedMotionProfile(){
+    public maxSpeedMP(){
         maxSpeed=IWConfig.maxSpeed;
     }
 

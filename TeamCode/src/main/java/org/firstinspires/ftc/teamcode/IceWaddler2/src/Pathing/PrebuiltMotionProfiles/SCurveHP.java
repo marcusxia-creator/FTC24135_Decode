@@ -1,15 +1,17 @@
 package org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.PrebuiltMotionProfiles;
 
+import static org.apache.commons.math3.util.FastMath.pow;
+
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.NormalizedAngle;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.HeadingProfile;
 
-public class linearHeadingProfile implements HeadingProfile {
+public class SCurveHP implements HeadingProfile {
     NormalizedAngle startHeading;
     NormalizedAngle endHeading;
     NormalizedAngle deltaHeading;
 
-    public linearHeadingProfile(){}
+    public SCurveHP(){}
 
     @Override
     public void init(NormalizedAngle startAngle, NormalizedAngle endAngle, Scalar totalDistance) {
@@ -20,6 +22,6 @@ public class linearHeadingProfile implements HeadingProfile {
 
     @Override
     public NormalizedAngle getAng(double completion) {
-        return startHeading.add(deltaHeading.multiply(completion));
+        return startHeading.add(deltaHeading.multiply(completion<=0.5?(2*pow(completion,2)):(1-2*pow(completion-1,2))));
     }
 }

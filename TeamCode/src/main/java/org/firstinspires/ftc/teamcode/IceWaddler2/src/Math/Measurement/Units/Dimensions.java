@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units;
 
-import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Dimensions.Dimension.Angular;
-import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Dimensions.Dimension.Spacial;
-import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Dimensions.Dimension.Temporal;
+import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Dimensions.Dimension.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
