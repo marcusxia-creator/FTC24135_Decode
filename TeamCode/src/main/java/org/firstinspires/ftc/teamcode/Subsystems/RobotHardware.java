@@ -138,10 +138,16 @@ public class RobotHardware {
         backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Set drive train motor run mode
-        frontLeftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
-        backLeftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); //set motor mode
-        frontRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
-        backRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
+        frontLeftMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER); // set motor mode
+        backLeftMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER); //set motor mode
+        frontRightMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER); // set motor mode
+        backRightMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER); // set motor mode
+
+        frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
         // set robot motor power 0
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
@@ -154,7 +160,7 @@ public class RobotHardware {
         //IWodo = new IceWaddler1.IWLocalizer(odo);
 
         //localizer = new OTOS(new Position(new Vector(-0.45, -6.57, in), new NormalizedAngle(0, deg)),odo);
-        localizer = new goBildaOdoComputer(odo, new Scalar(-19,cm),new Scalar(-3,cm), GoBildaOdometryPods.goBILDA_SWINGARM_POD, EncoderDirection.FORWARD, EncoderDirection.FORWARD);
+        localizer = new goBildaOdoComputer(odo, new Scalar(-161,mm),new Scalar(13,mm), GoBildaOdometryPods.goBILDA_SWINGARM_POD, EncoderDirection.REVERSED, EncoderDirection.REVERSED);
         driveTrain = new ExampleDriveTrain(this);
     }// End of init
 

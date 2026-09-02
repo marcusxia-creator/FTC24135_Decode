@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.*;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
 import org.firstinspires.ftc.teamcode.Subsystems.RobotHardware;
 
-@TeleOp(name="Velocity PID Tuner", group="IceWaddler")
+@TeleOp(name="Velocity Tuner", group="IceWaddler")
 @Config
 public class VelTuner extends OpMode {
     RobotHardware robot;

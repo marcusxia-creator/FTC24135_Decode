@@ -35,7 +35,7 @@ public class goBildaOdoComputer implements IWLocalizer {
 
     public void reset(Situation situation) {
         odo.resetPosAndIMU();
-        odo.setPosition(new Pose2D(DistanceUnit.METER, situation.getPosition().getX().getValueSI(), situation.getPosition().getY().getValueSI(), AngleUnit.RADIANS, situation.getPosition().getHeading().getValueSI()));
+        odo.setPosition(new Pose2D(DistanceUnit.METER, situation.getPosition().getY().getValueSI(), situation.getPosition().getX().getValueSI(), AngleUnit.RADIANS, -situation.getPosition().getHeading().getValueSI()));
     }
 
     public void update() {
@@ -45,8 +45,8 @@ public class goBildaOdoComputer implements IWLocalizer {
     public Situation getSituation() {
         return new Situation(
                 null,
-                new Velocity(new Vector(odo.getVelX(), odo.getVelY(), mm.div(s)), new Scalar(odo.getHeadingVelocity(),radiansPerSecond)),
-                new Position(new Vector(odo.getPosX(), odo.getPosY(), mm), new NormalizedAngle(odo.getHeading(), rad))
+                new Velocity(new Vector(odo.getVelY(), odo.getVelX(), mm.div(s)), new Scalar(-odo.getHeadingVelocity(),radiansPerSecond)),
+                new Position(new Vector(odo.getPosY(), odo.getPosX(), mm), new NormalizedAngle(-  odo.getHeading(), rad))
         );
     }
 }

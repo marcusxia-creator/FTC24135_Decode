@@ -18,7 +18,8 @@ import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMe
 
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.*;
 
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.function.Supplier;
 
 public class IceWaddler {
@@ -32,7 +33,7 @@ public class IceWaddler {
     Scalar runTime;
 
     // Situations
-    Situation lastSituation;    //Situation during the last tick, used to interpolate accelerations and velocities, if needed
+    Queue<Situation> lastSituations=new LinkedList<>();    //Situation during the last few ticks, used to interpolate accelerations and velocities, if needed
     Situation currentSituation; //Current situation, from odometry
     Situation lastTargetSituation; //Used for derivatives in controllers
     Situation targetSituation;  //Target situation to drive motors. Position is null
@@ -64,6 +65,7 @@ public class IceWaddler {
 
         //Init hardware
         driveTrain.init();
+        
         localizer.init();
         localizer.reset(new Situation(
                 Acceleration.zero,
@@ -71,7 +73,8 @@ public class IceWaddler {
                 initPos
         ));
         localizer.update();
-        lastSituation=localizer.getSituation();// To avoid not defined errors in later derivatives
+        currentSituation=localizer.getSituation();
+        lastSituations.offer(currentSituation);// To avoid not defined errors in later derivatives
 
         targetSituation=new Situation(null,null,null);
     }
@@ -80,6 +83,7 @@ public class IceWaddler {
         localizer.reset(new Situation(Acceleration.zero,
                 Velocity.zero,
                 resetPos));
+        currentSituation.setPosition(resetPos);
     }
 
     ///Updates tickTime variable
@@ -91,18 +95,24 @@ public class IceWaddler {
 
     ///Updates odometry, and computes derivatives if needed
     private void updateOdo(){
-        lastSituation=currentSituation;
+        Situation lastSituation;
+        if(lastSituations.size()>=derivativeTicks){
+            lastSituation=lastSituations.poll();
+        }
+        else{
+            lastSituation=lastSituations.peek();
+        }
         localizer.update();
         currentSituation=localizer.getSituation();
 
         //Derivatives first, derivatives avoid cumulative errors
         //Velocity as the derivative of position
         if(currentSituation.getVelocity()==null&&currentSituation.getPosition()!=null){
-            currentSituation.setVelocity(currentSituation.getPosition().sub(lastSituation.getPosition()).differentiate(tickTime));
+            currentSituation.setVelocity(currentSituation.getPosition().sub(lastSituation.getPosition()).differentiate(tickTime.multiply(lastSituations.size()+1)));
         }
         //Acceleration as the derivative of velocity
         if(currentSituation.getAcceleration()==null&&currentSituation.getVelocity()!=null){
-            currentSituation.setAcceleration(currentSituation.getVelocity().sub(lastSituation.getVelocity()).differentiate(tickTime));
+            currentSituation.setAcceleration(currentSituation.getVelocity().sub(lastSituation.getVelocity()).differentiate(tickTime.multiply(lastSituations.size()+1)));
         }
 
         //Integrals
@@ -114,6 +124,8 @@ public class IceWaddler {
         if(currentSituation.getPosition()==null&&currentSituation.getVelocity()!=null){
             currentSituation.setPosition(lastSituation.getPosition().add(currentSituation.getVelocity().integrate(tickTime)));
         }
+
+        lastSituations.offer(currentSituation);
     }
 
     ///Runs updates on odo and ticktime. Needs to be run every loop, preferably before any other methods

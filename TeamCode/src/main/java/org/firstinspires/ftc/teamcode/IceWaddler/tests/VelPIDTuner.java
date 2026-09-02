@@ -13,6 +13,7 @@ import static java.lang.Math.sqrt;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -22,7 +23,8 @@ import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1;
 import org.firstinspires.ftc.teamcode.Subsystems.RobotHardware;
 
 @TeleOp(name="Vel PID Tuner", group="Icewaddler Tests")
-
+@Deprecated
+@Disabled
 public class VelPIDTuner extends OpMode {
     public RobotHardware robot;
     public IceWaddler1 iceWaddler;

@@ -12,6 +12,9 @@ import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
 
 @Config
 public class IWConfig {
+    // Ticks in derivative, to reduce noise
+    public static int derivativeTicks=3;
+
     // Velocity -> Acceleration Error Correction
     public static double linAccelKP=10;
     public static double angAccelKP=10;

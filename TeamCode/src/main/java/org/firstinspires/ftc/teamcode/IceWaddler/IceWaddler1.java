@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.IceWaddler.IceWaddlerConfig1.*;
 
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.RobotHardware;
 
 import java.util.List;
 
+@Deprecated
 public class IceWaddler1 {
     final RobotHardware robot;
 

@@ -47,6 +47,10 @@ public class OdoTester extends OpMode {
     @Override
     public void loop() {
         waddler.update();
+        telemetry.addData("rawXPos", robot.odo.getPosX());
+        telemetry.addData("rawYPos", robot.odo.getPosY());
+        telemetry.addData("rawHeading", robot.odo.getHeading());
+
         telemetry.addData("xPos", waddler.getCurrentSituation().getPosition().getX().getValueSI());
         telemetry.addData("yPos", waddler.getCurrentSituation().getPosition().getY().getValueSI());
         telemetry.addData("Heading", waddler.getCurrentSituation().getPosition().getAngPos().getValue(deg));

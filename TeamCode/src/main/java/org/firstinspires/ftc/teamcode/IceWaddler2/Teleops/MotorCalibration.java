@@ -59,7 +59,7 @@ public class MotorCalibration extends OpMode {
         waddler.init(new Position(new Vector(0, 0, m), new NormalizedAngle(0, deg)),
                 true);
 
-        filepath = String.format("../sdcard/FIRST/%s.csv", Instant.now());
+        filepath = String.format("../sdcard/IceWaddler_Tuning/%s.csv", Instant.now());
 
         try {
             csvWriter = new BufferedWriter(new FileWriter(filepath));
@@ -80,7 +80,7 @@ public class MotorCalibration extends OpMode {
     public void init_loop() {
         waddler.update();
         if(robot.frontLeftMotor.getVelocity()!=0){
-            distPerTick=waddler.getCurrentSituation().getPosition().getY().div(robot.frontLeftMotor.getVelocity());
+            distPerTick=waddler.getCurrentSituation().getPosition().getY().div(robot.frontLeftMotor.getCurrentPosition());
             telemetry.addData("Current conversion Factor Estimation", String.format("%f m/tick", distPerTick.getValue(m)));
         }
     }
@@ -131,7 +131,7 @@ public class MotorCalibration extends OpMode {
         public void loop() {
             power=gamepad1.right_stick_y;
             velocity=robot.frontLeftMotor.getVelocity();
-            acceleration=waddler.getCurrentSituation().getAcceleration().getY().getValueSI();
+            acceleration=waddler.getCurrentSituation().getAcceleration().getX().getValueSI();
             slipping=waddler.getCurrentSituation().getVelocity().getY().div(new Scalar(velocity,perSecond)).lessThanOrEqual(distPerTick.multiply(0.9));
 
             telemetry.addLine("Currently logging to " + filepath + ", press B to stop logging");

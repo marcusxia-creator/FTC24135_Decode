@@ -32,7 +32,7 @@ public class OdoOffsetTester extends OpMode {
 
         odo.update();
 
-        telemetry.addData("X Offset", String.format("%d mm", (odo.getEncoderX()/13.26291192)/odo.getHeading()));
-        telemetry.addData("Y Offset", String.format("%d mm", (odo.getEncoderY()/13.26291192)/odo.getHeading()));
+        telemetry.addData("X Offset", String.format("%f mm", (odo.getEncoderX()/13.26291192)/odo.getHeading()));
+        telemetry.addData("Y Offset", String.format("%f mm", (odo.getEncoderY()/13.26291192)/odo.getHeading()));
     }
 }
