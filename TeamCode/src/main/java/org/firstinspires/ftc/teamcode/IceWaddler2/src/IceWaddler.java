@@ -65,7 +65,7 @@ public class IceWaddler {
 
         //Init hardware
         driveTrain.init();
-        
+
         localizer.init();
         localizer.reset(new Situation(
                 Acceleration.zero,
@@ -96,6 +96,8 @@ public class IceWaddler {
     ///Updates odometry, and computes derivatives if needed
     private void updateOdo(){
         Situation lastSituation;
+
+        lastSituations.offer(currentSituation);
         if(lastSituations.size()>=derivativeTicks){
             lastSituation=lastSituations.poll();
         }
@@ -124,8 +126,6 @@ public class IceWaddler {
         if(currentSituation.getPosition()==null&&currentSituation.getVelocity()!=null){
             currentSituation.setPosition(lastSituation.getPosition().add(currentSituation.getVelocity().integrate(tickTime)));
         }
-
-        lastSituations.offer(currentSituation);
     }
 
     ///Runs updates on odo and ticktime. Needs to be run every loop, preferably before any other methods
