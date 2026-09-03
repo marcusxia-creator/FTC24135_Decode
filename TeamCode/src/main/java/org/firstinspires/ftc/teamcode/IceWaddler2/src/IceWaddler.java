@@ -29,8 +29,7 @@ public class IceWaddler {
 
     // Timers
     Scalar tickTime;
-    ElapsedTime runTimer;
-    Scalar runTime;
+    ElapsedTime tickTimer;
 
     // Situations
     Queue<Situation> lastSituations=new LinkedList<>();    //Situation during the last few ticks, used to interpolate accelerations and velocities, if needed
@@ -60,8 +59,7 @@ public class IceWaddler {
         this.fieldCentric=fieldCentric;
 
         //Init timer
-        runTimer=new ElapsedTime();
-        runTime=new Scalar(runTimer.nanoseconds(), ns);
+        tickTimer=new ElapsedTime();
 
         //Init hardware
         driveTrain.init();
@@ -77,6 +75,7 @@ public class IceWaddler {
         lastSituations.offer(currentSituation);// To avoid not defined errors in later derivatives
 
         targetSituation=new Situation(null,null,null);
+        lastTargetSituation=currentSituation;
     }
 
     public void resetOdo(Position resetPos){
@@ -88,9 +87,12 @@ public class IceWaddler {
 
     ///Updates tickTime variable
     private void updateTimer(){
-        Scalar lastRunTime=runTime;
-        runTime=new Scalar(runTimer.nanoseconds(), ns);
-        tickTime=runTime.sub(lastRunTime);
+        tickTime=new Scalar(tickTimer.nanoseconds(), ns);
+        tickTimer.reset();
+    }
+
+    public Scalar getTickTime(){
+        return tickTime;
     }
 
     ///Updates odometry, and computes derivatives if needed
@@ -130,7 +132,6 @@ public class IceWaddler {
 
     ///Runs updates on odo and ticktime. Needs to be run every loop, preferably before any other methods
     public void update(){
-        lastTargetSituation=targetSituation;
         updateTimer();
         updateOdo();
     }
@@ -252,6 +253,7 @@ public class IceWaddler {
         Velocity target=targetSituation.getVelocity();
         targetSituation.setAcceleration(target.sub(lastTarget).differentiate(tickTime).add(accelerationController.getCorrection(target.sub(current))));
         limitAcceleration();
+        lastTargetSituation.setVelocity(current);
         writeAccel();
     }
 
@@ -381,9 +383,9 @@ public class IceWaddler {
     ///limits acceleration within the bounds specified in the config
     private void limitAcceleration(){
         Acceleration acceleration=targetSituation.getAcceleration();
-        targetSituation.setAcceleration(new Acceleration(
+        /*targetSituation.setAcceleration(new Acceleration(
                 acceleration.getLinAcc().mag().lessThanOrEqual(maxAccel)?acceleration.getLinAcc():acceleration.unitVector().multi(maxAccel),
                 acceleration.getAngAcc().abs().lessThanOrEqual(maxAngAccel)?acceleration.getAngAcc():acceleration.getAngAcc().multiply(maxAngAccel.div(acceleration.getAngAcc().abs()))
-        ));//Ternary operator is used instead of min to prevent divisions by zero
+        ));*///Ternary operator is used instead of min to prevent divisions by zero
     }
 }

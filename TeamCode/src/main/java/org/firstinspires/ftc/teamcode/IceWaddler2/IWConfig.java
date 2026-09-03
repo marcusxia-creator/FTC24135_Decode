@@ -13,21 +13,21 @@ import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
 @Config
 public class IWConfig {
     // Ticks in derivative, to reduce noise
-    public static int derivativeTicks=3;
+    public static int derivativeTicks=40;
 
     // Velocity -> Acceleration Error Correction
-    public static double linAccelKP=10;
-    public static double angAccelKP=10;
+    public static double linAccelKP=0;
+    public static double angAccelKP=0;
     public static AccelerationController accelerationController=new proportionalAccController(new Scalar(-linAccelKP,perSecond),new Scalar(-angAccelKP,perSecond));
 
     // Positional error -> Velocity Correction
-    public static double latPosKP=10;
-    public static double headingKP=10;
+    public static double latPosKP=0;
+    public static double headingKP=0;
     public static LatPositionController latPosController= new proportionaLatController(new Scalar(-latPosKP,perSecond));
     public static HeadingController headingController= new proportionaHeadingController(new Scalar(-headingKP,perSecond));
 
     // General constraints
-    public static Scalar maxAccel               = new Scalar(8, metersPerSecondSquared); //Maximum acceleration before wheels slip
+    public static Scalar maxAccel               = new Scalar(3, metersPerSecondSquared); //Maximum acceleration before wheels slip
     public static Scalar maxAngAccel            = new Scalar(1, radiansPerSecondSquared); //Maximum angular acceleration before wheels slip
     public static Scalar wheelPivotRadius       = new Scalar(10.5, in); //The distance between the pivot point and each of the wheels, or half the length of the diagonal
 

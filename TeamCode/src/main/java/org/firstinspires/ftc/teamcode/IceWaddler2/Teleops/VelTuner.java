@@ -27,6 +27,11 @@ public class VelTuner extends OpMode {
 
     Action rootAction;
 
+    Velocity getJoystickCommandVel(){
+        new Velocity(new Vector(linVelFactor.multiply(gamepad1.right_stick_x),linVelFactor.multiply(gamepad1.right_stick_y)),
+                angVelFactor.multiply(gamepad1.left_stick_x));
+    }
+
     @Override
     public void init(){
         robot=new RobotHardware(hardwareMap);
@@ -40,8 +45,7 @@ public class VelTuner extends OpMode {
         telemetry=new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
         rootAction=new ActionParallel(ActionParallel.TERMINATIONTYPE.NONE,
-                waddler.new VelDrive(()->new Velocity(new Vector(linVelFactor.multiply(gamepad1.right_stick_x),linVelFactor.multiply(gamepad1.right_stick_y)),
-                        angVelFactor.multiply(gamepad1.left_stick_x))),
+                waddler.new VelDrive(this::getJoystickCommandVel),
                 new telemetryDriver()
         );
     }
@@ -74,9 +78,13 @@ public class VelTuner extends OpMode {
             telemetry.addData("2.Target y vel", waddler.getTargetSituation().getVelocity().getY().getValueSI());
             telemetry.addData("2.Target ang vel", waddler.getTargetSituation().getVelocity().getAngVel().getValueSI());
 
-            telemetry.addData("3.Target x acc", waddler.getTargetSituation().getAcceleration().getX().getValueSI());
-            telemetry.addData("3.Target y acc", waddler.getTargetSituation().getAcceleration().getY().getValueSI());
-            telemetry.addData("3.Target ang acc", waddler.getTargetSituation().getAcceleration().getAngAcc().getValueSI());
+            telemetry.addData("3.Current x acc", waddler.getCurrentSituation().getAcceleration().getX().getValueSI());
+            telemetry.addData("3.Current y acc", waddler.getCurrentSituation().getAcceleration().getY().getValueSI());
+            telemetry.addData("3.Current ang acc", waddler.getCurrentSituation().getAcceleration().getAngAcc().getValueSI());
+
+            telemetry.addData("4.Target x acc", waddler.getTargetSituation().getAcceleration().getX().getValueSI());
+            telemetry.addData("4.Target y acc", waddler.getTargetSituation().getAcceleration().getY().getValueSI());
+            telemetry.addData("4.Target ang acc", waddler.getTargetSituation().getAcceleration().getAngAcc().getValueSI());
         }
     }
 }

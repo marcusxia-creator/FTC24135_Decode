@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples;
 
 import static org.firstinspires.ftc.teamcode.IceWaddler2.IWConfig.maxAccel;
+import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.metersPerSecondSquared;
+
+import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWDriveTrain;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
@@ -12,7 +15,10 @@ import java.util.List;
 /// An example IceWaddler drive train object, built on our robot hardwaremap.<br>
 /// If also using a hardwaremap, change class and motor names to match<br>
 /// If not using a hardware map, modify the constructor to input and store the four motors as individual parameters
+@Config
 public class ExampleDriveTrain implements IWDriveTrain {
+    public static double k_v=0.00035;
+    public static double k_a=0.180498;
     RobotHardware robot;
     ///In this implimentation, the constructor simply stores our hardware map
     public ExampleDriveTrain(RobotHardware robot){
@@ -44,7 +50,7 @@ public class ExampleDriveTrain implements IWDriveTrain {
 
     @Override
     public double powerController(Scalar Accel, double motorVel) {
-        return Accel.div(maxAccel).getValueSI(); //Temporary Placeholder
+        return k_v*motorVel+k_a*Accel.getValue(metersPerSecondSquared); //Temporary Placeholder
     }
 
     @Override

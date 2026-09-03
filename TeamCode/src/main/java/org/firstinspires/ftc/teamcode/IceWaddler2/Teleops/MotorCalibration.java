@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.IceWaddler2.Teleops;
 
+import static org.firstinspires.ftc.teamcode.IceWaddler2.IWConfig.derivativeTicks;
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -20,6 +21,8 @@ import org.threeten.bp.Instant;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.Queue;
 
 @TeleOp(name="Motor Power Calibration", group="IceWaddler")
 @Config
@@ -42,6 +45,9 @@ public class MotorCalibration extends OpMode {
     double velocity;
     double acceleration;
     boolean slipping;
+
+    Queue<Double> powerQueue=new LinkedList<>();
+    Queue<Double> velocityQueue=new LinkedList<>();
 
     @Override
     public void init() {
@@ -115,7 +121,7 @@ public class MotorCalibration extends OpMode {
             if(!slipping) {
                 try {
                     csvWriter.write(String.format("%f9,%f9,%f9",
-                            power, velocity, acceleration));
+                            powerQueue.peek(), velocityQueue.peek(), acceleration));
                     csvWriter.newLine();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -131,9 +137,10 @@ public class MotorCalibration extends OpMode {
         public void loop() {
             power=gamepad1.right_stick_y;
             velocity=robot.frontLeftMotor.getVelocity();
-            acceleration=waddler.getCurrentSituation().getAcceleration().getX().getValueSI();
-            slipping=waddler.getCurrentSituation().getVelocity().getY().div(new Scalar(velocity,perSecond)).lessThanOrEqual(distPerTick.multiply(0.9));
+            acceleration=waddler.getCurrentSituation().getAcceleration().rotateBy(waddler.getCurrentSituation().getPosition().getHeading().multiply(-1)).getY().getValueSI();
+            slipping=waddler.getCurrentSituation().getVelocity().rotateBy(waddler.getCurrentSituation().getPosition().getHeading().multiply(-1)).getY().div(new Scalar(velocity,perSecond)).lessThanOrEqual(distPerTick.multiply(0.9));
 
+            telemetry.addData("Ticktime",waddler.getTickTime().getValueSI());
             telemetry.addLine("Currently logging to " + filepath + ", press B to stop logging");
             telemetry.addData("Power", power);
             telemetry.addData("Velocity", velocity);
@@ -142,6 +149,14 @@ public class MotorCalibration extends OpMode {
             telemetry.update();
 
             dashboard.sendTelemetryPacket(waddler.drawField());
+
+            powerQueue.offer(power);
+            velocityQueue.offer(velocity);
+
+            if(powerQueue.size()>=derivativeTicks/2){
+                powerQueue.remove();
+                velocityQueue.remove();
+            }
         }
     }
 }
