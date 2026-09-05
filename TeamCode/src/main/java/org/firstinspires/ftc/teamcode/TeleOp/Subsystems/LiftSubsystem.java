@@ -3,15 +3,16 @@ package org.firstinspires.ftc.teamcode.TeleOp.Subsystems;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
+import static org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotActionConfig.*;
+
+import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotActionConfig;
+import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
+
 public class LiftSubsystem extends SubsystemBase {
-    private final double Ticks_Per_Moto_Revolution = 145.1;
-    private final double Pulley_Ratio = 2.0 / 3.0;
-    private final double Actual_Ticks_Per_Revolution = Ticks_Per_Moto_Revolution * Pulley_Ratio; //96.7
-    private final double Spool_Circumference_MM = 32 * Math.PI; //100.5MM
-    private final double Ticks_Per_MM = Actual_Ticks_Per_Revolution / Spool_Circumference_MM; //0.96
+
     private final RobotHardware robot;
     private final PIDFController pidfLift;
-    private double targetPositionUp = 200 * Ticks_Per_MM;
+    private double targetPositionUp = 200* Ticks_Per_MM;
     private int targetPositionDown = 0;
     private double targetPosition = targetPositionDown;
 

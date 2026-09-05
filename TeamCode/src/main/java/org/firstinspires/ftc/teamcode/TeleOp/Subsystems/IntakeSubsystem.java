@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.TeleOp.Subsystems;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
+
+import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
+
 public class IntakeSubsystem extends SubsystemBase{
     private RobotHardware robot;
     private double intakePower = 0.7;

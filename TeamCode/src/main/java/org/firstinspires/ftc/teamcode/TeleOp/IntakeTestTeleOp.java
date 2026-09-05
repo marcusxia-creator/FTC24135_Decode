@@ -1,11 +1,8 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.arcrobotics.ftclib.drivebase.RobotDrive;
 import com.seattlesolvers.solverslib.command.RunCommand;
-import com.seattlesolvers.solverslib.command.Subsystem;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -15,7 +12,7 @@ import org.firstinspires.ftc.teamcode.TeleOp.Commands.RobotDriveCommand;
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.RobotDriveSubsystem;
-import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.RobotHardware;
+import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
 
 @TeleOp (name = "Intake Test TeleOp", group = "Test")
 
@@ -55,11 +52,14 @@ public class IntakeTestTeleOp extends CommandOpMode {
             .whenPressed(new InstantCommand (lift :: extendLift, lift));
         new GamepadButton(gamepad, GamepadKeys.Button.X)
             .whenPressed(new InstantCommand(lift :: lowerLift, lift));
+
+        new GamepadButton (gamepad, GamepadKeys.Button.B)
+            .whenPressed(new InstantCommand(lift :: stop));
     }
     @Override
     public void run (){
         super.run();
-
+        telemetry.addLine("----------------INTAKE----------------");
         telemetry.addData("Intake Power", intake.getIntakePower());
         telemetry.addLine("-----------Lift in MM-----------");
         telemetry.addData("Target Lift Position MM", lift.getTargetPositionMM());
