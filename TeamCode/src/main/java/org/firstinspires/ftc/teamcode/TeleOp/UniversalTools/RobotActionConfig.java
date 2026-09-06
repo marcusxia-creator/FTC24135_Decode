@@ -11,5 +11,7 @@ public class RobotActionConfig {
     public static double Actual_Ticks_Per_Revolution = Ticks_Per_Moto_Revolution * Pulley_Ratio; //96.7
     public static double Spool_Circumference_MM = 32 * Math.PI; //100.5MM
     public static final double Ticks_Per_MM = Actual_Ticks_Per_Revolution / Spool_Circumference_MM; //0.96
+    public static double engagePTO = 0.2; ///PTO Servo connects for slides
+    public static double disengagePTO = 0.0; ///PTO Servo disconnects --> deafult?
 
 }

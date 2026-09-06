@@ -9,16 +9,19 @@ import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.button.GamepadButton;
 
 import org.firstinspires.ftc.teamcode.TeleOp.Commands.RobotDriveCommand;
+///Subsystems
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.RobotDriveSubsystem;
+import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.LinkagePTOSubsystem;
+
 import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
 
 @TeleOp (name = "Intake Test TeleOp", group = "Test")
 
 public class IntakeTestTeleOp extends CommandOpMode {
-
     private RobotDriveSubsystem robotDrive;
+    private LinkagePTOSubsystem linkagePTO;
     private LiftSubsystem lift;
     private IntakeSubsystem intake;
     private GamepadEx gamepad;
@@ -39,7 +42,8 @@ public class IntakeTestTeleOp extends CommandOpMode {
                 () -> gamepad.getRightX(),
                 () -> gamepad.getLeftX()
         ));
-
+        ///------------------Gamepad-----------------------
+        ///Run intake
         new GamepadButton(gamepad, GamepadKeys.Button.RIGHT_BUMPER)
                 .whileHeld(new RunCommand(intake :: runRollers,intake))
                 .whenReleased(new InstantCommand(intake :: stop,intake));
@@ -47,14 +51,21 @@ public class IntakeTestTeleOp extends CommandOpMode {
                 .whenPressed (new InstantCommand(() -> intake.increasePower(), intake));
         new GamepadButton (gamepad, GamepadKeys.Button.DPAD_DOWN)
                 .whenPressed(new InstantCommand(()-> intake.decreasePower(), intake));
-
+        ///Run lift
         new GamepadButton(gamepad, GamepadKeys.Button.Y)
             .whenPressed(new InstantCommand (lift :: extendLift, lift));
         new GamepadButton(gamepad, GamepadKeys.Button.X)
             .whenPressed(new InstantCommand(lift :: lowerLift, lift));
-
+        ///Stop lift
+        /*
         new GamepadButton (gamepad, GamepadKeys.Button.B)
             .whenPressed(new InstantCommand(lift :: stop));
+         */
+        ///Lift PTO
+        new GamepadButton(gamepad, GamepadKeys.Button.B)
+            .whenPressed(new RunCommand(linkagePTO :: engagePTO));
+        new GamepadButton(gamepad, GamepadKeys.Button.A)
+            .whenPressed(new RunCommand(linkagePTO :: disengagePTO));
     }
     @Override
     public void run (){

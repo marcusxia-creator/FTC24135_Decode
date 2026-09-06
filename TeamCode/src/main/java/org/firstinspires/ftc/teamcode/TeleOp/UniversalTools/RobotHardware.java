@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class RobotHardware{
     public DcMotorEx frontLeftMotor;
@@ -14,21 +15,20 @@ public class RobotHardware{
     public DcMotorEx intakeMotor;
     public DcMotorEx leftLiftMotor;
     public DcMotorEx rightLiftMotor;
+    public Servo linkagePTOServo;
 
     public HardwareMap hardwareMap;
     public RobotHardware(HardwareMap hardwareMap) {
        this.hardwareMap=hardwareMap;
     }
     public void init(){
+        ///PTO
+        linkagePTOServo = hardwareMap.get(Servo.class, "PTO_Servo");
+        ///Drive
         frontLeftMotor = hardwareMap.get(DcMotorEx.class, "FL_Motor");
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "BL_Motor");
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
-        ///Intake
-        intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
-        ///Lift
-        leftLiftMotor = hardwareMap.get(DcMotorEx.class,"Left_Lift_Motor");
-        rightLiftMotor = hardwareMap.get(DcMotorEx.class, "Right_Lift_Motor");
 
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -42,9 +42,15 @@ public class RobotHardware{
 
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        ///Intake
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
 
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        ///Lift
+        leftLiftMotor = hardwareMap.get(DcMotorEx.class,"Left_Lift_Motor");
+        rightLiftMotor = hardwareMap.get(DcMotorEx.class, "Right_Lift_Motor");
 
         leftLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
