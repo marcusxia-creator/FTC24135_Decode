@@ -5,7 +5,7 @@ import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Uni
 
 public class Scalar {
     /// The value of the scalar, in SI base units
-    double value;
+    public double value;//Public to be accessible in Dashboard
 
     Dimensions dimensions;
 

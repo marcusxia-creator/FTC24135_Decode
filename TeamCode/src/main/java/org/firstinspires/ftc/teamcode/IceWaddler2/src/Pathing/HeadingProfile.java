@@ -6,5 +6,7 @@ import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMe
 public interface HeadingProfile {
     void init(NormalizedAngle startAngle, NormalizedAngle endAngle, Scalar totalDistance);
 
-    NormalizedAngle getAng(double completion);
+    NormalizedAngle getHeading(double completion);
+
+    Scalar getAngVel(double completion, Scalar velocity);
 }

@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.PrebuiltControllers;
 
+import static org.firstinspires.ftc.teamcode.IceWaddler2.IWConfig.headingKP;
+import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.perSecond;
+
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.AccelerationController;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Controllers.HeadingController;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
@@ -8,13 +11,10 @@ import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMe
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Velocity;
 
 public class proportionaHeadingController implements HeadingController {
-    Scalar kP;
-    public proportionaHeadingController(Scalar kP){
-        this.kP=kP;
-    }
+    public proportionaHeadingController(double kP){}
 
     @Override
     public Scalar getCorrection(NormalizedAngle error) {
-        return error.toScalar().multiply(kP);
+        return error.toScalar().multiply(new Scalar(-headingKP,perSecond));
     }
 }

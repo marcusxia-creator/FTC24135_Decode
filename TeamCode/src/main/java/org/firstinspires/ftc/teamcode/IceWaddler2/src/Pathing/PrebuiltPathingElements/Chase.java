@@ -8,15 +8,17 @@ import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.*;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.Movement;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.function.Supplier;
 
 public class Chase implements Movement {
     Position targetPosition;
-    Position lastTargetPosition;
+    Queue<Position> lastTargetPositions=new LinkedList<>();
     Supplier<Position> positionSupplier;
     boolean dynamicStartpoint;
     String[] tags;
-    Scalar tickTime;
+    Scalar dt;
 
     Position relPos;
 
@@ -33,20 +35,23 @@ public class Chase implements Movement {
     @Override
     public void init(PathingPoint lastTargetPoint) {
         targetPosition=positionSupplier.get();
-        lastTargetPosition=targetPosition;
     }
 
     @Override
-    public void loop(Situation currentSituation, Scalar tickTime) {
-        lastTargetPosition=targetPosition;
+    public void loop(Situation currentSituation, Scalar dt) {
+        targetPosition=positionSupplier.get();
+        lastTargetPositions.offer(targetPosition);
+        if(lastTargetPositions.size()>derivativeTicks){
+            lastTargetPositions.poll();
+        }
         targetPosition=positionSupplier.get();
         relPos=currentSituation.getPosition().sub(targetPosition);
-        this.tickTime=tickTime;
+        this.dt=dt;
     }
 
     @Override
     public Velocity getTargetVel() {
-        return targetPosition.sub(lastTargetPosition).differentiate(tickTime)
+        return targetPosition.sub(lastTargetPositions.peek()).differentiate(dt)
                 .add(new Velocity(
                 relPos.getLinPos().unitVector().multi(latPosController.getCorrection(relPos.getLinPos().mag())),
                 headingController.getCorrection(relPos.getHeading()))

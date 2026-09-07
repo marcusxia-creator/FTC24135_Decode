@@ -13,6 +13,9 @@ public class OdoOffsetTester extends OpMode {
     GoBildaPinpointDriver odo;
     IWDriveTrain driveTrain;
 
+    int initialXTicks;
+    int initialYTicks;
+
     @Override
     public void init() {
         robot=new RobotHardware(hardwareMap);
@@ -20,7 +23,11 @@ public class OdoOffsetTester extends OpMode {
 
         odo=robot.odo;
         odo.initialize();
+        odo.recalibrateIMU();
         odo.resetPosAndIMU();
+
+        initialXTicks=odo.getEncoderX();
+        initialYTicks=odo.getEncoderY();
 
         driveTrain=robot.driveTrain;
     }
@@ -28,11 +35,11 @@ public class OdoOffsetTester extends OpMode {
     @Override
     public void loop() {
         double power=gamepad1.left_stick_x;
-        driveTrain.runPowers(power,power,-power,-power);
+        driveTrain.runPower(power,power,-power,-power);
 
         odo.update();
 
-        telemetry.addData("X Offset", String.format("%f mm", (odo.getEncoderX()/13.26291192)/odo.getHeading()));
-        telemetry.addData("Y Offset", String.format("%f mm", (odo.getEncoderY()/13.26291192)/odo.getHeading()));
+        telemetry.addData("X Offset", String.format("%f mm", ((odo.getEncoderX()-initialXTicks)/13.26291192)/odo.getHeading()));
+        telemetry.addData("Y Offset", String.format("%f mm", ((odo.getEncoderY()-initialYTicks)/13.26291192)/odo.getHeading()));
     }
 }

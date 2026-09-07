@@ -153,7 +153,7 @@ public class MotorCalibration extends OpMode {
             powerQueue.offer(power);
             velocityQueue.offer(velocity);
 
-            if(powerQueue.size()>=derivativeTicks/2){
+            if(powerQueue.size()>= derivativeTicks /2){
                 powerQueue.remove();
                 velocityQueue.remove();
             }

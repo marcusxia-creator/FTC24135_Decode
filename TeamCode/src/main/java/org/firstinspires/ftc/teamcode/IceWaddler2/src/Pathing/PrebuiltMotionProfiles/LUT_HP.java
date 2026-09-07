@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.PrebuiltMotionPro
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.NormalizedAngle;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.HeadingProfile;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.MotionProfile;
 
 public class LUT_HP implements HeadingProfile {
     double[] completionNodes;
@@ -28,7 +27,11 @@ public class LUT_HP implements HeadingProfile {
     public void init(NormalizedAngle startAng, NormalizedAngle endAng, Scalar totalDistance) {
         this.startAng=startAng;
         this.endAng=endAng;
+        this.totalDistance=totalDistance;
         currentBin=0;
+
+        currentBinSize=getNextCompletionNode();
+        getInterpolator().init(this.startAng,getEndAng(),totalDistance.multiply(currentBinSize));
     }
 
     double getLastCompletionNode(){
@@ -52,12 +55,17 @@ public class LUT_HP implements HeadingProfile {
     }
 
     @Override
-    public NormalizedAngle getAng(double completion) {
+    public NormalizedAngle getHeading(double completion) {
         if(completion>getNextCompletionNode()&&currentBin!=totalBins-1){
             currentBin++;
             currentBinSize=getNextCompletionNode()-getLastCompletionNode();
             getInterpolator().init(getStartAng(),getEndAng(),totalDistance.multiply(currentBinSize));
         }
-        return getInterpolator().getAng((completion-getLastCompletionNode())/currentBinSize);
+        return getInterpolator().getHeading((completion-getLastCompletionNode())/currentBinSize);
+    }
+
+    @Override
+    public Scalar getAngVel(double completion, Scalar velocity) {
+        return getInterpolator().getAngVel((completion-getLastCompletionNode())/currentBinSize, velocity);
     }
 }

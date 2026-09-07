@@ -6,6 +6,9 @@ import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.*;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.*;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 public class Line implements Movement {
     PathingPoint startPoint;
     PathingPoint endPoint;
@@ -18,12 +21,10 @@ public class Line implements Movement {
 
     //LineParams
     Scalar totalDistance;
-    Scalar latError;
     NormalizedAngle lineAngle;
 
     //Pathing helpers
     Position relativePos;
-    NormalizedAngle lastTargetHeading;
 
     public Line(PathingPoint startPoint, PathingPoint endPoint, MotionProfile motionProfile, HeadingProfile headingProfile, String[] tags) {
         this.startPoint = startPoint;
@@ -51,8 +52,6 @@ public class Line implements Movement {
         //Init profiles
         motionProfile.init(startPoint.getVelocity(),endPoint.getVelocity(),totalDistance);
         headingProfile.init(startPoint.getPosition().getAngPos(),endPoint.getPosition().getAngPos(),totalDistance);
-
-        lastTargetHeading=startPoint.getPosition().getHeading();
     }
 
     @Override
@@ -69,13 +68,13 @@ public class Line implements Movement {
 
     @Override
     public Velocity getTargetVel(){
-        NormalizedAngle targetHeading=headingProfile.getAng(getCompletion());
-        Velocity targetVel=new Velocity(
+
+        Scalar MPvel=motionProfile.getVel(getCompletion());
+
+        return new Velocity(
                 new Vector(latPosController.getCorrection(relativePos.getX()),
-                        motionProfile.getVel(getCompletion())).rotateBy(lineAngle),
-                targetHeading.sub(lastTargetHeading).div(tickTime).add(headingController.getCorrection(relativePos.getHeading().sub(targetHeading))));
-        lastTargetHeading=targetHeading;
-        return targetVel;
+                        MPvel).rotateBy(lineAngle),
+                headingProfile.getAngVel(getCompletion(),MPvel).add(headingController.getCorrection(relativePos.getHeading().sub(headingProfile.getHeading(getCompletion())))));
     }
 
     @Override
@@ -90,7 +89,7 @@ public class Line implements Movement {
 
     @Override
     public boolean finished(){
-        return totalDistance.sub(getDistanceTravelled()).lessThanOrEqual(distThreshold);
+        return getDistanceTravelled().greaterThanOrEqual(endPoint.getVelocity().lessThan(minSpeed)?totalDistance.sub(distThreshold):totalDistance);
     }
 
     @Override

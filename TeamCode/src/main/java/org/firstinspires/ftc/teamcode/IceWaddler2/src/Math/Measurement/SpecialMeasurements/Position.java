@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements;
 
-import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Dimensions.length;
-import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Dimensions.time;
+import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Dimensions.*;
+import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.DimlessVector;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Vector;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.*;
 
 public class Position {
     Vector linPos;
@@ -69,4 +67,6 @@ public class Position {
     public NormalizedAngle getHeading(){
         return angPos;
     }
+
+    public final static Position ORIGIN=new Position(new Vector(0,0,m), new NormalizedAngle(0,deg));
 }

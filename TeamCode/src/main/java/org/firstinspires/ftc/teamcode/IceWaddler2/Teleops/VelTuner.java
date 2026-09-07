@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.CommandBase.Action;
 import org.firstinspires.ftc.teamcode.CommandBase.PrebuiltActions.*;
+import org.firstinspires.ftc.teamcode.CommandBase.ScheduledOpMode;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.IceWaddler;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.*;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
@@ -17,18 +18,16 @@ import org.firstinspires.ftc.teamcode.Subsystems.RobotHardware;
 
 @TeleOp(name="Velocity Tuner", group="IceWaddler")
 @Config
-public class VelTuner extends OpMode {
+public class VelTuner extends ScheduledOpMode {
     RobotHardware robot;
     IceWaddler waddler;
     FtcDashboard dashboard;
 
     public static Scalar linVelFactor=new Scalar(2.5,metersPerSecond);
-    public static Scalar angVelFactor=new Scalar(2,radiansPerSecond);
-
-    Action rootAction;
+    public static Scalar angVelFactor=new Scalar(5,radiansPerSecond);
 
     Velocity getJoystickCommandVel(){
-        new Velocity(new Vector(linVelFactor.multiply(gamepad1.right_stick_x),linVelFactor.multiply(gamepad1.right_stick_y)),
+        return new Velocity(new Vector(linVelFactor.multiply(gamepad1.right_stick_x),linVelFactor.multiply(-gamepad1.right_stick_y)),
                 angVelFactor.multiply(gamepad1.left_stick_x));
     }
 
@@ -45,24 +44,10 @@ public class VelTuner extends OpMode {
         telemetry=new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
         rootAction=new ActionParallel(ActionParallel.TERMINATIONTYPE.NONE,
-                waddler.new VelDrive(this::getJoystickCommandVel),
+                new ActionSwitch(()->gamepad1.b?1:0, waddler.new VelDrive(this::getJoystickCommandVel),
+                        waddler.new Idle()),
                 new telemetryDriver()
         );
-    }
-
-    @Override
-    public void start() {
-        rootAction.init();
-    }
-
-    @Override
-    public void loop(){
-        rootAction.loop();
-    }
-
-    @Override
-    public void stop() {
-        rootAction.shutdown();
     }
 
     class telemetryDriver implements Action {
@@ -70,6 +55,8 @@ public class VelTuner extends OpMode {
 
         @Override
         public void loop() {
+            telemetry.addData("Ticktime",waddler.getTickTime().getValueSI());
+
             telemetry.addData("1.Current x vel",waddler.getCurrentSituation().getVelocity().getX().getValueSI());
             telemetry.addData("1.Current y vel",waddler.getCurrentSituation().getVelocity().getY().getValueSI());
             telemetry.addData("1.Current ang vel",waddler.getCurrentSituation().getVelocity().getAngVel().getValueSI());
@@ -85,6 +72,10 @@ public class VelTuner extends OpMode {
             telemetry.addData("4.Target x acc", waddler.getTargetSituation().getAcceleration().getX().getValueSI());
             telemetry.addData("4.Target y acc", waddler.getTargetSituation().getAcceleration().getY().getValueSI());
             telemetry.addData("4.Target ang acc", waddler.getTargetSituation().getAcceleration().getAngAcc().getValueSI());
+
+            telemetry.addData("5.Last Target x vel", waddler.getLastTargetSituation().getVelocity().getX().getValueSI());
+            telemetry.addData("5.Last Target y vel", waddler.getLastTargetSituation().getVelocity().getY().getValueSI());
+            telemetry.addData("5.Last Target ang vel", waddler.getLastTargetSituation().getVelocity().getAngVel().getValueSI());
         }
     }
 }

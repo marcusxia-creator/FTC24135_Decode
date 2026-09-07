@@ -95,6 +95,8 @@ public class RobotHardware {
     public IWLocalizer localizer;
     public IWDriveTrain driveTrain;
 
+    public VoltageSensor voltageSensor;
+
     private double vEma = 12.0;                 // EMA state
     public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
     public  double vMinAccept = 10.5;            // discard anything below this as junk
@@ -120,10 +122,10 @@ public class RobotHardware {
         //distanceSensor = hardwareMap.get(DistanceSensor.class, "colorSensor");
 
 
-        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //Webcam
         //webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
@@ -154,17 +156,19 @@ public class RobotHardware {
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
 
+        voltageSensor=hardwareMap.get(VoltageSensor.class, "Control Hub");
+
         odo = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint"); //with pinpoint computer
         //odo = hardwareMap.get(SparkFunOTOS.class, "sensor_otos"); //With OTOS
 
         //IWodo = new IceWaddler1.IWLocalizer(odo);
 
         //localizer = new OTOS(new Position(new Vector(-0.45, -6.57, in), new NormalizedAngle(0, deg)),odo);
-        localizer = new goBildaOdoComputer(odo, new Scalar(-161,mm),new Scalar(13,mm), GoBildaOdometryPods.goBILDA_SWINGARM_POD, EncoderDirection.REVERSED, EncoderDirection.REVERSED);
+        localizer = new goBildaOdoComputer(odo, new Scalar(0,mm),new Scalar(-170,mm), GoBildaOdometryPods.goBILDA_SWINGARM_POD, EncoderDirection.FORWARD, EncoderDirection.REVERSED);
         driveTrain = new ExampleDriveTrain(this);
     }// End of init
 
-    // Initialize IMU
+
     public void initIMU() {
         // set up REV imu
         imu = hardwareMap.get(IMU.class, "imu");

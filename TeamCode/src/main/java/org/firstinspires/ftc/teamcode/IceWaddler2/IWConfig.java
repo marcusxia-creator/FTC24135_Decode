@@ -13,30 +13,29 @@ import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
 @Config
 public class IWConfig {
     // Ticks in derivative, to reduce noise
-    public static int derivativeTicks=40;
+    public static int derivativeTicks =2;
 
     // Velocity -> Acceleration Error Correction
-    public static double linAccelKP=0;
-    public static double angAccelKP=0;
-    public static AccelerationController accelerationController=new proportionalAccController(new Scalar(-linAccelKP,perSecond),new Scalar(-angAccelKP,perSecond));
+    public static double linAccelKP=7;
+    public static double angAccelKP=1.3;
+    public static AccelerationController accelerationController=new proportionalAccController(linAccelKP,angAccelKP);
 
     // Positional error -> Velocity Correction
-    public static double latPosKP=0;
-    public static double headingKP=0;
-    public static LatPositionController latPosController= new proportionaLatController(new Scalar(-latPosKP,perSecond));
-    public static HeadingController headingController= new proportionaHeadingController(new Scalar(-headingKP,perSecond));
+    public static double latPosKP=7;
+    public static double headingKP=12;
+    public static LatPositionController latPosController= new proportionaLatController(latPosKP);
+    public static HeadingController headingController= new proportionaHeadingController(headingKP);
 
     // General constraints
-    public static Scalar maxAccel               = new Scalar(3, metersPerSecondSquared); //Maximum acceleration before wheels slip
+    public static Scalar maxAccel               = new Scalar(6, metersPerSecondSquared); //Maximum acceleration before wheels slip
     public static Scalar maxAngAccel            = new Scalar(1, radiansPerSecondSquared); //Maximum angular acceleration before wheels slip
-    public static Scalar wheelPivotRadius       = new Scalar(10.5, in); //The distance between the pivot point and each of the wheels, or half the length of the diagonal
 
     // Positional control parameter defaults, Can be modified per action
-    public static Scalar maxSpeed               = new Scalar(2, metersPerSecond);
-    public static Scalar minSpeed               = new Scalar(0.1, metersPerSecond);// A minimum drive speed, to prevent stalls
-    public static Scalar defaultAccel           = maxAccel.multiply(0.5); // A "comfortable" acceleration
-    public static Scalar distThreshold          = new Scalar(0.05, m); // The longitudinal distance from the end point at which the action indicates completion
+    public static Scalar maxSpeed               = new Scalar(1.4, metersPerSecond);
+    public static Scalar minSpeed               = new Scalar(0.2, metersPerSecond);// A minimum drive speed, to prevent stalls
+    public static Scalar defaultAccel           = new Scalar(1,metersPerSecondSquared); // A "comfortable" acceleration
+    public static Scalar distThreshold          = new Scalar(1, cm); // The longitudinal distance from the end point at which the action indicates completion
 
     // Angular position parameter defaults
-    public static Scalar angThreshold    = new Scalar(4, deg); // The angular distance from the end point at which the action indicates completion, used for non-distance driven movements
+    public static Scalar angThreshold    = new Scalar(2, deg); // The angular distance from the end point at which the action indicates completion, used for non-distance driven movements
 }

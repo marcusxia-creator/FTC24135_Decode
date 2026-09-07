@@ -23,6 +23,7 @@ public class holdPos implements Movement {
 
     public holdPos(String[] tags){
         this(null,tags);
+        dynamicStartpoint=true;
     }
 
     @Override

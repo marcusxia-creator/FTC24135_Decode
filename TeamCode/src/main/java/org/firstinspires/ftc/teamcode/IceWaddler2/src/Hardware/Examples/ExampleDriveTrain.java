@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples;
 
+import static org.apache.commons.math3.util.FastMath.abs;
 import static org.firstinspires.ftc.teamcode.IceWaddler2.IWConfig.maxAccel;
-import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.metersPerSecondSquared;
+import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
 import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWDriveTrain;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.DimlessVector;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
 import org.firstinspires.ftc.teamcode.Subsystems.RobotHardware;
 
 import java.util.Arrays;
@@ -17,8 +20,12 @@ import java.util.List;
 /// If not using a hardware map, modify the constructor to input and store the four motors as individual parameters
 @Config
 public class ExampleDriveTrain implements IWDriveTrain {
-    public static double k_v=0.00035;
-    public static double k_a=0.180498;
+    public static double k_v=8.8;
+    public static double angk_v=3;
+    public static double k_a=1.5;
+    public static double angk_a=5;
+    public static double maxAllowableLinPower=11;
+    public static Scalar wheelPivotRadius       = new Scalar(10, in); //The distance between the pivot point and each of the wheels, or half the length of the diagonal
     RobotHardware robot;
     ///In this implimentation, the constructor simply stores our hardware map
     public ExampleDriveTrain(RobotHardware robot){
@@ -26,38 +33,39 @@ public class ExampleDriveTrain implements IWDriveTrain {
     }
 
     @Override
-    public void init(){
-        /// Our drivetrain does not need an init, as reversing is already handled in hardware init, so this method is left blank
+    public void run(DimlessVector linPower, double angPower) {
+        if(linPower.mag()>maxAllowableLinPower){
+            linPower=linPower.unitVector().multi(maxAllowableLinPower);
+        }
+        double forward=linPower.getY();
+        double strafe=linPower.getX();
+        double rot=angPower;
+
+        runVoltage(
+                forward+strafe+rot,
+                forward-strafe+rot,
+                forward-strafe-rot,
+                forward+strafe-rot
+        );
     }
 
     @Override
-    public void runPowers(double FL_Power, double BL_Power, double FR_Power, double BR_Power) {
+    public void run(Velocity currentVelocity, Acceleration targetAcceleration, NormalizedAngle currentHeading){
+                DimlessVector linPower=currentVelocity.getLinVel().getDimlessVector().multi(k_v).add(targetAcceleration.getLinAcc().getDimlessVector().multi(k_a)).rotateBy(currentHeading.multiply(-1));
+        double angPower=angk_v*currentVelocity.getAngVel().getValueSI()+angk_a*targetAcceleration.getAngAcc().getValueSI();
+        run(linPower,angPower);
+    }
+
+    @Override
+    public void runPower(double FL_Power, double BL_Power, double FR_Power, double BR_Power) {
         robot.frontLeftMotor.setPower(FL_Power);
         robot.backLeftMotor.setPower(BL_Power);
         robot.frontRightMotor.setPower(FR_Power);
         robot.backRightMotor.setPower(BR_Power);
     }
 
-    @Override
-    public List<Double> getVelocities() {
-        return Arrays.asList(
-                robot.frontLeftMotor.getVelocity(), //Velocity of front left motor, in ticks/s
-                robot.backLeftMotor.getVelocity(),  //Velocity of back left motor, in ticks/s
-                robot.frontRightMotor.getVelocity(),//Velocity of front left motor, in ticks/s
-                robot.backLeftMotor.getVelocity()   //Velocity of front left motor, in ticks/s
-        );
-    }
-
-    @Override
-    public double powerController(Scalar Accel, double motorVel) {
-        return k_v*motorVel+k_a*Accel.getValue(metersPerSecondSquared); //Temporary Placeholder
-    }
-
-    @Override
-    public void runAccel(Scalar FL_Accel, Scalar BL_Accel, Scalar FR_Accel, Scalar BR_Accel) {
-        robot.frontLeftMotor.setPower(powerController(FL_Accel,robot.frontLeftMotor.getVelocity()));
-        robot.backLeftMotor.setPower(powerController(BL_Accel,robot.backLeftMotor.getVelocity()));
-        robot.frontRightMotor.setPower(powerController(FR_Accel,robot.frontRightMotor.getVelocity()));
-        robot.backRightMotor.setPower(powerController(BR_Accel,robot.backRightMotor.getVelocity()));
+    public void runVoltage(double FL_Voltage, double BL_Voltage, double FR_Voltage, double BR_Voltage){
+        double voltage=robot.voltageSensor.getVoltage();
+        runPower(FL_Voltage/voltage,BL_Voltage/voltage,FR_Voltage/voltage,BR_Voltage/voltage);
     }
 }

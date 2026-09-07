@@ -26,7 +26,11 @@ public class LUT_MP implements MotionProfile{
     public void init(Scalar startVel, Scalar endVel, Scalar totalDistance) {
         this.startVel=startVel;
         this.endVel=endVel;
+        this.totalDistance=totalDistance;
         currentBin=0;
+
+        currentBinSize=getNextCompletionNode();
+        getInterpolator().init(this.startVel,getEndVel(),totalDistance.multiply(getNextCompletionNode()));
     }
 
     double getLastCompletionNode(){

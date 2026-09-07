@@ -101,6 +101,6 @@ public class Vector {
     /// @throws RuntimeException if vectors are in different dimensions.
     public NormalizedAngle angleTo(Vector vector){
         if(!dimensions.equals(vector.getDimensions())){throw new RuntimeException(String.format("unitError: Dimension mismatch \nCannot subtract vectors with unit of dimensions %s and SI base units %s and unit of dimensions %s and SI base units %s",vector.getDimensions().toString(), vector.getDimensions().SIBaseUnitStr(), dimensions.toString(), dimensions.SIBaseUnitStr()));}
-        return sub(vector).direction();
+        return vector.sub(this).direction();
     }
 }

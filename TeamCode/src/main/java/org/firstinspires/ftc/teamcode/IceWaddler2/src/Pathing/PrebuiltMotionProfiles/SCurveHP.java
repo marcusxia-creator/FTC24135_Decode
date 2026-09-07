@@ -10,6 +10,7 @@ public class SCurveHP implements HeadingProfile {
     NormalizedAngle startHeading;
     NormalizedAngle endHeading;
     NormalizedAngle deltaHeading;
+    Scalar totalDistance;
 
     public SCurveHP(){}
 
@@ -18,10 +19,17 @@ public class SCurveHP implements HeadingProfile {
         startHeading=startAngle;
         endHeading=endAngle;
         deltaHeading=endHeading.sub(startHeading);
+
+        this.totalDistance=totalDistance;
     }
 
     @Override
-    public NormalizedAngle getAng(double completion) {
+    public NormalizedAngle getHeading(double completion) {
         return startHeading.add(deltaHeading.multiply(completion<=0.5?(2*pow(completion,2)):(1-2*pow(completion-1,2))));
+    }
+
+    @Override
+    public Scalar getAngVel(double completion, Scalar velocity) {
+        return deltaHeading.multiply(completion<=0.5?4*completion:4*(1-completion)).multiply(velocity).div(totalDistance);
     }
 }

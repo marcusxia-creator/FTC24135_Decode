@@ -3,10 +3,15 @@ package org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.PrebuiltPathingEl
 import static org.firstinspires.ftc.teamcode.IceWaddler2.IWConfig.*;
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
+import static java.lang.Math.PI;
+
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.*;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Dimensions;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.*;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class FixedArc implements Movement {
 
@@ -26,18 +31,17 @@ public class FixedArc implements Movement {
     Scalar targetRadius;
     PositiveAngle currentTheta;
     PositiveAngle targetTheta;
-    Scalar distanceTraveled;
     Scalar totalDistance;
     PathingPoint endPoint;
     NormalizedAngle endHeading;
 
     NormalizedAngle currentHeading;
-    NormalizedAngle lastTargetHeading;
     Scalar tickTime;
 
     public FixedArc(PathingPoint startPoint, Vector center, PositiveAngle angle, ArcDirection direction, Scalar endVelocity, NormalizedAngle endHeading, MotionProfile motionProfile, HeadingProfile headingProfile, String[] tags){
         this.startPoint = startPoint;
         if(!center.getDimensions().equals(Dimensions.length)){throw new DimMismatch(center.getDimensions(),"center point");}
+        this.center=center;
         this.targetTheta=angle;
         this.direction=direction;
         if(!endVelocity.getDimensions().equals(Dimensions.velocity)){throw new DimMismatch(endVelocity.getDimensions(),"end velocity");}
@@ -69,8 +73,6 @@ public class FixedArc implements Movement {
         //Init profiles
         motionProfile.init(startPoint.getVelocity(),endVelocity,totalDistance);
         headingProfile.init(startPoint.getPosition().getAngPos(),endHeading,totalDistance);
-
-        lastTargetHeading=startPoint.getPosition().getHeading();
     }
 
     @Override
@@ -89,13 +91,18 @@ public class FixedArc implements Movement {
 
     @Override
     public Velocity getTargetVel() {
-        NormalizedAngle targetHeading=headingProfile.getAng(getCompletion());
+
+        Scalar MPVel=motionProfile.getVel(getCompletion());
+
         Velocity targetVel=new Velocity(new Vector(latPosController.getCorrection(targetRadius.sub(currentRadius)),
-                motionProfile.getVel(getCompletion()).multiply(direction.getFactor()))//x is radial correction (+ is inward), y is clockwise velocity
+                MPVel.multiply(direction.getFactor()))//x is radial correction (+ is inward), y is clockwise velocity
                 .rotateBy(currentglobalAngle.add(new NormalizedAngle(90,deg))),
-                targetHeading.sub(lastTargetHeading).div(tickTime).add(headingController.getCorrection(currentHeading.sub(targetHeading))));
-        lastTargetHeading=targetHeading;
+                headingProfile.getAngVel(getCompletion(),MPVel).add(headingController.getCorrection(currentHeading.sub(headingProfile.getHeading(getCompletion())))));
         return targetVel;
+    }
+
+    boolean isValid(){
+        return getDistanceTravelled().lessThan(totalDistance.div(2).add(targetRadius.multiply(PI)));//Ensures that completion isn't running when robot hasn't reached the startpoint by using a threshold in between the endpoint and 360°
     }
 
     @Override
@@ -105,12 +112,12 @@ public class FixedArc implements Movement {
 
     @Override
     public double getCompletion() {
-        return getDistanceTravelled().div(totalDistance).getValueSI();
+        return isValid()?getDistanceTravelled().div(totalDistance).getValueSI():0;
     }
 
     @Override
     public boolean finished() {
-        return totalDistance.sub(getDistanceTravelled()).lessThanOrEqual(distThreshold);
+        return getDistanceTravelled().greaterThanOrEqual(endPoint.getVelocity().lessThan(minSpeed)?totalDistance.sub(distThreshold):totalDistance)&&isValid();
     }
 
     @Override

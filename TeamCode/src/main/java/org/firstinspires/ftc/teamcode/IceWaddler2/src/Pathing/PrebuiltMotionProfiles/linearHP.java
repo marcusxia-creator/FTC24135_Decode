@@ -8,6 +8,7 @@ public class linearHP implements HeadingProfile {
     NormalizedAngle startHeading;
     NormalizedAngle endHeading;
     NormalizedAngle deltaHeading;
+    Scalar totalDistance;
 
     public linearHP(){}
 
@@ -16,10 +17,16 @@ public class linearHP implements HeadingProfile {
         startHeading=startAngle;
         endHeading=endAngle;
         deltaHeading=endHeading.sub(startHeading);
+        this.totalDistance=totalDistance;
     }
 
     @Override
-    public NormalizedAngle getAng(double completion) {
+    public NormalizedAngle getHeading(double completion) {
         return startHeading.add(deltaHeading.multiply(completion));
+    }
+
+    @Override
+    public Scalar getAngVel(double completion, Scalar velocity) {
+        return deltaHeading.multiply(velocity).div(totalDistance);
     }
 }

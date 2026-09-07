@@ -35,8 +35,8 @@ public class maxSpeedMP implements MotionProfile {
     @Override
     public Scalar getVel(double completion) {
         return new Scalar(Range.clip(
-                min(startSpeed.pow(2).add(IWConfig.defaultAccel.multiply(totalDist.multiply(completion)).multiply(2)).pow(0.5).getValueSI(),
-                    endSpeed.pow(2).add(IWConfig.defaultAccel.multiply(totalDist.multiply(1-completion)).multiply(2)).pow(0.5).getValueSI()),
+                min(startSpeed.pow(2).add(IWConfig.defaultAccel.multiply(totalDist.multiply(completion)).multiply(2)).abs().pow(0.5).getValueSI(),
+                    endSpeed.pow(2).add(IWConfig.defaultAccel.multiply(totalDist.multiply(1-completion)).multiply(2)).abs().pow(0.5).getValueSI()),
                 IWConfig.minSpeed.getValueSI(),maxSpeed.getValueSI())
                 ,velocity.SIBaseUnit());
     }

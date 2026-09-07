@@ -30,13 +30,15 @@ public class IceWaddler {
     // Timers
     Scalar tickTime;
     ElapsedTime tickTimer;
+    Queue<Scalar> lastTicks=new LinkedList<>();
+    Scalar dt;
 
     // Situations
     Queue<Situation> lastSituations=new LinkedList<>();    //Situation during the last few ticks, used to interpolate accelerations and velocities, if needed
     Situation currentSituation; //Current situation, from odometry
-    Situation lastTargetSituation; //Used for derivatives in controllers
+    Queue<Situation> lastTargetSituations=new LinkedList<>(); //Used for derivatives in controllers
     Situation targetSituation;  //Target situation to drive motors. Position is null
-    PathingPoint targetPathingPoint; //Used to transfer information while transitioning between pathing segments
+    public PathingPoint targetPathingPoint; //Used to transfer information while transitioning between pathing segments
     // Note: All situation objects should be field centric
 
     public boolean fieldCentric;
@@ -74,8 +76,7 @@ public class IceWaddler {
         currentSituation=localizer.getSituation();
         lastSituations.offer(currentSituation);// To avoid not defined errors in later derivatives
 
-        targetSituation=new Situation(null,null,null);
-        lastTargetSituation=currentSituation;
+        targetSituation=new Situation(Acceleration.zero,Velocity.zero,currentSituation.getPosition());
     }
 
     public void resetOdo(Position resetPos){
@@ -97,26 +98,18 @@ public class IceWaddler {
 
     ///Updates odometry, and computes derivatives if needed
     private void updateOdo(){
-        Situation lastSituation;
-
-        lastSituations.offer(currentSituation);
-        if(lastSituations.size()>=derivativeTicks){
-            lastSituation=lastSituations.poll();
-        }
-        else{
-            lastSituation=lastSituations.peek();
-        }
+        Situation lastSituation=lastSituations.peek();
         localizer.update();
         currentSituation=localizer.getSituation();
 
         //Derivatives first, derivatives avoid cumulative errors
         //Velocity as the derivative of position
         if(currentSituation.getVelocity()==null&&currentSituation.getPosition()!=null){
-            currentSituation.setVelocity(currentSituation.getPosition().sub(lastSituation.getPosition()).differentiate(tickTime.multiply(lastSituations.size()+1)));
+            currentSituation.setVelocity(currentSituation.getPosition().sub(lastSituation.getPosition()).differentiate(dt));
         }
         //Acceleration as the derivative of velocity
         if(currentSituation.getAcceleration()==null&&currentSituation.getVelocity()!=null){
-            currentSituation.setAcceleration(currentSituation.getVelocity().sub(lastSituation.getVelocity()).differentiate(tickTime.multiply(lastSituations.size()+1)));
+            currentSituation.setAcceleration(currentSituation.getVelocity().sub(lastSituation.getVelocity()).differentiate(dt));
         }
 
         //Integrals
@@ -130,9 +123,30 @@ public class IceWaddler {
         }
     }
 
+    /// Update last storage queues, used for derivatives in the controller
+    private void updateLastStorage(){
+        lastTicks.offer(tickTime);
+        if(lastTicks.size()>derivativeTicks){
+            lastTicks.poll();
+        }
+        dt=new Scalar(0,s);
+        lastTicks.forEach(item->dt=dt.add(item));
+
+        lastSituations.offer(currentSituation);
+        if(lastSituations.size()>derivativeTicks){
+            lastSituations.poll();
+        }
+
+        lastTargetSituations.offer(targetSituation);
+        if(lastTargetSituations.size()>derivativeTicks){
+            lastTargetSituations.poll();
+        }
+    }
+
     ///Runs updates on odo and ticktime. Needs to be run every loop, preferably before any other methods
     public void update(){
         updateTimer();
+        updateLastStorage();
         updateOdo();
     }
 
@@ -152,12 +166,17 @@ public class IceWaddler {
         return targetSituation;
     }
 
+    ///For Debugging
+    public Situation getLastTargetSituation(){
+        return lastTargetSituations.peek();
+    }
+
     public Movement getCurrentAction(){return currentAction;}
 
     // Power methods
     ///Sets all motors to 0 power
     public void zeroPower(){
-        driveTrain.runPowers(0,0,0,0);
+        driveTrain.runPower(0,0,0,0);
     }
 
     ///Directly write powers into motors, used for tuning
@@ -184,7 +203,7 @@ public class IceWaddler {
         @Override
         public void loop() {
             update();
-            driveTrain.runPowers(
+            driveTrain.runPower(
                     FL_Power.get(),
                     FR_Power.get(),
                     BL_Power.get(),
@@ -198,20 +217,23 @@ public class IceWaddler {
         }
     }
 
+    public class Idle implements Action{
+        public Idle(){};
+
+        @Override
+        public void loop() {
+            update();
+            zeroPower();
+        }
+    }
+
     /// Writes power to drivetrain based on target acceleration in targetSituation
     private void writeAccel(){
         limitAcceleration();
 
-        Acceleration robotCentricAcc=targetSituation.getAcceleration().rotateBy(currentSituation.getPosition().getHeading().multiply(-1));
-        Scalar strafe=robotCentricAcc.getX();
-        Scalar forward=robotCentricAcc.getY();
-        Scalar rot=robotCentricAcc.getAngAcc().multiply(wheelPivotRadius).div(new Scalar(1,rad)); //Find linear acceleration needed to reach required angular acceleration
-        driveTrain.runAccel(
-                (forward).add(strafe).add(rot),
-                (forward).sub(strafe).add(rot),
-                (forward).sub(strafe).sub(rot),
-                (forward).add(strafe).sub(rot)
-        );
+        driveTrain.run(currentSituation.getVelocity(),
+                targetSituation.getAcceleration(),
+                currentSituation.getPosition().getHeading());
     }
 
     /// Tells waddler to maintain an acceleration of zero<br>
@@ -249,11 +271,10 @@ public class IceWaddler {
     private void writeVel(){
 
         Velocity current=currentSituation.getVelocity();
-        Velocity lastTarget=lastTargetSituation.getVelocity();
+        Velocity lastTarget=lastTargetSituations.peek().getVelocity();
         Velocity target=targetSituation.getVelocity();
-        targetSituation.setAcceleration(target.sub(lastTarget).differentiate(tickTime).add(accelerationController.getCorrection(target.sub(current))));
+        targetSituation.setAcceleration(target.sub(lastTarget).differentiate(dt).add(accelerationController.getCorrection(current.sub(target))));
         limitAcceleration();
-        lastTargetSituation.setVelocity(current);
         writeAccel();
     }
 
@@ -290,11 +311,7 @@ public class IceWaddler {
 
     ///Holds Velocity at Zero
     public class Brake implements Action{
-        public Brake(){
-        }
-
-        @Override
-        public void init() {}
+        public Brake(){}
 
         @Override
         public void loop() {
@@ -306,14 +323,38 @@ public class IceWaddler {
         public void shutdown() {
             zeroPower();
         }
+    }
+
+    /// Motion Actions
+
+    public class InitPath implements Action{
+        PathingPoint pathingPoint;
+        public InitPath(){};
+        public InitPath(PathingPoint pathingPoint){
+            this.pathingPoint=pathingPoint;
+        }
+
+        @Override
+        public void init() {
+            if(pathingPoint==null) {
+                targetPathingPoint = new PathingPoint(currentSituation.getPosition(),currentSituation.getVelocity().mag());
+            }
+            else{
+                targetPathingPoint = pathingPoint;
+            }
+        }
+
+        @Override
+        public void loop() {
+            update();
+        }
 
         @Override
         public boolean finished() {
-            return false;
+            return targetPathingPoint!=null;
         }
     }
 
-    /// Motion Action
     public class MotionAction implements Action{
         Movement movement;
 
@@ -327,6 +368,7 @@ public class IceWaddler {
             targetSituation.setPosition(targetPathingPoint.getPosition());
             targetPathingPoint=movement.getTargetPoint();
             currentAction=movement;
+            movement.loop(currentSituation,dt);
         }
 
         @Override
@@ -340,8 +382,8 @@ public class IceWaddler {
         @Override
         public void shutdown(){
             zeroPower();
-            currentAction=null;
             targetPathingPoint=movement.getTargetPoint();
+            currentAction=null;
         }
 
         @Override
@@ -364,11 +406,21 @@ public class IceWaddler {
                 .setStroke("white")
                 .setStrokeWidth(2)
                 .strokePolygon( new double[]{x, x+9*sin(h), x+sqrt(162)*sin(h+PI/4),    x+sqrt(162)*sin(h+3*PI/4),  x+sqrt(162)*sin(h-3*PI/4),  x+sqrt(162)*sin(h-PI/4),    x+9*sin(h)},
-                        new double[]{y, y+9*cos(h), y+sqrt(162)*cos(h+PI/4),    y+sqrt(162)*cos(h+3*PI/4),  y+sqrt(162)*cos(h-3*PI/4),  y+sqrt(162)*cos(h-PI/4),    y+9*cos(h)})
-                .setStroke("red")
-                .strokeLine(x,y,x+6*currentSituation.getVelocity().getX().getValueSI(),y+6*currentSituation.getVelocity().getY().getValueSI())
-                .setStroke("blue")
-                .strokeLine(x,y,x+20*currentSituation.getAcceleration().getX().getValueSI(),y+20*currentSituation.getAcceleration().getY().getValueSI())
+                        new double[]{y, y+9*cos(h), y+sqrt(162)*cos(h+PI/4),    y+sqrt(162)*cos(h+3*PI/4),  y+sqrt(162)*cos(h-3*PI/4),  y+sqrt(162)*cos(h-PI/4),    y+9*cos(h)});
+
+        if(currentSituation.getVelocity()!=null) {
+            packet.fieldOverlay()
+                    .setStroke("red")
+                    .strokeLine(x, y, x + 6 * currentSituation.getVelocity().getX().getValueSI(), y + 6 * currentSituation.getVelocity().getY().getValueSI());
+        }
+
+        if(currentSituation.getAcceleration()!=null){
+            packet.fieldOverlay()
+                    .setStroke("blue")
+                    .strokeLine(x, y, x + 20 * currentSituation.getAcceleration().getX().getValueSI(), y + 20 * currentSituation.getAcceleration().getY().getValueSI());
+        }
+
+        packet.fieldOverlay()
                 .setStroke("green")
                 .setStrokeWidth(1);
         return packet;
@@ -383,9 +435,9 @@ public class IceWaddler {
     ///limits acceleration within the bounds specified in the config
     private void limitAcceleration(){
         Acceleration acceleration=targetSituation.getAcceleration();
-        /*targetSituation.setAcceleration(new Acceleration(
+        targetSituation.setAcceleration(new Acceleration(
                 acceleration.getLinAcc().mag().lessThanOrEqual(maxAccel)?acceleration.getLinAcc():acceleration.unitVector().multi(maxAccel),
                 acceleration.getAngAcc().abs().lessThanOrEqual(maxAngAccel)?acceleration.getAngAcc():acceleration.getAngAcc().multiply(maxAngAccel.div(acceleration.getAngAcc().abs()))
-        ));*///Ternary operator is used instead of min to prevent divisions by zero
+        ));//Ternary operator is used instead of min to prevent divisions by zero
     }
 }
