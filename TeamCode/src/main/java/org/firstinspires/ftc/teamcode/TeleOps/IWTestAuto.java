@@ -47,7 +47,7 @@ public class IWTestAuto extends ScheduledOpMode {
                 waddler.new MotionAction(new FixedArc(new Vector(0,0.25,m),new PositiveAngle(90,deg),ArcDirection.COUNTERCLOCKWISE,new Scalar(0,metersPerSecond),new NormalizedAngle(0,deg),new maxSpeedMP(new Scalar(0.3,metersPerSecond)),new linearHP(),new String[]{})),
                 new ActionParallel(ActionParallel.TERMINATIONTYPE.NONE,waddler.new MotionAction(new holdPos(new String[]{})),new Standby())
         );
-
+        
         rootAction=new ActionParallel(ActionParallel.TERMINATIONTYPE.NONE,
                 path,
                 new telemetryDriver()
