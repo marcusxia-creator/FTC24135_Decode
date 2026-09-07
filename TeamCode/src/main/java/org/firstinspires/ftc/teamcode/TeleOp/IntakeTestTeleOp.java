@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.drivebase.RobotDrive;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
@@ -8,23 +12,29 @@ import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.button.GamepadButton;
 
+import org.firstinspires.ftc.teamcode.TeleOp.Commands.LimelightCommand;
 import org.firstinspires.ftc.teamcode.TeleOp.Commands.RobotDriveCommand;
 ///Subsystems
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.LiftSubsystem;
+import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.RobotDriveSubsystem;
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.LinkagePTOSubsystem;
 
 import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
 
 @TeleOp (name = "Intake Test TeleOp", group = "Test")
-
+@Config
 public class IntakeTestTeleOp extends CommandOpMode {
     private RobotDriveSubsystem robotDrive;
     private LinkagePTOSubsystem linkagePTO;
     private LiftSubsystem lift;
     private IntakeSubsystem intake;
     private GamepadEx gamepad;
+
+    private LimelightCommand limelightCommand;
+    private LimelightSubsystem limelightSubsystem;
+    private FtcDashboard dashboard;
 
     @Override
     public void initialize (){
@@ -55,31 +65,20 @@ public class IntakeTestTeleOp extends CommandOpMode {
         new GamepadButton(gamepad, GamepadKeys.Button.Y)
             .whenPressed(new InstantCommand (lift :: extendLift, lift));
         new GamepadButton(gamepad, GamepadKeys.Button.X)
-            .whenPressed(new InstantCommand(lift :: lowerLift, lift));
-        ///Stop lift
-        /*
-        new GamepadButton (gamepad, GamepadKeys.Button.B)
-            .whenPressed(new InstantCommand(lift :: stop));
-         */
-        ///Lift PTO
-        new GamepadButton(gamepad, GamepadKeys.Button.B)
-            .whenPressed(new RunCommand(linkagePTO :: engagePTO));
-        new GamepadButton(gamepad, GamepadKeys.Button.A)
-            .whenPressed(new RunCommand(linkagePTO :: disengagePTO));
+            .whenPressed(new InstantCommand(lift :: lowerLift, intake));
+
+        limelightSubsystem = new LimelightSubsystem(robot);
+        limelightCommand = new LimelightCommand(limelightSubsystem);
+
+        dashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
     }
     @Override
     public void run (){
         super.run();
-        telemetry.addLine("----------------INTAKE----------------");
-        telemetry.addData("Intake Power", intake.getIntakePower());
-        telemetry.addLine("-----------Lift in MM-----------");
-        telemetry.addData("Target Lift Position MM", lift.getTargetPositionMM());
-        telemetry.addData("Current Lift Position MM", lift.getCurrentPositionMM());
-        telemetry.addData("Error MM", lift.getErrorMM());
-        telemetry.addLine("-----------Lift in Ticks-----------");
-        telemetry.addData("Target Lift Position", lift.getTargetTick());
-        telemetry.addData("Current Lift Position", lift.getCurrentTick());
-        telemetry.addData("Error", lift.getErrorTick());
+        //telemetry.addData("Intake Power", intake.getIntakePower());
+        telemetry.addData("tx", limelightSubsystem.getTx());
+        telemetry.addData("ty", limelightSubsystem.getTy());
         telemetry.update();
     }
 }

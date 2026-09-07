@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp.UniversalTools;
 
 
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -16,6 +17,7 @@ public class RobotHardware{
     public DcMotorEx leftLiftMotor;
     public DcMotorEx rightLiftMotor;
     public Servo linkagePTOServo;
+    public Limelight3A limelight;
 
     public HardwareMap hardwareMap;
     public RobotHardware(HardwareMap hardwareMap) {
@@ -59,6 +61,8 @@ public class RobotHardware{
         rightLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         rightLiftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
     }
 }
