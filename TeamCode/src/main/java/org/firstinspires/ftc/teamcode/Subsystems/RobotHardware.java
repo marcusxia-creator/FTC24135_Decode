@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver.*;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -12,8 +14,6 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Auto.lib.GoBildaPinpointDriver;
-import org.firstinspires.ftc.teamcode.Auto.lib.GoBildaPinpointDriver.*;
 import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples.ExampleDriveTrain;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples.goBildaOdoComputer;
@@ -164,7 +164,7 @@ public class RobotHardware {
         //IWodo = new IceWaddler1.IWLocalizer(odo);
 
         //localizer = new OTOS(new Position(new Vector(-0.45, -6.57, in), new NormalizedAngle(0, deg)),odo);
-        localizer = new goBildaOdoComputer(odo, new Scalar(0,mm),new Scalar(-170,mm), GoBildaOdometryPods.goBILDA_SWINGARM_POD, EncoderDirection.FORWARD, EncoderDirection.REVERSED);
+        localizer = new goBildaOdoComputer(odo, new Scalar(0,mm),new Scalar(-170,mm), GoBildaOdometryPods.goBILDA_SWINGARM_POD, EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
         driveTrain = new ExampleDriveTrain(this);
     }// End of init
 

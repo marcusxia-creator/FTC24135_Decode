@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.M
 import static org.firstinspires.ftc.teamcode.IceWaddler.IceWaddlerConfig1.*;
 
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -15,7 +16,6 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Auto.lib.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Subsystems.RobotHardware;
 
 import java.util.List;
@@ -525,7 +525,7 @@ public class IceWaddler1 {
         public void init(Pose2D initPose){
             switch(odoType){
                 case goBildaPinpoint:
-                    goBildaPinpointDriver.setOffsets(odoXOffset, odoYOffset);
+                    //goBildaPinpointDriver.setOffsets(odoXOffset, odoYOffset);
                     goBildaPinpointDriver.setEncoderResolution(odoEncoderResolution);
                     goBildaPinpointDriver.setEncoderDirections(xEncoderDirection, yEncoderDirection);
                     //Set to start counting at initPose parameter
@@ -581,7 +581,7 @@ public class IceWaddler1 {
             Pose2D output=null;
             switch(odoType) {
                 case goBildaPinpoint:
-                    output=goBildaPinpointDriver.getVelocity();
+                    output=null;//goBildaPinpointDriver.getVelocity();
                     break;
                 case OTOS:
                     SparkFunOTOS.Pose2D input = otos.getVelocity();
@@ -595,7 +595,7 @@ public class IceWaddler1 {
             double output=0;
             switch(odoType) {
                 case goBildaPinpoint:
-                    output=goBildaPinpointDriver.getHeadingVelocity();
+                    output=0;//goBildaPinpointDriver.getHeadingVelocity();
                     break;
                 case OTOS:
                     output=otos.getVelocity().h;
