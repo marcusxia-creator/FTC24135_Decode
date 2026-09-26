@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Auto.lib.GoBildaPinpointDriver;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWDriveTrain;
+import org.firstinspires.ftc.teamcode.Subsystems.UniversalTools.RobotHardware;
 
 @TeleOp(name="goBilda Odo Offset Tester")
 public class OdoOffsetTester extends OpMode {
@@ -18,9 +20,9 @@ public class OdoOffsetTester extends OpMode {
     @Override
     public void init() {
         robot=new RobotHardware(hardwareMap);
-        robot.init(hardwareMap);
+        robot.init();
 
-        odo=robot.odo;
+        odo=robot.pinpoint;
         odo.initialize();
         odo.recalibrateIMU();
         odo.resetPosAndIMU();
@@ -38,7 +40,7 @@ public class OdoOffsetTester extends OpMode {
 
         odo.update();
 
-        telemetry.addData("X Offset", String.format("%f mm", ((odo.getEncoderX()-initialXTicks)/13.26291192)/odo.getHeading()));
-        telemetry.addData("Y Offset", String.format("%f mm", ((odo.getEncoderY()-initialYTicks)/13.26291192)/odo.getHeading()));
+        telemetry.addData("X Offset", String.format("%f mm", ((odo.getEncoderX()-initialXTicks)/13.26291192)/odo.getHeading(AngleUnit.RADIANS)));
+        telemetry.addData("Y Offset", String.format("%f mm", ((odo.getEncoderY()-initialYTicks)/13.26291192)/odo.getHeading(AngleUnit.RADIANS)));
     }
 }

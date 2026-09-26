@@ -5,10 +5,13 @@ import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Un
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.IceWaddler;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.NormalizedAngle;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Position;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Vector;
+import org.firstinspires.ftc.teamcode.Subsystems.UniversalTools.RobotHardware;
 
 
 @TeleOp(name="Odo Tester", group="IceWaddler")
@@ -19,9 +22,9 @@ public class OdoTester extends OpMode {
     @Override
     public void init() {
         robot = new RobotHardware(hardwareMap);
-        robot.init(hardwareMap);
+        robot.init();
 
-        waddler = new IceWaddler(robot.driveTrain, robot.localizer);
+        waddler = new IceWaddler(robot.driveTrain, robot.IWodo);
 
         waddler.init(new Position(new Vector(0, 0, m), new NormalizedAngle(0, deg)), true);
     }
@@ -46,9 +49,9 @@ public class OdoTester extends OpMode {
     @Override
     public void loop() {
         waddler.update();
-        telemetry.addData("rawXPos", robot.odo.getPosX());
-        telemetry.addData("rawYPos", robot.odo.getPosY());
-        telemetry.addData("rawHeading", robot.odo.getHeading());
+        telemetry.addData("rawXPos", robot.pinpoint.getPosX(DistanceUnit.METER));
+        telemetry.addData("rawYPos", robot.pinpoint.getPosY(DistanceUnit.METER));
+        telemetry.addData("rawHeading", robot.pinpoint.getHeading(AngleUnit.DEGREES));
 
         telemetry.addData("xPos", waddler.getCurrentSituation().getPosition().getX().getValueSI());
         telemetry.addData("yPos", waddler.getCurrentSituation().getPosition().getY().getValueSI());

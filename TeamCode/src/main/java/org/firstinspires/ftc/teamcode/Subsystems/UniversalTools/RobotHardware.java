@@ -1,12 +1,20 @@
 package org.firstinspires.ftc.teamcode.Subsystems.UniversalTools;
 
 
+import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
+
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver.*;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples.*;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
 
 public class RobotHardware{
     public DcMotorEx frontLeftMotor;
@@ -18,6 +26,11 @@ public class RobotHardware{
     public DcMotorEx rightLiftMotor;
     public Servo linkagePTOServo;
     public Limelight3A limelight;
+    public GoBildaPinpointDriver pinpoint;
+
+    public ExampleDriveTrain driveTrain;
+    public goBildaOdoComputer IWodo;
+    public VoltageSensor voltageSensor;
 
     public HardwareMap hardwareMap;
     public RobotHardware(HardwareMap hardwareMap) {
@@ -63,6 +76,11 @@ public class RobotHardware{
         rightLiftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        pinpoint=hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
 
+        //Icewaddler
+        driveTrain=new ExampleDriveTrain(this);
+        IWodo=new goBildaOdoComputer(pinpoint,new Scalar(100,mm),new Scalar(0,mm), GoBildaOdometryPods.goBILDA_SWINGARM_POD, EncoderDirection.FORWARD, EncoderDirection.FORWARD);
+        voltageSensor=hardwareMap.get(VoltageSensor.class, "Control Hub");
     }
 }

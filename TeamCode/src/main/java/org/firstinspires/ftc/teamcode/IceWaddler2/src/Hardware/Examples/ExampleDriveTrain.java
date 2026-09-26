@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples;
 
 import static org.apache.commons.math3.util.FastMath.abs;
+import static org.firstinspires.ftc.teamcode.IceWaddler2.IWConfig.maxAccel;
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -9,6 +10,10 @@ import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWDriveTrain;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.DimlessVector;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
+import org.firstinspires.ftc.teamcode.Subsystems.UniversalTools.RobotHardware;
+
+import java.util.Arrays;
+import java.util.List;
 
 /// An example IceWaddler drive train object, built on our robot hardwaremap.<br>
 /// If also using a hardwaremap, change class and motor names to match<br>
