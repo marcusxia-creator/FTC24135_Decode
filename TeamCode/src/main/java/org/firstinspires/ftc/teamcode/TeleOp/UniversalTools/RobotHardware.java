@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp.UniversalTools;
 
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -15,15 +16,16 @@ public class RobotHardware{
     public DcMotorEx intakeMotor;
     public DcMotorEx leftLiftMotor;
     public DcMotorEx rightLiftMotor;
-    public Servo linkagePTOServo;
+    public DcMotorEx shooterMotor;
+    public CRServo leftSideRoller;
+    public CRServo rightSideRoller;
+    public Servo Unknown;
 
     public HardwareMap hardwareMap;
     public RobotHardware(HardwareMap hardwareMap) {
        this.hardwareMap=hardwareMap;
     }
     public void init(){
-        ///PTO
-        linkagePTOServo = hardwareMap.get(Servo.class, "PTO_Servo");
         ///Drive
         frontLeftMotor = hardwareMap.get(DcMotorEx.class, "FL_Motor");
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "BL_Motor");
@@ -44,6 +46,11 @@ public class RobotHardware{
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         ///Intake
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
+
+        leftSideRoller = hardwareMap.get(CRServo.class, "Left_Side_Roller");
+        rightSideRoller = hardwareMap.get(CRServo.class, "Right_Side_Roller");
+
+        rightSideRoller.setDirection(DcMotorSimple.Direction.REVERSE);
 
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);

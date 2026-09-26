@@ -11,19 +11,17 @@ import com.seattlesolvers.solverslib.command.button.GamepadButton;
 import org.firstinspires.ftc.teamcode.TeleOp.Commands.RobotDriveCommand;
 ///Subsystems
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.RobotDriveSubsystem;
-import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.LinkagePTOSubsystem;
 
+import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
 
-@TeleOp (name = "Intake Test TeleOp", group = "Test")
+@TeleOp (name = "Basic TeleOp", group = "Test")
 
-public class IntakeTestTeleOp extends CommandOpMode {
+public class BasicTeleOp extends CommandOpMode {
     private RobotDriveSubsystem robotDrive;
-    private LinkagePTOSubsystem linkagePTO;
-    private LiftSubsystem lift;
     private IntakeSubsystem intake;
+    private ShooterSubsystem shooter;
     private GamepadEx gamepad;
 
     @Override
@@ -33,8 +31,8 @@ public class IntakeTestTeleOp extends CommandOpMode {
 
         robotDrive = new RobotDriveSubsystem(robot);
         intake = new IntakeSubsystem(robot);
+        shooter = new ShooterSubsystem(robot);
         gamepad = new GamepadEx(gamepad1);
-        lift = new LiftSubsystem(robot);
 
         robotDrive.setDefaultCommand(new RobotDriveCommand(
                 robotDrive,
@@ -51,35 +49,20 @@ public class IntakeTestTeleOp extends CommandOpMode {
                 .whenPressed (new InstantCommand(() -> intake.increasePower(), intake));
         new GamepadButton (gamepad, GamepadKeys.Button.DPAD_DOWN)
                 .whenPressed(new InstantCommand(()-> intake.decreasePower(), intake));
-        ///Run lift
-        new GamepadButton(gamepad, GamepadKeys.Button.Y)
-            .whenPressed(new InstantCommand (lift :: extendLift, lift));
+        ///RUN SHOOTER
         new GamepadButton(gamepad, GamepadKeys.Button.X)
-            .whenPressed(new InstantCommand(lift :: lowerLift, lift));
-        ///Stop lift
-        /*
-        new GamepadButton (gamepad, GamepadKeys.Button.B)
-            .whenPressed(new InstantCommand(lift :: stop));
-         */
-        ///Lift PTO
-        new GamepadButton(gamepad, GamepadKeys.Button.B)
-            .whenPressed(new RunCommand(linkagePTO :: engagePTO));
-        new GamepadButton(gamepad, GamepadKeys.Button.A)
-            .whenPressed(new RunCommand(linkagePTO :: disengagePTO));
+                .whenPressed(new InstantCommand(shooter :: runFlywheel, shooter))
+                .whenPressed(new InstantCommand(shooter :: stop, shooter));
+        new GamepadButton(gamepad, GamepadKeys.Button.DPAD_RIGHT)
+                .whenPressed(new InstantCommand (shooter :: increasePower, shooter));
+        new GamepadButton (gamepad, GamepadKeys.Button.DPAD_LEFT)
+                .whenPressed(new InstantCommand (shooter :: decreasePower, shooter));
     }
     @Override
     public void run (){
         super.run();
         telemetry.addLine("----------------INTAKE----------------");
         telemetry.addData("Intake Power", intake.getIntakePower());
-        telemetry.addLine("-----------Lift in MM-----------");
-        telemetry.addData("Target Lift Position MM", lift.getTargetPositionMM());
-        telemetry.addData("Current Lift Position MM", lift.getCurrentPositionMM());
-        telemetry.addData("Error MM", lift.getErrorMM());
-        telemetry.addLine("-----------Lift in Ticks-----------");
-        telemetry.addData("Target Lift Position", lift.getTargetTick());
-        telemetry.addData("Current Lift Position", lift.getCurrentTick());
-        telemetry.addData("Error", lift.getErrorTick());
         telemetry.update();
     }
 }

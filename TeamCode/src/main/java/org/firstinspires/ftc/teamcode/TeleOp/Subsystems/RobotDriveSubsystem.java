@@ -12,25 +12,33 @@ public class RobotDriveSubsystem extends SubsystemBase {
     public RobotDriveSubsystem (RobotHardware robot) {
         this.robot = robot;
     }
-
     public void mecanumDrive (double forward, double strafe, double turn){
-        double larp=0.2;
-        forward = Range.clip(forward, lastForward-larp, lastForward+larp);
-        strafe = Range.clip(strafe, lastStrafe-larp, lastStrafe+larp);
-        turn = Range.clip(turn, lastTurn-larp, lastTurn+larp);
+        double lerp =0.15;
+        forward = Range.clip(forward, lastForward- lerp, lastForward+ lerp);
+        strafe = Range.clip(strafe, lastStrafe- lerp, lastStrafe+ lerp);
+        turn = Range.clip(turn, lastTurn- lerp, lastTurn+ lerp);
+
+        lastForward = forward;
+        lastStrafe = strafe;
+        lastTurn = turn;
 
         double FLPower = forward + strafe + turn;
         double FRPower = forward - strafe - turn;
         double BLPower = forward - strafe + turn;
         double BRPower = forward + strafe - turn;
 
+        double max = Math.max(Math.abs(FLPower), Math.max(Math.abs(FRPower),
+                Math.max(Math.abs(BLPower), Math.abs(BRPower))));
+        if (max > 1.0) {
+            FLPower /= max;
+            FRPower /= max;
+            BLPower /= max;
+            BRPower /= max;
+        }
+
         robot.frontLeftMotor.setPower(FLPower);
         robot.frontRightMotor.setPower(FRPower);
         robot.backLeftMotor.setPower(BLPower);
         robot.backRightMotor.setPower(BRPower);
-
-        lastForward = forward;
-        lastStrafe = strafe;
-        lastTurn = turn;
     }
 }
