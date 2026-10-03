@@ -39,8 +39,8 @@ public class goBildaOdoComputer implements IWLocalizer {
     public Situation getSituation() {
         return new Situation(
                 null,
-                new Velocity(new Vector(-odo.getVelY(DistanceUnit.METER), odo.getVelX(DistanceUnit.METER), mm.div(s)), new Scalar(-odo.getHeadingVelocity(UnnormalizedAngleUnit.RADIANS),radiansPerSecond)),
-                new Position(new Vector(-odo.getPosY(DistanceUnit.METER), odo.getPosX(DistanceUnit.METER), mm), new NormalizedAngle(-odo.getHeading(AngleUnit.RADIANS), rad))
+                new Velocity(new Vector(-odo.getVelY(DistanceUnit.METER), odo.getVelX(DistanceUnit.METER), metersPerSecond), new Scalar(-odo.getHeadingVelocity(UnnormalizedAngleUnit.RADIANS),radiansPerSecond)),
+                new Position(new Vector(-odo.getPosY(DistanceUnit.METER), odo.getPosX(DistanceUnit.METER), m), new NormalizedAngle(-odo.getHeading(UnnormalizedAngleUnit.RADIANS), rad))
         );
     }
 }

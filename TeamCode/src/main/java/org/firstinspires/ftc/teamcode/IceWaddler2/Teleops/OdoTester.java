@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.IceWaddler2.Teleops;
 
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -24,9 +26,11 @@ public class OdoTester extends OpMode {
         robot = new RobotHardware(hardwareMap);
         robot.init();
 
-        waddler = new IceWaddler(robot.driveTrain, robot.IWodo);
+        waddler = new IceWaddler(robot.driveTrain, robot.localizer);
 
         waddler.init(new Position(new Vector(0, 0, m), new NormalizedAngle(0, deg)), true);
+
+        telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
     }
 
     /*

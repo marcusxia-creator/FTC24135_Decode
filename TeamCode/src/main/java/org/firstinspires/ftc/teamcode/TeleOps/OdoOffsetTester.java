@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWDriveTrain;
 import org.firstinspires.ftc.teamcode.Subsystems.UniversalTools.RobotHardware;
 
@@ -40,7 +41,7 @@ public class OdoOffsetTester extends OpMode {
 
         odo.update();
 
-        telemetry.addData("X Offset", String.format("%f mm", ((odo.getEncoderX()-initialXTicks)/13.26291192)/odo.getHeading(AngleUnit.RADIANS)));
-        telemetry.addData("Y Offset", String.format("%f mm", ((odo.getEncoderY()-initialYTicks)/13.26291192)/odo.getHeading(AngleUnit.RADIANS)));
+        telemetry.addData("X Offset", String.format("%f mm", ((odo.getEncoderX()-initialXTicks)/13.26291192)/odo.getHeading(UnnormalizedAngleUnit.RADIANS)));
+        telemetry.addData("Y Offset", String.format("%f mm", ((odo.getEncoderY()-initialYTicks)/13.26291192)/odo.getHeading(UnnormalizedAngleUnit.RADIANS)));
     }
 }

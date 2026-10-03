@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.CommandBase.ScheduledOpMode;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.IceWaddler;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.*;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
-import org.firstinspires.ftc.teamcode.Subsystems.RobotHardware;
+import org.firstinspires.ftc.teamcode.Subsystems.UniversalTools.RobotHardware;
 
 @TeleOp(name="Velocity Tuner", group="IceWaddler")
 @Config
@@ -34,7 +34,7 @@ public class VelTuner extends ScheduledOpMode {
     @Override
     public void init(){
         robot=new RobotHardware(hardwareMap);
-        robot.init(hardwareMap);
+        robot.init();
 
         waddler=new IceWaddler(robot.driveTrain, robot.localizer);
         waddler.init(new Position(new Vector(0,0,m),new NormalizedAngle(0,deg)),false);

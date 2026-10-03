@@ -20,10 +20,10 @@ import java.util.List;
 /// If not using a hardware map, modify the constructor to input and store the four motors as individual parameters
 @Config
 public class ExampleDriveTrain implements IWDriveTrain {
-    public static double k_v=8.8;
-    public static double angk_v=3;
-    public static double k_a=1.5;
-    public static double angk_a=5;
+    public static double k_v=3;
+    public static double angk_v=1.1;
+    public static double k_a=0;
+    public static double angk_a=0;
     public static double maxAllowableLinPower=11;
     public static Scalar wheelPivotRadius       = new Scalar(10, in); //The distance between the pivot point and each of the wheels, or half the length of the diagonal
     RobotHardware robot;
