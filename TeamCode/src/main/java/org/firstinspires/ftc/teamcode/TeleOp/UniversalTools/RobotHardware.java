@@ -55,17 +55,7 @@ public class RobotHardware{
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        ///Lift
-        leftLiftMotor = hardwareMap.get(DcMotorEx.class,"Left_Lift_Motor");
-        rightLiftMotor = hardwareMap.get(DcMotorEx.class, "Right_Lift_Motor");
-
-        leftLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        rightLiftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooterMotor = hardwareMap.get(DcMotorEx.class, "Shooter_Motor");
 
     }
 }

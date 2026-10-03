@@ -22,11 +22,14 @@ public class IntakeSubsystem extends SubsystemBase{
     public void decreasePower (){
         intakePower = Math.max(0.0, intakePower - POWER_STEP);
     }
-    public double getIntakePower() {
+    public double getIntakeMotorPower() {
         return intakePower;
     }
+    public double getIntakeRollerPower(){return robot.leftSideRoller.getPower();}
 
     public void stop () {
         robot.intakeMotor.setPower(0);
+        robot.rightSideRoller.setPower(0);
+        robot.leftSideRoller.setPower(0);
     }
 }
