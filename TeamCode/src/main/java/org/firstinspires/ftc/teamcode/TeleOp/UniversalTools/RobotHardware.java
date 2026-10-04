@@ -14,11 +14,9 @@ public class RobotHardware{
     public DcMotorEx frontRightMotor;
     public DcMotorEx backRightMotor;
     public DcMotorEx intakeMotor;
-    public DcMotorEx leftLiftMotor;
-    public DcMotorEx rightLiftMotor;
     public DcMotorEx shooterMotor;
-    public CRServo leftSideRoller;
-    public CRServo rightSideRoller;
+   // public CRServo leftSideRoller;
+    //public CRServo rightSideRoller;
     public Servo Unknown;
 
     public HardwareMap hardwareMap;
@@ -46,11 +44,13 @@ public class RobotHardware{
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         ///Intake
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
+        /**
 
         leftSideRoller = hardwareMap.get(CRServo.class, "Left_Side_Roller");
         rightSideRoller = hardwareMap.get(CRServo.class, "Right_Side_Roller");
 
         rightSideRoller.setDirection(DcMotorSimple.Direction.REVERSE);
+         */
 
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);

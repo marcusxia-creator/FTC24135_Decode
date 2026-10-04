@@ -12,8 +12,6 @@ public class IntakeSubsystem extends SubsystemBase{
     }
     public void runRollers (){
         robot.intakeMotor.setPower(intakePower);
-        robot.leftSideRoller.setPower(0.5);
-        robot.rightSideRoller.setPower(0.5);
     }
     public void increasePower() {
         intakePower = Math.min(1.0, intakePower + POWER_STEP);
@@ -25,11 +23,8 @@ public class IntakeSubsystem extends SubsystemBase{
     public double getIntakeMotorPower() {
         return intakePower;
     }
-    public double getIntakeRollerPower(){return robot.leftSideRoller.getPower();}
 
     public void stop () {
         robot.intakeMotor.setPower(0);
-        robot.rightSideRoller.setPower(0);
-        robot.leftSideRoller.setPower(0);
     }
 }

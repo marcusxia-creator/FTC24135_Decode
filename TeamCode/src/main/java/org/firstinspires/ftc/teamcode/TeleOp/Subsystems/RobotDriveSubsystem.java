@@ -14,18 +14,15 @@ public class RobotDriveSubsystem extends SubsystemBase {
     }
     public void mecanumDrive (double forward, double strafe, double turn){
         double lerp =0.15;
-        forward = Range.clip(forward, lastForward- lerp, lastForward+ lerp);
-        strafe = Range.clip(strafe, lastStrafe- lerp, lastStrafe+ lerp);
-        turn = Range.clip(turn, lastTurn- lerp, lastTurn+ lerp);
 
-        lastForward = forward;
-        lastStrafe = strafe;
-        lastTurn = turn;
+        lastForward = lastForward + lerp*(forward - lastForward);
+        lastStrafe = lastStrafe + lerp * (strafe - lastStrafe);
+        lastTurn = lastTurn + lerp * (turn - lastTurn);
 
-        double FLPower = forward + strafe + turn;
-        double FRPower = forward - strafe - turn;
-        double BLPower = forward - strafe + turn;
-        double BRPower = forward + strafe - turn;
+        double FLPower = lastForward + lastStrafe + lastTurn;
+        double FRPower = lastForward - lastStrafe - lastTurn;
+        double BLPower = lastForward - lastStrafe + lastTurn;
+        double BRPower = lastForward + lastStrafe - lastTurn;
 
         double max = Math.max(Math.abs(FLPower), Math.max(Math.abs(FRPower),
                 Math.max(Math.abs(BLPower), Math.abs(BRPower))));

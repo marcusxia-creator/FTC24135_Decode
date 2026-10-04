@@ -67,9 +67,7 @@ public class BasicTeleOp extends CommandOpMode {
     @Override
     public void run (){
         super.run();
-        telemetry.addLine("----------------INTAKE----------------");
         telemetry.addData("Intake Motor Power", intake.getIntakeMotorPower());
-        telemetry.addData("Intake Rollers Power", intake.getIntakeRollerPower());
         telemetry.addData("Shooter Power",shooter.getshooterPower());
         telemetry.update();
     }
