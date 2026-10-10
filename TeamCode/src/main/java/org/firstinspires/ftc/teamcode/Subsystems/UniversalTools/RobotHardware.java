@@ -55,10 +55,10 @@ public class RobotHardware{
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         ///Intake
-        intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
+        //intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
 
-        intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        //intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        //intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");

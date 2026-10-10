@@ -43,6 +43,6 @@ public class GamepadSubsystem extends GamepadDriver {
 
         intakeToggle=new Toggle(gamepads,gamepad -> gamepad.a,debounce,false);
 
-        driveSelect=new Switch(gamepads,gamepad -> joystick1.active()||joystick2.active(),gamepad -> gamepad.left_trigger>=0.9&&gamepad.dpad_left);
+        driveSelect=new Switch(gamepads,gamepad -> joystick1.active()||joystick2.active(),gamepad -> gamepad.left_trigger>=0.9&&gamepad.x);
     }
 }

@@ -29,6 +29,8 @@ public class SemiautoTeleop extends ScheduledOpMode {
         robot=new RobotHardware(hardwareMap);
         robot.init();
 
+        intake=new IntakeSubsystem(robot);
+
         waddler=new IceWaddler(robot.driveTrain, robot.localizer);
         waddler.init(Position.ORIGIN,false);
 
@@ -42,8 +44,8 @@ public class SemiautoTeleop extends ScheduledOpMode {
                                 waddler.new InitPath(),
                                 waddler.new MotionAction(new Line(new PathingPoint(Position.ORIGIN),new maxSpeedMP(),new linearHP(),new String[]{})),
                                 new ActionParallel(NONE,waddler.new MotionAction(new holdPos(new String[]{})))
-                        )
-                )
+                        )),
+                new ActivatableAction(gamepad.intakeToggle, intake.new RunIntake())
         );
     }
 }

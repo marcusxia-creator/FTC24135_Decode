@@ -18,6 +18,10 @@ public class ActivatableAction implements Action {
         this.initialState=initialState;
     }
 
+    public ActivatableAction(Supplier<Boolean> activationMethod, Action action){
+        this(activationMethod,()->!activationMethod.get(),action, activationMethod.get());
+    }
+
     public ActivatableAction(Supplier<Boolean> activationMethod, Supplier<Boolean> deactivationMethod, Action action){
         this(activationMethod,deactivationMethod,action,false);
     }
