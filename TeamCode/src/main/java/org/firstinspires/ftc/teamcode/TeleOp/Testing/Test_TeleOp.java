@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp;
+package org.firstinspires.ftc.teamcode.TeleOp.Testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -25,9 +25,10 @@ public class Test_TeleOp extends OpMode {
 
     @Override
     public void init() {
-        shooterMotor = hardwareMap.get(DcMotorEx.class, "Shooter_Motor");
+        shooterMotor = hardwareMap.get(DcMotorEx.class, "Left_Shooter_Motor");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
         shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         gamepad = new GamepadEx(gamepad1);
     }
@@ -36,43 +37,49 @@ public class Test_TeleOp extends OpMode {
     public void loop(){
 
         if (gamepad.getButton(GamepadKeys.Button.X) && debounceTimer.seconds() >= 0.2) {
-            shooterTargetVelocity = 2000.0;
             debounceTimer.reset();
+            shooterTargetVelocity = 2000.0;
         }
 
-        if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER) && debounceTimer.seconds() >= 0.2) {
-            shooterTargetVelocity += 100.0;
+        if (gamepad.getButton(GamepadKeys.Button.Y) && debounceTimer.seconds() >= 0.2) {
             debounceTimer.reset();
+            shooterTargetVelocity = 0.0;
         }
-        if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER) && debounceTimer.seconds() >= 0.2) {
-            shooterTargetVelocity -= 100.0;
+
+        if (gamepad.getButton(GamepadKeys.Button.DPAD_UP) && debounceTimer.seconds() >= 0.2) {
             debounceTimer.reset();
+            shooterTargetVelocity += 100.0;
+        }
+
+        if (gamepad.getButton(GamepadKeys.Button.DPAD_DOWN) && debounceTimer.seconds() >= 0.2) {
+            debounceTimer.reset();
+            shooterTargetVelocity -= 100.0;
         }
 
         if (gamepad.getButton(GamepadKeys.Button.A) && debounceTimer.seconds() >= 0.2) {
-            intakeTargetVelocity = 2000.0;
             debounceTimer.reset();
+            intakeTargetVelocity = 500.0;
+        }
+        if (gamepad.getButton(GamepadKeys.Button.B) && debounceTimer.seconds() >= 0.2) {
+            debounceTimer.reset();
+            intakeTargetVelocity = 0.0;
         }
         if (gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT) && debounceTimer.seconds() >= 0.2) {
-            intakeTargetVelocity += 100.0;
             debounceTimer.reset();
+            intakeTargetVelocity += 50.0;
         }
         if (gamepad.getButton(GamepadKeys.Button.DPAD_LEFT) && debounceTimer.seconds() >= 0.2) {
-            intakeTargetVelocity -= 100.0;
             debounceTimer.reset();
+            intakeTargetVelocity -= 50.0;
         }
 
-        if (gamepad.getButton(GamepadKeys.Button.B) && debounceTimer.seconds() >= 0.2) {
-
-            debounceTimer.reset();
-        }
         double shooterCurrentVelocity = shooterMotor.getVelocity();
         double shooterPidOutput = shooterPID.calculate(shooterCurrentVelocity, shooterTargetVelocity);
-        shooterMotor.setPower(shooterPidOutput);
+        shooterMotor.setPower(Range.clip(shooterPidOutput, 0, 1));
 
         double intakeCurrentVelocity = intakeMotor.getVelocity();
         double intakePidOutput = intakePID.calculate(intakeCurrentVelocity, intakeTargetVelocity);
-        intakeMotor.setPower(intakePidOutput);
+        intakeMotor.setPower(Range.clip(intakePidOutput, 0, 1));
 
         telemetry.addData("Shooter Target", shooterTargetVelocity);
         telemetry.addData("Shooter Current", shooterCurrentVelocity);
