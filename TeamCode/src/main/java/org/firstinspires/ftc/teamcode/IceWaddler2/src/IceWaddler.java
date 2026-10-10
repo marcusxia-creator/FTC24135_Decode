@@ -34,9 +34,9 @@ public class IceWaddler {
     Scalar dt;
 
     // Situations
-    Queue<Situation> lastSituations=new LinkedList<>();    //Situation during the last few ticks, used to interpolate accelerations and velocities, if needed
+    Situation lastSituation;    //Situation during the last few ticks, used to interpolate accelerations and velocities, if needed
     Situation currentSituation; //Current situation, from odometry
-    Queue<Situation> lastTargetSituations=new LinkedList<>(); //Used for derivatives in controllers
+    Situation lastTargetSituation; //Used for derivatives in controllers
     Situation targetSituation;  //Target situation to drive motors. Position is null
     public PathingPoint targetPathingPoint; //Used to transfer information while transitioning between pathing segments
     // Note: All situation objects should be field centric
@@ -74,9 +74,10 @@ public class IceWaddler {
         ));
         localizer.update();
         currentSituation=localizer.getSituation();
-        lastSituations.offer(currentSituation);// To avoid not defined errors in later derivatives
+        lastSituation=localizer.getSituation();// To avoid not defined errors in later derivatives
 
         targetSituation=new Situation(Acceleration.zero,Velocity.zero,currentSituation.getPosition());
+        lastTargetSituation=new Situation(Acceleration.zero,Velocity.zero,currentSituation.getPosition());
     }
 
     public void resetOdo(Position resetPos){
@@ -98,7 +99,6 @@ public class IceWaddler {
 
     ///Updates odometry, and computes derivatives if needed
     private void updateOdo(){
-        Situation lastSituation=lastSituations.peek();
         localizer.update();
         currentSituation=localizer.getSituation();
 
@@ -106,10 +106,12 @@ public class IceWaddler {
         //Velocity as the derivative of position
         if(currentSituation.getVelocity()==null&&currentSituation.getPosition()!=null){
             currentSituation.setVelocity(currentSituation.getPosition().sub(lastSituation.getPosition()).differentiate(dt));
+            lastSituation.setPosition(currentSituation.getPosition());
         }
         //Acceleration as the derivative of velocity
         if(currentSituation.getAcceleration()==null&&currentSituation.getVelocity()!=null){
             currentSituation.setAcceleration(currentSituation.getVelocity().sub(lastSituation.getVelocity()).differentiate(dt));
+            lastSituation.setVelocity(currentSituation.getVelocity());
         }
 
         //Integrals
@@ -123,30 +125,9 @@ public class IceWaddler {
         }
     }
 
-    /// Update last storage queues, used for derivatives in the controller
-    private void updateLastStorage(){
-        lastTicks.offer(tickTime);
-        if(lastTicks.size()>derivativeTicks){
-            lastTicks.poll();
-        }
-        dt=new Scalar(0,s);
-        lastTicks.forEach(item->dt=dt.add(item));
-
-        lastSituations.offer(currentSituation);
-        if(lastSituations.size()>derivativeTicks){
-            lastSituations.poll();
-        }
-
-        lastTargetSituations.offer(targetSituation);
-        if(lastTargetSituations.size()>derivativeTicks){
-            lastTargetSituations.poll();
-        }
-    }
-
     ///Runs updates on odo and ticktime. Needs to be run every loop, preferably before any other methods
     public void update(){
         updateTimer();
-        updateLastStorage();
         updateOdo();
     }
 
@@ -168,7 +149,7 @@ public class IceWaddler {
 
     ///For Debugging
     public Situation getLastTargetSituation(){
-        return lastTargetSituations.peek();
+        return lastTargetSituation;
     }
 
     public Movement getCurrentAction(){return currentAction;}
@@ -269,12 +250,12 @@ public class IceWaddler {
 
     ///Calculates target acceleration based on a target velocity
     private void writeVel(){
-
         Velocity current=currentSituation.getVelocity();
-        Velocity lastTarget=lastTargetSituations.peek().getVelocity();
+        Velocity lastTarget=lastTargetSituation.getVelocity();
         Velocity target=targetSituation.getVelocity();
         targetSituation.setAcceleration(target.sub(lastTarget).differentiate(dt).add(accelerationController.getCorrection(current.sub(target))));
         limitAcceleration();
+        lastTargetSituation.setVelocity(current);
         writeAccel();
     }
 
