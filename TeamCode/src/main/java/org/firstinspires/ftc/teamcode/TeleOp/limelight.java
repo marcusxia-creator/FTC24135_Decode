@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.Range;
 
 @Config
 @TeleOp(name = "Limelight 3A Python Test", group = "Test")
@@ -29,6 +30,9 @@ public class limelight extends OpMode {
 
     private double imageCenterX = 320.0;
     private double horizontalFOV = 54.5;
+
+    private double kP = 0.02;
+    private double deadBand = 0.7;
 
 
     @Override
@@ -149,6 +153,21 @@ public class limelight extends OpMode {
                 telemetry.addData("Custom Python Y (Pixel)", customTy);
                 telemetry.addData("Custom Radius", customRadius);
 
+                double turnPower;
+
+                if (Math.abs(customTxDeg) < deadBand) {
+                    turnPower = 0;
+                }
+                else {
+                    turnPower = customTxDeg * kP;
+                }
+                
+                turnPower = Range.clip(turnPower, -0.5, 0.5);
+
+                frontLeftMotor.setPower(turnPower);
+                backLeftMotor.setPower(turnPower);
+                frontRightMotor.setPower(-turnPower);
+                backRightMotor.setPower(-turnPower);
 
             }
             else {
