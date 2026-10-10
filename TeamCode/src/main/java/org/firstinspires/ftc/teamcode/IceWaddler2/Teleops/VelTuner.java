@@ -76,6 +76,8 @@ public class VelTuner extends ScheduledOpMode {
             telemetry.addData("5.Last Target x vel", waddler.getLastTargetSituation().getVelocity().getX().getValueSI());
             telemetry.addData("5.Last Target y vel", waddler.getLastTargetSituation().getVelocity().getY().getValueSI());
             telemetry.addData("5.Last Target ang vel", waddler.getLastTargetSituation().getVelocity().getAngVel().getValueSI());
+
+            telemetry.addData("dtarget yvel", waddler.getTargetSituation().getVelocity().sub(waddler.getLastTargetSituation().getVelocity()).getY().getValueSI());
         }
     }
 }
